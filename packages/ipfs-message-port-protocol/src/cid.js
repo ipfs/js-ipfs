@@ -1,7 +1,6 @@
 'use strict'
 
 const { CID } = require('multiformats/cid')
-const Digest = require('multiformats/hashes/digest')
 
 /**
  * @typedef {Object} EncodedCID
@@ -39,7 +38,7 @@ const decodeCID = encodedCID => {
   /** @type {CID} */
   const cid = (encodedCID)
 
-  // non-enumerable field that doesn't always get transferred
+  // @ts-ignore non-enumerable field that doesn't always get transferred
   if (!cid._baseCache) {
     Object.defineProperty(cid, '_baseCache', {
       value: new Map()

@@ -134,7 +134,7 @@ class BlockStorage extends BlockstoreAdapter {
    * @param {Query} q
    * @param {AbortOptions} options
    */
-   async * query (q, options = {}) {
+  async * query (q, options = {}) {
     yield * this.child.query(q, options)
   }
 
@@ -142,7 +142,7 @@ class BlockStorage extends BlockstoreAdapter {
    * @param {KeyQuery} q
    * @param {AbortOptions} options
    */
-   async * queryKeys (q, options = {}) {
+  async * queryKeys (q, options = {}) {
     yield * this.child.queryKeys(q, options)
   }
 }

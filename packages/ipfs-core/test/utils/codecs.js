@@ -8,5 +8,5 @@ const raw = require('multiformats/codecs/raw')
 
 module.exports = new Multicodecs({
   codecs: [dagPb, dagCbor, raw],
-  loadCodec: () => Promise.reject('No extra codecs configured')
+  loadCodec: () => Promise.reject(new Error('No extra codecs configured'))
 })

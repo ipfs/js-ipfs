@@ -11,8 +11,6 @@ const codecs = require('./utils/codecs')
 
 describe('utils', () => {
   let rootCid
-  let rootPath
-  let rootMultihash
   let aboutCid
   let aboutPath
   let aboutMultihash
@@ -34,8 +32,6 @@ describe('utils', () => {
       }))
 
       rootCid = res[2].cid
-      rootPath = `/ipfs/${rootCid}`
-      rootMultihash = rootCid.multihash.bytes
 
       aboutCid = res[0].cid
       aboutPath = `/ipfs/${aboutCid}`

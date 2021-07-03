@@ -94,6 +94,7 @@ describe('object', () => {
         Links: []
       }
 
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get ${cid}`, { ipfs })
@@ -111,6 +112,7 @@ describe('object', () => {
         }]
       }
 
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get ${cid}`, { ipfs })
@@ -129,6 +131,7 @@ describe('object', () => {
         Links: []
       }
 
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get ${cid}`, { ipfs })
@@ -143,6 +146,7 @@ describe('object', () => {
         Links: []
       }
 
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, defaultOptions).resolves(node)
 
       const out = await cli(`object get --data-encoding=utf8 ${cid}`, { ipfs })
@@ -152,7 +156,6 @@ describe('object', () => {
     })
 
     it('should get and print CIDs encoded in specified base', async () => {
-      ipfs.bases.getBase.withArgs('base64').returns(base64)
       const node = {
         Links: [{
           Name: '',
@@ -161,6 +164,7 @@ describe('object', () => {
         }]
       }
 
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.object.get.withArgs(cid.toV1(), defaultOptions).resolves(node)
 
       const out = await cli(`object get --cid-base=base64 ${cid.toV1()}`, { ipfs })
@@ -177,6 +181,7 @@ describe('object', () => {
         Links: []
       }
 
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000

@@ -4,7 +4,6 @@
 const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
 const delay = require('delay')
-const { Key } = require('interface-datastore')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
 const ipns = require('ipns')

@@ -133,7 +133,7 @@ CoreClient.prototype.cat = async function * cat (inputPath, options = {}) {
  * @type {RootAPI["ls"]}
  */
 CoreClient.prototype.ls = async function * ls (inputPath, options = {}) {
-  const input = inputPath instanceof CID  ? encodeCID(inputPath) : inputPath
+  const input = inputPath instanceof CID ? encodeCID(inputPath) : inputPath
   const result = await this.remote.ls({ ...options, path: input })
 
   yield * decodeIterable(result.data, decodeLsEntry)

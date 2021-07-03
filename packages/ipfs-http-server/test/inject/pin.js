@@ -102,16 +102,6 @@ describe('/pin', () => {
       })
     })
 
-    it('should not remove pin for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/pin/rm?arg=${cid}&cid-base=invalid`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{
@@ -210,16 +200,6 @@ describe('/pin', () => {
       res.result.Pins.forEach(c => {
         expect(c).to.equal(cid.toV1().toString(base64))
       })
-    })
-
-    it('should not add pin for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/pin/add?arg=${cid}&cid-base=invalid`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {
@@ -366,16 +346,6 @@ describe('/pin', () => {
       expect(res).to.have.nested.deep.property(`result.Keys.${cid.toV1().toString(base64)}`, {
         Type: 'direct'
       })
-    })
-
-    it('should not list pins for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/pin/ls?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {

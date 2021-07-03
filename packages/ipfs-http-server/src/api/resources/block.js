@@ -112,7 +112,7 @@ exports.put = {
         mhtype: Joi.string().default('sha2-256'),
         mhlen: Joi.number(),
         pin: Joi.bool().default(false),
-        version: Joi.number(),
+        version: Joi.number().default(1),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {

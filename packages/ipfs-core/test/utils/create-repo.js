@@ -11,7 +11,6 @@ const { Key } = require('interface-datastore')
  * @param {string} [options.path]
  * @param {number} [options.version]
  * @param {number} [options.spec]
- * @param {object} [options.config]
  * @param {boolean} [options.true]
  * @param {(version: number, percentComplete: string, message: string) => void} [options.onMigrationProgress]
  * @param {import('ipfs-core-types/src/config').Config} [options.config]

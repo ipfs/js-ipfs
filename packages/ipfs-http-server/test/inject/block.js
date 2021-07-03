@@ -50,9 +50,9 @@ describe('/block', () => {
 
   describe('/put', () => {
     const defaultOptions = {
-      mhtype: undefined,
-      format: undefined,
-      version: undefined,
+      mhtype: 'sha2-256',
+      format: 'raw',
+      version: 1,
       pin: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
@@ -137,17 +137,6 @@ describe('/block', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res.result.Key).to.equal(cid.toV1().toString(base64))
-    })
-
-    it.skip('should not put a value for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/block/put?cid-base=invalid',
-        ...await sendData(data)
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {
@@ -288,16 +277,6 @@ describe('/block', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res.result.Key).to.equal(cid.toV1().toString(base64))
-    })
-
-    it.skip('should not stat a block for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/block/stat?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {

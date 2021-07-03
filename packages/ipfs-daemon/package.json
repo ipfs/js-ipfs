@@ -23,7 +23,7 @@
   "scripts": {
     "lint": "aegir lint",
     "test": "npm run test:node",
-    "test:node": "aegir test -t node",
+    "test:node": "aegir test -t node -- --exit",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @mapbox/node-pre-gyp",

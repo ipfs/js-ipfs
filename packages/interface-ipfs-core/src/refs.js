@@ -7,7 +7,7 @@ const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
-const dagPB = require('@ipld/dag-pb')
+const dagPb = require('@ipld/dag-pb')
 
 const { UnixFS } = require('ipfs-unixfs')
 
@@ -328,7 +328,7 @@ function loadPbContent (ipfs, node) {
       return res.cid
     },
     putLinks: async (links) => {
-      const res = await ipfs.block.put(dagPB.encode({
+      const res = await ipfs.block.put(dagPb.encode({
         Links: links.map(({ name, cid }) => {
           return {
             Name: name,

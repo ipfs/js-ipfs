@@ -7,6 +7,7 @@ const { nanoid } = require('nanoid')
 const { CID } = require('multiformats/cid')
 const sha256 = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
+const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**

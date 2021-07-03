@@ -30,7 +30,7 @@ describe('.dag', function () {
       Links: []
     }
 
-    let cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256', cidVersion: 0 })
+    const cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256', cidVersion: 0 })
     expect(cid.code).to.equal(dagPb.code)
     expect(cid.toString(base58btc)).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
 
@@ -41,7 +41,7 @@ describe('.dag', function () {
 
   it('should be able to put and get a DAG node with format dag-cbor', async () => {
     const cbor = { foo: 'dag-cbor-bar' }
-    let cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+    const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
 
     expect(cid.code).to.equal(dagCbor.code)
     expect(cid.toString(base32)).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
@@ -53,7 +53,7 @@ describe('.dag', function () {
 
   it('should be able to put and get a DAG node with format raw', async () => {
     const node = uint8ArrayFromString('some data')
-    let cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
+    const cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
 
     expect(cid.code).to.equal(raw.code)
     expect(cid.toString(base32)).to.equal('bafkreiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')

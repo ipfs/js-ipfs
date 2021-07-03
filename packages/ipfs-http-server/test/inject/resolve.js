@@ -29,16 +29,6 @@ describe('/resolve', () => {
     return testHttpMethod('/api/v0/resolve')
   })
 
-  it('should not resolve a path for invalid cid-base option', async () => {
-    const res = await http({
-      method: 'POST',
-      url: `/api/v0/resolve?arg=${cid}&cid-base=invalid`
-    }, { ipfs })
-
-    expect(res).to.have.property('statusCode', 400)
-    expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-  })
-
   it('resolves a name', async () => {
     const result = 'result'
     ipfs.resolve.withArgs(cid.toString(), defaultOptions).returns(result)
@@ -95,15 +85,6 @@ describe('/resolve', () => {
 
     expect(res).to.have.property('statusCode', 200)
     expect(res).to.have.nested.property('result.Path', result)
-  })
-
-  it('does not accept an incalid cid-base', async () => {
-    const res = await http({
-      method: 'POST',
-      url: `/api/v0/resolve?arg=${cid}&cid-base=invalid`
-    }, { ipfs })
-
-    expect(res).to.have.property('statusCode', 400)
   })
 
   it('accepts a timeout', async () => {

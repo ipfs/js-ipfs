@@ -50,7 +50,7 @@ module.exports = FilesClient
  * @param {string|CID} pathOrCID
  */
 const encodeLocation = pathOrCID =>
-  pathOrCID instanceof CID  ? `/ipfs/${pathOrCID.toString()}` : pathOrCID
+  pathOrCID instanceof CID ? `/ipfs/${pathOrCID.toString()}` : pathOrCID
 
 /**
  * @param {EncodedStat} data

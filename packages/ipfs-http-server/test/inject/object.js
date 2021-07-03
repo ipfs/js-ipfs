@@ -35,7 +35,7 @@ describe('/object', () => {
     Data: new UnixFS({
       type: 'directory'
     }).marshal(),
-    Links: [],
+    Links: []
   }
   let ipfs
 
@@ -143,16 +143,6 @@ describe('/object', () => {
       expect(res.result.Hash).to.equal(cid.toV1().toString(base64))
     })
 
-    it('should not create a new object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/object/new?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.new.withArgs({
@@ -234,16 +224,6 @@ describe('/object', () => {
       expect(res.result.Hash).to.equal(cid.toV1().toString(base64))
     })
 
-    it('should not get an object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/get?cid-base=invalid&arg=${cid}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, {
@@ -320,7 +300,8 @@ describe('/object', () => {
           Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'),
           Tsize: 8
         }
-      ]}
+        ]
+      }
 
       ipfs.object.put.withArgs(pbNode, defaultOptions).returns(cid)
       ipfs.object.get.withArgs(cid).resolves(pbNode)
@@ -333,7 +314,8 @@ describe('/object', () => {
           Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
           Size: 8
         }
-      ]})))
+        ]
+      })))
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
@@ -367,7 +349,8 @@ describe('/object', () => {
           Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1(),
           Tsize: 8
         }
-      ]}
+        ]
+      }
 
       ipfs.object.put.withArgs(pbNode, defaultOptions).returns(cid.toV1())
       ipfs.object.get.withArgs(cid.toV1()).resolves(pbNode)
@@ -380,7 +363,8 @@ describe('/object', () => {
           Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1().toString(),
           Size: 8
         }
-      ]})))
+        ]
+      })))
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
@@ -404,23 +388,6 @@ describe('/object', () => {
       })
     })
 
-    it('should not put data for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('file', JSON.stringify({ Data: 'TEST' + Date.now(), Links: [] }), { filename: 'node.json' })
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/object/put?cid-base=invalid',
-        headers,
-        payload
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
@@ -431,7 +398,8 @@ describe('/object', () => {
           Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'),
           Tsize: 8
         }
-      ]}
+        ]
+      }
 
       ipfs.object.put.withArgs(pbNode, {
         ...defaultOptions,
@@ -450,7 +418,8 @@ describe('/object', () => {
           Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
           Size: 8
         }
-      ]})))
+        ]
+      })))
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
@@ -549,16 +518,6 @@ describe('/object', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Hash', cid.toV1().toString(base64))
-    })
-
-    it('should not stat object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/stat?cid-base=invalid&arg=${cid}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {
@@ -724,16 +683,6 @@ describe('/object', () => {
       })
     })
 
-    it('should not list object links for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/links?cid-base=invalid&arg=${cid}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.links.withArgs(cid, {
@@ -866,23 +815,6 @@ describe('/object', () => {
         Links: [],
         Size: 4
       })
-    })
-
-    it('should not append data to object for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/append-data?cid-base=invalid&arg=${cid}`,
-        headers,
-        payload
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {
@@ -1019,23 +951,6 @@ describe('/object', () => {
         Hash: cid.toV1().toString(base64),
         Links: []
       })
-    })
-
-    it('should not set data for object for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/set-data?cid-base=invalid&arg=${cid}`,
-        headers,
-        payload
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {
@@ -1182,16 +1097,6 @@ describe('/object', () => {
       })
     })
 
-    it('should not add a link to an object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/add-link?cid-base=invalid&arg=${cid}&arg=test&arg=${cid2}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const name = 'name'
@@ -1307,16 +1212,6 @@ describe('/object', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Hash', cid2.toV1().toString(base64))
-    })
-
-    it('should not remove a link from an object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/rm-link?cid-base=invalid&arg=${cid}&arg=derp`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
     })
 
     it('accepts a timeout', async () => {

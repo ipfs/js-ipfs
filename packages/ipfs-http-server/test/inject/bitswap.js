@@ -87,20 +87,6 @@ describe('/bitswap', () => {
       expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toV1().toString(base64) })
     })
 
-    it('/wantlist?cid-base=invalid', async () => {
-      ipfs.bitswap.wantlist.withArgs(defaultOptions).returns([
-        cid
-      ])
-
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/bitswap/wantlist?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'

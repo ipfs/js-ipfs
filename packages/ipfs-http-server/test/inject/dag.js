@@ -12,7 +12,6 @@ const http = require('../utils/http')
 const sinon = require('sinon')
 const { AbortSignal } = require('native-abort-controller')
 const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
 
 const toHeadersAndPayload = async (thing) => {
   const stream = new Readable()
