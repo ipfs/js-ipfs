@@ -44,7 +44,7 @@ module.exports = {
   async handler ({ ctx: { ipfs, print }, key, dataEncoding, cidBase, timeout }) {
     const node = await ipfs.object.get(key, { timeout })
 
-    /** @type {import('multibase').BaseName | 'utf8' | 'utf-8' | 'ascii' | undefined} */
+    /** @type {string | undefined} */
     let encoding
 
     if (dataEncoding === 'base64') {
@@ -63,6 +63,7 @@ module.exports = {
     const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
+      // @ts-ignore encoding type is wrong
       Data: node.Data ? uint8ArrayToString(node.Data, encoding) : '',
       Hash: key.toString(base.encoder),
       Size: buf.length,

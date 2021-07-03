@@ -4,7 +4,6 @@ const multipart = require('../../utils/multipart-request-parser')
 const all = require('it-all')
 const dagPB = require('@ipld/dag-pb')
 const Joi = require('../../utils/joi')
-const multibase = require('multibase')
 const Boom = require('@hapi/boom')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -72,7 +71,7 @@ exports.new = {
       },
       query: Joi.object().keys({
         template: Joi.string().valid('unixfs-dir'),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -150,7 +149,7 @@ exports.get = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -239,7 +238,7 @@ exports.put = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.string().valid(...Object.keys(multibase.names)).default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -354,7 +353,7 @@ exports.stat = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -415,7 +414,7 @@ exports.data = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -471,7 +470,7 @@ exports.links = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -544,7 +543,7 @@ exports.patchAppendData = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -645,7 +644,7 @@ exports.patchSetData = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -725,7 +724,7 @@ exports.patchAddLink = {
           Joi.string().required(),
           Joi.cid().required()
         ).required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -821,7 +820,7 @@ exports.patchRmLink = {
           Joi.cid().required(),
           Joi.string().required()
         ).required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')

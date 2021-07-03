@@ -164,7 +164,7 @@ exports.add = {
         .keys({
           cidVersion: Joi.number().integer().min(0).max(1),
           hashAlg: Joi.string(),
-          cidBase: Joi.cidBase().default('base58btc'),
+          cidBase: Joi.string().default('base58btc'),
           rawLeaves: Joi.boolean(),
           onlyHash: Joi.boolean(),
           pin: Joi.boolean(),
@@ -360,7 +360,7 @@ exports.ls = {
       query: Joi.object()
         .keys({
           path: Joi.ipfsPath().required(),
-          cidBase: Joi.cidBase().default('base58btc'),
+          cidBase: Joi.string().default('base58btc'),
           stream: Joi.boolean().default(false),
           recursive: Joi.boolean().default(false),
           timeout: Joi.timeout()

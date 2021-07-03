@@ -6,7 +6,6 @@ const { promisify } = require('util')
 const getFolderSize = promisify(require('get-folder-size'))
 // @ts-ignore no types
 const byteman = require('byteman')
-const mh = require('multihashing-async').multihash
 const {
   createProgressBar,
   coerceMtime,
@@ -97,7 +96,6 @@ module.exports = {
     },
     hash: {
       type: 'string',
-      choices: Object.keys(mh.names),
       describe: 'Hash function to use. Will set CID version to 1 if used. (experimental)',
       default: 'sha2-256'
     },
@@ -172,7 +170,7 @@ module.exports = {
    * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
    * @param {boolean} argv.rawLeaves
    * @param {boolean} argv.onlyHash
-   * @param {import('multihashes').HashName} argv.hash
+   * @param {string} argv.hash
    * @param {boolean} argv.wrapWithDirectory
    * @param {boolean} argv.pin
    * @param {string} argv.chunker

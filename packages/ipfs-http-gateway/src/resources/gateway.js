@@ -205,14 +205,14 @@ module.exports = {
         response.header('Last-Modified', 'Thu, 01 Jan 1970 00:00:01 GMT')
         // Suborigin for /ipfs/: https://github.com/ipfs/in-web-browsers/issues/66
         const rootCid = path.split('/')[2]
-        const ipfsOrigin = CID.parse(rootCid).toString(base32)
+        const ipfsOrigin = CID.parse(rootCid).toV1().toString(base32)
         response.header('Suborigin', `ipfs000${ipfsOrigin}`)
       } else if (path.startsWith('/ipns/')) {
         // Suborigin for /ipns/: https://github.com/ipfs/in-web-browsers/issues/66
         const root = path.split('/')[2]
         // encode CID/FQDN in base32 (Suborigin allows only a-z)
         const ipnsOrigin = isIPFS.cid(root)
-          ? CID.parse(root).toString(base32)
+          ? CID.parse(root).toV1().toString(base32)
           : base32.encode(uint8ArrayFromString(root))
         response.header('Suborigin', `ipns000${ipnsOrigin}`)
       }

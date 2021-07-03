@@ -44,7 +44,7 @@ exports.ls = {
       query: Joi.object().keys({
         paths: Joi.array().single().items(Joi.ipfsPath()),
         recursive: Joi.boolean().default(true),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         type: Joi.string().valid('all', 'direct', 'indirect', 'recursive').default('all'),
         stream: Joi.boolean().default(false),
         timeout: Joi.timeout()
@@ -128,7 +128,7 @@ exports.add = {
       query: Joi.object().keys({
         cids: Joi.array().single().items(Joi.cid()).min(1).required(),
         recursive: Joi.boolean().default(true),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout(),
         metadata: Joi.json()
       })
@@ -201,7 +201,7 @@ exports.rm = {
       query: Joi.object().keys({
         cids: Joi.array().single().items(Joi.cid()).min(1).required(),
         recursive: Joi.boolean().default(true),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {

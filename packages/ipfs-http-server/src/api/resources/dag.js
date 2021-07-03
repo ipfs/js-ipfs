@@ -8,7 +8,7 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
  * @param {undefined | Uint8Array | Record<string, any>} obj
- * @param {import('multibase').BaseName | 'utf8' | 'utf-8' | 'ascii'} encoding
+ * @param {'base64pad' | 'base16' | 'utf8'} encoding
  */
 const encodeBufferKeys = (obj, encoding) => {
   if (!obj) {
@@ -196,7 +196,7 @@ exports.put = {
         inputEncoding: Joi.string().default('json'),
         pin: Joi.boolean().default(false),
         hash: Joi.string().default('sha2-256'),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         cidVersion: Joi.number().integer().valid(0, 1).default(1),
         timeout: Joi.timeout()
       })
@@ -276,7 +276,7 @@ exports.resolve = {
       },
       query: Joi.object().keys({
         arg: Joi.cidAndPath().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout(),
         path: Joi.string()
       })

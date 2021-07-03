@@ -1,7 +1,5 @@
 'use strict'
 
-const multihash = require('multihashing-async').multihash
-const { nameToCode: codecs } = require('multicodec')
 const multipart = require('../../utils/multipart-request-parser')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
@@ -109,9 +107,9 @@ exports.put = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.cidBase().default('base58btc'),
-        format: Joi.string().valid(...Object.keys(codecs)),
-        mhtype: Joi.string().valid(...Object.keys(multihash.names)),
+        cidBase: Joi.string().default('base58btc'),
+        format: Joi.string().default('raw'),
+        mhtype: Joi.string().default('sha2-256'),
         mhlen: Joi.number(),
         pin: Joi.bool().default(false),
         version: Joi.number(),
@@ -187,7 +185,7 @@ exports.rm = {
         cids: Joi.array().single().items(Joi.cid()).min(1).required(),
         force: Joi.boolean().default(false),
         quiet: Joi.boolean().default(false),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -249,7 +247,7 @@ exports.stat = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase().default('base58btc'),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'cid', {

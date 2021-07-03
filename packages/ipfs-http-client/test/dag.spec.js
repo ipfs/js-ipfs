@@ -5,8 +5,8 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
-const ipldDagPb = require('@ipld/dag-pb')
-const { CID } = require('multiformats/cid')
+const dagPb = require('@ipld/dag-pb')
+const dagCbor = require('@ipld/dag-cbor')
 const raw = require('multiformats/codecs/raw')
 const { base58btc } = require('multiformats/bases/base58')
 const { base32 } = require('multiformats/bases/base32')
@@ -30,11 +30,9 @@ describe('.dag', function () {
       Links: []
     }
 
-    let cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256' })
-    cid = cid.toV0()
-    expect(cid.codec).to.equal('dag-pb')
-    cid = cid.toString(base58btc)
-    expect(cid).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+    let cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256', cidVersion: 0 })
+    expect(cid.code).to.equal(dagPb.code)
+    expect(cid.toString(base58btc)).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
 
     const result = await ipfs.dag.get(cid)
 
@@ -45,9 +43,8 @@ describe('.dag', function () {
     const cbor = { foo: 'dag-cbor-bar' }
     let cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
 
-    expect(cid.codec).to.equal('dag-cbor')
-    cid = cid.toString(base32)
-    expect(cid).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
+    expect(cid.code).to.equal(dagCbor.code)
+    expect(cid.toString(base32)).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
     const result = await ipfs.dag.get(cid)
 
@@ -59,8 +56,7 @@ describe('.dag', function () {
     let cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
 
     expect(cid.code).to.equal(raw.code)
-    cid = cid.toString(base32)
-    expect(cid).to.equal('bafkreiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
+    expect(cid.toString(base32)).to.equal('bafkreiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
 
     const result = await ipfs.dag.get(cid)
 
@@ -68,17 +64,17 @@ describe('.dag', function () {
   })
 
   it('should error when missing DAG resolver for multicodec from requested CID', async () => {
-    const block = await ipfs.block.put(Uint8Array.from([0, 1, 2, 3]), {
-      cid: CID.parse('z8mWaJ1dZ9fH5EetPuRsj8jj26pXsgpsr')
+    const cid = await ipfs.block.put(Uint8Array.from([0, 1, 2, 3]), {
+      format: 'git-raw'
     })
 
-    await expect(ipfs.dag.get(block.cid)).to.eventually.be.rejectedWith('Missing IPLD format "git-raw"')
+    await expect(ipfs.dag.get(cid)).to.eventually.be.rejectedWith(/No codec found/)
   })
 
   it('should error when putting node with esoteric format', () => {
     const node = uint8ArrayFromString('some data')
 
-    return expect(ipfs.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/Missing IPLD format/)
+    return expect(ipfs.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/No codec found/)
   })
 
   it('should attempt to load an unsupported format', async () => {
@@ -86,12 +82,10 @@ describe('.dag', function () {
     const ipfs2 = ipfsHttpClient.create({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {
-        loadFormat: (format) => {
+        loadCodec: (format) => {
           askedToLoadFormat = format === 'git-raw'
           return {
-            util: {
-              serialize: (buf) => buf
-            }
+            encode: (buf) => buf
           }
         }
       }
@@ -109,9 +103,12 @@ describe('.dag', function () {
     const ipfs2 = ipfsHttpClient.create({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {
-        formats: [
-          ipldDagPb
-        ]
+        codecs: [{
+          name: 'custom-codec',
+          code: 1337,
+          encode: (thing) => thing,
+          decode: (thing) => thing
+        }]
       }
     })
 

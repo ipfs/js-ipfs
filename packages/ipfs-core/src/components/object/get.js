@@ -4,10 +4,6 @@ const dagPb = require('@ipld/dag-pb')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('multibase').BaseName} BaseName
- */
-
-/**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload

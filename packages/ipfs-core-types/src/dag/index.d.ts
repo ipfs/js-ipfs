@@ -1,7 +1,5 @@
 import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
 import { CID, CIDVersion } from 'multiformats/cid'
-import { CodecName } from 'multicodec'
-import { HashName } from 'multihashes'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -123,12 +121,12 @@ export interface PutOptions extends AbortOptions, PreloadOptions {
   /**
    * The codec to use to create the CID (defaults to 'dag-cbor')
    */
-  format?: CodecName
+  format?: string
 
   /**
    * Multihash hashing algorithm to use (defaults to 'sha2-256')
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The version to use to create the CID (default to 1)

@@ -6,6 +6,7 @@ const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const FileType = require('file-type')
 const { CID } = require('multiformats/cid')
+const { base32 } = require('multiformats/bases/base32')
 const http = require('./utils/http')
 const sinon = require('sinon')
 const fs = require('fs')
@@ -506,7 +507,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
 
     const fileSignature = await FileType.fromBuffer(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
@@ -597,7 +598,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length)
     expect(res.headers.etag).to.equal(undefined)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
 
     // check if the cat picture is in the payload as a way to check
     // if this is an index of this directory
@@ -635,7 +636,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
     expect(res.rawPayload).to.deep.equal(content)
   })
 
@@ -669,7 +670,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
     expect(res.rawPayload).to.deep.equal(content)
   })
 
@@ -761,7 +762,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
     expect(res.rawPayload).to.deep.equal(content)
   })
 
@@ -798,7 +799,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
   })
 
   it('load a file from IPNS', async () => {

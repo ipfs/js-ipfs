@@ -3,7 +3,6 @@
 
 const { expect } = require('aegir/utils/chai')
 const fs = require('fs')
-const multibase = require('multibase')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const { CID } = require('multiformats/cid')
@@ -167,9 +166,9 @@ describe('object', () => {
       const out = await cli(`object get --cid-base=base64 ${cid.toV1()}`, { ipfs })
       const result = JSON.parse(out)
 
-      expect(multibase.isEncoded(result.Hash)).to.deep.equal('base64')
+      expect(result.Hash).to.equal(cid.toV1().toString(base64))
       result.Links.forEach(l => {
-        expect(multibase.isEncoded(l.Hash)).to.deep.equal('base64')
+        expect(l.Hash).to.equal(cid.toV1().toString(base64))
       })
     })
 
@@ -359,18 +358,19 @@ describe('object', () => {
     it('should get links and print CIDs encoded in specified base', async () => {
       ipfs.bases.getBase.withArgs('base64').returns(base64)
       const cid = CID.parse('QmZZmY4KCu9r3e7M2Pcn46Fc5qbn6NpzaAGaYb22kbfTqm').toV1()
+      const linkCid = CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1()
 
       ipfs.object.links.withArgs(cid, defaultOptions).resolves([{
         Name: 'some link',
         Tsize: 8,
-        Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1()
+        Hash: linkCid
       }])
 
       const out = await cli(`object links ${cid} --cid-base=base64`, { ipfs })
 
       out.trim().split('\n').forEach(line => {
         const cid = line.split(' ')[0]
-        expect(multibase.isEncoded(cid)).to.deep.equal('base64')
+        expect(cid).to.equal(linkCid.toString(base64))
       })
     })
 

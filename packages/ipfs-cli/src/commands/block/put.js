@@ -48,8 +48,8 @@ module.exports = {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.block
-   * @param {import('multicodec').CodecName} argv.format
-   * @param {import('multihashes').HashName} argv.mhtype
+   * @param {string} argv.format
+   * @param {string} argv.mhtype
    * @param {number} argv.mhlen
    * @param {import('multiformats/cid').CIDVersion} argv.version
    * @param {boolean} argv.pin

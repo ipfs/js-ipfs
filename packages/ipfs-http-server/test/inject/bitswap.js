@@ -84,7 +84,7 @@ describe('/bitswap', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toV1().toString('base64') })
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toV1().toString(base64) })
     })
 
     it('/wantlist?cid-base=invalid', async () => {

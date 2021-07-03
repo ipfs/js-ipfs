@@ -4,7 +4,6 @@ const Joi = require('joi')
 const { CID } = require('multiformats/cid')
 const { default: parseDuration } = require('parse-duration')
 const { Multiaddr } = require('multiaddr')
-const multibase = require('multibase')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 
 /**
@@ -55,7 +54,7 @@ const requireIfRequired = (value, helpers) => {
 
 module.exports = Joi
   .extend(
-    // @ts-ignore - according to typedfs coerce should always return
+    // @ts-ignore - according to typedefs coerce should always return
     // { errors?: ErrorReport[], value?: any }
     (joi) => {
       return {
@@ -124,25 +123,6 @@ module.exports = Joi
           }
 
           return { value: toCidAndPath(value) }
-        }
-      }
-    },
-    (joi) => {
-      return {
-        type: 'cidBase',
-        base: joi.string(),
-        validate: requireIfRequired,
-        coerce (value, _helpers) {
-          if (!value) {
-            return
-          }
-
-          // @ts-ignore value is not a BaseName
-          if (!multibase.names[value]) {
-            throw new Error('Invalid base name')
-          }
-
-          return { value }
         }
       }
     },

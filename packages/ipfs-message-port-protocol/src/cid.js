@@ -21,7 +21,7 @@ const { CID } = require('multiformats/cid')
  */
 const encodeCID = (cid, transfer) => {
   if (transfer) {
-    transfer.push(cid.bytes)
+    transfer.push(cid.bytes.buffer)
   }
   return cid
 }
