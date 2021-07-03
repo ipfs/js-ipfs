@@ -20,7 +20,7 @@ describe('cid (browser)', function () {
 
       expect(cidOut).to.be.an.instanceof(CID)
       expect(cidOut.equals(cidIn)).to.be.true()
-      expect(cidIn.multihash)
+      expect(cidIn.bytes)
         .property('byteLength')
         .not.be.equal(0)
     })
@@ -33,8 +33,8 @@ describe('cid (browser)', function () {
       const cidOut = decodeCID(cidDataOut)
 
       expect(cidOut).to.be.an.instanceof(CID)
-      expect(cidIn.multihash).property('byteLength', 0)
-      expect(cidOut.multihash)
+      expect(cidIn.bytes).property('byteLength', 0)
+      expect(cidOut.bytes)
         .property('byteLength')
         .to.not.be.equal(0)
       expect(cidOut.toString()).to.be.equal(

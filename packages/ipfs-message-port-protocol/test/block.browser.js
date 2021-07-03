@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 
-const { encodeBlock, decodeBlock } = require('../src/block')
+const { encodeBlock } = require('../src/block')
 const { ipc } = require('./util')
 const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -15,7 +15,7 @@ describe('block (browser)', function () {
     it('should decode Block over message channel', async () => {
       const blockIn = uint8ArrayFromString('hello')
 
-      const blockOut = decodeBlock(await move(encodeBlock(blockIn)))
+      const blockOut = await move(encodeBlock(blockIn))
 
       expect(blockOut).to.be.deep.equal(blockIn)
     })
@@ -25,9 +25,7 @@ describe('block (browser)', function () {
 
       const transfer = []
 
-      const blockOut = decodeBlock(
-        await move(encodeBlock(blockIn, transfer), transfer)
-      )
+      const blockOut = await move(encodeBlock(blockIn, transfer), transfer)
 
       expect(blockOut).to.equalBytes(uint8ArrayFromString('hello'))
     })

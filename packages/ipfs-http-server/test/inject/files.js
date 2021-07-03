@@ -508,7 +508,7 @@ describe('/files', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: cid.toV1().toString('base64'),
+        Hash: cid.toV1().toString(base64),
         Links: []
       })
     })

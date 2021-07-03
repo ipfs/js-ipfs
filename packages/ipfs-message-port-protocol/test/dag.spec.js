@@ -67,8 +67,8 @@ describe('dag', function () {
 
       expect(transfer).to.be.an.instanceOf(Array)
       expect(transfer).to.have.property('length', 3)
-      expect(transfer).to.include(cid1.multihash.buffer)
-      expect(transfer).to.include(cid2.multihash.buffer)
+      expect(transfer).to.include(cid1.multihash.bytes.buffer)
+      expect(transfer).to.include(cid2.multihash.bytes.buffer)
       expect(transfer).to.include(hi.buffer)
     })
 
@@ -104,8 +104,8 @@ describe('dag', function () {
 
       expect(transfer).to.be.an.instanceOf(Array)
       expect(transfer).to.have.property('length', 3)
-      expect(transfer).to.include(cid1.multihash.buffer)
-      expect(transfer).to.include(cid2.multihash.buffer)
+      expect(transfer).to.include(cid1.multihash.bytes.buffer)
+      expect(transfer).to.include(cid2.multihash.bytes.buffer)
       expect(transfer).to.include(hi.buffer)
     })
   })
