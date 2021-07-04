@@ -12,13 +12,14 @@ const urlSource = require('ipfs-utils/src/files/url-source')
 /**
  * @typedef {import('./types').EndpointConfig} EndpointConfig
  * @typedef {import('./types').Options} Options
+ * @typedef {import('ipfs-core-types').IPFS & { getEndpointConfig(): EndpointConfig }} IPFSHttpClient
  */
 
 /**
  * @param {Options} options
  */
 function create (options = {}) {
-  /** @type {import('ipfs-core-types').IPFS & { getEndpointConfig: () => EndpointConfig }} */
+  /** @type {IPFSHttpClient} */
   const client = {
     add: require('./add')(options),
     addAll: require('./add-all')(options),
