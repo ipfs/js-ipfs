@@ -18,7 +18,7 @@ module.exports = (common, options) => {
   const it = getIt(options)
 
   describe('.files.rm', function () {
-    this.timeout(120 * 1000)
+    this.timeout(300 * 1000)
 
     let ipfs
 

@@ -54,7 +54,7 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
   const hasher = await context.hashers.getHasher(options.hashAlg)
   const parent = {
     Data: dir.marshal(),
-    Links: links
+    Links: links.sort((a, b) => (a.Name || '').localeCompare(b.Name || ''))
   }
   const buf = dagPb.encode(parent)
   const hash = await hasher.digest(buf)
@@ -271,7 +271,7 @@ const createShard = async (context, contents, options = {}) => {
     hamtBucketBits: importerOptions.hamtBucketBits,
     hasher: importerOptions.hasher,
     ...options,
-    codec: dagPb.code
+    codec: dagPb
   })
 
   for (let i = 0; i < contents.length; i++) {

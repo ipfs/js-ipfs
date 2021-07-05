@@ -10,6 +10,7 @@ const { CID } = require('multiformats/cid')
 const { identity } = require('multiformats/hashes/identity')
 const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
+const raw = require('multiformats/codecs/raw')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -110,7 +111,7 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(filePath)
       const { value: node } = await ipfs.dag.get(stats.cid)
 
-      expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
+      expect(node).to.have.nested.property('Links[0].Hash.code', raw.code)
 
       const child = node.Links[0]
 
@@ -133,7 +134,7 @@ module.exports = (common, options) => {
       const { value: node } = await ipfs.dag.get(stats.cid)
       const child = node.Links[0]
 
-      expect(child.Hash.codec).to.equal('raw')
+      expect(child.Hash.code).to.equal(raw.code)
 
       const dir = `/dir-with-raw-${Math.random()}`
       const path = `${dir}/raw-${Math.random()}`
@@ -345,14 +346,14 @@ module.exports = (common, options) => {
     })
 
     it('should stat outside of mfs', async () => {
-      const stat = await ipfs.files.stat('/ipfs/' + fixtures.smallFile.cid)
+      const stat = await ipfs.files.stat(`/ipfs/${fixtures.smallFile.cid}`)
       stat.cid = stat.cid.toString()
 
       expect(stat).to.include({
         type: 'file',
         blocks: 0,
         size: 12,
-        cid: fixtures.smallFile.cid,
+        cid: fixtures.smallFile.cid.toString(),
         cumulativeSize: 0,
         withLocality: false
       })

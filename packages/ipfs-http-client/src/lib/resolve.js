@@ -31,6 +31,13 @@ const resolve = async function * (cid, path, codecs, getBlock, options) {
   let value = await load(cid)
   let lastCid = cid
 
+  if (!parts.length) {
+    yield {
+      value,
+      remainderPath: ''
+    }
+  }
+
   // End iteration if there isn't a CID to follow any more
   while (parts.length) {
     const key = parts.shift()
@@ -47,7 +54,7 @@ const resolve = async function * (cid, path, codecs, getBlock, options) {
         remainderPath: parts.join('/')
       }
     } else {
-      throw errCode(new Error(`No link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
+      throw errCode(new Error(`no link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
     }
 
     if (value instanceof CID) {

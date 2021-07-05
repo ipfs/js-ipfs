@@ -11,6 +11,7 @@ const drain = require('it-drain')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const { importer } = require('ipfs-unixfs-importer')
+const blockstore = require('./utils/blockstore-adapter')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -31,8 +32,8 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     before(() => Promise.all([
-      all(importer([{ content: fixtures.smallFile.data }], ipfs.block)),
-      all(importer([{ content: fixtures.bigFile.data }], ipfs.block))
+      all(importer([{ content: fixtures.smallFile.data }], blockstore(ipfs))),
+      all(importer([{ content: fixtures.bigFile.data }], blockstore(ipfs)))
     ]))
 
     it('should respect timeout option when catting files', () => {
@@ -63,7 +64,7 @@ module.exports = (common, options) => {
     it('should cat a file added as CIDv0 with a CIDv1', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.block))
+      const res = await all(importer([{ content: input }], blockstore(ipfs)))
 
       expect(res).to.have.nested.property('[0].cid.version', 0)
 
@@ -76,7 +77,7 @@ module.exports = (common, options) => {
     it('should cat a file added as CIDv1 with a CIDv0', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: input }], blockstore(ipfs), { cidVersion: 1, rawLeaves: false }))
 
       expect(res).to.have.nested.property('[0].cid.version', 1)
 
@@ -102,7 +103,7 @@ module.exports = (common, options) => {
     it('should cat with IPFS path, nested value', async () => {
       const fileToAdd = { path: 'a/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([fileToAdd], ipfs.block))
+      const filesAdded = await all(importer([fileToAdd], blockstore(ipfs)))
 
       const file = await filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
@@ -115,7 +116,7 @@ module.exports = (common, options) => {
     it('should cat with IPFS path, deeply nested value', async () => {
       const fileToAdd = { path: 'a/b/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([fileToAdd], ipfs.block))
+      const filesAdded = await all(importer([fileToAdd], blockstore(ipfs)))
 
       const file = filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
@@ -143,7 +144,7 @@ module.exports = (common, options) => {
     it('should error on dir path', async () => {
       const file = { path: 'dir/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([file], ipfs.block))
+      const filesAdded = await all(importer([file], blockstore(ipfs)))
       expect(filesAdded.length).to.equal(2)
 
       const files = filesAdded.filter((file) => file.path === 'dir')

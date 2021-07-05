@@ -5,7 +5,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
 const { nanoid } = require('nanoid')
 const { CID } = require('multiformats/cid')
-const sha256 = require('multiformats/hashes/sha2')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -66,19 +66,6 @@ module.exports = (common, options) => {
 
       expect(links).to.have.lengthOf(1)
       expect(node1b.Links).to.deep.equal(links)
-    })
-
-    it('should get links by base58 encoded multihash', async () => {
-      const testObj = {
-        Data: uint8ArrayFromString(nanoid()),
-        Links: []
-      }
-
-      const cid = await ipfs.object.put(testObj)
-      const node = await ipfs.object.get(cid)
-
-      const links = await ipfs.object.links(cid.bytes, { enc: 'base58' })
-      expect(node.Links).to.deep.equal(links)
     })
 
     it('should get links from CBOR object', async () => {

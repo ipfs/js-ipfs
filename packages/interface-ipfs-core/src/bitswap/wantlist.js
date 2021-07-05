@@ -32,7 +32,7 @@ module.exports = (common, options) => {
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB
-      ipfsB.block.get(key).catch(() => { /* is ok, expected on teardown */ })
+      ipfsB.block.get(CID.parse(key)).catch(() => { /* is ok, expected on teardown */ })
 
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })

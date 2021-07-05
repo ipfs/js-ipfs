@@ -22,7 +22,8 @@ module.exports = (codecs, options) => {
       return dagPut(obj, {
         ...options,
         format: 'dag-pb',
-        hashAlg: 'sha2-256'
+        hashAlg: 'sha2-256',
+        version: 0
       })
     }
     return put

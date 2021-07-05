@@ -6,6 +6,21 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
+const { base64 } = require('multiformats/bases/base64')
+
+async function getBaseEncodedMultihashes (ipfs) {
+  const refs = await all(ipfs.refs.local())
+
+  return refs.map(r => base64.encode(CID.parse(r.ref).multihash.bytes))
+}
+
+async function shouldHaveRef (ipfs, cid) {
+  return expect(getBaseEncodedMultihashes(ipfs)).to.eventually.include(base64.encode(cid.multihash.bytes))
+}
+
+async function shouldNotHaveRef (ipfs, cid) {
+  return expect(getBaseEncodedMultihashes(ipfs)).to.eventually.not.include(base64.encode(cid.multihash.bytes))
+}
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -39,9 +54,6 @@ module.exports = (common, options) => {
     })
 
     it('should clean up unpinned data', async () => {
-      // Get initial list of local blocks
-      const refsBeforeAdd = await all(ipfs.refs.local())
-
       // Add some data. Note: this will implicitly pin the data, which causes
       // some blocks to be added for the data itself and for the pinning
       // information that refers to the blocks
@@ -50,17 +62,14 @@ module.exports = (common, options) => {
 
       // Get the list of local blocks after the add, should be bigger than
       // the initial list and contain hash
-      const refsAfterAdd = await all(ipfs.refs.local())
-      expect(refsAfterAdd.length).to.be.gt(refsBeforeAdd.length)
-      expect(refsAfterAdd.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(cid.multihash.bytes)
+      await shouldHaveRef(ipfs, cid)
 
       // Run garbage collection
       await drain(ipfs.repo.gc())
 
       // Get the list of local blocks after GC, should still contain the hash,
       // because the file is still pinned
-      const refsAfterGc = await all(ipfs.refs.local())
-      expect(refsAfterGc.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(cid.multihash.bytes)
+      await shouldHaveRef(ipfs, cid)
 
       // Unpin the data
       await ipfs.pin.rm(cid)
@@ -69,14 +78,10 @@ module.exports = (common, options) => {
       await all(ipfs.repo.gc())
 
       // The list of local blocks should no longer contain the hash
-      const refsAfterUnpinAndGc = await all(ipfs.refs.local())
-      expect(refsAfterUnpinAndGc.map(r => CID.parse(r.ref).multihash.bytes)).not.equalBytes(cid.multihash.bytes)
+      await shouldNotHaveRef(ipfs, cid)
     })
 
     it('should clean up removed MFS files', async () => {
-      // Get initial list of local blocks
-      const refsBeforeAdd = await all(ipfs.refs.local())
-
       // Add a file to MFS
       await ipfs.files.write('/test', uint8ArrayFromString('oranges'), { create: true })
       const stats = await ipfs.files.stat('/test')
@@ -84,17 +89,14 @@ module.exports = (common, options) => {
 
       // Get the list of local blocks after the add, should be bigger than
       // the initial list and contain hash
-      const refsAfterAdd = await all(ipfs.refs.local())
-      expect(refsAfterAdd.length).to.be.gt(refsBeforeAdd.length)
-      expect(refsAfterAdd.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(stats.cid.multihash.bytes)
+      await shouldHaveRef(ipfs, stats.cid)
 
       // Run garbage collection
       await drain(ipfs.repo.gc())
 
       // Get the list of local blocks after GC, should still contain the hash,
       // because the file is in MFS
-      const refsAfterGc = await all(ipfs.refs.local())
-      expect(refsAfterGc.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(stats.cid.multihash.bytes)
+      await shouldHaveRef(ipfs, stats.cid)
 
       // Remove the file
       await ipfs.files.rm('/test')
@@ -103,14 +105,10 @@ module.exports = (common, options) => {
       await drain(ipfs.repo.gc())
 
       // The list of local blocks should no longer contain the hash
-      const refsAfterUnpinAndGc = await all(ipfs.refs.local())
-      expect(refsAfterUnpinAndGc.map(r => CID.parse(r.ref).multihash.bytes)).not.equalBytes(stats.cid.multihash.bytes)
+      await shouldNotHaveRef(ipfs, stats.cid)
     })
 
     it('should clean up block only after unpinned and removed from MFS', async () => {
-      // Get initial list of local blocks
-      const refsBeforeAdd = await all(ipfs.refs.local())
-
       // Add a file to MFS
       await ipfs.files.write('/test', uint8ArrayFromString('peaches'), { create: true })
       const stats = await ipfs.files.stat('/test')
@@ -121,22 +119,19 @@ module.exports = (common, options) => {
       const block = await ipfs.block.get(mfsFileCid)
 
       // Add the data to IPFS (which implicitly pins the data)
-      const addRes = await ipfs.add(block.data)
+      const addRes = await ipfs.add(block)
       const dataCid = addRes.cid
 
       // Get the list of local blocks after the add, should be bigger than
       // the initial list and contain the data hash
-      const refsAfterAdd = await all(ipfs.refs.local())
-      expect(refsAfterAdd.length).to.be.gt(refsBeforeAdd.length)
-      expect(refsAfterAdd.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(dataCid.multihash.bytes)
+      await shouldHaveRef(ipfs, dataCid)
 
       // Run garbage collection
       await drain(ipfs.repo.gc())
 
       // Get the list of local blocks after GC, should still contain the hash,
       // because the file is pinned and in MFS
-      const refsAfterGc = await all(ipfs.refs.local())
-      expect(refsAfterGc.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(dataCid.multihash.bytes)
+      await shouldHaveRef(ipfs, dataCid)
 
       // Remove the file
       await ipfs.files.rm('/test')
@@ -146,9 +141,8 @@ module.exports = (common, options) => {
 
       // Get the list of local blocks after GC, should still contain the hash,
       // because the file is still pinned
-      const refsAfterRmAndGc = await all(ipfs.refs.local())
-      expect(refsAfterRmAndGc.map(r => CID.parse(r.ref).multihash.bytes)).not.equalBytes(mfsFileCid.multihash.bytes)
-      expect(refsAfterRmAndGc.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(dataCid.multihash.bytes)
+      await shouldNotHaveRef(ipfs, mfsFileCid)
+      await shouldHaveRef(ipfs, dataCid)
 
       // Unpin the data
       await ipfs.pin.rm(dataCid)
@@ -157,15 +151,11 @@ module.exports = (common, options) => {
       await drain(ipfs.repo.gc())
 
       // The list of local blocks should no longer contain the hashes
-      const refsAfterUnpinAndGc = await all(ipfs.refs.local())
-      expect(refsAfterUnpinAndGc.map(r => CID.parse(r.ref).multihash.bytes)).not.equalBytes(mfsFileCid.multihash.bytes)
-      expect(refsAfterUnpinAndGc.map(r => CID.parse(r.ref).multihash.bytes)).not.equalBytes(dataCid.multihash.bytes)
+      await shouldNotHaveRef(ipfs, mfsFileCid)
+      await shouldNotHaveRef(ipfs, dataCid)
     })
 
     it('should clean up indirectly pinned data after recursive pin removal', async () => {
-      // Get initial list of local blocks
-      const refsBeforeAdd = await all(ipfs.refs.local())
-
       // Add some data
       const addRes = await ipfs.add(uint8ArrayFromString('pears'))
       const dataCid = addRes.cid
@@ -191,10 +181,8 @@ module.exports = (common, options) => {
 
       // Get the list of local blocks after the add, should be bigger than
       // the initial list and contain data and object hash
-      const refsAfterAdd = await all(ipfs.refs.local())
-      expect(refsAfterAdd.length).to.be.gt(refsBeforeAdd.length)
-      expect(refsAfterAdd.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(objCid.multihash.bytes)
-      expect(refsAfterAdd.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(dataCid.multihash.bytes)
+      await shouldHaveRef(ipfs, objCid)
+      await shouldHaveRef(ipfs, dataCid)
 
       // Recursively pin the object
       await ipfs.pin.add(objCid, { recursive: true })
@@ -208,8 +196,8 @@ module.exports = (common, options) => {
 
       // Get the list of local blocks after GC, should still contain the data
       // hash, because the data is still (indirectly) pinned
-      const refsAfterGc = await all(ipfs.refs.local())
-      expect(refsAfterGc.map(r => CID.parse(r.ref).multihash.bytes)).equalBytes(dataCid.multihash.bytes)
+      await shouldHaveRef(ipfs, objCid)
+      await shouldHaveRef(ipfs, dataCid)
 
       // Recursively unpin the object
       await ipfs.pin.rm(objCid.toString())
@@ -218,9 +206,8 @@ module.exports = (common, options) => {
       await drain(ipfs.repo.gc())
 
       // The list of local blocks should no longer contain the hashes
-      const refsAfterUnpinAndGc = await all(ipfs.refs.local())
-      expect(refsAfterUnpinAndGc.map(r => CID.parse(r.ref).multihash.bytes)).not.equalBytes(objCid.multihash.bytes)
-      expect(refsAfterUnpinAndGc.map(r => CID.parse(r.ref).multihash.bytes)).not.equalBytes(dataCid.multihash.bytes)
+      await shouldNotHaveRef(ipfs, objCid)
+      await shouldNotHaveRef(ipfs, dataCid)
     })
   })
 }

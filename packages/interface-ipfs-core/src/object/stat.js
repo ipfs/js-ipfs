@@ -5,7 +5,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
 const { nanoid } = require('nanoid')
 const { CID } = require('multiformats/cid')
-const sha256 = require('multiformats/hashes/sha2')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -37,14 +37,15 @@ module.exports = (common, options) => {
       const cid = await ipfs.object.put(testObj)
       const stats = await ipfs.object.stat(cid)
       const expected = {
-        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+        Hash: CID.parse('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ'),
         NumLinks: 0,
         BlockSize: 17,
         LinksSize: 2,
         DataSize: 15,
         CumulativeSize: 17
       }
-      expect(expected).to.deep.equal(stats)
+
+      expect(stats).to.deep.equal(expected)
     })
 
     it('should get stats for object with links by multihash', async () => {
@@ -70,54 +71,14 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.object.stat(node1bCid)
       const expected = {
-        Hash: 'QmPR7W4kaADkAo4GKEVVPQN81EDUFCHJtqejQZ5dEG7pBC',
+        Hash: node1bCid,
         NumLinks: 1,
-        BlockSize: 64,
+        BlockSize: 74,
         LinksSize: 53,
-        DataSize: 11,
-        CumulativeSize: 77
+        DataSize: 21,
+        CumulativeSize: 97
       }
-      expect(expected).to.eql(stats)
-    })
-
-    it('should get stats by base58 encoded multihash', async () => {
-      const testObj = {
-        Data: uint8ArrayFromString('get test object'),
-        Links: []
-      }
-
-      const cid = await ipfs.object.put(testObj)
-
-      const stats = await ipfs.object.stat(cid.bytes)
-      const expected = {
-        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-        NumLinks: 0,
-        BlockSize: 17,
-        LinksSize: 2,
-        DataSize: 15,
-        CumulativeSize: 17
-      }
-      expect(expected).to.deep.equal(stats)
-    })
-
-    it('should get stats by base58 encoded multihash string', async () => {
-      const testObj = {
-        Data: uint8ArrayFromString('get test object'),
-        Links: []
-      }
-
-      const cid = await ipfs.object.put(testObj)
-
-      const stats = await ipfs.object.stat(cid.toString())
-      const expected = {
-        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-        NumLinks: 0,
-        BlockSize: 17,
-        LinksSize: 2,
-        DataSize: 15,
-        CumulativeSize: 17
-      }
-      expect(expected).to.deep.equal(stats)
+      expect(stats).to.deep.equal(expected)
     })
 
     it('returns error for request without argument', () => {

@@ -98,14 +98,13 @@ module.exports = (common, options) => {
         .with(/already pinned recursively/)
     })
 
-    it('should fail to pin a hash not in datastore', function () {
+    it('should fail to pin a hash not in datastore', async function () {
       this.slow(3 * 1000)
       this.timeout(5 * 1000)
       const falseHash = `${`${fixtures.directory.cid}`.slice(0, -2)}ss`
-      return expect(ipfs.pin.add(falseHash, { timeout: '2s' }))
-        .to.eventually.be.rejected()
-        // TODO: http api TimeoutErrors do not have this property
-        // .with.a.property('code').that.equals('ERR_TIMEOUT')
+
+      await expect(ipfs.pin.add(falseHash, { timeout: '2s' }))
+        .to.eventually.be.rejected().with.property('name', 'TimeoutError')
     })
 
     it('needs all children in datastore to pin recursively', async function () {
@@ -114,7 +113,7 @@ module.exports = (common, options) => {
       await all(ipfs.block.rm(fixtures.directory.files[0].cid))
 
       await expect(ipfs.pin.add(fixtures.directory.cid, { timeout: '2s' }))
-        .to.eventually.be.rejected()
+        .to.eventually.be.rejected().with.property('name', 'TimeoutError')
     })
 
     it('should pin dag-cbor', async () => {

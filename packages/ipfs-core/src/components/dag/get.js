@@ -4,6 +4,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const first = require('it-first')
 const last = require('it-last')
 const { resolve } = require('../../utils')
+const errCode = require('err-code')
 
 /**
  * @param {Object} config
@@ -26,6 +27,11 @@ module.exports = ({ codecs, repo, preload }) => {
         : await last(resolve(cid, options.path, codecs, repo, options))
       /** @type {import('ipfs-core-types/src/dag').GetResult} - first and last will return undefined when empty */
       const result = (entry)
+
+      if (!result) {
+        throw errCode(new Error('Not found'), 'ERR_NOT_FOUND')
+      }
+
       return result
     }
 

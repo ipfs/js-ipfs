@@ -59,7 +59,7 @@ module.exports = (context) => {
     }
 
     if (!statters[file.type]) {
-      throw new Error(`Cannot stat codec ${file.cid.codec}`)
+      throw new Error(`Cannot stat codec ${file.cid.code}`)
     }
 
     return statters[file.type](file)

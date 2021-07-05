@@ -4,7 +4,7 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
 const { CID } = require('multiformats/cid')
-const sha256 = require('multiformats/hashes/sha2')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */

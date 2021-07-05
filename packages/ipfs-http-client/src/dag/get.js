@@ -4,6 +4,7 @@ const configure = require('../lib/configure')
 const resolve = require('../lib/resolve')
 const first = require('it-first')
 const last = require('it-last')
+const errCode = require('err-code')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -28,6 +29,11 @@ module.exports = (codecs, options) => {
           : await last(resolve(cid, options.path, codecs, getBlock, options))
         /** @type {import('ipfs-core-types/src/dag').GetResult} - first and last will return undefined when empty */
         const result = (entry)
+
+        if (!result) {
+          throw errCode(new Error('Not found'), 'ERR_NOT_FOUND')
+        }
+
         return result
       }
 

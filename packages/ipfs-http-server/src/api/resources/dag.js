@@ -167,8 +167,10 @@ exports.put = {
           // the node is an uncommon format which the client should have
           // serialized so add it to the block store and fetch it deserialized
           // before continuing
+          const cidVersion = format === 'dag-pb' && request.query.hashAlg === 'sha2-256' ? request.query.version : 1
+
           const cid = await request.server.app.ipfs.block.put(data, {
-            version: request.query.cidVersion,
+            version: cidVersion,
             format,
             mhtype: request.query.hash
           })
@@ -196,8 +198,8 @@ exports.put = {
         inputEncoding: Joi.string().default('json'),
         pin: Joi.boolean().default(false),
         hash: Joi.string().default('sha2-256'),
-        cidBase: Joi.string().default('base58btc'),
-        cidVersion: Joi.number().integer().valid(0, 1).default(1),
+        cidBase: Joi.string().default('base32'),
+        version: Joi.number().integer().valid(0, 1).default(1),
         timeout: Joi.timeout()
       })
         .rename('input-enc', 'inputEncoding', {
@@ -205,10 +207,6 @@ exports.put = {
           ignoreUndefined: true
         })
         .rename('cid-base', 'cidBase', {
-          override: true,
-          ignoreUndefined: true
-        })
-        .rename('cid-version', 'cidVersion', {
           override: true,
           ignoreUndefined: true
         })
@@ -239,16 +237,19 @@ exports.put = {
       query: {
         pin,
         cidBase,
-        timeout
+        timeout,
+        version
       }
     } = request
 
+    const cidVersion = format === 'dag-pb' && hashAlg === 'sha2-256' ? version : 1
     let cid
 
     try {
       cid = await ipfs.dag.put(node, {
         format,
         hashAlg,
+        version: cidVersion,
         pin,
         signal,
         timeout
@@ -257,7 +258,7 @@ exports.put = {
       throw Boom.boomify(err, { message: 'Failed to put node' })
     }
 
-    const base = await ipfs.bases.getBase(cidBase)
+    const base = await ipfs.bases.getBase(cidVersion === 0 ? 'base58btc' : cidBase)
 
     return h.response({
       Cid: {

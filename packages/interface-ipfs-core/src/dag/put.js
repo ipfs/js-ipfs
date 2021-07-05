@@ -24,7 +24,8 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     const pbNode = {
-      data: uint8ArrayFromString('some data')
+      Data: uint8ArrayFromString('some data'),
+      Links: []
     }
     const cborNode = {
       data: uint8ArrayFromString('some other data')
@@ -67,7 +68,7 @@ module.exports = (common, options) => {
       expect(cid).to.be.an.instanceOf(CID)
 
       const bytes = dagCbor.encode(cborNode)
-      const hash = await sha256.encode(bytes)
+      const hash = await sha256.digest(bytes)
       const _cid = CID.createV1(dagCbor.code, hash)
 
       expect(cid.bytes).to.eql(_cid.bytes)

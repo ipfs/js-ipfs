@@ -80,6 +80,8 @@ class Network {
 
     const blockstore = new BlockStorage(repo.blocks, bitswap)
     repo.blocks = blockstore
+    // @ts-ignore private field
+    repo.pins.blockstore = blockstore
 
     return new Network(peerId, libp2p, bitswap, repo, blockstore)
   }
@@ -89,6 +91,8 @@ class Network {
    */
   static async stop (network) {
     network.repo.blocks = network.blockstore.unwrap()
+    // @ts-ignore private field
+    network.repo.pins.blockstore = network.blockstore.unwrap()
 
     await Promise.all([
       network.bitswap.stop(),

@@ -11,6 +11,8 @@ const { CID } = require('multiformats/cid')
 const raw = require('multiformats/codecs/raw')
 const testTimeout = require('../utils/test-timeout')
 
+const delay = require('delay')
+
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common
@@ -54,49 +56,25 @@ module.exports = (common, options) => {
       expect(localRefsAfterRemove.find(ref => ref.ref === CID.createV1(raw.code, cid.multihash).toString())).to.not.be.ok()
     })
 
-    it('should remove by CID in string', async () => {
-      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
-        hashAlg: 'sha2-256'
-      })
-      const result = await all(ipfs.block.rm(cid.toString()))
-
-      expect(result).to.be.an('array').and.to.have.lengthOf(1)
-      expect(result[0].cid.toString()).to.equal(cid.toString())
-      expect(result[0]).to.not.have.property('error')
-    })
-
-    it('should remove by CID in buffer', async () => {
-      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
-        hashAlg: 'sha2-256'
-      })
-      const result = await all(ipfs.block.rm(cid.bytes))
-
-      expect(result).to.be.an('array').and.to.have.lengthOf(1)
-      expect(result[0].cid.toString()).to.equal(cid.toString())
-      expect(result[0]).to.not.have.property('error')
-    })
-
     it('should remove multiple CIDs', async () => {
-      const cids = [
-        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
+      const cids = await Promise.all([
+        ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
+        ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
+        ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         })
-      ]
+      ])
 
       const result = await all(ipfs.block.rm(cids))
 
-      expect(result).to.be.an('array').and.to.have.lengthOf(3)
+      expect(result).to.have.lengthOf(3)
 
       result.forEach((res, index) => {
         expect(res.cid.toString()).to.equal(cids[index].toString())

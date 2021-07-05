@@ -22,19 +22,21 @@ module.exports = configure(api => {
     const signal = abortSignal(controller.signal, options.signal)
 
     // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
-    const { Hash } = await (await api.post('object/patch/set-data', {
+    const res = await api.post('object/patch/set-data', {
       timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
         arg: [
-          `${cid instanceof Uint8Array ? CID.decode(cid) : cid}`
+          `${cid}`
         ],
         ...options
       }),
       ...(
         await multipartRequest(data, controller, options.headers)
       )
-    })).json()
+    })
+
+    const { Hash } = await res.json()
 
     return CID.parse(Hash)
   }

@@ -107,12 +107,12 @@ exports.put = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.string().default('base58btc'),
-        format: Joi.string().default('raw'),
+        cidBase: Joi.string().default('base32'),
+        format: Joi.string().default('dag-pb'),
         mhtype: Joi.string().default('sha2-256'),
         mhlen: Joi.number(),
         pin: Joi.bool().default(false),
-        version: Joi.number().default(1),
+        version: Joi.number().default(0),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -151,12 +151,14 @@ exports.put = {
       }
     } = request
 
+    const cidVersion = format === 'dag-pb' && mhtype === 'sha2-256' ? version : 1
     let cid
+
     try {
       cid = await ipfs.block.put(data, {
         mhtype,
         format,
-        version,
+        version: cidVersion,
         pin,
         signal,
         timeout
@@ -165,7 +167,7 @@ exports.put = {
       throw Boom.boomify(err, { message: 'Failed to put block' })
     }
 
-    const base = await ipfs.bases.getBase(cidBase)
+    const base = await ipfs.bases.getBase(cidVersion === 0 ? 'base58btc' : cidBase)
 
     return h.response({
       Key: cid.toString(base.encoder),

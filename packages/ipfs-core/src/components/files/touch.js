@@ -77,7 +77,7 @@ module.exports = (context) => {
 
       const hash = await hasher.digest(updatedBlock)
 
-      updatedCid = CID.create(options.cidVersion || 0, dagPb.code, hash)
+      updatedCid = CID.create(settings.cidVersion, dagPb.code, hash)
 
       if (settings.flush) {
         await context.repo.blocks.put(updatedCid, updatedBlock)
@@ -107,11 +107,10 @@ module.exports = (context) => {
       })
 
       const hash = await hasher.digest(updatedBlock)
-
-      updatedCid = CID.create(options.cidVersion, dagPb.code, hash)
+      updatedCid = CID.create(settings.cidVersion, dagPb.code, hash)
 
       if (settings.flush) {
-        await context.repo.blocks.put(cid, updatedBlock)
+        await context.repo.blocks.put(updatedCid, updatedBlock)
       }
     }
 
@@ -128,7 +127,7 @@ module.exports = (context) => {
       size: updatedBlock.length,
       flush: settings.flush,
       shardSplitThreshold: settings.shardSplitThreshold,
-      hashAlg: options.hashAlg,
+      hashAlg: settings.hashAlg,
       cidVersion
     })
 

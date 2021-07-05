@@ -11,6 +11,8 @@ const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIC
 const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const last = require('it-last')
+const raw = require('multiformats/codecs/raw')
+const dagPb = require('@ipld/dag-pb')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -76,8 +78,8 @@ module.exports = (common, options) => {
     it('should add a Uint8Array', async () => {
       const file = await ipfs.add(fixtures.smallFile.data)
 
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
-      expect(file.path).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
+      expect(file.path).to.equal(fixtures.smallFile.cid.toString())
       // file.size counts the overhead by IPLD nodes and unixfs protobuf
       expect(file.size).greaterThan(fixtures.smallFile.data.length)
     })
@@ -85,8 +87,8 @@ module.exports = (common, options) => {
     it('should add a BIG Uint8Array', async () => {
       const file = await ipfs.add(fixtures.bigFile.data)
 
-      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid)
-      expect(file.path).to.equal(fixtures.bigFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid.toString())
+      expect(file.path).to.equal(fixtures.bigFile.cid.toString())
       // file.size counts the overhead by IPLD nodes and unixfs protobuf
       expect(file.size).greaterThan(fixtures.bigFile.data.length)
     })
@@ -101,8 +103,8 @@ module.exports = (common, options) => {
 
       const file = await ipfs.add(fixtures.bigFile.data, { progress: handler })
 
-      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid)
-      expect(file.path).to.equal(fixtures.bigFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid.toString())
+      expect(file.path).to.equal(fixtures.bigFile.cid.toString())
       expect(progCalled).to.be.true()
       expect(accumProgress).to.equal(fixtures.bigFile.data.length)
     })
@@ -117,8 +119,8 @@ module.exports = (common, options) => {
 
       const file = await ipfs.add(fixtures.emptyFile.data, { progress: handler })
 
-      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid)
-      expect(file.path).to.equal(fixtures.emptyFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid.toString())
+      expect(file.path).to.equal(fixtures.emptyFile.cid.toString())
       expect(progCalled).to.be.true()
       expect(accumProgress).to.equal(fixtures.emptyFile.data.length)
     })
@@ -140,8 +142,8 @@ module.exports = (common, options) => {
     it('should add an empty file without progress enabled', async () => {
       const file = await ipfs.add(fixtures.emptyFile.data)
 
-      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid)
-      expect(file.path).to.equal(fixtures.emptyFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid.toString())
+      expect(file.path).to.equal(fixtures.emptyFile.cid.toString())
     })
 
     it('should add a Uint8Array as tuple', async () => {
@@ -149,7 +151,7 @@ module.exports = (common, options) => {
 
       const file = await ipfs.add(tuple)
 
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
       expect(file.path).to.equal('testfile.txt')
     })
 
@@ -204,7 +206,7 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(`/ipfs/${wrapper.cid}/testfile.txt`)
 
-      expect(`${stats.cid}`).to.equal(fixtures.smallFile.cid)
+      expect(`${stats.cid}`).to.equal(fixtures.smallFile.cid.toString())
     })
 
     it('should add with only-hash=true', async function () {
@@ -349,7 +351,7 @@ module.exports = (common, options) => {
       })
 
       expect(file.cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
-      expect(file.cid.codec).to.equal('raw')
+      expect(file.cid.code).to.equal(raw.code)
       expect(file.size).to.equal(3)
     })
 
@@ -367,7 +369,7 @@ module.exports = (common, options) => {
       })
 
       expect(file.cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
-      expect(file.cid.codec).to.equal('dag-pb')
+      expect(file.cid.code).to.equal(dagPb.code)
       expect(file.size).to.equal(18)
     })
 

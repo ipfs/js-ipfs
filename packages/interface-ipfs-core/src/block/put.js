@@ -6,6 +6,8 @@ const { base58btc } = require('multiformats/bases/base58')
 const { CID } = require('multiformats/cid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
+const raw = require('multiformats/codecs/raw')
+const { sha512 } = require('multiformats/hashes/sha2')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -31,7 +33,8 @@ module.exports = (common, options) => {
 
       const cid = await ipfs.block.put(blob)
 
-      expect(cid.multihash.bytes).to.equalBytes(base58btc.decode(`z${expectedHash}`))
+      expect(cid.toString()).to.equal(expectedHash)
+      expect(cid.bytes).to.equalBytes(base58btc.decode(`z${expectedHash}`))
     })
 
     it('should put a buffer, using options', async () => {
@@ -45,8 +48,8 @@ module.exports = (common, options) => {
       })
 
       expect(cid.version).to.equal(1)
-      expect(cid.code).to.equal(0x55)
-      expect(cid.multihash.codec).to.equal(0x13)
+      expect(cid.code).to.equal(raw.code)
+      expect(cid.multihash.code).to.equal(sha512.code)
 
       expect(await all(ipfs.pin.ls({ paths: cid }))).to.have.lengthOf(1)
     })
@@ -59,13 +62,6 @@ module.exports = (common, options) => {
       const cid = await ipfs.block.put(b)
 
       expect(cid.multihash.bytes).to.equalBytes(expectedCID.multihash.bytes)
-    })
-
-    it('should error with array of blocks', () => {
-      const blob = uint8ArrayFromString('blorb')
-
-      return expect(ipfs.block.put([blob, blob])).to.eventually.be.rejected
-        .and.be.an.instanceOf(Error)
     })
   })
 }

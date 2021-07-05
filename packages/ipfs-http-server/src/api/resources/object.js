@@ -699,7 +699,7 @@ exports.patchSetData = {
     const base = await ipfs.bases.getBase(cidBase)
 
     return h.response({
-      Hash: cid.toString(base.encoder),
+      Hash: newCid.toString(base.encoder),
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,

@@ -7,9 +7,11 @@ const Key = require('interface-datastore').Key
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+const dagPb = require('@ipld/dag-pb')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ * @typedef {import('@ipld/dag-pb').PBLink} PBLink
  */
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
@@ -26,6 +28,11 @@ const normalizePath = (pathStr) => {
   if (pathStr instanceof CID) {
     return `/ipfs/${pathStr}`
   }
+
+  try {
+    CID.parse(pathStr)
+    pathStr = `/ipfs/${pathStr}`
+  } catch {}
 
   if (isIpfs.path(pathStr)) {
     return pathStr
@@ -195,12 +202,36 @@ const resolve = async function * (cid, path, codecs, repo, options) {
   let value = await load(cid)
   let lastCid = cid
 
+  if (!parts.length) {
+    yield {
+      value,
+      remainderPath: ''
+    }
+  }
+
   // End iteration if there isn't a CID to follow any more
   while (parts.length) {
     const key = parts.shift()
 
     if (!key) {
       throw errCode(new Error(`Could not resolve path "${path}"`), 'ERR_INVALID_PATH')
+    }
+
+    // special case for dag-pb, use the link name as the path segment
+    if (cid.code === dagPb.code && Array.isArray(value.Links)) {
+      const link = value.Links.find((/** @type {PBLink} */ l) => l.Name === key)
+
+      if (link) {
+        yield {
+          value: link.Hash,
+          remainderPath: parts.join('/')
+        }
+
+        value = await load(link.Hash)
+        lastCid = link.Hash
+
+        continue
+      }
     }
 
     if (Object.prototype.hasOwnProperty.call(value, key)) {
@@ -211,7 +242,7 @@ const resolve = async function * (cid, path, codecs, repo, options) {
         remainderPath: parts.join('/')
       }
     } else {
-      throw errCode(new Error(`No link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
+      throw errCode(new Error(`no link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
     }
 
     if (value instanceof CID) {

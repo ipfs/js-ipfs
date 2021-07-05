@@ -5,6 +5,7 @@ const { PinTypes } = require('ipfs-repo')
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 const { resolvePath } = require('../../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const errCode = require('err-code')
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -44,6 +45,10 @@ module.exports = ({ repo, codecs }) => {
 
     if (options.type) {
       type = options.type
+
+      if (!Object.keys(PinTypes).includes(type)) {
+        throw errCode(new Error('Invalid pin type'), 'ERR_INVALID_PIN_TYPE')
+      }
     }
 
     if (options.paths) {
@@ -55,7 +60,7 @@ module.exports = ({ repo, codecs }) => {
         const { reason, pinned, parent, metadata } = await repo.pins.isPinnedWithType(cid, type)
 
         if (!pinned) {
-          throw new Error(`path '${path}' is not pinned`)
+          throw errCode(new Error(`path '${path}' is not pinned`), 'ERR_NOT_PINNED')
         }
 
         switch (reason) {

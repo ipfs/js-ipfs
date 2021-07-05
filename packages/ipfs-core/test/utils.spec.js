@@ -69,7 +69,7 @@ describe('utils', () => {
       return expect(utils.resolvePath(repo, codecs, `${aboutPath}/fusion`))
         .to.eventually.be.rejected()
         .and.have.property('message')
-        .that.includes(`No link named "fusion" under ${aboutCid}`)
+        .that.includes(`no link named "fusion" under ${aboutCid}`)
     })
   })
 })

@@ -20,17 +20,16 @@ module.exports = ({ codecs, hashers, repo, preload }) => {
    * @type {import('ipfs-core-types/src/block').API["put"]}
    */
   async function put (block, options = {}) {
-    if (Array.isArray(block)) {
-      throw new Error('Array is not supported')
-    }
-
-    const release = await repo.gcLock.readLock()
+    const release = options.pin ? await repo.gcLock.readLock() : null
 
     try {
+      const cidVersion = options.version != null ? options.version : 0
+      const codecName = options.format || (cidVersion === 0 ? 'dag-pb' : 'raw')
+
       const hasher = await hashers.getHasher(options.mhtype || 'sha2-256')
       const hash = await hasher.digest(block)
-      const codec = await codecs.getCodec(options.format || 'raw')
-      const cid = CID.create(options.version || 1, codec.code, hash)
+      const codec = await codecs.getCodec(codecName)
+      const cid = CID.create(cidVersion, codec.code, hash)
 
       await repo.blocks.put(cid, block, {
         signal: options.signal
@@ -48,7 +47,9 @@ module.exports = ({ codecs, hashers, repo, preload }) => {
 
       return cid
     } finally {
-      release()
+      if (release) {
+        release()
+      }
     }
   }
 

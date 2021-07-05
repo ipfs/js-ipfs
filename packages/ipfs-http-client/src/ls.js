@@ -29,6 +29,8 @@ module.exports = configure((api, opts) => {
         const stats = await stat(opts)(ipfsPath)
 
         hash = stats.cid
+      } else {
+        hash = CID.parse(hash)
       }
 
       /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
@@ -36,7 +38,7 @@ module.exports = configure((api, opts) => {
         name: link.Name,
         path: pathStr + (link.Name ? `/${link.Name}` : ''),
         size: link.Size,
-        cid: CID.parse(hash),
+        cid: hash,
         type: typeOf(link),
         depth: link.Depth || 1
       }

@@ -19,7 +19,7 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: [
-          `${cid instanceof Uint8Array ? CID.decode(cid) : cid}`,
+          `${cid}`,
           // @ts-ignore loose types
           dLink.Name || dLink.name || null
         ],

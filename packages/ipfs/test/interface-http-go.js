@@ -123,11 +123,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
 
   tests.dag(commonFactory, {
     skip: [
-      // dag.tree
-      {
-        name: 'tree',
-        reason: 'TODO vmx 2018-02-22: Currently the tree API is not exposed in go-ipfs'
-      },
       // dag.get:
       {
         name: 'should get a dag-pb node local value',

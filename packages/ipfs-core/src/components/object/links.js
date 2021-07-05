@@ -63,7 +63,7 @@ module.exports = ({ repo, codecs }) => {
    * @type {import('ipfs-core-types/src/object').API["links"]}
    */
   async function links (cid, options = {}) {
-    const codec = await codecs.getCodec(cid.codec)
+    const codec = await codecs.getCodec(cid.code)
     const block = await repo.blocks.get(cid, options)
     const node = codec.decode(block)
 

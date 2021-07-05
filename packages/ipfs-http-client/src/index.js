@@ -19,18 +19,29 @@ const { base58btc } = require('multiformats/bases/base58')
 /**
  * @typedef {import('./types').EndpointConfig} EndpointConfig
  * @typedef {import('./types').Options} Options
+ * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
  */
 
 /**
  * @param {Options} options
  */
 function create (options = {}) {
+  /**
+   * @type {BlockCodec}
+   */
+  const id = {
+    name: identity.name,
+    code: identity.code,
+    encode: (id) => id,
+    decode: (id) => id
+  }
+
   const bases = new Multibases({
     bases: [base58btc].concat(options.ipld && options.ipld.bases ? options.ipld.bases : []),
     loadBase: options.ipld && options.ipld.loadBase ? options.ipld.loadBase : (prefixOrName) => Promise.reject(new Error(`No base found for "${prefixOrName}"`))
   })
   const codecs = new Multicodecs({
-    codecs: [dagPb, dagCbor, raw, json].concat(options.ipld?.codecs || []),
+    codecs: [dagPb, dagCbor, raw, json, id].concat(options.ipld?.codecs || []),
     loadCodec: options.ipld && options.ipld.loadCodec ? options.ipld.loadCodec : (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
   })
   const hashers = new Multihashes({

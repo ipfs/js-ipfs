@@ -4,7 +4,7 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const isIpfs = require('is-ipfs')
 const { nanoid } = require('nanoid')
-const { base64 } = require('multiformats/bases/base64')
+const { base64url } = require('multiformats/bases/base64')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const { isWebWorker } = require('ipfs-utils/src/env')
@@ -45,7 +45,7 @@ module.exports = (common, options) => {
       const path = await ipfs.resolve(`/ipfs/${cid}`, { cidBase: 'base64url' })
       const [,, cidStr] = path.split('/')
 
-      expect(cidStr).to.equal(cid.toString(base64))
+      expect(cidStr).to.equal(cid.toString(base64url))
     })
 
     // Test resolve turns /ipfs/QmRootHash/path/to/file into /ipfs/QmFileHash

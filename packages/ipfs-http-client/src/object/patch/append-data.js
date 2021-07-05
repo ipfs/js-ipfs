@@ -26,7 +26,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: `${cid instanceof Uint8Array ? CID.decode(cid) : cid}`,
+        arg: `${cid}`,
         ...options
       }),
       ...(

@@ -60,6 +60,7 @@ const Multibases = require('ipfs-core-utils/src/multibases')
  * @typedef {import('../types').Options} Options
  * @typedef {import('../types').Print} Print
  * @typedef {import('./storage')} StorageAPI
+ * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
  */
 
 class IPFS {
@@ -109,7 +110,7 @@ class IPFS {
     const resolve = createResolveAPI({ repo, codecs, bases, name })
 
     const dag = new DagAPI({ repo, codecs, hashers, preload })
-    const refs = Object.assign(createRefsAPI({ repo, resolve, preload }), {
+    const refs = Object.assign(createRefsAPI({ repo, codecs, resolve, preload }), {
       local: createRefsLocalAPI({ repo: storage.repo })
     })
     const { add, addAll, cat, get, ls } = new RootAPI({
@@ -180,7 +181,7 @@ class IPFS {
     this.files = files
     this.key = new KeyAPI({ keychain })
     this.object = new ObjectAPI({ preload, codecs, repo })
-    this.repo = new RepoAPI({ repo })
+    this.repo = new RepoAPI({ repo, hashers })
     this.stats = new StatsAPI({ repo, network })
     this.swarm = new SwarmAPI({ network })
 
@@ -230,8 +231,18 @@ class IPFS {
     options = mergeOptions(getDefaultOptions(), options)
     const initOptions = options.init || {}
 
+    /**
+     * @type {BlockCodec}
+     */
+    const id = {
+      name: identity.name,
+      code: identity.code,
+      encode: (id) => id,
+      decode: (id) => id
+    }
+
     const codecs = new Multicodecs({
-      codecs: [dagPb, dagCbor, raw, json].concat(options.ipld?.codecs || []),
+      codecs: [dagPb, dagCbor, raw, json, id].concat(options.ipld?.codecs || []),
       loadCodec: options.ipld && options.ipld.loadCodec ? options.ipld.loadCodec : (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
     })
 

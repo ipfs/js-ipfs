@@ -14,6 +14,7 @@ const { randomBytes } = require('iso-random-stream')
 const { randomStream } = require('iso-random-stream')
 const all = require('it-all')
 const isShardAtPath = require('../utils/is-shard-at-path')
+const raw = require('multiformats/codecs/raw')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -57,7 +58,7 @@ module.exports = (common, options) => {
   }
 
   describe('.files.write', function () {
-    this.timeout(120 * 1000)
+    this.timeout(300 * 1000)
 
     let ipfs
 
@@ -404,7 +405,7 @@ module.exports = (common, options) => {
         const stats = await ipfs.files.stat(path)
 
         for await (const { cid } of traverseLeafNodes(ipfs, stats.cid)) {
-          expect(cid.codec).to.equal('raw')
+          expect(cid.code).to.equal(raw.code)
         }
       })
     })

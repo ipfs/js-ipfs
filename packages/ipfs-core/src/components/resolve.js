@@ -10,7 +10,7 @@ const { resolve: res } = require('../utils')
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
  * @param {import('ipfs-core-utils/src/multibases')} config.bases
- * @param {import('ipfs-core-types/src/name').API} config.name - An IPFS core interface name API
+ * @param {import('ipfs-core-types/src/name').API} config.name
  */
 module.exports = ({ repo, codecs, bases, name }) => {
   /**
@@ -22,10 +22,6 @@ module.exports = ({ repo, codecs, bases, name }) => {
     }
 
     if (isIpfs.ipnsPath(path)) {
-      if (!name) {
-        throw new Error('failed to resolve IPNS path: name API unavailable')
-      }
-
       for await (const resolvedPath of name.resolve(path, opts)) {
         path = resolvedPath
       }
@@ -33,11 +29,11 @@ module.exports = ({ repo, codecs, bases, name }) => {
 
     const [, , hash, ...rest] = path.split('/') // ['', 'ipfs', 'hash', ...path]
     const cid = CID.parse(hash)
-    const base = await bases.getBase(opts.cidBase)
+    const base = opts.cidBase ? await bases.getBase(opts.cidBase) : undefined
 
     // nothing to resolve return the input
     if (rest.length === 0) {
-      return `/ipfs/${cid.toString(base.encoder)}`
+      return `/ipfs/${cid.toString(base && base.encoder)}`
     }
 
     path = rest.join('/')
@@ -53,7 +49,7 @@ module.exports = ({ repo, codecs, bases, name }) => {
       }
     }
 
-    return `/ipfs/${value.toString(base.encoder)}${remainderPath ? '/' + remainderPath : ''}`
+    return `/ipfs/${value.toString(base && base.encoder)}${remainderPath ? '/' + remainderPath : ''}`
   }
 
   return withTimeoutOption(resolve)

@@ -318,26 +318,32 @@ function getRefsTests () {
 
 function loadPbContent (ipfs, node) {
   const store = {
-    putData: async (data) => {
-      const res = await ipfs.block.put(
+    putData: (data) => {
+      return ipfs.block.put(
         dagPb.encode({
           Data: data,
           Links: []
-        })
+        }), {
+          version: 0,
+          format: 'dag-pb',
+          mhtype: 'sha2-256'
+        }
       )
-      return res.cid
     },
-    putLinks: async (links) => {
-      const res = await ipfs.block.put(dagPb.encode({
+    putLinks: (links) => {
+      return ipfs.block.put(dagPb.encode({
         Links: links.map(({ name, cid }) => {
           return {
             Name: name,
             Tsize: 8,
-            Hash: cid
+            Hash: CID.parse(cid)
           }
         })
-      }))
-      return res.cid
+      }), {
+        version: 0,
+        format: 'dag-pb',
+        mhtype: 'sha2-256'
+      })
     }
   }
   return loadContent(ipfs, store, node)
@@ -345,14 +351,17 @@ function loadPbContent (ipfs, node) {
 
 function loadDagContent (ipfs, node) {
   const store = {
-    putData: async (data) => {
+    putData: (data) => {
       const inner = new UnixFS({ type: 'file', data: data })
       const serialized = dagPb.encode({
         Data: inner.marshal(),
         Links: []
       })
-      const res = await ipfs.block.put(serialized)
-      return res.cid
+      return ipfs.block.put(serialized, {
+        version: 0,
+        format: 'dag-pb',
+        mhtype: 'sha2-256'
+      })
     },
     putLinks: (links) => {
       const obj = {}

@@ -18,17 +18,16 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: `${cid instanceof Uint8Array ? CID.decode(cid) : cid}`,
+        arg: `${cid}`,
         ...options
       }),
       headers: options.headers
     })
 
-    const output = res.json()
+    const output = await res.json()
 
     return {
       ...output,
-      // @ts-ignore cannot detect this property
       Hash: CID.parse(output.Hash)
     }
   }

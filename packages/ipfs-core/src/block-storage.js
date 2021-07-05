@@ -109,7 +109,7 @@ class BlockStorage extends BlockstoreAdapter {
    * @param {RmOptions} [options]
    */
   async delete (cid, options) {
-    this.child.delete(cid, options)
+    await this.child.delete(cid, options)
   }
 
   /**

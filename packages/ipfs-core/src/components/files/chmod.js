@@ -318,7 +318,7 @@ module.exports = (context) => {
     const hashAlg = opts.hashAlg || defaultOptions.hashAlg
     const hasher = await context.hashers.getHasher(hashAlg)
     const hash = await hasher.digest(updatedBlock)
-    const updatedCid = CID.create(options.cidVersion, dagPb.code, hash)
+    const updatedCid = CID.create(opts.cidVersion, dagPb.code, hash)
 
     if (opts.flush) {
       await context.repo.blocks.put(updatedCid, updatedBlock)

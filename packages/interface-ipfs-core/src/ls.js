@@ -58,7 +58,7 @@ module.exports = (common, options) => {
 
       const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root.cid.toString()).to.equal(fixtures.directory.cid.toString())
 
       const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
       const output = await all(ipfs.ls(cid))

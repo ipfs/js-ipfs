@@ -2,12 +2,15 @@
 
 const log = require('debug')('ipfs:repo:gc')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const loadMfsRoot = require('../files/utils/with-mfs-root')
 
 /**
  * @typedef {import('ipfs-core-types/src/pin').API} PinAPI
  * @typedef {import('ipfs-core-types/src/refs').API} RefsAPI
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  * @typedef {import('interface-datastore').Key} Key
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ * @typedef {import('ipfs-core-utils/src/multihashes')} Multihashes
  */
 
 /**
@@ -15,24 +18,34 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  *
  * @param {Object} config
  * @param {IPFSRepo} config.repo
+ * @param {Multihashes} config.hashers
  */
-module.exports = ({ repo }) => {
+module.exports = ({ repo, hashers }) => {
   /**
    * @type {import('ipfs-core-types/src/repo').API["gc"]}
    */
-  async function * gc (_options = {}) {
+  async function * gc (options = {}) {
     const start = Date.now()
-    log('Creating set of marked blocks')
-
-    const release = await repo.gcLock.writeLock()
+    let mfsRootCid
 
     try {
-      yield * repo.gc()
+      mfsRootCid = await loadMfsRoot({
+        repo,
+        hashers
+      }, options)
 
-      log(`Complete (${Date.now() - start}ms)`)
+      // temporarily pin mfs root
+      await repo.pins.pinRecursively(mfsRootCid)
+
+      yield * repo.gc()
     } finally {
-      release()
+      // gc complete, unpin mfs root
+      if (mfsRootCid) {
+        await repo.pins.unpin(mfsRootCid)
+      }
     }
+
+    log(`Complete (${Date.now() - start}ms)`)
   }
 
   return withTimeoutOption(gc)

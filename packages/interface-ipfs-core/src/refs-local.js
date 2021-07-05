@@ -8,6 +8,7 @@ const { importer } = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
 const uint8ArrayEquals = require('uint8arrays/equals')
+const blockstore = require('./utils/blockstore-adapter')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -40,7 +41,7 @@ module.exports = (common, options) => {
         content('holmes.txt')
       ]
 
-      const imported = await all(importer(dirs, ipfs.block))
+      const imported = await all(importer(dirs, blockstore(ipfs)))
 
       // otherwise go-ipfs doesn't show them in the local refs
       await drain(ipfs.pin.addAll(imported.map(i => i.cid)))

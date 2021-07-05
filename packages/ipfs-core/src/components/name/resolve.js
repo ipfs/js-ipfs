@@ -62,7 +62,7 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: { offline } }) => {
 
     const [namespace, hash, ...remainder] = name.slice(1).split('/')
     try {
-      CID.parse(hash) // eslint-disable-line no-new
+      CID.parse(hash)
     } catch (err) {
       // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
       if (isDomain(hash)) {

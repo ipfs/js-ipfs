@@ -5,9 +5,10 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPB = require('@ipld/dag-pb')
 const { nanoid } = require('nanoid')
 const { CID } = require('multiformats/cid')
-const sha256 = require('multiformats/hashes/sha2')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
+const first = require('it-first')
+const drain = require('it-drain')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -38,9 +39,7 @@ module.exports = (common, options) => {
       const cid = await ipfs.object.put(obj)
       const node = await ipfs.object.get(cid)
 
-      const nodeJSON = node.toJSON()
-      expect(obj.Data).to.deep.equal(nodeJSON.data)
-      expect(obj.Links).to.deep.equal(nodeJSON.links)
+      expect(obj).to.deep.equal(obj)
     })
 
     it('should pin an object when putting', async () => {
@@ -52,53 +51,25 @@ module.exports = (common, options) => {
       const cid = await ipfs.object.put(obj, {
         pin: true
       })
-      const pin = await all(ipfs.pin.ls(cid))
+      const pin = await first(ipfs.pin.ls({
+        paths: cid
+      }))
 
       expect(pin).to.have.deep.property('cid', cid)
       expect(pin).to.have.property('type', 'recursive')
     })
 
-    it('should put a JSON encoded Uint8Array', async () => {
+    it('should not pin an object by default', async () => {
       const obj = {
         Data: uint8ArrayFromString(nanoid()),
         Links: []
       }
 
-      const obj2 = {
-        Data: obj.Data.toString(),
-        Links: obj.Links
-      }
+      const cid = await ipfs.object.put(obj)
 
-      const buf = uint8ArrayFromString(JSON.stringify(obj2))
-
-      const cid = await ipfs.object.put(buf, { enc: 'json' })
-
-      const node = await ipfs.object.get(cid)
-      const nodeJSON = node.toJSON()
-      expect(nodeJSON.data).to.eql(node.Data)
-    })
-
-    it('should put a Protobuf encoded Uint8Array', async () => {
-      const node = {
-        Data: uint8ArrayFromString(nanoid()),
-        Links: []
-      }
-      const serialized = node.serialize()
-
-      const cid = await ipfs.object.put(serialized, { enc: 'protobuf' })
-      const node2 = await ipfs.object.get(cid)
-      expect(node2.Data).to.deep.equal(node.Data)
-      expect(node2.Links).to.deep.equal(node.Links)
-    })
-
-    it('should put a Uint8Array as data', async () => {
-      const data = uint8ArrayFromString(nanoid())
-
-      const cid = await ipfs.object.put(data)
-      const node = await ipfs.object.get(cid)
-      const nodeJSON = node.toJSON()
-      expect(data).to.deep.equal(nodeJSON.data)
-      expect([]).to.deep.equal(nodeJSON.links)
+      return expect(drain(ipfs.pin.ls({
+        paths: cid
+      }))).to.eventually.be.rejectedWith(/not pinned/)
     })
 
     it('should put a Protobuf DAGNode', async () => {
@@ -109,8 +80,7 @@ module.exports = (common, options) => {
 
       const cid = await ipfs.object.put(dNode)
       const node = await ipfs.object.get(cid)
-      expect(dNode.Data).to.deep.equal(node.Data)
-      expect(dNode.Links).to.deep.equal(node.Links)
+      expect(dNode).to.deep.equal(node)
     })
 
     it('should fail if a string is passed', () => {

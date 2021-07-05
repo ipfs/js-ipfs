@@ -13,6 +13,7 @@ const map = require('it-map')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const testTimeout = require('./utils/test-timeout')
 const { importer } = require('ipfs-unixfs-importer')
+const blockstore = require('./utils/blockstore-adapter')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -30,8 +31,8 @@ module.exports = (common, options) => {
 
     before(async () => {
       ipfs = (await common.spawn()).api
-      await drain(importer([{ content: fixtures.smallFile.data }], ipfs.block))
-      await drain(importer([{ content: fixtures.bigFile.data }], ipfs.block))
+      await drain(importer([{ content: fixtures.smallFile.data }], blockstore(ipfs)))
+      await drain(importer([{ content: fixtures.bigFile.data }], blockstore(ipfs)))
     })
 
     after(() => common.clean())
@@ -45,14 +46,14 @@ module.exports = (common, options) => {
     it('should get with a base58 encoded multihash', async () => {
       const files = await all(ipfs.get(fixtures.smallFile.cid))
       expect(files).to.be.length(1)
-      expect(files[0].path).to.eql(fixtures.smallFile.cid)
+      expect(files[0].path).to.eql(fixtures.smallFile.cid.toString())
       expect(uint8ArrayToString(uint8ArrayConcat(await all(files[0].content)))).to.contain('Plz add me!')
     })
 
     it('should get a file added as CIDv0 with a CIDv1', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.block))
+      const res = await all(importer([{ content: input }], blockstore(ipfs)))
 
       const cidv0 = res[0].cid
       expect(cidv0.version).to.equal(0)
@@ -66,7 +67,7 @@ module.exports = (common, options) => {
     it('should get a file added as CIDv1 with a CIDv0', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: input }], blockstore(ipfs), { cidVersion: 1, rawLeaves: false }))
 
       const cidv1 = res[0].cid
       expect(cidv1.version).to.equal(1)
@@ -80,7 +81,7 @@ module.exports = (common, options) => {
     it('should get a file added as CIDv1 with rawLeaves', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: true }))
+      const res = await all(importer([{ content: input }], blockstore(ipfs), { cidVersion: 1, rawLeaves: true }))
 
       const cidv1 = res[0].cid
       expect(cidv1.version).to.equal(1)
@@ -92,7 +93,7 @@ module.exports = (common, options) => {
 
     it('should get a BIG file', async () => {
       for await (const file of ipfs.get(fixtures.bigFile.cid)) {
-        expect(file.path).to.equal(fixtures.bigFile.cid)
+        expect(file.path).to.equal(fixtures.bigFile.cid.toString())
         const content = uint8ArrayConcat(await all(file.content))
         expect(content.length).to.eql(fixtures.bigFile.data.length)
         expect(content.slice()).to.eql(fixtures.bigFile.data)
@@ -118,11 +119,11 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const res = await all(importer(dirs, ipfs.block))
+      const res = await all(importer(dirs, blockstore(ipfs)))
       const root = res[res.length - 1]
 
       expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root.cid.toString()).to.equal(fixtures.directory.cid.toString())
 
       let files = await all((async function * () {
         for await (let { path, content } of ipfs.get(fixtures.directory.cid)) {
@@ -175,7 +176,7 @@ module.exports = (common, options) => {
         content('jungle.txt', 'foo/bar/jungle.txt')
       ]
 
-      const res = await all(importer(dirs, ipfs.block))
+      const res = await all(importer(dirs, blockstore(ipfs)))
       const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
       expect(root.cid.toString()).to.equal('QmVMXXo3c2bDPH9ayy2VKoXpykfYJHwAcU5YCJjPf7jg3g')
@@ -216,7 +217,7 @@ module.exports = (common, options) => {
         content: fixtures.smallFile.data
       }
 
-      const fileAdded = await last(importer([file], ipfs.block))
+      const fileAdded = await last(importer([file], blockstore(ipfs)))
       expect(fileAdded).to.have.property('path', 'a')
 
       const files = await all(ipfs.get(`/ipfs/${fileAdded.cid}/testfile.txt`))

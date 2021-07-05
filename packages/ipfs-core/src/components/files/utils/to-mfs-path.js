@@ -169,7 +169,7 @@ const toMfsPath = async (context, path, options) => {
   const cidPath = output.type === 'mfs' ? output.mfsPath : output.path
 
   try {
-    const res = await exporter(cidPath, context.repo.blocks)
+    const res = await exporter(cidPath, context.repo.blocks, options)
 
     output.cid = res.cid
     output.mfsPath = `/ipfs/${res.path}`

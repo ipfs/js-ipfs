@@ -29,7 +29,11 @@ module.exports = configure(api => {
 
     return {
       Data: uint8ArrayFromString(data.Data, 'base64pad'),
-      Links: data.Links || []
+      Links: (data.Links || []).map((/** @type {any} */ link) => ({
+        Name: link.Name,
+        Hash: CID.parse(link.Hash),
+        Tsize: link.Size
+      }))
     }
   }
   return get

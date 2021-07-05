@@ -24,8 +24,6 @@ module.exports = ({ repo, preload }) => {
       } else {
         throw new Error('unknown template')
       }
-    } else {
-      data = new Uint8Array(0)
     }
 
     const buf = dagPb.encode({
