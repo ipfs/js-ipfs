@@ -23,7 +23,7 @@ $ npm start
 ```
 ## Call structure in `App.js`
 All React applications store their main logic in `App.js`:
-* `App.js` renders the cosmetics of the demo and call `useIpfs` to retrieve the `id` of the node
+* `App.js` renders the cosmetics of the demo and calls `useIpfs` to retrieve the `id` of the node
 * `useIpfsFactory.js` initialises and closes the IPFS local node
 * `useIpfs.js` does the actual calls to IPFS to retrieve the property specified in argument (here the retrieved property is `id`, requested from `App.js`)
 
