@@ -228,8 +228,6 @@ async function * getLinks (repo, codecs, cid, base = []) {
       name,
       cid
     }
-
-    //yield * getLinks(repo, codecs, cid, base)
   }
 }
 
@@ -238,7 +236,7 @@ async function * getLinks (repo, codecs, cid, base = []) {
  * @param {Array<string|number>} base
  * @returns {Iterable<[string, CID]>}
  */
- const links = function * (source, base) {
+const links = function * (source, base) {
   if (source == null) {
     return
   }
@@ -256,6 +254,7 @@ async function * getLinks (repo, codecs, cid, base = []) {
           const elementPath = [...path, index]
           const cid = CID.asCID(element)
 
+          // eslint-disable-next-line max-depth
           if (cid) {
             yield [elementPath.join('/'), cid]
           } else if (typeof element === 'object') {
@@ -273,4 +272,8 @@ async function * getLinks (repo, codecs, cid, base = []) {
       }
     }
   }
+
+  // ts requires a @returns annotation when a function is recursive,
+  // eslint requires a return when you use a @returns annotation.
+  return []
 }

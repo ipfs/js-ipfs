@@ -11,8 +11,6 @@ const { CID } = require('multiformats/cid')
 const raw = require('multiformats/codecs/raw')
 const testTimeout = require('../utils/test-timeout')
 
-const delay = require('delay')
-
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
  * @param {Factory} common

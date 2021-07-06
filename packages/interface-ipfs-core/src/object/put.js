@@ -39,7 +39,7 @@ module.exports = (common, options) => {
       const cid = await ipfs.object.put(obj)
       const node = await ipfs.object.get(cid)
 
-      expect(obj).to.deep.equal(obj)
+      expect(node).to.deep.equal(obj)
     })
 
     it('should pin an object when putting', async () => {

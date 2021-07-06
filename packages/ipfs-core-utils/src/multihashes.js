@@ -6,10 +6,15 @@
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
+/**
+ * @type {LoadHasherFn}
+ */
+const LOAD_HASHER = (codeOrName) => Promise.reject(new Error(`No hasher found for "${codeOrName}"`))
+
 class Multihashes {
   /**
    * @param {object} options
-   * @param {LoadHasherFn} options.loadHasher
+   * @param {LoadHasherFn} [options.loadHasher]
    * @param {MultihashHasher[]} options.hashers
    */
   constructor (options) {
@@ -21,16 +26,7 @@ class Multihashes {
     /** @type {Record<number, MultihashHasher>}} */
     this._hashersByCode = {}
 
-    if (typeof options.loadHasher !== 'function') {
-      /**
-       * @type {LoadHasherFn}
-       */
-      this.loadHasher = (codeOrName) => {
-        return Promise.reject(new Error(`No hasher found for "${codeOrName}"`))
-      }
-    } else {
-      this.loadHasher = options.loadHasher
-    }
+    this._loadHasher = options.loadHasher || LOAD_HASHER
 
     // Enable all supplied hashers
     for (const hasher of options.hashers) {
@@ -73,7 +69,7 @@ class Multihashes {
     }
 
     // If not supported, attempt to dynamically load this hasher
-    const hasher = await this.loadHasher(code)
+    const hasher = await this._loadHasher(code)
 
     if (table[code] == null) {
       this.addHasher(hasher)

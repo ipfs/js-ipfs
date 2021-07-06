@@ -6,10 +6,15 @@
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
+/**
+ * @type {LoadCodecFn}
+ */
+ const LOAD_CODEC = (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
+
 class Multicodecs {
   /**
    * @param {object} options
-   * @param {LoadCodecFn} options.loadCodec
+   * @param {LoadCodecFn} [options.loadCodec]
    * @param {BlockCodec[]} options.codecs
    */
   constructor (options) {
@@ -21,7 +26,7 @@ class Multicodecs {
     /** @type {Record<number, BlockCodec>}} */
     this._codecsByCode = {}
 
-    this._loadCodec = options.loadCodec
+    this._loadCodec = options.loadCodec || LOAD_CODEC
 
     // Enable all supplied codecs
     for (const codec of options.codecs) {

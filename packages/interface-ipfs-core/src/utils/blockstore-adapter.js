@@ -31,7 +31,7 @@ class IPFSBlockstore extends BlockstoreAdapter {
    * @param {import(multiformats/cid).CID} cid
    * @param {Uint8Array} buf
    */
-  async put (cid, buf, options) {
+  async put (cid, buf) {
     const c = await this.ipfs.block.put(buf, {
       format: formats[cid.code],
       mhtype: hashes[cid.multihash.code],

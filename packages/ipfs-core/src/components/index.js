@@ -85,12 +85,12 @@ class IPFS {
 
     const hashers = new Multihashes({
       hashers: (options.ipld && options.ipld.hashers ? options.ipld.hashers : []).concat([sha256, sha512, identity]),
-      loadHasher: options.ipld && options.ipld.loadHasher ? options.ipld.loadHasher : (codeOrName) => Promise.reject(new Error(`No hasher found for "${codeOrName}"`))
+      loadHasher: options.ipld && options.ipld.loadHasher
     })
 
     const bases = new Multibases({
       bases: [base16, base32, base32pad, base32hex, base32hexpad, base32z, base58btc, base58flickr, base64, base64pad, base64url, base64urlpad].concat(options.ipld && options.ipld.bases ? options.ipld.bases : []),
-      loadBase: options.ipld && options.ipld.loadBase ? options.ipld.loadBase : (prefixOrName) => Promise.reject(new Error(`No base found for "${prefixOrName}"`))
+      loadBase: options.ipld && options.ipld.loadBase
     })
 
     const pin = new PinAPI({ repo, codecs })
@@ -243,7 +243,7 @@ class IPFS {
 
     const codecs = new Multicodecs({
       codecs: [dagPb, dagCbor, raw, json, id].concat(options.ipld?.codecs || []),
-      loadCodec: options.ipld && options.ipld.loadCodec ? options.ipld.loadCodec : (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
+      loadCodec: options.ipld && options.ipld.loadCodec
     })
 
     // eslint-disable-next-line no-console

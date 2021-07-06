@@ -6,10 +6,15 @@
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
+/**
+ * @type {LoadBaseFn}
+ */
+const LOAD_BASE = (name) => Promise.reject(new Error(`No base found for "${name}"`))
+
 class Multibases {
   /**
    * @param {object} options
-   * @param {LoadBaseFn} options.loadBase
+   * @param {LoadBaseFn} [options.loadBase]
    * @param {MultibaseCodec[]} options.bases
    */
   constructor (options) {
@@ -21,7 +26,7 @@ class Multibases {
     /** @type {Record<string, MultibaseCodec>}} */
     this._codecsByPrefix = {}
 
-    this._loadBase = options.loadBase
+    this._loadBase = options.loadBase || LOAD_BASE
 
     // Enable all supplied codecs
     for (const base of options.bases) {

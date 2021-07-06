@@ -74,7 +74,7 @@ module.exports = (common, options) => {
       const hash = await identity.digest(uint8ArrayFromString('derp'))
       const cid = CID.createV1(identity.code, hash)
       await ipfs.block.put(uint8ArrayFromString('derp'), {
-        mhtype: 'identity',
+        mhtype: 'identity'
       })
       await ipfs.files.cp(`/ipfs/${cid}`, parent)
 

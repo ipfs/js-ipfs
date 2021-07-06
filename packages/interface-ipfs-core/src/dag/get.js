@@ -102,7 +102,7 @@ module.exports = (common, options) => {
       const node = result.value
 
       const cid = CID.createV0(await sha256.digest(dagPB.encode(node)))
-      expect(cid.equals(cidPb)).to.be.true
+      expect(cid.equals(cidPb)).to.be.true()
     })
 
     it('should get a dag-pb node local value', async function () {

@@ -3,7 +3,6 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { Multiaddr } = require('multiaddr')
-const { CID } = require('multiformats/cid')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const retry = require('p-retry')
 

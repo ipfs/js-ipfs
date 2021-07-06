@@ -38,15 +38,15 @@ function create (options = {}) {
 
   const bases = new Multibases({
     bases: [base58btc].concat(options.ipld && options.ipld.bases ? options.ipld.bases : []),
-    loadBase: options.ipld && options.ipld.loadBase ? options.ipld.loadBase : (prefixOrName) => Promise.reject(new Error(`No base found for "${prefixOrName}"`))
+    loadBase: options.ipld && options.ipld.loadBase
   })
   const codecs = new Multicodecs({
     codecs: [dagPb, dagCbor, raw, json, id].concat(options.ipld?.codecs || []),
-    loadCodec: options.ipld && options.ipld.loadCodec ? options.ipld.loadCodec : (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
+    loadCodec: options.ipld && options.ipld.loadCodec
   })
   const hashers = new Multihashes({
     hashers: [sha256, sha512, identity].concat(options.ipld && options.ipld.hashers ? options.ipld.hashers : []),
-    loadHasher: options.ipld && options.ipld.loadHasher ? options.ipld.loadHasher : (codeOrName) => Promise.reject(new Error(`No hasher found for "${codeOrName}"`))
+    loadHasher: options.ipld && options.ipld.loadHasher
   })
 
   /** @type {import('ipfs-core-types').IPFS & { getEndpointConfig: () => EndpointConfig }} */
