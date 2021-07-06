@@ -5,10 +5,10 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "bundle": "browserify src/index.js > public/bundle.js",
-    "serve": "http-server public -a 127.0.0.1 -p 8888",
-    "start": "npm run bundle && npm run serve",
-    "clean": "rimraf public/bundle.js",
+    "build": "copyfiles -u 1 -a './public/**/*' ./dist && browserify src/index.js > dist/bundle.js",
+    "serve": "http-server dist -a 127.0.0.1 -p 8888",
+    "start": "npm run build && npm run serve",
+    "clean": "rimraf ./dist",
     "test": "test-ipfs-example"
   },
   "keywords": [],
@@ -16,10 +16,13 @@
   "devDependencies": {
     "browserify": "^17.0.0",
     "concat-stream": "^2.0.0",
+    "copyfiles": "^2.4.1",
     "execa": "^5.0.0",
     "http-server": "^0.12.3",
-    "ipfs": "^0.55.4",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
+  },
+  "dependencies": {
+    "ipfs": "^0.55.4"
   }
 }

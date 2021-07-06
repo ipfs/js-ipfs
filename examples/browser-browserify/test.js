@@ -6,14 +6,21 @@ module.exports = {
   [pkg.name]: function (browser) {
     browser
       .url(process.env.IPFS_EXAMPLE_TEST_URL)
-      .waitForElementVisible('#source')
-      .setValue('#source', 'hello')
-      .waitForElementVisible('#store')
-      .click('#store')
-      .waitForElementVisible('#output', 5e3, 100)
-
-    browser.expect.element('#cid').text.to.contain('QmWfVY9y3xjsixTgbd9AorQxH7VtMpzfx2HaWtsoUYecaX')
-    browser.expect.element('#content').text.to.contain('hello')
+      .waitForElementVisible('body')
+      .assert.visible('input#file-name')
+      .setValue('input#file-name', 'test.txt')
+      .assert.visible('input#file-content')
+      .setValue('input#file-content', 'test')
+      .assert.visible('button#add-submit')
+      .click('button#add-submit')
+      .waitForElementVisible('#output')
+      .waitForElementVisible('#QmRf22bZar3WKmojipms22PkXH1MZGmvsqzQtuSvQE3uhm')
+      .clearValue('input#file-name')
+      .setValue('input#file-name', 'test123.txt')
+      .clearValue('input#file-content')
+      .setValue('input#file-content', 'test123')
+      .click('button#add-submit')
+      .waitForElementVisible('#QmSTbSvecWDxM1jPDKBJ2ECBTwwuSAFEyuA111NvMYosr3')
 
     browser.end()
   }
