@@ -12,6 +12,7 @@ const { CID } = require('multiformats/cid')
 const { AbortSignal } = require('native-abort-controller')
 const { base58btc } = require('multiformats/bases/base58')
 const { base64 } = require('multiformats/bases/base64')
+const { base32 } = require('multiformats/bases/base32')
 
 const sendData = async (data) => {
   const form = new FormData()
@@ -51,8 +52,8 @@ describe('/block', () => {
   describe('/put', () => {
     const defaultOptions = {
       mhtype: 'sha2-256',
-      format: 'raw',
-      version: 1,
+      format: 'dag-pb',
+      version: 0,
       pin: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
@@ -108,12 +109,12 @@ describe('/block', () => {
       expect(res).to.have.deep.property('result', expectedResult)
     })
 
-    it('updates value with a v1 CID', async () => {
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+    it('defaults to base32 encoding with a v1 CID', async () => {
+      ipfs.bases.getBase.withArgs('base32').returns(base32)
       ipfs.block.put.withArgs(data, {
         ...defaultOptions,
         version: 1
-      }).returns(cid)
+      }).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
@@ -122,16 +123,19 @@ describe('/block', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.property('result', expectedResult)
+      expect(res.result.Key).to.equal(cid.toV1().toString())
     })
 
     it('should put a value and return a base64 encoded CID', async () => {
       ipfs.bases.getBase.withArgs('base64').returns(base64)
-      ipfs.block.put.withArgs(data, defaultOptions).returns(cid.toV1())
+      ipfs.block.put.withArgs(data, {
+        ...defaultOptions,
+        version: 1
+      }).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
-        url: '/api/v0/block/put?cid-base=base64',
+        url: '/api/v0/block/put?version=1&cid-base=base64',
         ...await sendData(data)
       }, { ipfs })
 

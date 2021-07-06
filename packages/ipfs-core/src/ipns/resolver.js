@@ -9,6 +9,7 @@ const log = Object.assign(debug('ipfs:ipns:resolver'), {
 })
 const uint8ArrayToString = require('uint8arrays/to-string')
 const { CID } = require('multiformats/cid')
+const { base58btc } = require('multiformats/bases/base58')
 
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
@@ -90,7 +91,14 @@ class IpnsResolver {
    * @param {string} name
    */
   async _resolveName (name) {
-    const peerId = PeerId.createFromCID(CID.parse(name))
+    let peerId
+
+    if (name.charAt(0) === '1') {
+      peerId = PeerId.createFromBytes(base58btc.decode(`z${name}`))
+    } else {
+      peerId = PeerId.createFromCID(CID.parse(name))
+    }
+
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
     let record
 

@@ -45,8 +45,16 @@ const decodeCID = encodedCID => {
     })
   }
 
+  // @ts-ignore non-enumerable field that doesn't always get transferred
+  if (!cid.asCID) {
+    Object.defineProperty(cid, 'asCID', {
+      get: () => cid
+    })
+  }
+
   Object.setPrototypeOf(cid.multihash.digest, Uint8Array.prototype)
   Object.setPrototypeOf(cid.multihash.bytes, Uint8Array.prototype)
+  Object.setPrototypeOf(cid.bytes, Uint8Array.prototype)
   Object.setPrototypeOf(cid, CID.prototype)
   // TODO: Figure out a way to avoid `Symbol.for` here as it can get out of
   // sync with cids implementation.

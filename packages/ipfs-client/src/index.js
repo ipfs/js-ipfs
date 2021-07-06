@@ -30,7 +30,7 @@ function create (opts = {}) {
   }
 
   // override http methods with grpc if address is supplied
-  return mergeOptions(clients)
+  return mergeOptions(...clients)
 }
 
 module.exports = {

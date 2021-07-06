@@ -123,7 +123,7 @@ module.exports = (common, options) => {
       const node = result.value
 
       const cid = CID.createV1(dagCBOR.code, await sha256.digest(dagCBOR.encode(node)))
-      expect(cid.equals(cidCbor)).to.be.true
+      expect(cid.equals(cidCbor)).to.be.true()
     })
 
     it('should get a dag-cbor node local value', async () => {
