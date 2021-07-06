@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add readable stream</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" />
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <script src="../src/index.js" defer></script>
+
+    <style>
+      ::placeholder {
+        color: rgb(0 0 0 / 30%);
+      }
+
+      form {
+        margin: 1.25rem 0;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .window {
+        display: flex;
+        flex-direction: column;
+        background: #222;
+        color: #fff;
+        height: 400px;
+      }
+
+      .window .header {
+        flex-basis: 3rem;
+        background: #c6c6c6;
+        position: relative;
+      }
+
+      .window .header:after {
+        content: ". . .";
+        position: absolute;
+        left: 12px;
+        right: 0;
+        top: -3px;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 96px;
+        color: #fff;
+        line-height: 0;
+        letter-spacing: -12px;
+      }
+
+      .terminal {
+        margin: 20px;
+        font-family: monospace;
+        font-size: 16px;
+        overflow: auto;
+        flex: 1;
+      }
+
+      details > summary {
+        background-color: #0b3a53;
+        color: whitesmoke;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+      }
+
+      details > summary > * {
+        display: inline;
+      }
+
+      details > div {
+        border: 2px solid #0b3a53;
+        margin-top: 0;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+
+  <body class="montserrat f5">
+    <header class="flex items-center pa3 bg-navy bb bw3 b--aqua">
+      <a href="https://ipfs.io" title="home">
+        <img
+          alt="IPFS logo"
+          src="./assets/ipfs-logo.svg"
+          style="height: 50px;"
+          class="v-top"
+        />
+      </a>
+    </header>
+
+    <main class="pa4-l bg-snow mw7 mv5 center pa4">
+      <h1 class="pa0 f2 ma0 mb4 aqua tc">Readable stream example</h1>
+
+      <h3>Files to add</h3>
+
+      <div id="examples"></div>
+
+      <h3>Add file</h3>
+
+      <form id="add-file">
+        <label for="file-directory" class="f5 ma0 pb2 aqua fw4 db"
+          >Directory</label
+        >
+        <input
+          class="input-reset bn black-80 bg-white pa3 w-100 mb3"
+          id="file-directory"
+          name="file-directory"
+          type="text"
+          value="directory"
+          placeholder="directory"
+          required
+        />
+
+        <label for="file-name" class="f5 ma0 pb2 aqua fw4 db">Name</label>
+        <input
+          class="input-reset bn black-80 bg-white pa3 w-100 mb3"
+          id="file-name"
+          name="file-name"
+          type="text"
+          placeholder="file.txt"
+          required
+        />
+
+        <label for="file-content" class="f5 ma0 pb2 aqua fw4 db">Content</label>
+        <input
+          class="input-reset bn black-80 bg-white pa3 w-100 mb3 ft"
+          id="file-content"
+          name="file-content"
+          type="text"
+          placeholder="Hello world"
+          required
+        />
+
+        <button
+          class="button-reset pv3 tc bn bg-animate bg-black-80 hover-bg-aqua white pointer w-100"
+          id="add-submit"
+          type="submit"
+        >
+          Add files
+        </button>
+      </form>
+
+      <h3>Output</h3>
+
+      <div class="window">
+        <div class="header"></div>
+        <div id="terminal" class="terminal">
+          <div id="output"></div>
+        </div>
+      </div>
+
+      <div id="preview" class="hidden mt3">
+        <h3>Preview files</h3>
+      </div>
+    </main>
+  </body>
+</html>

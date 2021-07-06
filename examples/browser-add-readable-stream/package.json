@@ -2,17 +2,23 @@
   "name": "example-browser-add-readable-stream",
   "description": "How to add readable streams in the browser",
   "version": "2.0.1",
-  "main": "index.js",
+  "main": "dist/index.html",
   "private": true,
   "scripts": {
-    "serve": "http-server public -a 127.0.0.1 -p 8888",
+    "build": "parcel build public/index.html --dist-dir ./dist --no-scope-hoist",
+    "serve": "parcel serve public/index.html",
     "start": "npm run serve",
-    "test": "test-ipfs-example"
+    "test": "test-ipfs-example",
+    "clean": "rimraf ./dist ./.cache ./.parcel-cache"
   },
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "ipfs": "^0.55.4",
+    "parcel": "latest",
+    "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
+  },
+  "dependencies": {
+    "ipfs": "^0.55.4"
   }
 }
