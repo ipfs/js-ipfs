@@ -232,14 +232,14 @@ jobs:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000
 
     - stage: test
-      name: http-api-client interface tests vs go-ipfs - firefox
+      name: http-api-client interface tests vs go-ipfs - firefox,chrome
       script:
         - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
       name: http-api-client interface tests vs go-ipfs - firefox webworker
       script:
-        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox
+        - npm run test:interface:http-go -- $RUN_SINCE -- -- --bail -t webworker --timeout 60000 -- --browser firefox, chrome
 
     - stage: test
       name: http-api-client interface tests vs js-ipfs - node
@@ -301,7 +301,7 @@ jobs:
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
         - git fetch --unshallow
-        - echo "//registry.npmjs.org/:_authToken=\${1v3SQllEiu8HSImTdWIzW609Y39}" > .npmrc
+        - echo "//registry.npmjs.org/:_authToken=\${1v3SQllEiu8HSImTdWIzW609Y39,884a175f077246baa942d317f2873029}" > .npmrc
         - echo "$CORE_VAL_EXTREME" | docker login -u "$CORE_VAL_EXTREME" --password-stdin
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run release:rc ; fi
@@ -314,7 +314,7 @@ jobs:
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
         - git fetch --unshallow
-        - echo "//registry.npmjs.org/:_authToken=\${1v3SQllEiu8HSImTdWIzW609Y39}" > .npmrc
+        - echo "//registry.npmjs.org/:_authToken=\${1v3SQllEiu8HSImTdWIzW609Y39,884a175f077246baa942d317f2873029}" > .npmrc
         - echo "$CORE_VAL_EXTREME" | docker login -u "$COREVALEXTREME" --password-stdin
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run docker:rc ; fi
