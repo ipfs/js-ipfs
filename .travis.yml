@@ -301,8 +301,8 @@ jobs:
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
         - git fetch --unshallow
-        - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - echo "//registry.npmjs.org/:_authToken=\${1v3SQllEiu8HSImTdWIzW609Y39}" > .npmrc
+        - echo "$CORE_VAL_EXTREME" | docker login -u "$CORE_VAL_EXTREME" --password-stdin
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run release:rc ; fi
 
@@ -314,8 +314,8 @@ jobs:
         # travis does not fetch the whole repo history, but we need that to work out the
         # ref count to publish canary releases properly
         - git fetch --unshallow
-        - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - echo "//registry.npmjs.org/:_authToken=\${1v3SQllEiu8HSImTdWIzW609Y39}" > .npmrc
+        - echo "$CORE_VAL_EXTREME" | docker login -u "$COREVALEXTREME" --password-stdin
         # only run if the last commit was not part of a release
         - if [[ ! `git log -n 1 -q` =~ publish ]]; then npm run docker:rc ; fi
 
