@@ -14,7 +14,6 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @typedef {import('@ipld/dag-pb').PBNode} DAGNode
- * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
@@ -24,7 +23,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @typedef {object} DefaultOptions
  * @property {boolean} parents
  * @property {boolean} flush
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {number} shardSplitThreshold
  * @property {AbortSignal} [signal]

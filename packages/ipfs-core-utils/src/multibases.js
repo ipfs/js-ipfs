@@ -20,11 +20,11 @@ class Multibases {
   constructor (options) {
     // Object with current list of active resolvers
     /** @type {Record<string, MultibaseCodec>}} */
-    this._codecsByName = {}
+    this._basesByName = {}
 
     // Object with current list of active resolvers
     /** @type {Record<string, MultibaseCodec>}} */
-    this._codecsByPrefix = {}
+    this._basesByPrefix = {}
 
     this._loadBase = options.loadBase || LOAD_BASE
 
@@ -40,12 +40,12 @@ class Multibases {
    * @param {MultibaseCodec} base
    */
   addBase (base) {
-    if (this._codecsByName[base.name] || this._codecsByPrefix[base.prefix]) {
+    if (this._basesByName[base.name] || this._basesByPrefix[base.prefix]) {
       throw new Error(`Codec already exists for codec "${base.name}"`)
     }
 
-    this._codecsByName[base.name] = base
-    this._codecsByPrefix[base.prefix] = base
+    this._basesByName[base.name] = base
+    this._basesByPrefix[base.prefix] = base
   }
 
   /**
@@ -54,30 +54,34 @@ class Multibases {
    * @param {MultibaseCodec} base
    */
   removeBase (base) {
-    delete this._codecsByName[base.name]
-    delete this._codecsByPrefix[base.prefix]
+    delete this._basesByName[base.name]
+    delete this._basesByPrefix[base.prefix]
   }
 
   /**
    * @param {string} nameOrPrefix
    */
   async getBase (nameOrPrefix) {
-    if (this._codecsByName[nameOrPrefix]) {
-      return this._codecsByName[nameOrPrefix]
+    if (this._basesByName[nameOrPrefix]) {
+      return this._basesByName[nameOrPrefix]
     }
 
-    if (this._codecsByPrefix[nameOrPrefix]) {
-      return this._codecsByPrefix[nameOrPrefix]
+    if (this._basesByPrefix[nameOrPrefix]) {
+      return this._basesByPrefix[nameOrPrefix]
     }
 
     // If not supported, attempt to dynamically load this codec
     const base = await this._loadBase(nameOrPrefix)
 
-    if (this._codecsByName[base.name] == null && this._codecsByPrefix[base.prefix] == null) {
+    if (this._basesByName[base.name] == null && this._basesByPrefix[base.prefix] == null) {
       this.addBase(base)
     }
 
     return base
+  }
+
+  listBases () {
+    return Object.values(this._basesByName)
   }
 }
 

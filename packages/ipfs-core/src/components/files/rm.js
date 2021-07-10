@@ -10,13 +10,12 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 
 /**
- * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions
  * @property {boolean} recursive
  * @property {CIDVersion} cidVersion
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {boolean} flush
  * @property {number} shardSplitThreshold
  * @property {AbortSignal} [signal]

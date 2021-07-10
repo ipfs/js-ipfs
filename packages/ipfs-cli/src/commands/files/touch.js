@@ -61,7 +61,7 @@ module.exports = {
    * @param {string} argv.path
    * @param {boolean} argv.flush
    * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
-   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {string} argv.hashAlg
    * @param {number} argv.shardSplitThreshold
    * @param {number} argv.mtime
    * @param {number} argv.mtimeNsecs

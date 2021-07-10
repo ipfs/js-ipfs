@@ -13,7 +13,6 @@ const errCode = require('err-code')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext
- * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('hamt-sharding').Bucket<any>} Bucket
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode
@@ -21,7 +20,7 @@ const errCode = require('err-code')
  * @typedef {object} RemoveLinkOptions
  * @property {string} name
  * @property {number} shardSplitThreshold
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {boolean} flush
  * @property {CID} [parentCid]
@@ -30,7 +29,7 @@ const errCode = require('err-code')
  * @typedef {object} RemoveLinkOptionsInternal
  * @property {string} name
  * @property {number} shardSplitThreshold
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {boolean} flush
  * @property {PBNode} parent

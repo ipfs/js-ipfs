@@ -77,6 +77,10 @@ class Multicodecs {
 
     return codec
   }
+
+  listCodecs () {
+    return Object.values(this._codecsByName)
+  }
 }
 
 module.exports = Multicodecs

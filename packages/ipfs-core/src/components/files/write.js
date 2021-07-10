@@ -30,7 +30,6 @@ const {
 } = require('ipfs-unixfs')
 
 /**
- * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
@@ -46,7 +45,7 @@ const {
  * @property {boolean} rawLeaves
  * @property {boolean} reduceSingleLeafToSelf
  * @property {CIDVersion} cidVersion
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {boolean} parents
  * @property {import('ipfs-core-types/src/root').AddProgressFn} progress
  * @property {'trickle' | 'balanced'} strategy

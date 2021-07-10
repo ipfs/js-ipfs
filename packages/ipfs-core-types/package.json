@@ -30,7 +30,7 @@
   "dependencies": {
     "interface-datastore": "^5.0.0",
     "multiaddr": "^10.0.0",
-    "multiformats": "^9.1.0"
+    "multiformats": "^9.2.0"
   },
   "devDependencies": {
     "aegir": "^34.0.2"

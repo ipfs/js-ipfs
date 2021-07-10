@@ -14,7 +14,6 @@ const { CID } = require('multiformats/cid')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('multihashes').HashName} HashName
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
@@ -22,7 +21,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @property {boolean} flush
  * @property {number} shardSplitThreshold
  * @property {CIDVersion} cidVersion
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {MtimeLike} [mtime]
  * @property {AbortSignal} [signal]
  * @property {number} [timeout]

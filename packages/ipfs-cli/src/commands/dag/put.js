@@ -99,7 +99,7 @@ module.exports = {
    * @param {'json' | 'cbor' | 'raw' | 'protobuf'} argv.inputEncoding
    * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
    * @param {boolean} argv.pin
-   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {string} argv.hashAlg
    * @param {string} argv.cidBase
    * @param {boolean} argv.preload
    * @param {boolean} argv.onlyHash

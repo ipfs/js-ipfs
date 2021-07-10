@@ -52,14 +52,17 @@ export interface IPFS extends RootAPI {
 
 interface Bases {
   getBase: (code: string) => Promise<MultibaseCodec<any>>
+  listBases: () => Array<MultibaseCodec<any>>
 }
 
 interface Codecs {
   getCodec: (code: number | string) => Promise<BlockCodec<any, any>>
+  listCodecs: () => Array<BlockCodec<any, any>>
 }
 
 interface Hashers {
   getHasher: (code: number | string) => Promise<MultihashHasher<any, any>>
+  listHashers: () => Array<MultihashHasher<any, any>>
 }
 
 export type {

@@ -77,6 +77,10 @@ class Multihashes {
 
     return hasher
   }
+
+  listHashers () {
+    return Object.values(this._hashersByName)
+  }
 }
 
 module.exports = Multihashes
