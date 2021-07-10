@@ -3,7 +3,7 @@
 /* eslint-env mocha */
 const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { Server } = require('../src/server')
 const { IPFSService } = require('../src/index')
 
@@ -11,7 +11,7 @@ describe('Server', function () {
   this.timeout(10 * 1000)
 
   it('should be able to transfer multiple of the same CID instances', () => {
-    const cid = new CID('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
+    const cid = CID.parse('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
     return new Promise((resolve, reject) => {
       const channel = process.browser

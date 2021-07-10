@@ -14,7 +14,7 @@ const errCode = require('err-code')
 /**
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('hamt-sharding').Bucket<any>} Bucket
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  *

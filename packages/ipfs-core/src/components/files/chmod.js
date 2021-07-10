@@ -22,7 +22,7 @@ const persist = require('ipfs-unixfs-importer/src/utils/persist')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  * @typedef {import('./').MfsContext} MfsContext
  *

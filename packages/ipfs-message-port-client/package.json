@@ -36,7 +36,8 @@
     "browser-readablestream-to-it": "^1.0.1",
     "ipfs-core-types": "^0.5.2",
     "ipfs-message-port-protocol": "^0.7.3",
-    "ipfs-unixfs": "^5.0.0"
+    "ipfs-unixfs": "^5.0.0",
+    "multiformats": "^9.2.0"
   },
   "devDependencies": {
     "aegir": "^34.0.2",
