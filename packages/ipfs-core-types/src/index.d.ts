@@ -19,8 +19,8 @@ import { API as StatsAPI } from './stats'
 import { API as SwarmAPI } from './swarm'
 import { AbortOptions, Await, AwaitIterable } from './utils'
 import type { BlockCodec } from 'multiformats/codecs/interface'
+import type { MultibaseCodec } from 'multiformats/bases/interface'
 import type { MultihashHasher } from 'multiformats/hashes/interface'
-import type { MultibaseCodec } from 'multiformats/codecs/interface'
 
 interface RefsAPI extends Refs {
   local: Local

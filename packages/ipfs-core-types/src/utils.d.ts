@@ -1,6 +1,5 @@
 import { CID } from 'multiformts/cid'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
-import { Options as DatastoreOptions, Query, KeyQuery } from 'interface-datastore'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =
   | FileEntry<Content>
@@ -72,9 +71,9 @@ export interface InputFile extends BaseFile {
 }
 
 export interface BrowserImportCandidate {
-  path?: string,
-  content?: Blob,
-  mtime?: Mtime,
+  path?: string
+  content?: Blob
+  mtime?: Mtime
   mode?: number
 }
 

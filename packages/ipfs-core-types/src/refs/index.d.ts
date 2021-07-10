@@ -1,7 +1,6 @@
 import type { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
-import type { CID } from 'multiformts/cid'
 
-export type API<OptionExtension = {}> = {
+export interface API<OptionExtension = {}> {
   /**
    * Get links (references) from an object
    */
@@ -13,7 +12,7 @@ export type API<OptionExtension = {}> = {
   local: Local<OptionExtension>
 }
 
-export type Refs<OptionExtension = {}> = (ipfsPath: IPFSPath | IPFSPath[], options?: RefsOptions & OptionExtension) => AsyncIterable<RefsResult>
+export interface Refs<OptionExtension = {}> { (ipfsPath: IPFSPath | IPFSPath[], options?: RefsOptions & OptionExtension): AsyncIterable<RefsResult> }
 
 export interface RefsOptions extends AbortOptions, PreloadOptions {
   recursive?: boolean
@@ -23,7 +22,7 @@ export interface RefsOptions extends AbortOptions, PreloadOptions {
   maxDepth?: number
 }
 
-export type Local<OptionExtension = {}> = (options?: AbortOptions & OptionExtension) => AsyncIterable<RefsResult>
+export interface Local<OptionExtension = {}> { (options?: AbortOptions & OptionExtension): AsyncIterable<RefsResult> }
 
 export interface RefsResult {
   ref: string

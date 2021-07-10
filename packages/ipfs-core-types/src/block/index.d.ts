@@ -107,7 +107,7 @@ export interface RmOptions extends AbortOptions {
   /**
    * Ignores non-existent blocks
    */
-  force?: boolean,
+  force?: boolean
 
   /**
    * Do not return output if true

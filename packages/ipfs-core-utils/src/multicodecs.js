@@ -9,7 +9,7 @@
 /**
  * @type {LoadCodecFn}
  */
- const LOAD_CODEC = (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
+const LOAD_CODEC = (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
 
 class Multicodecs {
   /**

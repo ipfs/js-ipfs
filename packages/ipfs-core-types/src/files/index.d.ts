@@ -33,13 +33,13 @@ export interface API<OptionExtension = {}> {
    * @example
    * ```js
    * // To copy a file
-* await ipfs.files.cp('/src-file', '/dst-file')
-*
-* // To copy a directory
-* await ipfs.files.cp('/src-dir', '/dst-dir')
-*
-* // To copy multiple files to a directory
-* await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
+   * await ipfs.files.cp('/src-file', '/dst-file')
+   *
+   * // To copy a directory
+   * await ipfs.files.cp('/src-dir', '/dst-dir')
+   *
+   * // To copy multiple files to a directory
+   * await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
    * ```
    */
   cp: (from: IPFSPath | IPFSPath[], to: string, options?: CpOptions & OptionExtension) => Promise<void>

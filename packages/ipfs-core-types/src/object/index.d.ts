@@ -1,4 +1,4 @@
-import type { CID } from 'multiformts/cid';
+import type { CID } from 'multiformts/cid'
 import type { AbortOptions, PreloadOptions } from '../utils'
 import type { API as PatchAPI } from './patch'
 import type { PBNode, PBLink } from '@ipld/dag-pb'

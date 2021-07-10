@@ -30,6 +30,8 @@ class PinAPI {
       service: {
         add: (name, credentials) => Promise.reject(new Error('Not implemented')),
         rm: (name, options = {}) => Promise.reject(new Error('Not implemented')),
+        // @ts-ignore return types seem to be broken by a recent ts release. doesn't matter here because
+        // we are just throwing. Will be removed by https://github.com/protocol/web3-dev-team/pull/58
         ls: (options = {}) => Promise.reject(new Error('Not implemented'))
       }
     }

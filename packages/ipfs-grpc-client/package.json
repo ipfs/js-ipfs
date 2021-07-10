@@ -39,19 +39,19 @@
     "ipfs-core-types": "^0.5.2",
     "ipfs-core-utils": "^0.8.3",
     "ipfs-grpc-protocol": "^0.3.0",
-    "ipfs-unixfs": "https://gitpkg.now.sh/ipfs/js-ipfs-unixfs/packages/ipfs-unixfs?js-dag-pb",
+    "ipfs-unixfs": "^5.0.0",
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.0",
-    "multiaddr": "multiformats/js-multiaddr#chore/update-to-new-multiformats",
+    "multiaddr": "^10.0.0",
     "protobufjs": "^6.10.2",
     "wherearewe": "1.0.0",
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "aegir": "^33.0.0",
+    "aegir": "^34.0.2",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
-    "sinon": "^10.0.1"
+    "sinon": "^11.1.1"
   },
   "eslintConfig": {
     "extends": "ipfs"

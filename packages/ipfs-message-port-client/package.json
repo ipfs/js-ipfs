@@ -36,10 +36,10 @@
     "browser-readablestream-to-it": "^1.0.1",
     "ipfs-core-types": "^0.5.2",
     "ipfs-message-port-protocol": "^0.7.3",
-    "ipfs-unixfs": "https://gitpkg.now.sh/ipfs/js-ipfs-unixfs/packages/ipfs-unixfs?js-dag-pb"
+    "ipfs-unixfs": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^33.0.0",
+    "aegir": "^34.0.2",
     "interface-ipfs-core": "^0.147.0",
     "ipfs-core": "^0.8.0",
     "ipfs-message-port-server": "^0.7.3",

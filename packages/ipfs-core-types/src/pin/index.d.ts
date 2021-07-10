@@ -150,7 +150,7 @@ export type PinType = 'recursive' | 'direct' | 'indirect' | 'all'
 
 export type PinQueryType = 'recursive' | 'direct' | 'indirect' | 'all'
 
-export interface LsOptions  extends AbortOptions {
+export interface LsOptions extends AbortOptions {
   paths?: CID | CID[] | string | string[]
   type?: PinQueryType
 }
@@ -170,4 +170,3 @@ export interface RmAllInput {
   path?: string
   recursive?: boolean
 }
-

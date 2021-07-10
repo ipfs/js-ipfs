@@ -1,5 +1,5 @@
 import type { AbortOptions } from '../utils'
-import { API as ProfilesAPI} from './profiles'
+import { API as ProfilesAPI } from './profiles'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -31,7 +31,7 @@ export interface API<OptionExtension = {}> {
 
 export interface Config {
   Addresses?: AddressConfig
-  API?: APIConfig,
+  API?: APIConfig
   Profiles?: string
   Bootstrap?: string[]
   Discovery?: DiscoveryConfig
@@ -51,8 +51,8 @@ export interface AddressConfig {
   RPC?: string
   Delegates?: string[]
   Gateway?: string
-  Swarm?: string[],
-  Announce?: string[],
+  Swarm?: string[]
+  Announce?: string[]
   NoAnnounce?: string[]
 }
 
@@ -79,22 +79,22 @@ export interface DatastoreConfig {
 }
 
 export interface DatastoreType {
-  type: string,
-  path: string,
-  sync?: boolean,
-  shardFunc?: string,
+  type: string
+  path: string
+  sync?: boolean
+  shardFunc?: string
   compression?: string
 }
 
 export interface DatastoreMountPoint {
-  mountpoint: string,
-  type: string,
-  prefix: string,
+  mountpoint: string
+  type: string
+  prefix: string
   child: DatastoreType
 }
 
 export interface DatastoreSpec {
-  type?: string,
+  type?: string
   mounts?: DatastoreMountPoint[]
 }
 

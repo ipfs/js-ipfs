@@ -2,7 +2,6 @@ import { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCa
 import { CID, CIDVersion } from 'multiformats/cid'
 import { Mtime } from 'ipfs-unixfs'
 import { Multiaddr } from 'multiaddr'
-import { BaseName } from 'multibase'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -174,7 +173,7 @@ export interface Directory {
 
 export type IPFSEntry = File | Directory
 
-export type AddProgressFn = (bytes: number, path?: string) => void
+export interface AddProgressFn { (bytes: number, path?: string): void }
 
 export interface AddOptions extends AbortOptions {
   /**

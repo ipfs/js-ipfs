@@ -20,7 +20,7 @@
   "dependencies": {
     "ipfs": "^0.55.4",
     "it-all": "^1.0.4",
-    "libp2p-websockets": "^0.15.6",
+    "libp2p-websockets": "^0.16.1",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"
   }

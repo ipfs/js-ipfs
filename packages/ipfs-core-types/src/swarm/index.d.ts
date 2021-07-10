@@ -1,7 +1,4 @@
 import type { AbortOptions } from '../utils'
-import { API as BitswapAPI } from '../bitswap'
-import { API as RepoAPI } from '../repo'
-import type { CID } from 'multiformts/cid'
 import type { Multiaddr } from 'multiaddr'
 
 export interface API<OptionExtension = {}> {
