@@ -4,7 +4,7 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
-const { CID } = require('multiformats/cid')
+const PeerId = require('peer-id')
 const { base32 } = require('multiformats/bases/base32')
 const last = require('it-last')
 
@@ -49,7 +49,7 @@ module.exports = (common, options) => {
 
       // Represent Peer ID as CIDv1 Base32
       // https://github.com/libp2p/specs/blob/master/RFC/0001-text-peerid-cid.md
-      const keyCid = CID.parse(peerId).toV1().toString(base32)
+      const keyCid = base32.encode(PeerId.parse(peerId).toBytes())
       const resolvedPath = await last(ipfs.name.resolve(`/ipns/${keyCid}`))
 
       expect(resolvedPath).to.equal(`/ipfs/${path}`)

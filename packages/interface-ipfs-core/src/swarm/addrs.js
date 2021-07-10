@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { CID } = require('multiformats/cid')
+const PeerId = require('peer-id')
 const { Multiaddr } = require('multiaddr')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isWebWorker } = require('ipfs-utils/src/env')
@@ -38,7 +38,7 @@ module.exports = (common, options) => {
       expect(peers).to.be.an('array')
 
       for (const peer of peers) {
-        expect(CID.parse(peer.id)).to.be.ok()
+        expect(PeerId.parse(peer.id)).to.be.ok()
         expect(peer).to.have.a.property('addrs').that.is.an('array')
 
         for (const ma of peer.addrs) {
