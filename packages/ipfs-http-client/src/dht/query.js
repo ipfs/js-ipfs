@@ -1,6 +1,5 @@
 'use strict'
 
-const { CID } = require('multiformats/cid')
 const { Multiaddr } = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
@@ -28,7 +27,6 @@ module.exports = configure(api => {
 
     for await (let message of res.ndjson()) {
       message = toCamel(message)
-      message.id = CID.parse(message.id)
       message.responses = (message.responses || []).map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
         id: ID,
         addrs: (Addrs || []).map((/** @type {string} **/ a) => new Multiaddr(a))

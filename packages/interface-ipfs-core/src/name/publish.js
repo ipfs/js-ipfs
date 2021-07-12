@@ -6,7 +6,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
-const { CID } = require('multiformats/cid')
+const PeerId = require('peer-id')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -40,7 +40,7 @@ module.exports = (common, options) => {
       const res = await ipfs.name.publish(value, { allowOffline: true })
       expect(res).to.exist()
 
-      expect(CID.parse(res.name).toV1().toString()).to.equal(CID.parse(self.id).toV1().toString())
+      expect(PeerId.parse(res.name).toString()).to.equal(PeerId.parse(self.id).toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
@@ -67,7 +67,7 @@ module.exports = (common, options) => {
 
       const res = await ipfs.name.publish(value, options)
       expect(res).to.exist()
-      expect(CID.parse(res.name).toV1().toString()).to.equal(CID.parse(self.id).toV1().toString())
+      expect(PeerId.parse(res.name).toString()).to.equal(PeerId.parse(self.id).toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
@@ -87,7 +87,7 @@ module.exports = (common, options) => {
       const res = await ipfs.name.publish(value, options)
 
       expect(res).to.exist()
-      expect(CID.parse(res.name).toV1().toString()).to.equal(CID.parse(key.id).toV1().toString())
+      expect(PeerId.parse(res.name).toString()).to.equal(PeerId.parse(key.id).toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
   })

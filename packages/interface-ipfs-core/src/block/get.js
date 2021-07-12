@@ -53,10 +53,7 @@ module.exports = (common, options) => {
     it('should get a block added as CIDv0 with a CIDv1', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const cidv0 = await ipfs.block.put(input, {
-        version: 0,
-        format: 'dag-pb'
-      })
+      const cidv0 = await ipfs.block.put(input)
       expect(cidv0.version).to.equal(0)
 
       const cidv1 = cidv0.toV1()

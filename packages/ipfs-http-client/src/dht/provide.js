@@ -1,6 +1,5 @@
 'use strict'
 
-const { CID } = require('multiformats/cid')
 const { Multiaddr } = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
@@ -9,6 +8,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
+ * @typedef {import('multiformats/cid').CID} CID
  */
 
 module.exports = configure(api => {
@@ -31,7 +31,6 @@ module.exports = configure(api => {
 
     for await (let message of res.ndjson()) {
       message = toCamel(message)
-      message.id = CID.parse(message.id)
       if (message.responses) {
         message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,

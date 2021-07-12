@@ -6,6 +6,7 @@ const { exporter } = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const dagPb = require('@ipld/dag-pb')
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -77,9 +78,7 @@ const statters = {
     return {
       cid: file.cid,
       size: file.node.length,
-      // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      // cumulativeSize: file.node.length,
-      cumulativeSize: 0,
+      cumulativeSize: file.node.length,
       blocks: 0,
       type: 'file', // for go compatibility
       local: undefined,
@@ -96,9 +95,7 @@ const statters = {
       cid: file.cid,
       type: 'file',
       size: file.unixfs.fileSize(),
-      // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      // cumulativeSize: file.node.size,
-      cumulativeSize: 0,
+      cumulativeSize: dagPb.encode(file.node).length + (file.node.Links || []).reduce((acc, curr) => acc + (curr.Tsize || 0), 0),
       blocks: file.unixfs.blockSizes.length,
       local: undefined,
       sizeLocal: undefined,
@@ -121,9 +118,7 @@ const statters = {
       cid: file.cid,
       type: 'directory',
       size: 0,
-      // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      // cumulativeSize: file.node.size,
-      cumulativeSize: 0,
+      cumulativeSize: dagPb.encode(file.node).length + (file.node.Links || []).reduce((acc, curr) => acc + (curr.Tsize || 0), 0),
       blocks: file.node.Links.length,
       local: undefined,
       sizeLocal: undefined,
@@ -145,9 +140,7 @@ const statters = {
     return {
       cid: file.cid,
       size: file.node.length,
-      // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      // cumulativeSize: file.node.length,
-      cumulativeSize: 0,
+      cumulativeSize: file.node.length,
       type: 'file', // for go compatibility
       blocks: 0,
       local: undefined,
@@ -163,9 +156,7 @@ const statters = {
     return {
       cid: file.cid,
       size: file.node.length,
-      // TODO vmx 2021-05-04: Decide if returning 0 is OK
-      // cumulativeSize: file.node.length,
-      cumulativeSize: 0,
+      cumulativeSize: file.node.length,
       blocks: 0,
       type: 'file', // for go compatibility
       local: undefined,
