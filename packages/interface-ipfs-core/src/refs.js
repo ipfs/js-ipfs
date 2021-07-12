@@ -323,11 +323,7 @@ function loadPbContent (ipfs, node) {
         dagPb.encode({
           Data: data,
           Links: []
-        }), {
-          version: 0,
-          format: 'dag-pb',
-          mhtype: 'sha2-256'
-        }
+        })
       )
     },
     putLinks: (links) => {
@@ -339,11 +335,7 @@ function loadPbContent (ipfs, node) {
             Hash: CID.parse(cid)
           }
         })
-      }), {
-        version: 0,
-        format: 'dag-pb',
-        mhtype: 'sha2-256'
-      })
+      }))
     }
   }
   return loadContent(ipfs, store, node)
@@ -357,11 +349,7 @@ function loadDagContent (ipfs, node) {
         Data: inner.marshal(),
         Links: []
       })
-      return ipfs.block.put(serialized, {
-        version: 0,
-        format: 'dag-pb',
-        mhtype: 'sha2-256'
-      })
+      return ipfs.block.put(serialized)
     },
     putLinks: (links) => {
       const obj = {}

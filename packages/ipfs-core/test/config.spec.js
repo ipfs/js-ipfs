@@ -26,7 +26,7 @@ describe('config', function () {
 
   after(() => cleanup())
 
-  it('bootstrap list should contain dialable nodes', async () => {
+  it.only('bootstrap list should contain dialable nodes', async () => {
     const res = await ipfs.bootstrap.list()
 
     expect(res.Peers).to.not.be.empty()

@@ -92,6 +92,20 @@ describe('/block', () => {
       expect(res).to.have.deep.property('result', expectedResult)
     })
 
+    it('converts a v0 format to dag-pb', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+      ipfs.block.put.withArgs(data, defaultOptions).returns(cid)
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/block/put?format=v0',
+        ...await sendData(data)
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.property('result', expectedResult)
+    })
+
     it('updates value and pins block', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.put.withArgs(data, {

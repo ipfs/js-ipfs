@@ -151,13 +151,14 @@ exports.put = {
       }
     } = request
 
-    const cidVersion = format === 'dag-pb' && mhtype === 'sha2-256' ? version : 1
+    const codec = format === 'v0' ? 'dag-pb' : format
+    const cidVersion = codec === 'dag-pb' && mhtype === 'sha2-256' ? version : 1
     let cid
 
     try {
       cid = await ipfs.block.put(data, {
         mhtype,
-        format,
+        format: codec,
         version: cidVersion,
         pin,
         signal,
