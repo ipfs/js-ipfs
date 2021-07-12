@@ -1,7 +1,6 @@
 'use strict'
 
 const pTryEach = require('p-try-each')
-const mh = require('multihashes')
 const debug = require('debug')
 const log = debug('jsipfs:http:response:resolver')
 log.error = debug('jsipfs:http:response:resolver:error')
@@ -64,7 +63,9 @@ const multihash = async (ipfs, path) => {
   // (left for backward-compatibility)
   const result = await cid(ipfs, path)
 
-  return { multihash: mh.toB58String(result.cid.multihash) }
+  return {
+    multihash: result.cid.toString()
+  }
 }
 
 module.exports = {

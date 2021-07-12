@@ -6,7 +6,6 @@ const { expect } = require('aegir/utils/chai')
 const loadFixture = require('aegir/utils/fixtures')
 const { createFactory } = require('ipfsd-ctl')
 const getStream = require('get-stream')
-const CID = require('cids')
 const all = require('it-all')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
@@ -16,7 +15,7 @@ const makeWebResponseEnv = require('./utils/web-response-env')
 const factory = createFactory({
   test: true,
   type: 'proc',
-  ipfsModule: require('ipfs')
+  ipfsModule: require('ipfs-core')
 })
 
 describe('resolve file (CIDv0)', function () {
@@ -35,7 +34,7 @@ describe('resolve file (CIDv0)', function () {
     ipfs = ipfsd.api
 
     const retrievedFile = await ipfs.add(file.data, { cidVersion: 0 })
-    expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
+    expect(retrievedFile.cid.toString()).to.equal(file.cid)
     expect(retrievedFile.size, 'ipfs.add result size should not be smaller than input buffer').greaterThan(file.data.length)
   })
 
@@ -71,7 +70,7 @@ describe('resolve file (CIDv1)', function () {
     ipfs = ipfsd.api
 
     const retrievedFile = await ipfs.add(file.data, { cidVersion: 1 })
-    expect(retrievedFile.cid).to.deep.equal(new CID(file.cid))
+    expect(retrievedFile.cid.toString()).to.equal(file.cid)
     expect(retrievedFile.size, 'ipfs.add result size should equal input buffer').to.equal(file.data.length)
   })
 
@@ -123,7 +122,7 @@ describe('resolve directory (CIDv0)', function () {
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-folder')
-    expect(root.cid).to.deep.equal(new CID(directory.cid))
+    expect(root.cid.toString()).to.equal(directory.cid)
 
     expect(res[0].size, 'ipfs.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
     expect(res[1].size, 'ipfs.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
@@ -191,7 +190,7 @@ describe('resolve directory (CIDv1)', function () {
     expect(root.path).to.equal('test-folder')
     // expect(res[0].size, 'ipfs.files.add 1st result size should not be smaller than 1st input buffer').greaterThan(dirs[0].content.length)
     // expect(res[1].size, 'ipfs.files.add 2nd result size should not be smaller than 2nd input buffer').greaterThan(dirs[1].content.length)
-    expect(root.cid).to.deep.equal(new CID(directory.cid))
+    expect(root.cid.toString()).to.equal(directory.cid)
   })
 
   after(() => factory.clean())
@@ -257,7 +256,7 @@ describe('resolve web page (CIDv0)', function () {
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-site')
-    expect(root.cid).to.deep.equal(new CID(webpage.cid))
+    expect(root.cid.toString()).to.equal(webpage.cid)
   })
 
   after(() => factory.clean())
@@ -305,7 +304,7 @@ describe('resolve web page (CIDv1)', function () {
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-site')
-    expect(root.cid).to.deep.equal(new CID(webpage.cid))
+    expect(root.cid.toString()).to.equal(webpage.cid)
   })
 
   after(() => factory.clean())
@@ -358,7 +357,7 @@ describe('mime-types', () => {
     const root = res[res.length - 1]
 
     expect(root.path).to.equal('test-mime-types')
-    expect(root.cid).to.deep.equal(new CID(webpage.cid))
+    expect(root.cid.toString()).to.equal(webpage.cid)
   })
 
   after(() => factory.clean())

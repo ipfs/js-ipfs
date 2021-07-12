@@ -39,14 +39,13 @@
     "it-reader": "^3.0.0",
     "it-to-stream": "^1.0.0",
     "mime-types": "^2.1.30",
-    "multihashes": "^4.0.2",
+    "multiformats": "^9.2.0",
     "p-try-each": "^1.0.1"
   },
   "devDependencies": {
-    "aegir": "^33.1.2",
-    "cids": "^1.0.0",
+    "aegir": "^34.0.2",
     "get-stream": "^6.0.0",
-    "ipfs": "^0.55.1",
+    "ipfs-core": "^0.8.0",
     "ipfsd-ctl": "^8.0.2",
     "it-all": "^1.0.5",
     "path": "^0.12.7",

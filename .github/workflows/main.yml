@@ -22,14 +22,13 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        node: [14, 15]
+        node: [14, 16]
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - run: npm install -g @mapbox/node-pre-gyp
       - run: npm install
       - run: npx aegir test -t node --cov --bail
       - uses: codecov/codecov-action@v1
