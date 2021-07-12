@@ -104,10 +104,10 @@ module.exports = (common, options) => {
       const node = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       await ipfs.swarm.connect(node.peerId.addresses[0])
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve an IPNS key if recursive === false'))
-      const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
+      const { id: keyId } = await ipfs.key.gen('new-key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
-      await ipfs.name.publish(`/ipns/${ipfs.peerId.id}`, { allowOffline: true, key: 'key-name', resolve: false })
+      await ipfs.name.publish(`/ipns/${ipfs.peerId.id}`, { allowOffline: true, key: 'new-key-name', resolve: false })
 
       return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: false }))
         .to.eq(`/ipns/${ipfs.peerId.id}`)
