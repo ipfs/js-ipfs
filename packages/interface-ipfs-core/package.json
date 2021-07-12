@@ -46,7 +46,7 @@
     "ipfs-unixfs": "^5.0.0",
     "ipfs-unixfs-importer": "^8.0.0",
     "ipfs-utils": "^8.1.4",
-    "ipns": "^0.13.1",
+    "ipns": "^0.13.2",
     "is-ipfs": "^6.0.1",
     "iso-random-stream": "^2.0.0",
     "it-all": "^1.0.4",
@@ -65,7 +65,7 @@
     "native-abort-controller": "^1.0.3",
     "p-map": "^4.0.0",
     "p-retry": "^4.5.0",
-    "peer-id": "^0.15.0",
+    "peer-id": "^0.15.1",
     "readable-stream": "^3.4.0",
     "uint8arrays": "^2.1.3"
   },

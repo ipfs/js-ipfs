@@ -80,7 +80,7 @@
     "ipfs-unixfs-exporter": "^6.0.0",
     "ipfs-unixfs-importer": "^8.0.0",
     "ipfs-utils": "^8.1.4",
-    "ipns": "^0.13.1",
+    "ipns": "^0.13.2",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^6.0.1",
     "it-all": "^1.0.4",
@@ -112,7 +112,7 @@
     "native-abort-controller": "^1.0.3",
     "p-queue": "^6.6.1",
     "parse-duration": "^1.0.0",
-    "peer-id": "^0.15.0",
+    "peer-id": "^0.15.1",
     "streaming-iterables": "^6.0.0",
     "uint8arrays": "^2.1.3"
   },

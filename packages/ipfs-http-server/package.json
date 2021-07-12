@@ -63,7 +63,7 @@
     "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^2.1.3",
-    "uri-to-multiaddr": "multiformats/js-uri-to-multiaddr#chore/update-deps"
+    "uri-to-multiaddr": "^6.0.0"
   },
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
