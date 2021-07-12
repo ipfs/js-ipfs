@@ -1,3 +1,17 @@
+# [0.7.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.4...v0.7.0) (2021-07-12)
+
+
+### chore
+
+* update to new multiformats ([#98](https://github.com/ipfs/js-ipfs-http-response/issues/98)) ([1641cef](https://github.com/ipfs/js-ipfs-http-response/commit/1641cefaa2cc965ddd7fdaa2d9be8dd7b0150665))
+
+
+### BREAKING CHANGES
+
+* pulls in new multiformats modules
+
+
+
 ## [0.6.4](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.3...v0.6.4) (2021-04-16)
 
 
