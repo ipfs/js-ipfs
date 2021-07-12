@@ -32,20 +32,15 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.5",
     "debug": "^4.1.1",
-    "dlv": "^1.1.3",
     "ipfs-core": "^0.8.0",
     "ipfs-core-types": "^0.5.2",
     "ipfs-grpc-server": "^0.3.4",
-    "ipfs-http-client": "^50.1.2",
     "ipfs-http-gateway": "^0.4.3",
     "ipfs-http-server": "^0.5.2",
     "ipfs-utils": "^8.1.4",
     "just-safe-set": "^2.2.1",
     "libp2p": "next",
-    "libp2p-delegated-content-routing": "^0.11.0",
-    "libp2p-delegated-peer-routing": "^0.10.0",
-    "libp2p-webrtc-star": "^0.23.0",
-    "multiaddr": "^10.0.0"
+    "libp2p-webrtc-star": "^0.23.0"
   },
   "devDependencies": {
     "aegir": "^34.0.2",

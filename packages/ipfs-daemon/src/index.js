@@ -1,16 +1,9 @@
 'use strict'
 
 const log = require('debug')('ipfs:daemon')
-const get = require('dlv')
 const set = require('just-safe-set')
-const { Multiaddr } = require('multiaddr')
 // @ts-ignore - no types
 const WebRTCStar = require('libp2p-webrtc-star')
-// @ts-ignore - no types
-const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
-// @ts-ignore - no types
-const DelegatedContentRouter = require('libp2p-delegated-content-routing')
-const { create: ipfsHttpClient } = require('ipfs-http-client')
 const IPFS = require('ipfs-core')
 const HttpApi = require('ipfs-http-server')
 const HttpGateway = require('ipfs-http-gateway')
@@ -103,32 +96,6 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
     log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
     set(libp2pOptions, 'config.transport.WebRTCStar.wrtc', wrtc || electronWebRTC)
     libp2pOptions.modules.transport.push(WebRTCStar)
-  }
-
-  // Set up Delegate Routing based on the presence of Delegates in the config
-  const delegateHosts = get(options, 'config.Addresses.Delegates',
-    get(config, 'Addresses.Delegates', [])
-  )
-
-  if (delegateHosts.length > 0) {
-    // Pick a random delegate host
-    const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
-    const delegateAddr = new Multiaddr(delegateString).toOptions()
-    const delegateApiOptions = {
-      host: delegateAddr.host,
-      // port is a string atm, so we need to convert for the check
-      // @ts-ignore - parseInt(input:string) => number
-      protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
-      port: delegateAddr.port
-    }
-
-    const delegateHttpClient = ipfsHttpClient(delegateApiOptions)
-
-    libp2pOptions.modules.contentRouting = libp2pOptions.modules.contentRouting || []
-    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerId, delegateHttpClient))
-
-    libp2pOptions.modules.peerRouting = libp2pOptions.modules.peerRouting || []
-    libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegateHttpClient))
   }
 
   const Libp2p = require('libp2p')
