@@ -56,6 +56,7 @@ module.exports = class MessageTransport {
 
     // If query has a timeout set a timer.
     if (query.timeout > 0 && query.timeout < Infinity) {
+      /** @type {number} */
       query.timerID = setTimeout(MessageTransport.timeout, query.timeout, this, id)
     }
 
