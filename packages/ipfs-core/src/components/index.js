@@ -7,14 +7,8 @@ const errCode = require('err-code')
 const { UnixFS } = require('ipfs-unixfs')
 const dagPb = require('@ipld/dag-pb')
 const dagCbor = require('@ipld/dag-cbor')
-const raw = require('multiformats/codecs/raw')
-const json = require('multiformats/codecs/json')
-const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const { identity } = require('multiformats/hashes/identity')
-const { base16 } = require('multiformats/bases/base16')
-const { base32, base32pad, base32hex, base32hexpad, base32z } = require('multiformats/bases/base32')
-const { base58btc, base58flickr } = require('multiformats/bases/base58')
-const { base64, base64pad, base64url, base64urlpad } = require('multiformats/bases/base64')
+const { bases, hashes, codecs } = require('multiformats/basics')
 
 const initAssets = require('../runtime/init-assets-nodejs')
 const { AlreadyInitializedError } = require('../errors')
@@ -83,18 +77,18 @@ class IPFS {
     // libp2p can be a function, while IPNS router config expects libp2p config
     const ipns = new IPNSAPI(options)
 
-    const hashers = new Multihashes({
-      hashers: (options.ipld && options.ipld.hashers ? options.ipld.hashers : []).concat([sha256, sha512, identity]),
+    this.hashers = new Multihashes({
+      hashers: Object.values(hashes).concat(options.ipld && options.ipld.hashers ? options.ipld.hashers : []),
       loadHasher: options.ipld && options.ipld.loadHasher
     })
 
-    const bases = new Multibases({
-      bases: [base16, base32, base32pad, base32hex, base32hexpad, base32z, base58btc, base58flickr, base64, base64pad, base64url, base64urlpad].concat(options.ipld && options.ipld.bases ? options.ipld.bases : []),
+    this.bases = new Multibases({
+      bases: Object.values(bases).concat(options.ipld && options.ipld.bases ? options.ipld.bases : []),
       loadBase: options.ipld && options.ipld.loadBase
     })
 
     const pin = new PinAPI({ repo, codecs })
-    const block = new BlockAPI({ codecs, hashers, preload, repo })
+    const block = new BlockAPI({ codecs, hashers: this.hashers, preload, repo })
 
     const name = new NameAPI({
       dns,
@@ -107,9 +101,9 @@ class IPFS {
       options
     })
 
-    const resolve = createResolveAPI({ repo, codecs, bases, name })
+    const resolve = createResolveAPI({ repo, codecs, bases: this.bases, name })
 
-    const dag = new DagAPI({ repo, codecs, hashers, preload })
+    const dag = new DagAPI({ repo, codecs, hashers: this.hashers, preload })
     const refs = Object.assign(createRefsAPI({ repo, codecs, resolve, preload }), {
       local: createRefsLocalAPI({ repo: storage.repo })
     })
@@ -122,7 +116,7 @@ class IPFS {
     const files = createFilesAPI({
       repo,
       preload,
-      hashers,
+      hashers: this.hashers,
       options
     })
 
@@ -181,7 +175,7 @@ class IPFS {
     this.files = files
     this.key = new KeyAPI({ keychain })
     this.object = new ObjectAPI({ preload, codecs, repo })
-    this.repo = new RepoAPI({ repo, hashers })
+    this.repo = new RepoAPI({ repo, hashers: this.hashers })
     this.stats = new StatsAPI({ repo, network })
     this.swarm = new SwarmAPI({ network })
 
@@ -209,9 +203,7 @@ class IPFS {
     }
     this.mount = notImplemented
 
-    this.bases = bases
     this.codecs = codecs
-    this.hashers = hashers
   }
 
   /**
@@ -241,20 +233,20 @@ class IPFS {
       decode: (id) => id
     }
 
-    const codecs = new Multicodecs({
-      codecs: [dagPb, dagCbor, raw, json, id].concat(options.ipld?.codecs || []),
+    const multicodecs = new Multicodecs({
+      codecs: Object.values(codecs).concat([dagPb, dagCbor, id]).concat(options.ipld && options.ipld.codecs || []),
       loadCodec: options.ipld && options.ipld.loadCodec
     })
 
     // eslint-disable-next-line no-console
     const print = options.silent ? log : console.log
-    const storage = await Storage.start(print, codecs, options)
+    const storage = await Storage.start(print, multicodecs, options)
     const config = await storage.repo.config.getAll()
 
     const ipfs = new IPFS({
       storage,
       print,
-      codecs,
+      codecs: multicodecs,
       options: { ...options, config }
     })
 

@@ -55,7 +55,7 @@
     "mafmt": "^10.0.0",
     "multiaddr": "^10.0.0",
     "multiaddr-to-uri": "^8.0.0",
-    "multiformats": "^9.2.0",
+    "multiformats": "^9.4.0",
     "parse-duration": "^1.0.0",
     "pretty-bytes": "^5.4.1",
     "progress": "^2.0.3",

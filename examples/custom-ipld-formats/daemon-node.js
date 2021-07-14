@@ -1,18 +1,13 @@
-// ordinarily we'd open a PR against the multicodec module to get our
-// codec number added but since we're just testing we shim our new
-// codec into the base-table.json file - this has to be done
-// before requiring other modules as the int table will become read-only
-
-// now require modules as usual
 const IPFSDaemon = require('ipfs-daemon')
 const ipfsHttpClient = require('ipfs-http-client')
 const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 async function main () {
   // see https://github.com/multiformats/js-multiformats#multicodec-encoders--decoders--codecs for the interface definition
   const codec = {
     name: 'dag-test',
-    codec: 392091,
+    code: 392091,
     encode: (data) => uint8ArrayFromString(JSON.stringify(data)),
     decode: (buf) => JSON.parse(uint8ArrayToString(buf))
   }

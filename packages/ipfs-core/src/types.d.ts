@@ -244,13 +244,13 @@ export interface IPLDOptions {
   loadHasher: LoadHasherFn
   bases: Array<MultibaseCodec<any>>
   codecs: Array<BlockCodec<any, any>>
-  hashers: MultihashHasher[]
+  hashers: MultihashHasher<any, any>[]
 }
 
 export interface BlockCodecStore {
-  getCodec: (codeOrName: number | string) => Promise<BlockCodec<any. any>>
+  getCodec: (codeOrName: number | string) => Promise<BlockCodec<any, any>>
 }
 
 export interface MultihashHasherStore {
-  getHasher: (codeOrName: number | string) => Promise<MultihashHasher<any. any>>
+  getHasher: (codeOrName: number | string) => Promise<MultihashHasher<any, any>>
 }

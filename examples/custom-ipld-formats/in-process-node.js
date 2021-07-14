@@ -1,12 +1,14 @@
 'use strict'
 
 const IPFS = require('ipfs-core')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 async function main () {
-  // see https://github.com/ipld/interface-ipld-format for the interface definition
+  // see https://github.com/multiformats/js-multiformats#multicodec-encoders--decoders--codecs for the interface definition
   const codec = {
     name: 'dag-test',
-    codec: 392091,
+    code: 392091,
     encode: (data) => uint8ArrayFromString(JSON.stringify(data)),
     decode: (buf) => JSON.parse(uint8ArrayToString(buf))
   }
@@ -24,8 +26,8 @@ async function main () {
   }
 
   const cid = await node.dag.put(data, {
-    format: codecName,
-    hashAlg: format.defaultHashAlg
+    format: 'dag-test',
+    hashAlg: 'sha2-256'
   })
 
   console.info(`Put ${JSON.stringify(data)} = CID(${cid})`)

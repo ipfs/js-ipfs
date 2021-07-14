@@ -37,7 +37,7 @@
     "ipfs-core-types": "^0.5.2",
     "ipfs-message-port-protocol": "^0.7.3",
     "ipfs-unixfs": "^5.0.0",
-    "multiformats": "^9.2.0"
+    "multiformats": "^9.4.0"
   },
   "devDependencies": {
     "aegir": "^34.0.2",
