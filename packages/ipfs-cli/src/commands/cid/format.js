@@ -53,7 +53,7 @@ module.exports = {
    * @param {string[]} [argv.cids]
    * @param {string} [argv.format]
    * @param {import('multiformats/cid').CIDVersion} [argv.cidVersion]
-   * @param {import('multibase').BaseNameOrCode} [argv.base]
+   * @param {string} [argv.base]
    */
   async handler ({ ctx: { ipfs, print, getStdin }, cids, format, cidVersion, base }) {
     let input

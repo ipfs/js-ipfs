@@ -51,7 +51,7 @@
     "it-pipe": "^1.1.0",
     "it-split": "^0.0.1",
     "jsondiffpatch": "^0.4.1",
-    "libp2p-crypto": "^0.19.3",
+    "libp2p-crypto": "^0.19.6",
     "mafmt": "^10.0.0",
     "multiaddr": "^10.0.0",
     "multiaddr-to-uri": "^8.0.0",

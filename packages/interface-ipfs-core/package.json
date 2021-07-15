@@ -57,7 +57,7 @@
     "it-last": "^1.0.4",
     "it-map": "^1.0.4",
     "it-pushable": "^1.4.0",
-    "libp2p-crypto": "^0.19.5",
+    "libp2p-crypto": "^0.19.6",
     "libp2p-websockets": "^0.16.1",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.4.1",
