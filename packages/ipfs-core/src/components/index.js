@@ -234,7 +234,7 @@ class IPFS {
     }
 
     const multicodecs = new Multicodecs({
-      codecs: Object.values(codecs).concat([dagPb, dagCbor, id]).concat(options.ipld && options.ipld.codecs || []),
+      codecs: Object.values(codecs).concat([dagPb, dagCbor, id]).concat((options.ipld && options.ipld.codecs) || []),
       loadCodec: options.ipld && options.ipld.loadCodec
     })
 

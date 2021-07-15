@@ -111,7 +111,7 @@
     "mortice": "^2.0.0",
     "multiaddr": "^10.0.0",
     "multiaddr-to-uri": "^8.0.0",
-    "multiformats": "^9.4.0",
+    "multiformats": "^9.4.1",
     "native-abort-controller": "^1.0.3",
     "p-queue": "^6.6.1",
     "parse-duration": "^1.0.0",

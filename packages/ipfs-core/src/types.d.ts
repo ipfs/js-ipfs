@@ -244,7 +244,7 @@ export interface IPLDOptions {
   loadHasher: LoadHasherFn
   bases: Array<MultibaseCodec<any>>
   codecs: Array<BlockCodec<any, any>>
-  hashers: MultihashHasher<any, any>[]
+  hashers: Array<MultihashHasher<any, any>>
 }
 
 export interface BlockCodecStore {

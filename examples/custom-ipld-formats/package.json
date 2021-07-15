@@ -15,7 +15,7 @@
     "ipfs-daemon": "^0.7.2",
     "ipfs-core": "^0.8.0",
     "ipfs-http-client": "^50.1.2",
-    "multiformats": "^9.4.0",
+    "multiformats": "^9.4.1",
     "uint8arrays": "^2.1.3"
   }
 }

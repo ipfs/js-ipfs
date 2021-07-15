@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "ipfs-core-types": "^0.5.2",
-    "multiformats": "^9.4.0"
+    "multiformats": "^9.4.1"
   },
   "devDependencies": {
     "aegir": "^34.0.2",

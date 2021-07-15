@@ -17,7 +17,7 @@
     "ipfs": "^0.55.4",
     "ipfs-repo": "^11.0.0",
     "it-all": "^1.0.4",
-    "multiformats": "^9.4.0"
+    "multiformats": "^9.4.1"
   },
   "devDependencies": {
     "execa": "^5.0.0",

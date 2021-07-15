@@ -43,7 +43,7 @@
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.0",
     "multiaddr": "^10.0.0",
-    "multiformats": "^9.4.0",
+    "multiformats": "^9.4.1",
     "protobufjs": "^6.10.2",
     "wherearewe": "1.0.0",
     "ws": "^7.3.1"
