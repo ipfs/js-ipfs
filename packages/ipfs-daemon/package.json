@@ -39,7 +39,7 @@
     "ipfs-http-server": "^0.5.2",
     "ipfs-utils": "^8.1.4",
     "just-safe-set": "^2.2.1",
-    "libp2p": "next",
+    "libp2p": "^0.32.0",
     "libp2p-webrtc-star": "^0.23.0"
   },
   "devDependencies": {
