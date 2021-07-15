@@ -6,7 +6,7 @@ const getPort = require('aegir/utils/get-port')
 /** @type {import('aegir').PartialOptions} */
 module.exports = {
   build: {
-    bundlesizeMax: '89KB'
+    bundlesizeMax: '66KB'
   },
   test: {
     async before (options) {
