@@ -47,7 +47,7 @@
     "cids": "^1.1.6",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.5.2",
-    "ipfs-unixfs": "^4.0.3",
+    "ipfs-unixfs": "^5.0.0",
     "ipfs-utils": "^8.1.2",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
