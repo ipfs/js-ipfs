@@ -106,7 +106,7 @@ module.exports = (common, options) => {
       })).to.eventually.be.rejected()
     })
 
-    it('explodes if given a negtive offset', async () => {
+    it('explodes if given a negative offset', async () => {
       await expect(ipfs.files.write('/foo-negative-offset', uint8ArrayFromString('foo'), {
         offset: -1
       })).to.eventually.be.rejected()
@@ -404,9 +404,14 @@ module.exports = (common, options) => {
 
         const stats = await ipfs.files.stat(path)
 
+        let leafCount = 0
+
         for await (const { cid } of traverseLeafNodes(ipfs, stats.cid)) {
+          leafCount++
           expect(cid.code).to.equal(raw.code)
         }
+
+        expect(leafCount).to.be.greaterThan(0)
       })
     })
 

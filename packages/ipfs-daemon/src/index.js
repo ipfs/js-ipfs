@@ -47,7 +47,11 @@ class Daemon {
     this._httpGateway = new HttpGateway(this._ipfs)
     await this._httpGateway.start()
 
-    this._grpcServer = await gRPCServer(this._ipfs)
+    const config = await this._ipfs.config.getAll()
+
+    if (config.Addresses && config.Addresses.RPC) {
+      this._grpcServer = await gRPCServer(this._ipfs)
+    }
 
     log('started')
   }
