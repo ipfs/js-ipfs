@@ -23,25 +23,25 @@ interface RefsAPI extends Refs {
   local: Local
 }
 
-export interface IPFS extends RootAPI {
-  bitswap: BitswapAPI
-  block: BlockAPI
-  bootstrap: BootstrapAPI
-  config: ConfigAPI
-  dag: DAGAPI
-  dht: DHTAPI
-  diag: DiagAPI
-  files: FilesAPI
-  key: KeyAPI
-  log: LogAPI
-  name: NameAPI
-  object: ObjectAPI
-  pin: PinAPI
-  pubsub: PubsubAPI
+export interface IPFS<OptionExtension = {}> extends RootAPI<OptionExtension> {
+  bitswap: BitswapAPI<OptionExtension>
+  block: BlockAPI<OptionExtension>
+  bootstrap: BootstrapAPI<OptionExtension>
+  config: ConfigAPI<OptionExtension>
+  dag: DAGAPI<OptionExtension>
+  dht: DHTAPI<OptionExtension>
+  diag: DiagAPI<OptionExtension>
+  files: FilesAPI<OptionExtension>
+  key: KeyAPI<OptionExtension>
+  log: LogAPI<OptionExtension>
+  name: NameAPI<OptionExtension>
+  object: ObjectAPI<OptionExtension>
+  pin: PinAPI<OptionExtension>
+  pubsub: PubsubAPI<OptionExtension>
   refs: RefsAPI
-  repo: RepoAPI
-  stats: StatsAPI
-  swarm: SwarmAPI
+  repo: RepoAPI<OptionExtension>
+  stats: StatsAPI<OptionExtension>
+  swarm: SwarmAPI<OptionExtension>
 }
 
 export type {
