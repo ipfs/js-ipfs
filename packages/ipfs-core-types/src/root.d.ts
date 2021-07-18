@@ -8,28 +8,28 @@ export interface API<OptionExtension = {}> {
   /**
    * Import a file or data into IPFS
    */
-  add: (entry: ImportCandidate, options?: AddOptions & OptionExtension) => Promise<AddResult>
+  add(entry: ImportCandidate, options?: AddOptions & OptionExtension): Promise<AddResult>
 
   /**
    * Import multiple files and data into IPFS
    */
-  addAll: (source: ImportCandidateStream, options?: AddAllOptions & AbortOptions & OptionExtension) => AsyncIterable<AddResult>
+  addAll(source: ImportCandidateStream, options?: AddAllOptions & AbortOptions & OptionExtension): AsyncIterable<AddResult>
 
   /**
    * Returns content of the file addressed by a valid IPFS Path or CID
    */
-  cat: (ipfsPath: IPFSPath, options?: CatOptions & OptionExtension) => AsyncIterable<Uint8Array>
+  cat(ipfsPath: IPFSPath, options?: CatOptions & OptionExtension): AsyncIterable<Uint8Array>
 
   /**
    * Fetch a file or an entire directory tree from IPFS that is addressed by a
    * valid IPFS Path
    */
-  get: (ipfsPath: IPFSPath, options?: GetOptions & OptionExtension) => AsyncIterable<IPFSEntry>
+  get(ipfsPath: IPFSPath, options?: GetOptions & OptionExtension): AsyncIterable<IPFSEntry>
 
   /**
    * Lists a directory from IPFS that is addressed by a valid IPFS Path
    */
-  ls: (ipfsPath: IPFSPath, options?: ListOptions & OptionExtension) => AsyncIterable<IPFSEntry>
+  ls(ipfsPath: IPFSPath, options?: ListOptions & OptionExtension): AsyncIterable<IPFSEntry>
 
   /**
    * Returns the identity of the Peer
@@ -40,7 +40,7 @@ export interface API<OptionExtension = {}> {
    * console.log(identity)
    * ```
    */
-  id: (options?: IDOptions & OptionExtension) => Promise<IDResult>
+  id(options?: IDOptions & OptionExtension): Promise<IDResult>
 
   /**
    * Returns the implementation version
@@ -51,22 +51,22 @@ export interface API<OptionExtension = {}> {
    * console.log(version)
    * ```
    */
-  version: (options?: AbortOptions & OptionExtension) => Promise<VersionResult>
+  version(options?: AbortOptions & OptionExtension): Promise<VersionResult>
 
   /**
    * Resolve DNS links
    */
-  dns: (domain: string, options?: DNSOptions & OptionExtension) => Promise<string>
+  dns(domain: string, options?: DNSOptions & OptionExtension): Promise<string>
 
   /**
    * Start the node
    */
-  start: () => Promise<void>
+  start(): Promise<void>
 
   /**
    * Stop the node
    */
-  stop: (options?: AbortOptions & OptionExtension) => Promise<void>
+  stop(options?: AbortOptions & OptionExtension): Promise<void>
 
   /**
    * Send echo request packets to IPFS hosts.
@@ -82,7 +82,7 @@ export interface API<OptionExtension = {}> {
    * }
    * ```
    */
-  ping: (peerId: string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
+  ping(peerId: string, options?: PingOptions & OptionExtension): AsyncIterable<PingResult>
 
   /**
    * Resolve the value of names to IPFS
@@ -123,14 +123,14 @@ export interface API<OptionExtension = {}> {
    * // Logs: /ipfs/QmYRMjyvAiHKN9UTi8Bzt1HUspmSRD8T8DwxfSMzLgBon1
    * ```
    */
-  resolve: (name: string, options?: ResolveOptions & OptionExtension) => Promise<string>
+  resolve(name: string, options?: ResolveOptions & OptionExtension): Promise<string>
 
   /**
    * Returns a list of available commands
    */
-  commands: (options?: AbortOptions & OptionExtension) => Promise<string[]>
+  commands(options?: AbortOptions & OptionExtension): Promise<string[]>
 
-  mount: (options?: MountOptions & OptionExtension) => Promise<MountResult>
+  mount(options?: MountOptions & OptionExtension): Promise<MountResult>
 
   /**
    * Returns true if this IPFS node is online - that is, it's listening on network addresses

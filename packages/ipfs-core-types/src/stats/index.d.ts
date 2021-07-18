@@ -10,7 +10,7 @@ export interface API<OptionExtension = {}> {
   /**
    * Return bandwith usage stats
    */
-  bw: (options?: BWOptions & OptionExtension) => AsyncIterable<BWResult>
+  bw(options?: BWOptions & OptionExtension): AsyncIterable<BWResult>
 }
 
 export interface BWOptions extends AbortOptions {

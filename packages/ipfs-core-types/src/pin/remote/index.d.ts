@@ -12,25 +12,25 @@ export interface API<OptionExtension = {}> {
   /**
    * Pin a content with a given CID to a remote pinning service.
    */
-  add: (cid: CID, options: AddOptions & AbortOptions & OptionExtension) => Promise<Pin>
+  add(cid: CID, options: AddOptions & AbortOptions & OptionExtension): Promise<Pin>
 
   /**
    * Returns a list of matching pins on the remote pinning service.
    */
-  ls: (query: Query & AbortOptions & OptionExtension) => AsyncIterable<Pin>
+  ls(query: Query & AbortOptions & OptionExtension): AsyncIterable<Pin>
 
   /**
    * Removes a single pin object matching query allowing it to be garbage
    * collected (if needed). Will error if multiple pins match provided
    * query. To remove all matches use `rmAll` instead.
    */
-  rm: (query: Query & AbortOptions & OptionExtension) => Promise<void>
+  rm(query: Query & AbortOptions & OptionExtension): Promise<void>
 
   /**
    * Removes all pin object that match given query allowing them to be garbage
    * collected if needed.
    */
-  rmAll: (query: Query & AbortOptions & OptionExtension) => Promise<void>
+  rmAll(query: Query & AbortOptions & OptionExtension): Promise<void>
 }
 
 export interface AddOptions extends RemoteServiceOptions {

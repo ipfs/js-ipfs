@@ -1,9 +1,9 @@
 import type { AbortOptions } from '../utils'
 
 export interface API<OptionExtension = {}> {
-  cmds: (options?: AbortOptions & OptionExtension) => Promise<CmdsResult[]>
-  net: (options?: AbortOptions & OptionExtension) => Promise<any>
-  sys: (options?: AbortOptions & OptionExtension) => Promise<any>
+  cmds(options?: AbortOptions & OptionExtension): Promise<CmdsResult[]>
+  net(options?: AbortOptions & OptionExtension): Promise<any>
+  sys(options?: AbortOptions & OptionExtension): Promise<any>
 }
 
 export interface CmdsResult {

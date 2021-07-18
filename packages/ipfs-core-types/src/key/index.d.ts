@@ -16,7 +16,7 @@ export interface API<OptionExtension = {}> {
    * //  name: 'my-key' }
    * ```
    */
-  gen: (name: string, options?: GenOptions & OptionExtension) => Promise<Key>
+  gen(name: string, options?: GenOptions & OptionExtension): Promise<Key>
 
   /**
    * List all the keys
@@ -34,7 +34,7 @@ export interface API<OptionExtension = {}> {
    * // ]
    * ```
    */
-  list: (options?: AbortOptions & OptionExtension) => Promise<Key[]>
+  list(options?: AbortOptions & OptionExtension): Promise<Key[]>
 
   /**
    * Remove a key
@@ -48,7 +48,7 @@ export interface API<OptionExtension = {}> {
    * //   name: 'my-key' }
    * ```
    */
-  rm: (name: string, options?: AbortOptions & OptionExtension) => Promise<Key>
+  rm(name: string, options?: AbortOptions & OptionExtension): Promise<Key>
 
   /**
    * Rename a key
@@ -64,7 +64,7 @@ export interface API<OptionExtension = {}> {
    * //   overwrite: false }
    * ```
    */
-  rename: (oldName: string, newName: string, options?: AbortOptions & OptionExtension) => Promise<RenameKeyResult>
+  rename(oldName: string, newName: string, options?: AbortOptions & OptionExtension): Promise<RenameKeyResult>
 
   /**
    * Remove a key
@@ -81,7 +81,7 @@ export interface API<OptionExtension = {}> {
    * // -----END ENCRYPTED PRIVATE KEY-----
    * ```
    */
-  export: (name: string, password: string, options?: AbortOptions & OptionExtension) => Promise<string>
+  export(name: string, password: string, options?: AbortOptions & OptionExtension): Promise<string>
 
   /**
    * Remove a key
@@ -95,7 +95,7 @@ export interface API<OptionExtension = {}> {
    * //   name: 'clone' }
    * ```
    */
-  import: (name: string, pem: string, password: string, options?: AbortOptions & OptionExtension) => Promise<Key>
+  import(name: string, pem: string, password: string, options?: AbortOptions & OptionExtension): Promise<Key>
 
   /**
    * Return the id and name of a key
@@ -105,7 +105,7 @@ export interface API<OptionExtension = {}> {
    * const { id, name } = await ipfs.key.info('key-name')
    * ```
    */
-  info: (name: string, options?: AbortOptions & OptionExtension) => Promise<Key>
+  info(name: string, options?: AbortOptions & OptionExtension): Promise<Key>
 }
 
 export interface GenOptions extends AbortOptions {

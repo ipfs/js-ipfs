@@ -14,7 +14,7 @@ export interface API<OptionExtension = {}> {
    * console.log(block.data)
    * ```
    */
-  get: (cid: CID | string | Uint8Array, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<Block>
+  get(cid: CID | string | Uint8Array, options?: AbortOptions & PreloadOptions & OptionExtension): Promise<Block>
 
   /**
    * Stores input as an IPFS block.
@@ -53,7 +53,7 @@ export interface API<OptionExtension = {}> {
    * // the CID of the object
    * ```
    */
-  put: (block: Block | Uint8Array, options?: PutOptions & OptionExtension) => Promise<Block>
+  put(block: Block | Uint8Array, options?: PutOptions & OptionExtension): Promise<Block>
 
   /**
    * Remove one or more IPFS block(s) from the underlying block store
@@ -69,7 +69,7 @@ export interface API<OptionExtension = {}> {
    * }
    * ```
    */
-  rm: (cid: CID | CID[], options?: RmOptions & OptionExtension) => AsyncIterable<RmResult>
+  rm(cid: CID | CID[], options?: RmOptions & OptionExtension): AsyncIterable<RmResult>
 
   /**
    * Print information of a raw IPFS block
@@ -84,7 +84,7 @@ export interface API<OptionExtension = {}> {
    * // Logs: 3739
    * ```
    */
-  stat: (ipfsPath: IPFSPath, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
+  stat(ipfsPath: IPFSPath, options?: AbortOptions & PreloadOptions & OptionExtension): Promise<StatResult>
 }
 
 export interface PutOptions extends AbortOptions, PreloadOptions {

@@ -15,7 +15,7 @@ export interface API<OptionExtension = {}> {
    * // ['/ip4/104....9z']
    * ```
    */
-  add: (addr: Multiaddr, options?: AbortOptions & OptionExtension) => Promise<{ Peers: Multiaddr[] }>
+  add(addr: Multiaddr, options?: AbortOptions & OptionExtension): Promise<{ Peers: Multiaddr[] }>
 
   /**
    * Reset the bootstrap list to contain only the default bootstrap nodes
@@ -28,7 +28,7 @@ export interface API<OptionExtension = {}> {
    * // [address1, address2, ...]
    * ```
    */
-  reset: (options?: AbortOptions & OptionExtension) => Promise<{ Peers: Multiaddr[] }>
+  reset(options?: AbortOptions & OptionExtension): Promise<{ Peers: Multiaddr[] }>
 
   /**
    * List all peer addresses in the bootstrap list
@@ -41,7 +41,7 @@ export interface API<OptionExtension = {}> {
    * // [address1, address2, ...]
    * ```
    */
-  list: (options?: AbortOptions & OptionExtension) => Promise<{ Peers: Multiaddr[] }>
+  list(options?: AbortOptions & OptionExtension): Promise<{ Peers: Multiaddr[] }>
 
   /**
    * Remove a peer address from the bootstrap list
@@ -54,7 +54,7 @@ export interface API<OptionExtension = {}> {
    * // [address1, address2, ...]
    * ```
    */
-  rm: (addr: Multiaddr, options?: AbortOptions & OptionExtension) => Promise<{ Peers: Multiaddr[] }>
+  rm(addr: Multiaddr, options?: AbortOptions & OptionExtension): Promise<{ Peers: Multiaddr[] }>
 
   /**
    * Remove all peer addresses from the bootstrap list
@@ -67,5 +67,5 @@ export interface API<OptionExtension = {}> {
    * // [address1, address2, ...]
    * ```
    */
-  clear: (options?: AbortOptions & OptionExtension) => Promise<{ Peers: Multiaddr[] }>
+  clear(options?: AbortOptions & OptionExtension): Promise<{ Peers: Multiaddr[] }>
 }

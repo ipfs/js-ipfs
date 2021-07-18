@@ -12,7 +12,7 @@ export interface API<OptionExtension = {}> {
    * // [ CID('QmHash') ]
    * ```
    */
-  wantlist: (options?: AbortOptions & OptionExtension) => Promise<CID[]>
+  wantlist(options?: AbortOptions & OptionExtension): Promise<CID[]>
 
   /**
    * Returns the wantlist for a connected peer
@@ -24,7 +24,7 @@ export interface API<OptionExtension = {}> {
    * // [ CID('QmHash') ]
    * ```
    */
-  wantlistForPeer: (peerId: string, options?: AbortOptions & OptionExtension) => Promise<CID[]>
+  wantlistForPeer(peerId: string, options?: AbortOptions & OptionExtension): Promise<CID[]>
 
   /**
    * Removes one or more CIDs from the wantlist
@@ -42,7 +42,7 @@ export interface API<OptionExtension = {}> {
    * // []
    * ```
    */
-  unwant: (cids: CID | CID[], options?: AbortOptions & OptionExtension) => Promise<void>
+  unwant(cids: CID | CID[], options?: AbortOptions & OptionExtension): Promise<void>
 
   /**
    * Show diagnostic information on the bitswap agent.
@@ -54,7 +54,7 @@ export interface API<OptionExtension = {}> {
    * console.log(stats)
    * ```
    */
-  stat: (options?: AbortOptions & OptionExtension) => Promise<Stats>
+  stat(options?: AbortOptions & OptionExtension): Promise<Stats>
 }
 
 export interface Stats {

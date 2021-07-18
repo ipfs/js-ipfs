@@ -48,7 +48,7 @@ export interface API<OptionExtension = {}> {
    * // 6
    * ```
    */
-  get: (cid: CID, options?: GetOptions & OptionExtension) => Promise<GetResult>
+  get(cid: CID, options?: GetOptions & OptionExtension): Promise<GetResult>
 
   /**
    * Store an IPLD format node
@@ -62,7 +62,7 @@ export interface API<OptionExtension = {}> {
    * // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
    * ```
    */
-  put: (node: any, options?: PutOptions & OptionExtension) => Promise<CID>
+  put(node: any, options?: PutOptions & OptionExtension): Promise<CID>
 
   /**
    * Enumerate all the entries in a graph
@@ -99,7 +99,7 @@ export interface API<OptionExtension = {}> {
    * // c/cb
    * ```
    */
-  tree: (cid: CID, options?: TreeOptions & OptionExtension) => Promise<string[]>
+  tree(cid: CID, options?: TreeOptions & OptionExtension): Promise<string[]>
 
   /**
    * Returns the CID and remaining path of the node at the end of the passed IPFS path
@@ -129,7 +129,7 @@ export interface API<OptionExtension = {}> {
    * // }
    * ```
    */
-  resolve: (ipfsPath: IPFSPath, options?: ResolveOptions & OptionExtension) => Promise<ResolveResult>
+  resolve(ipfsPath: IPFSPath, options?: ResolveOptions & OptionExtension): Promise<ResolveResult>
 }
 
 export interface GetOptions extends AbortOptions, PreloadOptions {

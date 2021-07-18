@@ -4,13 +4,13 @@ export interface API<OptionExtension = {}> {
   /**
    * List available config profiles
    */
-  list: (options?: AbortOptions & OptionExtension) => Promise<Profile[]>
+  list(options?: AbortOptions & OptionExtension): Promise<Profile[]>
 
   /**
    * Apply a profile to the current config.  Note that restarting the node
    * will be necessary for any change to take effect.
    */
-  apply: (name: string, options?: ProfilesApplyOptions & OptionExtension) => Promise<ProfilesApplyResult>
+  apply(name: string, options?: ProfilesApplyOptions & OptionExtension): Promise<ProfilesApplyResult>
 }
 
 export interface Profile {

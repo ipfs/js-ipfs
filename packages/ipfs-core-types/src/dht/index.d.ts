@@ -21,7 +21,7 @@ export interface API<OptionExtension = {}> {
      * // '/ip4/147.75.94.115/tcp/4001'
      * ```
      */
-  findPeer: (peerId: string, options?: AbortOptions & OptionExtension) => Promise<PeerResult>
+  findPeer(peerId: string, options?: AbortOptions & OptionExtension): Promise<PeerResult>
 
   /**
      * Find peers in the DHT that can provide a specific value, given a CID.
@@ -34,17 +34,17 @@ export interface API<OptionExtension = {}> {
      * }
      * ```
      */
-  findProvs: (cid: CID, options?: DHTFindProvsOptions & OptionExtension) => AsyncIterable<PeerResult>
+  findProvs(cid: CID, options?: DHTFindProvsOptions & OptionExtension): AsyncIterable<PeerResult>
 
   /**
    * Given a key, query the DHT for its best value.
    */
-  get: (key: Uint8Array, options?: AbortOptions & OptionExtension) => Promise<Uint8Array>
+  get(key: Uint8Array, options?: AbortOptions & OptionExtension): Promise<Uint8Array>
 
   /**
      * Announce to the network that we are providing given values.
      */
-  provide: (cid: CID | CID[], options?: DHTProvideOptions & OptionExtension) => AsyncIterable<DHTQueryMessage>
+  provide(cid: CID | CID[], options?: DHTProvideOptions & OptionExtension): AsyncIterable<DHTQueryMessage>
 
   /**
      * Write a key/value pair to the DHT.
@@ -54,12 +54,12 @@ export interface API<OptionExtension = {}> {
      * that key.
      *
      */
-  put: (key: Uint8Array, value: Uint8Array, options?: AbortOptions & OptionExtension) => AsyncIterable<DHTQueryMessage>
+  put(key: Uint8Array, value: Uint8Array, options?: AbortOptions & OptionExtension): AsyncIterable<DHTQueryMessage>
 
   /**
    * Find the closest peers to a given `PeerId`, by querying the DHT.
    */
-  query: (peerId: string, options?: AbortOptions & OptionExtension) => AsyncIterable<PeerResult>
+  query(peerId: string, options?: AbortOptions & OptionExtension): AsyncIterable<PeerResult>
 }
 
 export interface PeerResult {

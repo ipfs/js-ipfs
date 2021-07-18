@@ -4,12 +4,12 @@ import type { DAGNode, DAGNodeLike, DAGLink } from 'ipld-dag-pb'
 import type { API as PatchAPI } from './patch'
 
 export interface API<OptionExtension = {}> {
-  new: (options?: NewObjectOptions & OptionExtension) => Promise<CID>
-  put: (obj: DAGNode | DAGNodeLike | Uint8Array, options?: PutOptions & OptionExtension) => Promise<CID>
-  get: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGNode>
-  data: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<Uint8Array>
-  links: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGLink[]>
-  stat: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
+  new(options?: NewObjectOptions & OptionExtension): Promise<CID>
+  put(obj: DAGNode | DAGNodeLike | Uint8Array, options?: PutOptions & OptionExtension): Promise<CID>
+  get(cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension): Promise<DAGNode>
+  data(cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension): Promise<Uint8Array>
+  links(cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension): Promise<DAGLink[]>
+  stat(cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension): Promise<StatResult>
 
   patch: PatchAPI
 }

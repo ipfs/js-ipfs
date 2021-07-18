@@ -8,27 +8,27 @@ export interface API<OptionExtension = {}> {
   /**
    * List of known addresses of each peer connected
    */
-  addrs: (options?: AbortOptions & OptionExtension) => Promise<AddrsResult[]>
+  addrs(options?: AbortOptions & OptionExtension): Promise<AddrsResult[]>
 
   /**
    * Open a connection to a given address or peer id
    */
-  connect: (addr: Multiaddr | string, options?: AbortOptions & OptionExtension) => Promise<void>
+  connect(addr: Multiaddr | string, options?: AbortOptions & OptionExtension): Promise<void>
 
   /**
    * Close a connection to a given address or peer id
    */
-  disconnect: (addr: Multiaddr | string, options?: AbortOptions & OptionExtension) => Promise<void>
+  disconnect(addr: Multiaddr | string, options?: AbortOptions & OptionExtension): Promise<void>
 
   /**
    * Local addresses this node is listening on
    */
-  localAddrs: (options?: AbortOptions & OptionExtension) => Promise<Multiaddr[]>
+  localAddrs(options?: AbortOptions & OptionExtension): Promise<Multiaddr[]>
 
   /**
    * Return a list of connected peers
    */
-  peers: (options?: PeersOptions & OptionExtension) => Promise<PeersResult[]>
+  peers(options?: PeersOptions & OptionExtension): Promise<PeersResult[]>
 }
 
 export interface AddrsResult {

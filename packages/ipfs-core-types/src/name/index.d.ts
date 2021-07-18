@@ -20,7 +20,7 @@ export interface API<OptionExtension = {}> {
    * console.log(`https://gateway.ipfs.io/ipns/${res.name}`)
    * ```
    */
-  publish: (value: CID | string, options?: PublishOptions & OptionExtension) => Promise<PublishResult>
+  publish(value: CID | string, options?: PublishOptions & OptionExtension): Promise<PublishResult>
 
   /**
    * Given a key, query the DHT for its best value.
@@ -36,7 +36,7 @@ export interface API<OptionExtension = {}> {
    * // Logs: /ipfs/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm
    * ```
    */
-  resolve: (value: string, options?: ResolveOptions & OptionExtension) => AsyncIterable<string>
+  resolve(value: string, options?: ResolveOptions & OptionExtension): AsyncIterable<string>
 
   pubsub: PubsubAPI
 }

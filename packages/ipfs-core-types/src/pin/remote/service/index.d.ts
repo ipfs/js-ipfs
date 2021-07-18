@@ -5,18 +5,19 @@ export interface API<OptionExtension = {}> {
    * Registers remote pinning service with a given name. Errors if service
    * with the given name is already registered.
    */
-  add: (name: string, credentials: Credentials & AbortOptions & OptionExtension) => Promise<void>
+  add(name: string, credentials: Credentials & AbortOptions & OptionExtension): Promise<void>
 
   /**
    * Unregisters remote pinning service with a given name. If service with such
    * name isn't registered this is a noop.
    */
-  rm: (name: string, options?: AbortOptions & OptionExtension) => Promise<void>
+  rm(name: string, options?: AbortOptions & OptionExtension): Promise<void>
 
   /**
    * List registered remote pinning services.
    */
-  ls: ((options: { stat: true } & AbortOptions & OptionExtension) => Promise<RemotePinServiceWithStat[]>) & ((options?: AbortOptions & OptionExtension) => Promise<RemotePinService[]>)
+  ls(options: { stat: true } & AbortOptions & OptionExtension): Promise<RemotePinServiceWithStat[]>
+  ls(options?: AbortOptions & OptionExtension): Promise<RemotePinService[]>
 }
 
 export interface Credentials {

@@ -21,7 +21,7 @@ export interface API<OptionExtension = {}> {
    * await ipfs.files.chmod('/path/to/file.txt', '777')
    * ```
    */
-  chmod: (path: string, mode: number | string, options?: ChmodOptions & OptionExtension) => Promise<void>
+  chmod(path: string, mode: number | string, options?: ChmodOptions & OptionExtension): Promise<void>
 
   /**
    * Copy files from one location to another
@@ -44,17 +44,17 @@ export interface API<OptionExtension = {}> {
 * await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
    * ```
    */
-  cp: (from: IPFSPath | IPFSPath[], to: string, options?: CpOptions & OptionExtension) => Promise<void>
+  cp(from: IPFSPath | IPFSPath[], to: string, options?: CpOptions & OptionExtension): Promise<void>
 
   /**
    * Make a directory in your MFS
    */
-  mkdir: (path: string, options?: MkdirOptions & OptionExtension) => Promise<void>
+  mkdir(path: string, options?: MkdirOptions & OptionExtension): Promise<void>
 
   /**
    * Get file or directory statistics
    */
-  stat: (ipfsPath: IPFSPath, options?: StatOptions & OptionExtension) => Promise<StatResult>
+  stat(ipfsPath: IPFSPath, options?: StatOptions & OptionExtension): Promise<StatResult>
 
   /**
    * Update the mtime of a file or directory
@@ -70,7 +70,7 @@ export interface API<OptionExtension = {}> {
    * })
    * ```
    */
-  touch: (ipfsPath: string, options?: TouchOptions & OptionExtension) => Promise<void>
+  touch(ipfsPath: string, options?: TouchOptions & OptionExtension): Promise<void>
 
   /**
    * Remove a file or directory
@@ -87,7 +87,7 @@ export interface API<OptionExtension = {}> {
    * await ipfs.files.rm('/my/beautiful/directory', { recursive: true })
    * ```
    */
-  rm: (ipfsPaths: string | string[], options?: RmOptions & OptionExtension) => Promise<void>
+  rm(ipfsPaths: string | string[], options?: RmOptions & OptionExtension): Promise<void>
 
   /**
    * Read a file
@@ -104,7 +104,7 @@ export interface API<OptionExtension = {}> {
    * // Hello, World!
    * ```
    */
-  read: (ipfsPath: IPFSPath, options?: ReadOptions & OptionExtension) => AsyncIterable<Uint8Array>
+  read(ipfsPath: IPFSPath, options?: ReadOptions & OptionExtension): AsyncIterable<Uint8Array>
 
   /**
    * Write to an MFS path
@@ -114,7 +114,7 @@ export interface API<OptionExtension = {}> {
    * await ipfs.files.write('/hello-world', new TextEncoder().encode('Hello, world!'))
    * ```
    */
-  write: (ipfsPath: string, content: string | Uint8Array | Blob | AsyncIterable<Uint8Array> | Iterable<Uint8Array>, options?: WriteOptions & OptionExtension) => Promise<void>
+  write(ipfsPath: string, content: string | Uint8Array | Blob | AsyncIterable<Uint8Array> | Iterable<Uint8Array>, options?: WriteOptions & OptionExtension): Promise<void>
 
   /**
    * Move files from one location to another
@@ -135,7 +135,7 @@ export interface API<OptionExtension = {}> {
    * await ipfs.files.mv('/src-file1', '/src-file2', '/dst-dir')
    * ```
    */
-  mv: (from: string | string[], to: string, options?: MvOptions & OptionExtension) => Promise<void>
+  mv(from: string | string[], to: string, options?: MvOptions & OptionExtension): Promise<void>
 
   /**
    * Flush a given path's data to the disk
@@ -145,7 +145,7 @@ export interface API<OptionExtension = {}> {
    * const cid = await ipfs.files.flush('/')
    * ```
    */
-  flush: (ipfsPath: string, options?: AbortOptions & OptionExtension) => Promise<CID>
+  flush(ipfsPath: string, options?: AbortOptions & OptionExtension): Promise<CID>
 
   /**
    * List directories in the local mutable namespace
@@ -159,7 +159,7 @@ export interface API<OptionExtension = {}> {
    * // 2018-01-22T18:08:49.184Z.png
    * ```
    */
-  ls: (ipfsPath: IPFSPath, options?: AbortOptions & OptionExtension) => AsyncIterable<MFSEntry>
+  ls(ipfsPath: IPFSPath, options?: AbortOptions & OptionExtension): AsyncIterable<MFSEntry>
 }
 
 export interface MFSEntry {

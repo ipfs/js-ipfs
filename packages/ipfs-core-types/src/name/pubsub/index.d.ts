@@ -13,7 +13,7 @@ export interface API<OptionExtension = {}> {
    * // Logs: true
    * ```
    */
-  cancel: (name: string, options?: AbortOptions & OptionExtension) => Promise<PubsubCancelResult>
+  cancel(name: string, options?: AbortOptions & OptionExtension): Promise<PubsubCancelResult>
 
   /**
    * Query the state of IPNS pubsub.
@@ -25,7 +25,7 @@ export interface API<OptionExtension = {}> {
    * // Logs: true
    * ```
    */
-  state: (options?: AbortOptions & OptionExtension) => Promise<PubsubStateResult>
+  state(options?: AbortOptions & OptionExtension): Promise<PubsubStateResult>
 
   /**
    * Show current name subscriptions.
@@ -37,7 +37,7 @@ export interface API<OptionExtension = {}> {
    * // Logs: ['/ipns/QmQrX8hka2BtNHa8N8arAq16TCVx5qHcb46c5yPewRycLm']
    * ```
    */
-  subs: (options?: AbortOptions & OptionExtension) => Promise<string[]>
+  subs(options?: AbortOptions & OptionExtension): Promise<string[]>
 }
 
 export interface PubsubCancelResult {

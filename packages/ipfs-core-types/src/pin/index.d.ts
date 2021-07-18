@@ -16,7 +16,7 @@ export interface API<OptionExtension = {}> {
    * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ```
    */
-  add: (cid: string | CID, options?: AddOptions & OptionExtension) => Promise<CID>
+  add(cid: string | CID, options?: AddOptions & OptionExtension): Promise<CID>
 
   /**
    * Adds multiple IPFS blocks to the pinset and also stores it to the IPFS
@@ -32,7 +32,7 @@ export interface API<OptionExtension = {}> {
    * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ```
    */
-  addAll: (source: AwaitIterable<AddInput>, options?: AddAllOptions & OptionExtension) => AsyncIterable<CID>
+  addAll(source: AwaitIterable<AddInput>, options?: AddAllOptions & OptionExtension): AsyncIterable<CID>
 
   /**
    * List all the objects pinned to local storage
@@ -59,7 +59,7 @@ export interface API<OptionExtension = {}> {
    * // { cid: CID(QmSo73bmN47gBxMNqbdV6rZ4KJiqaArqJ1nu5TvFhqqj1R), type: 'indirect' }
    * ```
    */
-  ls: (options?: LsOptions & OptionExtension) => AsyncIterable<LsResult>
+  ls(options?: LsOptions & OptionExtension): AsyncIterable<LsResult>
 
   /**
    * Unpin this block from your repo
@@ -73,7 +73,7 @@ export interface API<OptionExtension = {}> {
    * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ```
    */
-  rm: (ipfsPath: string | CID, options?: RmOptions & OptionExtension) => Promise<CID>
+  rm(ipfsPath: string | CID, options?: RmOptions & OptionExtension): Promise<CID>
 
   /**
    * Unpin one or more blocks from your repo
@@ -90,7 +90,7 @@ export interface API<OptionExtension = {}> {
    * // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ```
    */
-  rmAll: (source: AwaitIterable<RmAllInput>, options?: AbortOptions & OptionExtension) => AsyncIterable<CID>
+  rmAll(source: AwaitIterable<RmAllInput>, options?: AbortOptions & OptionExtension): AsyncIterable<CID>
 
   remote: Remote<OptionExtension>
 }
