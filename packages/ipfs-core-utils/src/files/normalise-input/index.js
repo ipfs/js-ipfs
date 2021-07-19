@@ -8,7 +8,7 @@ const normaliseInput = require('./normalise-input')
  * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImportCandidate
  */
 
-/**
+/*
  * Transforms any of the `ipfs.add` input types into
  *
  * ```
@@ -20,4 +20,5 @@ const normaliseInput = require('./normalise-input')
  * @param {ImportCandidateStream} input
  * @returns {AsyncGenerator<ImportCandidate, void, undefined>}
  */
+// @ts-ignore TODO vmx 2021-03-30 enable again
 module.exports = (input) => normaliseInput(input, normaliseContent)

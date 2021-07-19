@@ -4,7 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const multibase = require('multibase')
+const { base32 } = require('multiformats/bases/base32')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const defaultOptions = {
@@ -52,7 +52,7 @@ describe('refs local', () => {
     const out = await cli('refs local --multihash', { ipfs })
     const lines = out.split('\n')
 
-    expect(lines.includes(multibase.encoding('base32upper').encode(uint8ArrayFromString(ref)))).to.be.true()
+    expect(lines.includes(base32.encode(uint8ArrayFromString(ref)).toUpperCase())).to.be.true()
     expect(lines.includes(err)).to.be.true()
   })
 

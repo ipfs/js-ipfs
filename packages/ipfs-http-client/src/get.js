@@ -2,7 +2,7 @@
 
 // @ts-ignore no types
 const Tar = require('it-tar')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 const map = require('it-map')
@@ -21,7 +21,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: `${path instanceof Uint8Array ? new CID(path) : path}`,
+        arg: `${path instanceof Uint8Array ? CID.decode(path) : path}`,
         ...options
       }),
       headers: options.headers

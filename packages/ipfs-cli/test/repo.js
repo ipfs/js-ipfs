@@ -4,7 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 describe('repo', () => {
   let ipfs
@@ -124,7 +124,7 @@ describe('repo', () => {
   })
 
   describe('gc', () => {
-    const cid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const cid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
     const defaultOptions = {
       timeout: undefined
     }

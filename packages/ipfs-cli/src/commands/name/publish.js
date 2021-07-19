@@ -46,7 +46,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.ipfsPath
+   * @param {import('multiformats/cid').CID} argv.ipfsPath
    * @param {boolean} argv.resolve
    * @param {string} argv.lifetime
    * @param {string} argv.key

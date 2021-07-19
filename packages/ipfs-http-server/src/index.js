@@ -15,7 +15,6 @@ const LOG_ERROR = 'ipfs:http-api:error'
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('./types').Server} Server
- * @typedef {import('ipld')} IPLD
  * @typedef {import('libp2p')} libp2p
  */
 
@@ -103,8 +102,6 @@ class HttpApi {
 
   /**
    * Starts the IPFS HTTP server
-   *
-   * @returns {Promise<HttpApi>}
    */
   async start () {
     this._log('starting')
@@ -120,8 +117,11 @@ class HttpApi {
       credentials: Boolean(headers['Access-Control-Allow-Credentials'])
     })
 
+    // for the CLI to know the whereabouts of the API
+    // @ts-ignore - ipfs.repo.setApiAddr is not part of the core api
+    await ipfs.repo.setApiAddr(this._apiServers[0].info.ma)
+
     this._log('started')
-    return this
   }
 
   /**

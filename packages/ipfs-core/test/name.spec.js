@@ -4,7 +4,6 @@
 const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
 const delay = require('delay')
-const { Key } = require('interface-datastore')
 const PeerId = require('peer-id')
 const errCode = require('err-code')
 const ipns = require('ipns')
@@ -116,26 +115,6 @@ describe('name', function () {
       return expect(publisher._putRecordToRouting(undefined, undefined))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_PEER_ID')
-    })
-
-    it('should fail to publish if receives an invalid datastore key', async () => {
-      const routing = {
-        get: sinon.stub().rejects(errCode(new Error('not found'), 'ERR_NOT_FOUND'))
-      }
-      const datastore = {
-        get: sinon.stub().rejects(errCode(new Error('not found'), 'ERR_NOT_FOUND')),
-        put: sinon.stub().resolves()
-      }
-      const publisher = new IpnsPublisher(routing, datastore)
-      const peerId = await PeerId.create()
-
-      const stub = sinon.stub(Key, 'isKey').returns(false)
-
-      await expect(publisher.publish(peerId.privKey, ipfsRef))
-        .to.eventually.be.rejected()
-        .with.property('code', 'ERR_INVALID_DATASTORE_KEY')
-
-      stub.restore()
     })
 
     it('should fail to publish if we receive a unexpected error getting from datastore', async () => {

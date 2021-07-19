@@ -2,7 +2,7 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
@@ -17,27 +17,25 @@ module.exports = (common, options) => {
 
   describe('.block.stat', () => {
     const data = uint8ArrayFromString('blorb')
-    let ipfs, hash
+    let ipfs, cid
 
     before(async () => {
       ipfs = (await common.spawn()).api
-      const block = await ipfs.block.put(data)
-      hash = block.cid.multihash
+      cid = await ipfs.block.put(data)
     })
 
     after(() => common.clean())
 
     it('should respect timeout option when statting a block', () => {
-      return testTimeout(() => ipfs.block.stat(new CID('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
+      return testTimeout(() => ipfs.block.stat(CID.parse('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
         timeout: 1
       }))
     })
 
     it('should stat by CID', async () => {
-      const cid = new CID(hash)
       const stats = await ipfs.block.stat(cid)
       expect(stats.cid.toString()).to.equal(cid.toString())
-      expect(stats).to.have.property('size')
+      expect(stats).to.have.property('size', data.length)
     })
 
     it('should return error for missing argument', () => {

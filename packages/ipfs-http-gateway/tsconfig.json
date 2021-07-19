@@ -8,10 +8,7 @@
   ],
   "references": [
     {
-      "path": "../ipfs-core"
-    },
-    {
-      "path": "../ipfs-core-utils"
+      "path": "../ipfs-core-types"
     }
   ]
 }

@@ -15,6 +15,8 @@ const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const bufferStream = require('it-buffer-stream')
+const raw = require('multiformats/codecs/raw')
+const dagPb = require('@ipld/dag-pb')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -79,7 +81,7 @@ module.exports = (common, options) => {
       expect(filesAdded).to.have.length(1)
 
       const file = filesAdded[0]
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
       expect(file.path).to.equal('testfile.txt')
     })
 
@@ -124,7 +126,7 @@ module.exports = (common, options) => {
       const root = await last(ipfs.addAll(dirs))
 
       expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root.cid.toString()).to.equal(fixtures.directory.cid.toString())
     })
 
     it('should add a nested directory as array of tupples with progress', async function () {
@@ -162,7 +164,7 @@ module.exports = (common, options) => {
       const root = await last(ipfs.addAll(dirs, { progress: handler }))
       expect(progressSizes).to.deep.equal(total)
       expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root.cid.toString()).to.equal(fixtures.directory.cid.toString())
     })
 
     it('should receive progress path as empty string when adding content without paths', async function () {
@@ -243,7 +245,7 @@ module.exports = (common, options) => {
 
       const file = filesAdded[0]
       const wrapped = filesAdded[1]
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
       expect(file.path).to.equal('testfile.txt')
       expect(wrapped.path).to.equal('')
     })
@@ -392,7 +394,7 @@ module.exports = (common, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
-      expect(files[0].cid.codec).to.equal('raw')
+      expect(files[0].cid.code).to.equal(raw.code)
       expect(files[0].size).to.equal(3)
     })
 
@@ -411,7 +413,7 @@ module.exports = (common, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
-      expect(files[0].cid.codec).to.equal('dag-pb')
+      expect(files[0].cid.code).to.equal(dagPb.code)
       expect(files[0].size).to.equal(18)
     })
 
@@ -427,7 +429,7 @@ module.exports = (common, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('QmaZTosBmPwo9LQ48ESPCEcNuX2kFxkpXYy8i3rxqBdzRG')
-      expect(files[0].cid.codec).to.equal('dag-pb')
+      expect(files[0].cid.code).to.equal(dagPb.code)
       expect(files[0].size).to.equal(11)
     })
 

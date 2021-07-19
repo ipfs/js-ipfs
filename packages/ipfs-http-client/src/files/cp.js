@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -14,15 +14,14 @@ module.exports = configure(api => {
    * @type {FilesAPI["cp"]}
    */
   async function cp (sources, destination, options = {}) {
-    if (!Array.isArray(sources)) {
-      sources = [sources]
-    }
+    /** @type {import('ipfs-core-types/src/utils').IPFSPath[]} */
+    const sourceArr = Array.isArray(sources) ? sources : [sources]
 
     const res = await api.post('files/cp', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: sources.concat(destination).map(src => CID.isCID(src) ? `/ipfs/${src}` : src),
+        arg: sourceArr.concat(destination).map(src => src instanceof CID ? `/ipfs/${src}` : src),
         ...options
       }),
       headers: options.headers

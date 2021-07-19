@@ -86,7 +86,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const cid of ipfs.pin.add(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))
+const cid of ipfs.pin.add(CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))
 console.log(cid)
 // Logs:
 // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
@@ -130,7 +130,7 @@ Each yielded object has the form:
 ### Example
 
 ```JavaScript
-for await (const cid of ipfs.pin.addAll(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
+for await (const cid of ipfs.pin.addAll(CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
   console.log(cid)
 }
 // Logs:
@@ -178,7 +178,7 @@ for await (const { cid, type } of ipfs.pin.ls()) {
 
 ```JavaScript
 for await (const { cid, type } of ipfs.pin.ls({
-  paths: [ new CID('Qmc5..'), new CID('QmZb..'), new CID('QmSo..') ]
+  paths: [ CID.parse('Qmc5..'), CID.parse('QmZb..'), CID.parse('QmSo..') ]
 })) {
   console.log({ cid, type })
 }
@@ -218,7 +218,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const cid of ipfs.pin.rm(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))
+const cid of ipfs.pin.rm(CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))
 console.log(cid)
 // prints the CID that was unpinned
 // CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
@@ -254,7 +254,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-for await (const cid of ipfs.pin.rmAll(new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
+for await (const cid of ipfs.pin.rmAll(CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'))) {
   console.log(cid)
 }
 // prints the CIDs that were unpinned
@@ -320,7 +320,7 @@ An object may have the following optional fields:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| stat | `boolean` | `false` | If `true` will  include service stats. | 
+| stat | `boolean` | `false` | If `true` will  include service stats. |
 | timeout | `number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
 
@@ -486,7 +486,7 @@ Status is one of the following string values:
 ### Example
 
 ```JavaScript
-const cid = new CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+const cid = CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
 const pin = await ipfs.pin.remote.add(cid, {
   service: 'pinata',
   name: 'block-party'

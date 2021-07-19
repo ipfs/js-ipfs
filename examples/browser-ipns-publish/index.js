@@ -8,6 +8,7 @@ const last = require("it-last");
 const cryptoKeys = require("human-crypto-keys"); // { getKeyPairFromSeed }
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const { sha256 } = require('multiformats/hashes/sha2')
 
 const { sleep, Logger, onEnterPress, catchAndLog } = require("./util");
 
@@ -142,11 +143,10 @@ async function main() {
     return new Promise(async (resolve, reject) => {
       try {
         // quick and dirty key gen, don't do this in real life
-        const key = await IPFS.multihashing.digest(
+        const key = await sha256.digest(
           uint8ArrayFromString(keyName + Math.random().toString(36).substring(2)),
-          "sha2-256"
         );
-        const keyPair = await cryptoKeys.getKeyPairFromSeed(key, "rsa");
+        const keyPair = await cryptoKeys.getKeyPairFromSeed(key.bytes, "rsa");
 
         // put it on the browser IPNS keychain and name it
         await ipfsBrowser.key.import(keyName, keyPair.privateKey);

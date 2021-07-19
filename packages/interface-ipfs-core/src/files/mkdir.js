@@ -3,7 +3,7 @@
 
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const multihash = require('multihashing-async').multihash
+const { sha512 } = require('multiformats/hashes/sha2')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
 const isShardAtPath = require('../utils/is-shard-at-path')
@@ -160,8 +160,7 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-512'
       })
 
-      await expect(ipfs.files.stat(subDirectoryPath)).to.eventually.have.nested.property('cid.multihash')
-        .that.satisfies(hash => multihash.decode(hash).name === 'sha2-512')
+      await expect(ipfs.files.stat(subDirectoryPath)).to.eventually.have.nested.property('cid.multihash.code', sha512.code)
     })
 
     it('should make directory and have default mode', async function () {

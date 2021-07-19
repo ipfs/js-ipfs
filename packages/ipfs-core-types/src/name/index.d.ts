@@ -1,9 +1,9 @@
-import CID from 'cids';
+import { CID } from 'multiformts/cid'
 import type { AbortOptions } from '../utils'
 import type { API as PubsubAPI } from './pubsub'
 
 export interface API<OptionExtension = {}> {
-   /**
+  /**
    * IPNS is a PKI namespace, where names are the hashes of public keys, and
    * the private key enables publishing new (signed) values. In both publish
    * and resolve, the default name used is the node's own PeerID,
@@ -60,11 +60,11 @@ export interface PublishOptions extends AbortOptions {
   key?: string
   /**
    * When offline, save the IPNS record
-    * to the the local datastore without broadcasting to the network instead of
-    * simply failing.
-    *
-    * This option is not yet implemented in js-ipfs. See tracking issue [ipfs/js-ipfs#1997]
-    * (https://github.com/ipfs/js-ipfs/issues/1997).
+   * to the the local datastore without broadcasting to the network instead of
+   * simply failing.
+   *
+   * This option is not yet implemented in js-ipfs. See tracking issue [ipfs/js-ipfs#1997]
+   * (https://github.com/ipfs/js-ipfs/issues/1997).
    */
   allowOffline?: boolean
 }
@@ -90,5 +90,5 @@ export interface ResolveOptions extends AbortOptions {
   /**
    * do not use cached entries
    */
-   nocache?: boolean
+  nocache?: boolean
 }

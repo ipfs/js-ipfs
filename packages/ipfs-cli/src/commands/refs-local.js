@@ -2,7 +2,7 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { default: parseDuration } = require('parse-duration')
-const multibase = require('multibase')
+const { base32 } = require('multiformats/bases/base32')
 
 module.exports = {
   command: 'refs-local',
@@ -37,7 +37,7 @@ module.exports = {
         print(err.toString(), true, true)
       } else {
         if (multihash) {
-          print(multibase.encoding('base32upper').encode(uint8ArrayFromString(ref)))
+          print(base32.encode(uint8ArrayFromString(ref)).toUpperCase())
         } else {
           print(ref)
         }

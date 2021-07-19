@@ -1,14 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
+const { expect } = require('aegir/utils/chai')
 
-// Do not reorder these statements - https://github.com/chaijs/chai/issues/1298
-chai.use(require('chai-as-promised'))
-chai.use(require('dirty-chai'))
-chai.use(require('chai-subset'))
-
-module.exports.expect = chai.expect
+module.exports.expect = expect
 
 const isObject = (o) => Object.prototype.toString.call(o) === '[object Object]'
 

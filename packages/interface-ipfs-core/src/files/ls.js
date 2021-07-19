@@ -3,10 +3,11 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
 const { randomBytes } = require('iso-random-stream')
+const raw = require('multiformats/codecs/raw')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -42,7 +43,7 @@ module.exports = (common, options) => {
       const files = await all(ipfs.files.ls('/'))
 
       expect(files).to.have.lengthOf(1).and.to.containSubset([{
-        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        cid: CID.parse('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
         type: 'file'
@@ -70,7 +71,7 @@ module.exports = (common, options) => {
       const files = await all(ipfs.files.ls(`/${dirName}`))
 
       expect(files).to.have.lengthOf(1).and.to.containSubset([{
-        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        cid: CID.parse('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
         type: 'file'
@@ -88,7 +89,7 @@ module.exports = (common, options) => {
       const files = await all(ipfs.files.ls(`/${fileName}`))
 
       expect(files).to.have.lengthOf(1).and.to.containSubset([{
-        cid: new CID('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
+        cid: CID.parse('Qmetpc7cZmN25Wcc6R27cGCAvCDqCS5GjHG4v7xABEfpmJ'),
         name: fileName,
         size: content.length,
         type: 'file'
@@ -111,7 +112,7 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(filePath)
       const { value: node } = await ipfs.dag.get(stats.cid)
 
-      expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
+      expect(node).to.have.nested.property('Links[0].Hash.code', raw.code)
 
       const child = node.Links[0]
       const files = await all(ipfs.files.ls(`/ipfs/${child.Hash}`))
@@ -137,7 +138,7 @@ module.exports = (common, options) => {
       const cid = stats.cid
       const { value: node } = await ipfs.dag.get(cid)
 
-      expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
+      expect(node).to.have.nested.property('Links[0].Hash.code', raw.code)
 
       const child = node.Links[0]
       const dir = `/dir-with-raw-${Math.random()}`

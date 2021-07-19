@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -32,7 +32,7 @@ module.exports = configure(api => {
 function toCoreInterface (res) {
   return {
     provideBufLen: res.ProvideBufLen,
-    wantlist: (res.Wantlist || []).map((/** @type {{ '/': string }} */ k) => new CID(k['/'])),
+    wantlist: (res.Wantlist || []).map((/** @type {{ '/': string }} */ k) => CID.parse(k['/'])),
     peers: (res.Peers || []),
     blocksReceived: BigInt(res.BlocksReceived),
     dataReceived: BigInt(res.DataReceived),

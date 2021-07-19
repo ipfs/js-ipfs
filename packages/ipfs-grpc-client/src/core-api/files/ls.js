@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const serverStreamToIterator = require('../../utils/server-stream-to-iterator')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
@@ -28,7 +28,7 @@ module.exports = function grpcMfsLs (grpc, service, opts) {
         name: result.name,
         type: result.type.toLowerCase(),
         size: result.size,
-        cid: new CID(result.cid),
+        cid: CID.parse(result.cid),
         mode: result.mode,
         mtime: {
           secs: result.mtime || 0,

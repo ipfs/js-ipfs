@@ -94,20 +94,20 @@ Libp2p `PeerId` instances are no longer returned from the API. If your applicati
 Peer ID strings are also CIDs so converting them is simple:
 
 ```js
-const peerId = PeerId.createFromCID(peerIdStr)
+const peerId = PeerId.createFromB58String(peerIdStr)
 ```
 
 You can get hold of the `PeerId` class using npm or in a script tag:
 
 ```js
 const PeerId = require('peer-id')
-const peerId = PeerId.createFromCID(peerIdStr)
+const peerId = PeerId.createFromB58String(peerIdStr)
 ```
 
 ```html
 <script src="https://unpkg.com/peer-id/dist/index.min.js"></script>
 <script>
-  const peerId = window.PeerId.createFromCID(peerIdStr)
+  const peerId = window.PeerId.createFromB58String(peerIdStr)
 </script>
 ```
 
@@ -120,7 +120,7 @@ Libp2p `PeerInfo` instances are no longer returned from the API. Instead, plain 
 Instantiate a new `PeerInfo` and add addresses to it:
 
 ```js
-const peerInfo = new PeerInfo(PeerId.createFromCID(info.id))
+const peerInfo = new PeerInfo(PeerId.createFromB58String(info.id))
 info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 ```
 
@@ -129,7 +129,7 @@ You can get hold of the `PeerInfo` class using npm or in a script tag:
 ```js
 const PeerInfo = require('peer-info')
 const PeerId = require('peer-id')
-const peerInfo = new PeerInfo(PeerId.createFromCID(info.id))
+const peerInfo = new PeerInfo(PeerId.createFromB58String(info.id))
 info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 ```
 
@@ -137,7 +137,7 @@ info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 <script src="https://unpkg.com/peer-info/dist/index.min.js"></script>
 <script src="https://unpkg.com/peer-id/dist/index.min.js"></script>
 <script>
-  const peerInfo = new window.PeerInfo(window.PeerId.createFromCID(info.id))
+  const peerInfo = new window.PeerInfo(window.PeerId.createFromB58String(info.id))
   info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 </script>
 ```
