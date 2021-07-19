@@ -85,7 +85,7 @@ module.exports = (common, options) => {
       expect(isIpfs.ipfsPath(resolved)).to.be.true()
     })
 
-    it('should resolve IPNS link recursively', async function () {
+    it('should resolve IPNS link recursively by default', async function () {
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
       const node = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
@@ -96,8 +96,23 @@ module.exports = (common, options) => {
       await ipfs.name.publish(path, { allowOffline: true })
       await ipfs.name.publish(`/ipns/${ipfs.peerId.id}`, { allowOffline: true, key: 'key-name', resolve: false })
 
-      return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: true }))
+      return expect(await ipfs.resolve(`/ipns/${keyId}`))
         .to.eq(`/ipfs/${path}`)
+    })
+
+    it('should resolve IPNS link non-recursively if recursive==false', async function () {
+      this.timeout(20 * 1000)
+      // webworkers are not dialable because webrtc is not available
+      const node = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      await ipfs.swarm.connect(node.peerId.addresses[0])
+      const { path } = await ipfs.add(uint8ArrayFromString('should resolve an IPNS key if recursive === false'))
+      const { id: keyId } = await ipfs.key.gen('new-key-name', { type: 'rsa', size: 2048 })
+
+      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(`/ipns/${ipfs.peerId.id}`, { allowOffline: true, key: 'new-key-name', resolve: false })
+
+      return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: false }))
+        .to.eq(`/ipns/${ipfs.peerId.id}`)
     })
   })
 }

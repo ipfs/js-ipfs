@@ -27,13 +27,13 @@ module.exports = ({ repo, codecs, bases, name }) => {
       }
     }
 
-    const [, , hash, ...rest] = path.split('/') // ['', 'ipfs', 'hash', ...path]
+    const [, schema, hash, ...rest] = path.split('/') // ['', 'ipfs', 'hash', ...path]
     const cid = CID.parse(hash)
     const base = opts.cidBase ? await bases.getBase(opts.cidBase) : undefined
 
     // nothing to resolve return the input
     if (rest.length === 0) {
-      return `/ipfs/${cid.toString(base && base.encoder)}`
+      return `/${schema}/${cid.toString(base && base.encoder)}`
     }
 
     path = rest.join('/')
