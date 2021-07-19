@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeCID, decodeCID } = require('../src/cid')
 const { expect } = require('aegir/utils/chai')
 
@@ -11,22 +11,22 @@ describe('cid', function () {
 
   describe('encodeCID / decodeCID', () => {
     it('should encode CID', () => {
-      const { multihash, codec, version } = encodeCID(
-        new CID('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+      const { multihash: { digest }, code, version } = encodeCID(
+        CID.parse('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
       )
-      expect(multihash).to.be.an.instanceof(Uint8Array)
+      expect(digest).to.be.an.instanceof(Uint8Array)
       expect(version).to.be.a('number')
-      expect(codec).to.be.a('string')
+      expect(code).to.be.a('number')
     })
 
     it('should decode CID', () => {
-      const { multihash, codec, version } = encodeCID(
-        new CID('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+      const encoded = encodeCID(
+        CID.parse('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
       )
-      const cid = new CID('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
-      const decodecCID = decodeCID({ multihash, codec, version })
+      const cid = CID.parse('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+      const decodedCID = decodeCID(encoded)
 
-      expect(cid.equals(decodecCID)).to.be.true()
+      expect(cid.equals(decodedCID)).to.be.true()
     })
   })
 })

@@ -7,13 +7,13 @@ const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
 const errCode = require('err-code')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { AbortSignal } = require('native-abort-controller')
 const allNdjson = require('../utils/all-ndjson')
 
 describe('/dht', () => {
   const peerId = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
-  const cid = new CID('Qmc77hSNykXJ6Jxp1C6RpD8VENV7RK6JD7eAcWpc7nEZx2')
+  const cid = CID.parse('Qmc77hSNykXJ6Jxp1C6RpD8VENV7RK6JD7eAcWpc7nEZx2')
   let ipfs
 
   beforeEach(() => {
@@ -49,8 +49,8 @@ describe('/dht', () => {
       expect(res).to.have.nested.property('result.Code', 1)
     })
 
-    it('returns 404 if peerId is provided as there is no peers in the routing table', async () => {
-      ipfs.dht.findPeer.withArgs(new CID(peerId), defaultOptions).throws(errCode(new Error('Nope'), 'ERR_LOOKUP_FAILED'))
+    it('returns 404 if peerId is provided and there are no peers in the routing table', async () => {
+      ipfs.dht.findPeer.withArgs(peerId, defaultOptions).throws(errCode(new Error('Nope'), 'ERR_LOOKUP_FAILED'))
 
       const res = await http({
         method: 'POST',
@@ -59,11 +59,11 @@ describe('/dht', () => {
 
       expect(res).to.have.property('statusCode', 404)
       expect(ipfs.dht.findPeer.called).to.be.true()
-      expect(ipfs.dht.findPeer.getCall(0).args[0]).to.deep.equal(new CID(peerId))
+      expect(ipfs.dht.findPeer.getCall(0).args[0]).to.equal(peerId)
     })
 
     it('accepts a timeout', async () => {
-      ipfs.dht.findPeer.withArgs(new CID(peerId), {
+      ipfs.dht.findPeer.withArgs(peerId, {
         ...defaultOptions,
         timeout: 1000
       }).returns({
@@ -392,7 +392,7 @@ describe('/dht', () => {
     })
 
     it('returns 200 if key is provided', async function () {
-      ipfs.dht.query.withArgs(new CID(peerId), defaultOptions).returns([{
+      ipfs.dht.query.withArgs(peerId, defaultOptions).returns([{
         id: 'id'
       }])
 
@@ -406,7 +406,7 @@ describe('/dht', () => {
     })
 
     it('accepts a timeout', async function () {
-      ipfs.dht.query.withArgs(new CID(peerId), {
+      ipfs.dht.query.withArgs(peerId, {
         ...defaultOptions,
         timeout: 1000
       }).returns([{

@@ -11,19 +11,13 @@ const { supportedKeys } = require('libp2p-crypto/src/keys')
 const IPFS = require('../src')
 const defer = require('p-defer')
 const uint8ArrayToString = require('uint8arrays/to-string')
-
-// This gets replaced by `create-repo-browser.js` in the browser
-const createTempRepo = require('./utils/create-repo-nodejs.js')
+const createTempRepo = require('./utils/create-repo')
 
 describe('create node', function () {
   let tempRepo
 
   beforeEach(async () => {
     tempRepo = await createTempRepo()
-  })
-
-  afterEach(() => {
-    tempRepo.teardown()
   })
 
   it('should create a node with a custom repo path', async function () {
@@ -252,7 +246,6 @@ describe('create node', function () {
     expect(idA.id).to.not.equal(idB.id)
 
     await Promise.all([nodeA.stop(), nodeB.stop()])
-    await Promise.all([repoA.teardown(), repoB.teardown()])
   })
 
   it('should not error with empty IPLD config', async function () {
@@ -307,20 +300,20 @@ describe('create node', function () {
           PeerId: id.toString(),
           PrivKey: uint8ArrayToString(id.marshalPrivKey(), 'base64pad')
         }
-      }
-    })
-
-    const node = await IPFS.create({
-      repo: repo.path,
+      },
+      autoMigrate: true,
       onMigrationProgress: () => {
         // migrations are happening
         deferred.resolve()
       }
     })
 
+    const node = await IPFS.create({
+      repo
+    })
+
     await deferred.promise
 
     await node.stop()
-    await repo.teardown()
   })
 })

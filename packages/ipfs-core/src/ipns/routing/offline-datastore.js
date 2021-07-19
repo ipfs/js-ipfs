@@ -14,7 +14,7 @@ const log = Object.assign(debug('ipfs:ipns:offline-datastore'), {
 // to the local datastore
 class OfflineDatastore {
   /**
-   * @param {import('ipfs-repo')} repo
+   * @param {import('ipfs-repo').IPFSRepo} repo
    */
   constructor (repo) {
     this._repo = repo

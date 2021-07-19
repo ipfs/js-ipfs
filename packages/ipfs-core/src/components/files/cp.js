@@ -13,10 +13,9 @@ const toTrail = require('./utils/to-trail')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids')} CID
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('@ipld/dag-pb').PBNode} DAGNode
+ * @typedef {import('multiformats/cid').CID} CID
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
  * @typedef {import('./utils/to-mfs-path').MfsPath} MfsPath
  * @typedef {import('./utils/to-trail').MfsTrail} MfsTrail
@@ -24,7 +23,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @typedef {object} DefaultOptions
  * @property {boolean} parents
  * @property {boolean} flush
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {number} shardSplitThreshold
  * @property {AbortSignal} [signal]
@@ -58,7 +57,7 @@ module.exports = (context) => {
     }
 
     const sources = await Promise.all(
-      from.map(path => toMfsPath(context, path, options))
+      from.map((/** @type {CID | string} */ path) => toMfsPath(context, path, options))
     )
     let destination = await toMfsPath(context, to, options)
 
@@ -78,6 +77,7 @@ module.exports = (context) => {
     if (destination.exists) {
       log('Destination exists')
 
+      // @ts-ignore ts seems to think `sources` will always have a length of 10
       if (sources.length === 1 && !destinationIsDirectory) {
         throw errCode(new Error('directory already has entry by that name'), 'ERR_ALREADY_EXISTS')
       }
@@ -116,6 +116,7 @@ module.exports = (context) => {
     const destinationPath = isDirectory(destination) ? destination.mfsPath : destination.mfsDirectory
     const trail = await toTrail(context, destinationPath)
 
+    // @ts-ignore ts seems to think `sources` will always have a length of 10
     if (sources.length === 1) {
       const source = sources.pop()
 
@@ -205,13 +206,12 @@ const copyToDirectory = async (context, sources, destination, destinationTrail, 
  */
 const addSourceToParent = async (context, source, childName, parent, options) => {
   const sourceBlock = await context.repo.blocks.get(source.cid)
-
   const {
     node,
     cid
   } = await addLink(context, {
     parentCid: parent.cid,
-    size: sourceBlock.data.length,
+    size: sourceBlock.length,
     cid: source.cid,
     name: childName,
     hashAlg: options.hashAlg,

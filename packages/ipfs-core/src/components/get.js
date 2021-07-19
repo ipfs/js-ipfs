@@ -4,16 +4,16 @@ const exporter = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
 const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {Object} Context
- * @property {import('ipld')} ipld
+ * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../types').Preload} preload
  *
  * @param {Context} context
  */
-module.exports = function ({ ipld, preload }) {
+module.exports = function ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["get"]}
    */
@@ -27,10 +27,12 @@ module.exports = function ({ ipld, preload }) {
         throw errCode(err, 'ERR_INVALID_PATH')
       }
 
-      preload(new CID(pathComponents[0]))
+      preload(CID.parse(pathComponents[0]))
     }
 
-    for await (const file of exporter.recursive(ipfsPath, ipld, options)) {
+    const ipfsPathOrCid = CID.asCID(ipfsPath) || ipfsPath
+
+    for await (const file of exporter.recursive(ipfsPathOrCid, repo.blocks, options)) {
       yield mapFile(file, {
         ...options,
         includeContent: true

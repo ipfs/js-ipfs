@@ -4,7 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 
-const commandCount = 112
+const commandCount = 115
 
 describe('commands', () => {
   it('list the commands', async () => {

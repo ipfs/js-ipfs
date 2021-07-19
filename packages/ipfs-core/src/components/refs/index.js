@@ -1,11 +1,11 @@
 'use strict'
 
-const CID = require('cids')
-const { DAGNode } = require('ipld-dag-pb')
+const dagPb = require('@ipld/dag-pb')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toCIDAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+const { CID } = require('multiformats/cid')
 
 const Format = {
   default: '<dst>',
@@ -25,11 +25,12 @@ const Format = {
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
  * @param {import('ipfs-core-types/src/root').API["resolve"]} config.resolve
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = function ({ ipld, resolve, preload }) {
+module.exports = function ({ repo, codecs, resolve, preload }) {
   /**
    * @type {import('ipfs-core-types/src/refs').API["refs"]}
    */
@@ -54,7 +55,7 @@ module.exports = function ({ ipld, resolve, preload }) {
     const paths = rawPaths.map(p => getFullPath(preload, p, options))
 
     for (const path of paths) {
-      yield * refsStream(resolve, ipld, path, options)
+      yield * refsStream(resolve, repo, codecs, path, options)
     }
   }
 
@@ -85,11 +86,12 @@ function getFullPath (preload, ipfsPath, options) {
  * Get a stream of refs at the given path
  *
  * @param {import('ipfs-core-types/src/root').API["resolve"]} resolve
- * @param {import('ipld')} ipld
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} codecs
  * @param {string} path
  * @param {import('ipfs-core-types/src/refs').RefsOptions} options
  */
-async function * refsStream (resolve, ipld, path, options) {
+async function * refsStream (resolve, repo, codecs, path, options) {
   // Resolve to the target CID of the path
   const resPath = await resolve(path)
   const {
@@ -100,7 +102,7 @@ async function * refsStream (resolve, ipld, path, options) {
   const unique = options.unique || false
 
   // Traverse the DAG, converting it into a stream
-  for await (const obj of objectStream(ipld, cid, maxDepth, unique)) {
+  for await (const obj of objectStream(repo, codecs, cid, maxDepth, unique)) {
     // Root object will not have a parent
     if (!obj.parent) {
       continue
@@ -137,12 +139,13 @@ function formatLink (srcCid, dstCid, linkName = '', format = Format.default) {
 /**
  * Do a depth first search of the DAG, starting from the given root cid
  *
- * @param {import('ipld')} ipld
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} codecs
  * @param {CID} rootCid
  * @param {number} maxDepth
  * @param {boolean} uniqueOnly
  */
-async function * objectStream (ipld, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
+async function * objectStream (repo, codecs, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
   const seen = new Set()
 
   /**
@@ -161,7 +164,7 @@ async function * objectStream (ipld, rootCid, maxDepth, uniqueOnly) { // eslint-
     // Get this object's links
     try {
       // Look at each link, parent and the new depth
-      for (const link of await getLinks(ipld, parent.cid)) {
+      for await (const link of getLinks(repo, codecs, parent.cid)) {
         yield {
           parent: parent,
           node: link,
@@ -187,44 +190,90 @@ async function * objectStream (ipld, rootCid, maxDepth, uniqueOnly) { // eslint-
 }
 
 /**
- * Fetch a node from IPLD then get all its links
+ * Fetch a node and then get all its links
  *
- * @param {import('ipld')} ipld
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} codecs
  * @param {CID} cid
+ * @param {Array<string|number>} base
+ * @returns {AsyncGenerator<{ name: string, cid: CID }, void, undefined>}
  */
-async function getLinks (ipld, cid) {
-  const node = await ipld.get(cid)
+async function * getLinks (repo, codecs, cid, base = []) {
+  const block = await repo.blocks.get(cid)
+  const codec = await codecs.getCodec(cid.code)
+  const value = codec.decode(block)
+  const isDagPb = cid.code === dagPb.code
 
-  if (node instanceof DAGNode) {
-    /**
-     * @param {import('ipld-dag-pb').DAGLink} arg
-     */
-    const mapper = ({ Name, Hash }) => ({ name: Name, cid: Hash })
-    return node.Links.map(mapper)
+  for (const [name, cid] of links(value, base)) {
+    // special case for dag-pb - use the name of the link
+    // instead of the path within the object
+    if (isDagPb) {
+      const match = name.match(/^Links\/(\d+)\/Hash$/)
+
+      if (match) {
+        const index = Number(match[1])
+
+        if (index < value.Links.length) {
+          yield {
+            name: value.Links[index].Name,
+            cid
+          }
+
+          continue
+        }
+      }
+    }
+
+    yield {
+      name,
+      cid
+    }
   }
-
-  return getNodeLinks(node)
 }
 
 /**
- * Recursively search the node for CIDs
- *
- * @param {object} node
- * @param {string} [path]
- * @returns {Node[]}
+ * @param {*} source
+ * @param {Array<string|number>} base
+ * @returns {Iterable<[string, CID]>}
  */
-function getNodeLinks (node, path = '') {
-  /** @type {Node[]} */
-  let links = []
-  for (const [name, value] of Object.entries(node)) {
-    if (CID.isCID(value)) {
-      links.push({
-        name: path + name,
-        cid: value
-      })
-    } else if (typeof value === 'object') {
-      links = links.concat(getNodeLinks(value, path + name + '/'))
+const links = function * (source, base) {
+  if (source == null) {
+    return
+  }
+
+  if (source instanceof Uint8Array) {
+    return
+  }
+
+  for (const [key, value] of Object.entries(source)) {
+    const path = [...base, key]
+
+    if (value != null && typeof value === 'object') {
+      if (Array.isArray(value)) {
+        for (const [index, element] of value.entries()) {
+          const elementPath = [...path, index]
+          const cid = CID.asCID(element)
+
+          // eslint-disable-next-line max-depth
+          if (cid) {
+            yield [elementPath.join('/'), cid]
+          } else if (typeof element === 'object') {
+            yield * links(element, elementPath)
+          }
+        }
+      } else {
+        const cid = CID.asCID(value)
+
+        if (cid) {
+          yield [path.join('/'), cid]
+        } else {
+          yield * links(value, path)
+        }
+      }
     }
   }
-  return links
+
+  // ts requires a @returns annotation when a function is recursive,
+  // eslint requires a return when you use a @returns annotation.
+  return []
 }

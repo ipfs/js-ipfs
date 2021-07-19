@@ -1,10 +1,10 @@
 'use strict'
 
-const fs = require('fs')
 const concat = require('it-concat')
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
+const dagPB = require('@ipld/dag-pb')
 const { default: parseDuration } = require('parse-duration')
+const uint8arrayToString = require('uint8arrays/to-string')
+const uint8arrayFromString = require('uint8arrays/from-string')
 
 module.exports = {
   command: 'put [data]',
@@ -14,12 +14,13 @@ module.exports = {
   builder: {
     'input-enc': {
       type: 'string',
+      choices: ['json', 'protobuf'],
       default: 'json'
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
+      describe: 'Number base to display CIDs in',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -31,20 +32,30 @@ module.exports = {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.data
-   * @param {import('ipfs-core-types/src/object').PutEncoding} argv.inputEnc
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {'json' | 'protobuf'} argv.inputEnc
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print, getStdin }, data, inputEnc, cidBase, timeout }) {
     let buf
 
     if (data) {
-      buf = fs.readFileSync(data)
+      buf = uint8arrayFromString(data)
     } else {
       buf = (await concat(getStdin(), { type: 'buffer' })).slice()
     }
 
-    const cid = await ipfs.object.put(buf, { enc: inputEnc, timeout })
-    print(`added ${cidToString(cid, { base: cidBase, upgrade: false })}`)
+    let node
+
+    if (inputEnc === 'protobuf') {
+      node = dagPB.decode(buf)
+    } else {
+      node = JSON.parse(uint8arrayToString(buf))
+    }
+
+    const base = await ipfs.bases.getBase(cidBase)
+
+    const cid = await ipfs.object.put(node, { timeout })
+    print(`added ${cid.toString(base.encoder)}`)
   }
 }

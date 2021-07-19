@@ -3,26 +3,25 @@
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 const { resolvePath } = require('../../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { PinTypes } = require('./pin-manager')
+const { PinTypes } = require('ipfs-repo')
 
 /**
  * @param {Object} config
- * @param {import('./pin-manager')} config.pinManager
- * @param {import('.').GCLock} config.gcLock
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
  */
-module.exports = ({ pinManager, gcLock, ipld }) => {
+module.exports = ({ repo, codecs }) => {
   /**
    * @type {import('ipfs-core-types/src/pin').API["rmAll"]}
    */
   async function * rmAll (source, _options = {}) {
-    const release = await gcLock.readLock()
+    const release = await repo.gcLock.readLock()
 
     try {
       // verify that each hash can be unpinned
       for await (const { path, recursive } of normaliseInput(source)) {
-        const cid = await resolvePath(ipld, path)
-        const { pinned, reason } = await pinManager.isPinnedWithType(cid, PinTypes.all)
+        const { cid } = await resolvePath(repo, codecs, path)
+        const { pinned, reason } = await repo.pins.isPinnedWithType(cid, PinTypes.all)
 
         if (!pinned) {
           throw new Error(`${cid} is not pinned`)
@@ -34,13 +33,13 @@ module.exports = ({ pinManager, gcLock, ipld }) => {
               throw new Error(`${cid} is pinned recursively`)
             }
 
-            await pinManager.unpin(cid)
+            await repo.pins.unpin(cid)
 
             yield cid
 
             break
           case (PinTypes.direct):
-            await pinManager.unpin(cid)
+            await repo.pins.unpin(cid)
 
             yield cid
 

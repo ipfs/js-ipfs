@@ -7,6 +7,7 @@ const { expect } = require('aegir/utils/chai')
 const all = require('it-all')
 const MockPreloadNode = require('./utils/mock-preload-node-utils')
 const createNode = require('./utils/create-node')
+const dagPb = require('@ipld/dag-pb')
 
 describe('preload', () => {
   let ipfs
@@ -174,18 +175,19 @@ describe('preload', () => {
 
     const linkCid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
     const linkNode = await ipfs.object.get(linkCid)
+    const linkBuf = dagPb.encode(linkNode)
 
     const parentCid = await ipfs.object.put({
       Data: uint8ArrayFromString(nanoid()),
       Links: [{
-        name: 'link',
-        cid: linkCid,
-        size: linkNode.size
+        Name: 'link',
+        Hash: linkCid,
+        Tsize: linkBuf.length
       }]
     })
 
     await MockPreloadNode.clearPreloadCids()
-    const cid = await ipfs.object.patch.rmLink(parentCid, { name: 'link' })
+    const cid = await ipfs.object.patch.rmLink(parentCid, { Name: 'link' })
     await MockPreloadNode.waitForCids(cid)
   })
 
@@ -215,24 +217,24 @@ describe('preload', () => {
 
   it('should preload content added with block.put', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()))
-    await MockPreloadNode.waitForCids(block.cid)
+    const cid = await ipfs.block.put(uint8ArrayFromString(nanoid()))
+    await MockPreloadNode.waitForCids(cid)
   })
 
   it('should preload content retrieved with block.get', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
+    const cid = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
     await MockPreloadNode.clearPreloadCids()
-    await ipfs.block.get(block.cid)
-    await MockPreloadNode.waitForCids(block.cid)
+    await ipfs.block.get(cid)
+    await MockPreloadNode.waitForCids(cid)
   })
 
   it('should preload content retrieved with block.stat', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
+    const cid = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
     await MockPreloadNode.clearPreloadCids()
-    await ipfs.block.stat(block.cid)
-    await MockPreloadNode.waitForCids(block.cid)
+    await ipfs.block.stat(cid)
+    await MockPreloadNode.waitForCids(cid)
   })
 
   it('should preload content added with dag.put', async function () {

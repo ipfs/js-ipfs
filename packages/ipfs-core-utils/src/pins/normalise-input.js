@@ -1,7 +1,7 @@
 'use strict'
 
 const errCode = require('err-code')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {Object} Pinnable
@@ -52,8 +52,8 @@ module.exports = async function * normaliseInput (input) {
     throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
   }
 
-  // CID|String
-  if (CID.isCID(input)) {
+  // CID
+  if (input instanceof CID) {
     yield toPin({ cid: input })
     return
   }
@@ -78,7 +78,7 @@ module.exports = async function * normaliseInput (input) {
     if (first.done) return iterator
 
     // Iterable<CID|String>
-    if (CID.isCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
+    if (first.value instanceof CID || first.value instanceof String || typeof first.value === 'string') {
       yield toPin({ cid: first.value })
       for (const cid of iterator) {
         yield toPin({ cid })
@@ -106,7 +106,7 @@ module.exports = async function * normaliseInput (input) {
     if (first.done) return iterator
 
     // AsyncIterable<CID|String>
-    if (CID.isCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
+    if (first.value instanceof CID || first.value instanceof String || typeof first.value === 'string') {
       yield toPin({ cid: first.value })
       for await (const cid of iterator) {
         yield toPin({ cid })

@@ -1,4 +1,4 @@
-import type CID from 'cids'
+import type { CID } from 'multiformts/cid'
 import type { AbortOptions } from '../utils'
 
 export interface API<OptionExtension = {}> {
@@ -61,10 +61,10 @@ export interface Stats {
   provideBufLen: number
   wantlist: CID[]
   peers: string[]
-  blocksReceived: BigInt
-  dataReceived: BigInt
-  blocksSent: BigInt
-  dataSent: BigInt
-  dupBlksReceived: BigInt
-  dupDataReceived: BigInt
+  blocksReceived: bigint
+  dataReceived: bigint
+  blocksSent: bigint
+  dataSent: bigint
+  dupBlksReceived: bigint
+  dupDataReceived: bigint
 }

@@ -7,26 +7,21 @@ const createStat = require('./stat')
 
 /**
  * @typedef {import('../../types').Preload} Preload
- * @typedef {import('ipfs-block-service')} BlockService
- * @typedef {import('../gc-lock').GCLock} GCLock
- * @typedef {import('ipfs-core-types/src/pin').API} Pin
- * @typedef {import('../pin/pin-manager')} PinManager
  */
 
 class BlockAPI {
   /**
    * @param {Object} config
+   * @param {import('ipfs-core-utils/src/multihashes')} config.hashers
+   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
    * @param {Preload} config.preload
-   * @param {BlockService} config.blockService
-   * @param {GCLock} config.gcLock
-   * @param {Pin} config.pin
-   * @param {PinManager} config.pinManager
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
-  constructor ({ blockService, preload, gcLock, pinManager, pin }) {
-    this.get = createGet({ blockService, preload })
-    this.put = createPut({ blockService, preload, gcLock, pin })
-    this.rm = createRm({ blockService, gcLock, pinManager })
-    this.stat = createStat({ blockService, preload })
+  constructor ({ codecs, hashers, preload, repo }) {
+    this.get = createGet({ preload, repo })
+    this.put = createPut({ codecs, hashers, preload, repo })
+    this.rm = createRm({ repo })
+    this.stat = createStat({ preload, repo })
   }
 }
 

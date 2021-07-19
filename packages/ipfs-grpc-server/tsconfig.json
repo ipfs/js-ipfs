@@ -5,5 +5,10 @@
   },
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-core-types"
+    }
   ]
 }

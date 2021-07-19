@@ -1,8 +1,5 @@
 import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
-import CID, { CIDVersion } from 'cids'
-import Block from 'ipld-block'
-import { CodecName } from 'multicodec'
-import { HashName } from 'multihashes'
+import { CID, CIDVersion } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -11,26 +8,23 @@ export interface API<OptionExtension = {}> {
    * @example
    * ```js
    * const block = await ipfs.block.get(cid)
-   * console.log(block.data)
+   * console.log(block)
    * ```
    */
-  get: (cid: CID | string | Uint8Array, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<Block>
+  get: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<Uint8Array>
 
   /**
-   * Stores input as an IPFS block.
-   *
-   * **Note:** If you pass a `Block` instance as the block parameter, you
-   * don't need to pass options, as the block instance will carry the CID
-   * value as a property.
+   * Stores a Uint8Array as a block in the underlying blockstore
    *
    * @example
    * ```js
+   * const dagPb = require('@ipld/dag-pb')
    * // Defaults
    * const encoder = new TextEncoder()
    * const decoder = new TextDecoder()
    *
    * const bytes = encoder.encode('a serialized object')
-   * const block = await ipfs.block.put(bytes)
+   * const cid = await ipfs.block.put(bytes)
    *
    * console.log(decoder.decode(block.data))
    * // Logs:
@@ -40,9 +34,9 @@ export interface API<OptionExtension = {}> {
    * // the CID of the object
    *
    * // With custom format and hashtype through CID
-   * const CID = require('cids')
+   * const { CID } = require('multiformats/cid')
    * const another = encoder.encode('another serialized object')
-   * const cid = new CID(1, 'dag-pb', multihash)
+   * const cid = CID.createV1(dagPb.code, multihash)
    * const block = await ipfs.block.put(another, cid)
    * console.log(decoder.decode(block.data))
    *
@@ -53,7 +47,7 @@ export interface API<OptionExtension = {}> {
    * // the CID of the object
    * ```
    */
-  put: (block: Block | Uint8Array, options?: PutOptions & OptionExtension) => Promise<Block>
+  put: (block: Uint8Array, options?: PutOptions & OptionExtension) => Promise<CID>
 
   /**
    * Remove one or more IPFS block(s) from the underlying block store
@@ -76,7 +70,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ')
+   * const cid = CID.parse('QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ')
    * const stats = await ipfs.block.stat(cid)
    * console.log(stats.cid.toString())
    * // Logs: QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ
@@ -89,24 +83,14 @@ export interface API<OptionExtension = {}> {
 
 export interface PutOptions extends AbortOptions, PreloadOptions {
   /**
-   *  CID to store the block under - ignored if a Block is passed
-   */
-  cid?: CID
-
-  /**
    * The codec to use to create the CID
    */
-  format?: CodecName
+  format?: string
 
   /**
    * Multihash hashing algorithm to use. (Defaults to 'sha2-256')
    */
-  mhtype?: HashName
-
-  /**
-   * @deprecated
-   */
-  mhlen?: any
+  mhtype?: string
 
   /**
    * The version to use to create the CID
@@ -123,7 +107,7 @@ export interface RmOptions extends AbortOptions {
   /**
    * Ignores non-existent blocks
    */
-  force?: boolean,
+  force?: boolean
 
   /**
    * Do not return output if true

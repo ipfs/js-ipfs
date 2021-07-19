@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const Client = require('../../lib/core')
 const Service = require('./service')
 const toUrlSearchParams = require('../../lib/to-url-search-params')
@@ -96,7 +96,7 @@ Remote.prototype.rmAll = async function ({ timeout, signal, headers, ...query })
  */
 const decodePin = ({ Name: name, Status: status, Cid: cid }) => {
   return {
-    cid: new CID(cid),
+    cid: CID.parse(cid),
     name,
     status
   }
@@ -119,10 +119,10 @@ const encodeService = (service) => {
  * @returns {string}
  */
 const encodeCID = (cid) => {
-  if (CID.isCID(cid)) {
+  if (cid instanceof CID) {
     return cid.toString()
   } else {
-    throw new TypeError(`CID instance expected instead of ${cid}`)
+    throw new TypeError(`CID instance expected instead of ${typeof cid}`)
   }
 }
 

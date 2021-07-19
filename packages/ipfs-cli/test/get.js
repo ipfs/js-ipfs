@@ -5,7 +5,7 @@ const fs = require('fs')
 const { expect } = require('aegir/utils/chai')
 const path = require('path')
 const clean = require('./utils/clean')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -15,7 +15,7 @@ const defaultOptions = {
 }
 
 describe('get', () => {
-  const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+  const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
   const buf = uint8ArrayFromString('hello world')
   let ipfs
 

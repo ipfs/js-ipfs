@@ -25,7 +25,7 @@ module.exports = (common, options) => {
 
     after(() => common.clean())
 
-    it('should get data by multihash', async () => {
+    it('should get data by CID', async () => {
       const testObj = {
         Data: uint8ArrayFromString(nanoid()),
         Links: []
@@ -34,19 +34,7 @@ module.exports = (common, options) => {
       const nodeCid = await ipfs.object.put(testObj)
 
       const data = await ipfs.object.data(nodeCid)
-      expect(testObj.Data).to.deep.equal(data)
-    })
-
-    it('should get data by base58 encoded multihash string', async () => {
-      const testObj = {
-        Data: uint8ArrayFromString(nanoid()),
-        Links: []
-      }
-
-      const nodeCid = await ipfs.object.put(testObj)
-
-      const data = await ipfs.object.data(nodeCid.toV0().toString(), { enc: 'base58' })
-      expect(testObj.Data).to.eql(data)
+      expect(testObj.Data).to.equalBytes(data)
     })
 
     it('returns error for request without argument', () => {
