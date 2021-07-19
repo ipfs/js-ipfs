@@ -1,7 +1,6 @@
 'use strict'
 
 const Joi = require('../../utils/joi')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 
 exports.wantlist = {
   options: {
@@ -11,8 +10,8 @@ exports.wantlist = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.cid(),
-        cidBase: Joi.cidBase(),
+        peer: Joi.string(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -57,9 +56,11 @@ exports.wantlist = {
       })
     }
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     return h.response({
       Keys: list.map(cid => ({
-        '/': cidToString(cid, { base: cidBase, upgrade: false })
+        '/': cid.toString(base.encoder)
       }))
     })
   }
@@ -73,7 +74,7 @@ exports.stat = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -108,11 +109,13 @@ exports.stat = {
       timeout
     })
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     return h.response({
       ProvideBufLen: stats.provideBufLen,
       BlocksReceived: stats.blocksReceived.toString(),
       Wantlist: stats.wantlist.map(cid => ({
-        '/': cidToString(cid, { base: cidBase, upgrade: false })
+        '/': cid.toString(base.encoder)
       })),
       Peers: stats.peers,
       DupBlksReceived: stats.dupBlksReceived.toString(),
@@ -133,7 +136,7 @@ exports.unwant = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'cid', {
@@ -173,6 +176,8 @@ exports.unwant = {
       timeout
     })
 
-    return h.response({ key: cidToString(cid, { base: cidBase, upgrade: false }) })
+    const base = await ipfs.bases.getBase(cidBase)
+
+    return h.response({ key: cid.toString(base.encoder) })
   }
 }

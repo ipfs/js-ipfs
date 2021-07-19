@@ -6,7 +6,7 @@ const { Multiaddr } = require('multiaddr')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-repo')} config.repo
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 module.exports = ({ repo }) => {
   /**

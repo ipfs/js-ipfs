@@ -2,32 +2,32 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
+const { base58btc } = require('multiformats/bases/base58')
+const { base64 } = require('multiformats/bases/base64')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 
-// fixture structure:
-//  planets/
-//   solar-system.md
-//   mercury/
-//    wiki.md
 const pins = {
-  root: 'QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys',
-  solarWiki: 'QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG',
-  mercuryDir: 'QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q',
-  mercuryWiki: 'QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi'
+  root: CID.parse('QmTAMavb995EHErSrKo7mB8dYkpaSJxu6ys1a6XJyB2sys'),
+  solarWiki: CID.parse('QmTMbkDfvHwq3Aup6Nxqn3KKw9YnoKzcZvuArAfQ9GF3QG'),
+  mercuryDir: CID.parse('QmbJCNKXJqVK8CzbjpNFz2YekHwh3CSHpBA86uqYg3sJ8q'),
+  mercuryWiki: CID.parse('QmVgSHAdMxFAuMP2JiMAYkB8pCWP1tcB9djqvq8GKAFiHi')
 }
 
 describe('pin', () => {
   let ipfs
 
-  before(() => {
+  beforeEach(() => {
     ipfs = {
       pin: {
         rmAll: sinon.stub(),
         addAll: sinon.stub(),
         ls: sinon.stub(),
         query: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -42,11 +42,12 @@ describe('pin', () => {
     }
 
     it('recursively (default)', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root
+        path: pins.root.toString()
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin rm ${pins.root}`, { ipfs })
@@ -54,12 +55,13 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root,
+        path: pins.root.toString(),
         recursive: false
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin rm --recursive false ${pins.root}`, { ipfs })
@@ -67,12 +69,13 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root,
+        path: pins.root.toString(),
         recursive: false
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin rm -r false ${pins.root}`, { ipfs })
@@ -80,27 +83,29 @@ describe('pin', () => {
     })
 
     it('should rm and print CIDs encoded in specified base', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root
+        path: pins.root.toString()
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root.toV1()
       ])
 
       const out = await cli(`pin rm ${pins.root} --cid-base=base64`, { ipfs })
-      const b64CidStr = new CID(pins.root).toV1().toString('base64')
+      const b64CidStr = pins.root.toV1().toString(base64)
       expect(out).to.eql(`unpinned ${b64CidStr}\n`)
     })
 
     it('with timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root
+        path: pins.root.toString()
       }], {
         ...defaultOptions,
         timeout: 1000
       }).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin rm ${pins.root} --timeout=1s`, { ipfs })
@@ -119,11 +124,12 @@ describe('pin', () => {
     }
 
     it('recursively (default)', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root
+        path: pins.root.toString()
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin add ${pins.root}`, { ipfs })
@@ -131,12 +137,13 @@ describe('pin', () => {
     })
 
     it('non recursively', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root,
+        path: pins.root.toString(),
         recursive: false
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin add --recursive false ${pins.root}`, { ipfs })
@@ -144,12 +151,13 @@ describe('pin', () => {
     })
 
     it('non recursively (short option)', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root,
+        path: pins.root.toString(),
         recursive: false
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin add -r false ${pins.root}`, { ipfs })
@@ -157,14 +165,15 @@ describe('pin', () => {
     })
 
     it('with metadata', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root,
+        path: pins.root.toString(),
         metadata: {
           key: 'value'
         }
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin add --metadata key=value ${pins.root}`, { ipfs })
@@ -172,14 +181,15 @@ describe('pin', () => {
     })
 
     it('with a metadata (short option)', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root,
+        path: pins.root.toString(),
         metadata: {
           key: 'value'
         }
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin add -m key=value ${pins.root}`, { ipfs })
@@ -187,44 +197,45 @@ describe('pin', () => {
     })
 
     it('with json metadata', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root,
+        path: pins.root.toString(),
         metadata: {
           key: 'value'
         }
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin add --metadata-json '{"key":"value"}' ${pins.root}`, { ipfs })
       expect(out).to.equal(`pinned ${pins.root} recursively\n`)
     })
 
-    it('should rm and print CIDs encoded in specified base', async () => {
+    it('should add and print CIDs encoded in specified base', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.pin.addAll.withArgs([{
-        ...defaultOptions,
-        path: pins.root,
-        recursive: true,
-        comments: undefined
+        ...defaultPinOptions,
+        path: pins.root.toString()
       }], defaultOptions).returns([
-        new CID(pins.root)
+        pins.root.toV1()
       ])
 
       const out = await cli(`pin add ${pins.root} --cid-base=base64`, { ipfs })
-      const b64CidStr = new CID(pins.root).toV1().toString('base64')
+      const b64CidStr = pins.root.toV1().toString(base64)
       expect(out).to.eql(`pinned ${b64CidStr} recursively\n`)
     })
 
     it('recursively with timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         ...defaultPinOptions,
-        path: pins.root
+        path: pins.root.toString()
       }], {
         ...defaultOptions,
         timeout: 1000
       }).returns([
-        new CID(pins.root)
+        pins.root
       ])
 
       const out = await cli(`pin add ${pins.root} --timeout=1s`, { ipfs })
@@ -240,8 +251,9 @@ describe('pin', () => {
     }
 
     it('lists all pins when no hash is passed', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
-        cid: new CID(pins.root),
+        cid: pins.root,
         type: 'recursive'
       }])
 
@@ -250,14 +262,15 @@ describe('pin', () => {
     })
 
     it('handles multiple hashes', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs({
         ...defaultOptions,
-        paths: [pins.root, pins.solarWiki]
+        paths: [pins.root.toString(), pins.solarWiki.toString()]
       }).returns([{
-        cid: new CID(pins.root),
+        cid: pins.root,
         type: 'recursive'
       }, {
-        cid: new CID(pins.solarWiki),
+        cid: pins.solarWiki,
         type: 'direct'
       }])
 
@@ -266,8 +279,9 @@ describe('pin', () => {
     })
 
     it('can print quietly', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
-        cid: new CID(pins.root),
+        cid: pins.root.toString(),
         type: 'recursive'
       }])
 
@@ -276,8 +290,9 @@ describe('pin', () => {
     })
 
     it('can print quietly (short option)', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
-        cid: new CID(pins.root),
+        cid: pins.root.toString(),
         type: 'recursive'
       }])
 
@@ -286,21 +301,23 @@ describe('pin', () => {
     })
 
     it('should ls and print CIDs encoded in specified base', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
-        cid: new CID(pins.root).toV1(),
+        cid: pins.root.toV1(),
         type: 'recursive'
       }])
 
       const out = await cli('pin ls --cid-base=base64', { ipfs })
-      expect(out).to.equal(`${new CID(pins.root).toV1().toString('base64')} recursive\n`)
+      expect(out).to.equal(`${pins.root.toV1().toString(base64)} recursive\n`)
     })
 
     it('lists all pins with a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs({
         ...defaultOptions,
         timeout: 1000
       }).returns([{
-        cid: new CID(pins.root),
+        cid: pins.root,
         type: 'recursive'
       }])
 
@@ -309,8 +326,9 @@ describe('pin', () => {
     })
 
     it('strips control characters from metadata', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
-        cid: new CID(pins.root),
+        cid: pins.root,
         type: 'recursive',
         metadata: {
           'herp\n\t': 'de\brp'

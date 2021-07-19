@@ -3,14 +3,11 @@
 
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const loadFixture = require('aegir/utils/fixtures')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
-
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
-const DAGLink = dagPB.DAGLink
+const dagPb = require('@ipld/dag-pb')
 
 const { UnixFS } = require('ipfs-unixfs')
 
@@ -65,7 +62,6 @@ module.exports = (common, options) => {
         }
 
         const refs = await all(ipfs.refs(p, params))
-
         // Sort the refs not to lock-in the iteration order
         // Check there was no error and the refs match what was expected
         expect(refs.map(r => r.ref).sort()).to.eql(expected.sort())
@@ -322,15 +318,24 @@ function getRefsTests () {
 
 function loadPbContent (ipfs, node) {
   const store = {
-    putData: async (data) => {
-      const res = await ipfs.block.put(new DAGNode(data).serialize())
-      return res.cid
+    putData: (data) => {
+      return ipfs.block.put(
+        dagPb.encode({
+          Data: data,
+          Links: []
+        })
+      )
     },
-    putLinks: async (links) => {
-      const res = await ipfs.block.put(new DAGNode('', links.map(({ name, cid }) => {
-        return new DAGLink(name, 8, cid)
-      })).serialize())
-      return res.cid
+    putLinks: (links) => {
+      return ipfs.block.put(dagPb.encode({
+        Links: links.map(({ name, cid }) => {
+          return {
+            Name: name,
+            Tsize: 8,
+            Hash: CID.parse(cid)
+          }
+        })
+      }))
     }
   }
   return loadContent(ipfs, store, node)
@@ -338,16 +343,18 @@ function loadPbContent (ipfs, node) {
 
 function loadDagContent (ipfs, node) {
   const store = {
-    putData: async (data) => {
+    putData: (data) => {
       const inner = new UnixFS({ type: 'file', data: data })
-      const serialized = new DAGNode(inner.marshal()).serialize()
-      const res = await ipfs.block.put(serialized)
-      return res.cid
+      const serialized = dagPb.encode({
+        Data: inner.marshal(),
+        Links: []
+      })
+      return ipfs.block.put(serialized)
     },
     putLinks: (links) => {
       const obj = {}
       for (const { name, cid } of links) {
-        obj[name] = new CID(cid)
+        obj[name] = CID.parse(cid)
       }
       return ipfs.dag.put(obj)
     }

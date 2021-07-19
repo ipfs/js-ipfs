@@ -4,8 +4,10 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
-const CID = require('cids')
+const PeerId = require('peer-id')
 const last = require('it-last')
+const { CID } = require('multiformats/cid')
+const Digest = require('multiformats/hashes/digest')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -42,16 +44,16 @@ module.exports = (common, options) => {
 
     it('should resolve a record from peerid as cidv1 in base32', async function () {
       this.timeout(20 * 1000)
-      const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record from cidv1b32'))
+      const { cid } = await ipfs.add(uint8ArrayFromString('should resolve a record from cidv1b32'))
       const { id: peerId } = await ipfs.id()
-      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(cid, { allowOffline: true })
 
       // Represent Peer ID as CIDv1 Base32
       // https://github.com/libp2p/specs/blob/master/RFC/0001-text-peerid-cid.md
-      const keyCid = new CID(peerId).toV1().toString('base32')
+      const keyCid = CID.createV1(0x72, Digest.decode(PeerId.parse(peerId).toBytes()))
       const resolvedPath = await last(ipfs.name.resolve(`/ipns/${keyCid}`))
 
-      expect(resolvedPath).to.equal(`/ipfs/${path}`)
+      expect(resolvedPath).to.equal(`/ipfs/${cid}`)
     })
 
     it('should resolve a record recursive === false', async () => {

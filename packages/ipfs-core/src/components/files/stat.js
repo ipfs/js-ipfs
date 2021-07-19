@@ -6,6 +6,7 @@ const { exporter } = require('ipfs-unixfs-exporter')
 const log = require('debug')('ipfs:mfs:stat')
 const errCode = require('err-code')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const dagPb = require('@ipld/dag-pb')
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -49,7 +50,7 @@ module.exports = (context) => {
     let file
 
     try {
-      file = await exporter(exportPath, context.ipld)
+      file = await exporter(exportPath, context.repo.blocks)
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
         throw errCode(new Error(`${path} does not exist`), 'ERR_NOT_FOUND')
@@ -59,7 +60,7 @@ module.exports = (context) => {
     }
 
     if (!statters[file.type]) {
-      throw new Error(`Cannot stat codec ${file.cid.codec}`)
+      throw new Error(`Cannot stat codec ${file.cid.code}`)
     }
 
     return statters[file.type](file)
@@ -94,7 +95,7 @@ const statters = {
       cid: file.cid,
       type: 'file',
       size: file.unixfs.fileSize(),
-      cumulativeSize: file.node.size,
+      cumulativeSize: dagPb.encode(file.node).length + (file.node.Links || []).reduce((acc, curr) => acc + (curr.Tsize || 0), 0),
       blocks: file.unixfs.blockSizes.length,
       local: undefined,
       sizeLocal: undefined,
@@ -117,7 +118,7 @@ const statters = {
       cid: file.cid,
       type: 'directory',
       size: 0,
-      cumulativeSize: file.node.size,
+      cumulativeSize: dagPb.encode(file.node).length + (file.node.Links || []).reduce((acc, curr) => acc + (curr.Tsize || 0), 0),
       blocks: file.node.Links.length,
       local: undefined,
       sizeLocal: undefined,

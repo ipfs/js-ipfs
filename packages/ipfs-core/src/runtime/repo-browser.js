@@ -1,6 +1,8 @@
 'use strict'
 
-const IPFSRepo = require('ipfs-repo')
+const { createRepo } = require('ipfs-repo')
+const DatastoreLevel = require('datastore-level')
+const BlockstoreDatastoreAdapter = require('blockstore-datastore-adapter')
 
 /**
  * @typedef {import('ipfs-repo-migrations').ProgressCallback} MigrationProgressCallback
@@ -8,14 +10,24 @@ const IPFSRepo = require('ipfs-repo')
 
 /**
  * @param {import('../types').Print} print
+ * @param {import('ipfs-core-utils/src/multicodecs')} codecs
  * @param {object} options
  * @param {string} [options.path]
  * @param {boolean} [options.autoMigrate]
  * @param {MigrationProgressCallback} [options.onMigrationProgress]
  */
-module.exports = (print, options) => {
+module.exports = (print, codecs, options) => {
   const repoPath = options.path || 'ipfs'
-  return new IPFSRepo(repoPath, {
+
+  return createRepo(repoPath, (codeOrName) => codecs.getCodec(codeOrName), {
+    root: new DatastoreLevel(repoPath),
+    blocks: new BlockstoreDatastoreAdapter(
+      new DatastoreLevel(`${repoPath}/blocks`)
+    ),
+    datastore: new DatastoreLevel(`${repoPath}/datastore`),
+    keys: new DatastoreLevel(`${repoPath}/keys`),
+    pins: new DatastoreLevel(`${repoPath}/pins`)
+  }, {
     autoMigrate: options.autoMigrate,
     onMigrationProgress: options.onMigrationProgress || print
   })

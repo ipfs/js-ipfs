@@ -237,4 +237,5 @@ class Service {
     return Service.try(this)
   }
 }
+
 module.exports = Service

@@ -2,16 +2,15 @@
 'use strict'
 
 const { resolvePath } = require('../../utils')
-const PinManager = require('./pin-manager')
-const { PinTypes } = PinManager
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
+const { PinTypes } = require('ipfs-repo')
 
 /**
  * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Source} Source
  * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Pin} PinTarget
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  */
 
 /**
@@ -21,11 +20,10 @@ const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
 
 /**
  * @param {Object} config
- * @param {import('../gc-lock').GCLock} config.gcLock
- * @param {import('ipld')} config.ipld
- * @param {import('./pin-manager')} config.pinManager
+ * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ pinManager, gcLock, ipld }) => {
+module.exports = ({ repo, codecs }) => {
   /**
    * @type {import('ipfs-core-types/src/pin').API["addAll"]}
    */
@@ -35,10 +33,10 @@ module.exports = ({ pinManager, gcLock, ipld }) => {
      */
     const pinAdd = async function * () {
       for await (const { path, recursive, metadata } of normaliseInput(source)) {
-        const cid = await resolvePath(ipld, path)
+        const { cid } = await resolvePath(repo, codecs, path)
 
         // verify that each hash can be pinned
-        const { reason } = await pinManager.isPinnedWithType(cid, [PinTypes.recursive, PinTypes.direct])
+        const { reason } = await repo.pins.isPinnedWithType(cid, [PinTypes.recursive, PinTypes.direct])
 
         if (reason === 'recursive' && !recursive) {
           // only disallow trying to override recursive pins
@@ -46,9 +44,9 @@ module.exports = ({ pinManager, gcLock, ipld }) => {
         }
 
         if (recursive) {
-          await pinManager.pinRecursively(cid, { metadata })
+          await repo.pins.pinRecursively(cid, { metadata })
         } else {
-          await pinManager.pinDirectly(cid, { metadata })
+          await repo.pins.pinDirectly(cid, { metadata })
         }
 
         yield cid
@@ -64,7 +62,7 @@ module.exports = ({ pinManager, gcLock, ipld }) => {
       return
     }
 
-    const release = await gcLock.readLock()
+    const release = await repo.gcLock.readLock()
 
     try {
       yield * pinAdd()

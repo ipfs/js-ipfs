@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "clean": "rimraf ./dist ./.cache ./.parcel-cache",
-    "build": "parcel build index.html --no-scope-hoist",
-    "start": "parcel index.html -p 8888",
+    "build": "parcel build public/index.html --no-scope-hoist",
+    "start": "parcel public/index.html -p 8888",
     "test": "test-ipfs-example"
   },
   "author": "Tara Vancil <tbvanc@gmail.com>",
@@ -18,7 +18,7 @@
   "devDependencies": {
     "execa": "^5.0.0",
     "go-ipfs": "0.8.0",
-    "ipfsd-ctl": "^8.0.1",
+    "ipfsd-ctl": "^9.0.0",
     "parcel": "2.0.0-beta.2",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"

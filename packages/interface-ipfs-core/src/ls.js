@@ -4,7 +4,7 @@
 const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const testTimeout = require('./utils/test-timeout')
 
 const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`
@@ -30,7 +30,7 @@ module.exports = (common, options) => {
     after(() => common.clean())
 
     it('should respect timeout option when listing files', () => {
-      return testTimeout(() => ipfs.ls(new CID('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
+      return testTimeout(() => ipfs.ls(CID.parse('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
         timeout: 1
       }))
     })
@@ -58,7 +58,7 @@ module.exports = (common, options) => {
 
       const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root.cid.toString()).to.equal(fixtures.directory.cid.toString())
 
       const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
       const output = await all(ipfs.ls(cid))

@@ -1,47 +1,22 @@
-// ordinarily we'd open a PR against the multicodec module to get our
-// codec number added but since we're just testing we shim our new
-// codec into the base-table.json file - this has to be done
-// before requiring other modules as the int table will become read-only
-const codecName = 'dag-test'
-const codecNumber = 392091
+'use strict'
 
-const table = require('multicodec/src/base-table')
-// @ts-ignore
-table.baseTable = {
-  ...table.baseTable,
-  [codecName]: codecNumber
-}
-
-// now require modules as usual
 const IPFS = require('ipfs-core')
-const multihashing = require('multihashing-async')
-const multicodec = require('multicodec')
-const CID = require('cids')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 async function main () {
-  // see https://github.com/ipld/interface-ipld-format for the interface definition
-  const format = {
-    codec: codecNumber,
-    defaultHashAlg: multicodec.SHA2_256,
-    util: {
-      serialize (data) {
-        return Buffer.from(JSON.stringify(data))
-      },
-      deserialize (buf) {
-        return JSON.parse(buf.toString('utf8'))
-      },
-      async cid (buf) {
-        const multihash = await multihashing(buf, format.defaultHashAlg)
-
-        return new CID(1, format.codec, multihash)
-      }
-    }
+  // see https://github.com/multiformats/js-multiformats#multicodec-encoders--decoders--codecs for the interface definition
+  const codec = {
+    name: 'dag-test',
+    code: 392091,
+    encode: (data) => uint8ArrayFromString(JSON.stringify(data)),
+    decode: (buf) => JSON.parse(uint8ArrayToString(buf))
   }
 
   const node = await IPFS.create({
     ipld: {
-      formats: [
-        format
+      codecs: [
+        codec
       ]
     }
   })
@@ -51,8 +26,8 @@ async function main () {
   }
 
   const cid = await node.dag.put(data, {
-    format: codecName,
-    hashAlg: format.defaultHashAlg
+    format: 'dag-test',
+    hashAlg: 'sha2-256'
   })
 
   console.info(`Put ${JSON.stringify(data)} = CID(${cid})`)

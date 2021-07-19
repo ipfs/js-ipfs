@@ -1,6 +1,5 @@
 'use strict'
 
-const multibase = require('multibase')
 const { default: parseDuration } = require('parse-duration')
 const {
   stripControlCharacters
@@ -20,7 +19,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -33,7 +32,7 @@ module.exports = {
    * @param {import('../types').Context} argv.ctx
    * @param {string} argv.name
    * @param {boolean} argv.recursive
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { print, ipfs }, name, recursive, cidBase, timeout }) {

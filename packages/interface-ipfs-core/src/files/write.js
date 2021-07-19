@@ -6,7 +6,7 @@ const uint8ArrayConcat = require('uint8arrays/concat')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isNode } = require('ipfs-utils/src/env')
-const multihash = require('multihashing-async').multihash
+const { sha512 } = require('multiformats/hashes/sha2')
 const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const createTwoShards = require('../utils/create-two-shards')
@@ -14,6 +14,7 @@ const { randomBytes } = require('iso-random-stream')
 const { randomStream } = require('iso-random-stream')
 const all = require('it-all')
 const isShardAtPath = require('../utils/is-shard-at-path')
+const raw = require('multiformats/codecs/raw')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -57,7 +58,7 @@ module.exports = (common, options) => {
   }
 
   describe('.files.write', function () {
-    this.timeout(120 * 1000)
+    this.timeout(300 * 1000)
 
     let ipfs
 
@@ -105,7 +106,7 @@ module.exports = (common, options) => {
       })).to.eventually.be.rejected()
     })
 
-    it('explodes if given a negtive offset', async () => {
+    it('explodes if given a negative offset', async () => {
       await expect(ipfs.files.write('/foo-negative-offset', uint8ArrayFromString('foo'), {
         offset: -1
       })).to.eventually.be.rejected()
@@ -403,9 +404,14 @@ module.exports = (common, options) => {
 
         const stats = await ipfs.files.stat(path)
 
+        let leafCount = 0
+
         for await (const { cid } of traverseLeafNodes(ipfs, stats.cid)) {
-          expect(cid.codec).to.equal('raw')
+          leafCount++
+          expect(cid.code).to.equal(raw.code)
         }
+
+        expect(leafCount).to.be.greaterThan(0)
       })
     })
 
@@ -570,10 +576,7 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-512'
       })
 
-      await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.multihash')
-        .that.satisfies(hash => {
-          return multihash.decode(hash).name === 'sha2-512'
-        })
+      await expect(ipfs.files.stat(filePath)).to.eventually.have.nested.property('cid.multihash.code', sha512.code)
 
       const actualBytes = uint8ArrayConcat(await all(ipfs.files.read(filePath)))
 

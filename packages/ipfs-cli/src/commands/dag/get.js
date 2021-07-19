@@ -3,13 +3,14 @@
 const { default: parseDuration } = require('parse-duration')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 const uint8ArrayToString = require('uint8arrays/to-string')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 const {
   stripControlCharacters,
   makeEntriesPrintable,
   escapeControlCharacters
 } = require('../../utils')
-const multibase = require('multibase')
+const dagPB = require('@ipld/dag-pb')
+const dagCBOR = require('@ipld/dag-cbor')
+const raw = require('multiformats/codecs/raw')
 
 module.exports = {
   command: 'get <cid path>',
@@ -24,7 +25,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     'data-enc': {
       describe: 'String encoding to display data in.',
@@ -42,7 +43,7 @@ module.exports = {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.cidpath
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {'base16' | 'base64' | 'base58btc'} argv.dataEnc
    * @param {boolean} argv.localResolve
    * @param {number} argv.timeout
@@ -74,9 +75,10 @@ module.exports = {
     }
 
     const node = result.value
+    const base = await ipfs.bases.getBase(cidBase)
 
-    if (cid.codec === 'dag-pb') {
-      /** @type {import('ipld-dag-pb').DAGNode} */
+    if (cid.code === dagPB.code) {
+      /** @type {import('@ipld/dag-pb').PBNode} */
       const dagNode = node
 
       print(JSON.stringify({
@@ -84,13 +86,13 @@ module.exports = {
         links: (dagNode.Links || []).map(link => ({
           Name: stripControlCharacters(link.Name),
           Size: link.Tsize,
-          Cid: { '/': cidToString(link.Hash, { base: cidBase }) }
+          Cid: { '/': link.Hash.toString(base.encoder) }
         }))
       }))
-    } else if (cid.codec === 'raw') {
+    } else if (cid.code === raw.code) {
       print(uint8ArrayToString(node, dataEnc))
-    } else if (cid.codec === 'dag-cbor') {
-      print(JSON.stringify(makeEntriesPrintable(node, cidBase)))
+    } else if (cid.code === dagCBOR.code) {
+      print(JSON.stringify(makeEntriesPrintable(node, base)))
     } else {
       print(escapeControlCharacters(node.toString()))
     }

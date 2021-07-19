@@ -2,7 +2,7 @@
 
 // @ts-ignore no types
 const { createFactory } = require('ipfsd-ctl')
-const merge = require('merge-options')
+const merge = require('merge-options').bind({ ignoreUndefined: true })
 const { isNode } = require('ipfs-utils/src/env')
 
 const commonOptions = {

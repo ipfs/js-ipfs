@@ -14,13 +14,14 @@ const main = async () => {
 
   const directoryHash = await streamFiles(ipfs, directoryName, inputFiles)
 
-  const fileList = await ipfs.ls(directoryHash)
-
   log(`\n--\n\nDirectory contents:\n\n${directoryName}/ ${directoryHash}`)
 
-  fileList.forEach((file, index) => {
-    log(` ${index < fileList.length - 1 ? '\u251C' : '\u2514'}\u2500 ${file.name} ${file.path} ${file.hash}`)
-  })
+  let index = 0
+
+  for await (const file of ipfs.ls(directoryHash)) {
+    log(` ${index < inputFiles.length - 1 ? '\u251C' : '\u2514'}\u2500 ${file.name} ${file.path} ${file.cid}`)
+    index++
+  }
 }
 
 const createFiles = (directory) => {
@@ -54,7 +55,7 @@ const streamFiles = async (ipfs, directory, files) => {
 
   const data = await ipfs.add(stream)
 
-  log(`Added ${data.path} hash: ${data.hash}`)
+  log(`Added ${data.path} hash: ${data.cid}`)
 
   // The last data event will contain the directory hash
   if (data.path === directory) {

@@ -22,7 +22,7 @@ module.exports = class Query {
       this.namespace = namespace
       this.method = method
       this.timeout = input.timeout == null ? Infinity : input.timeout
-      /** @type {ReturnType<typeof setTimeout>|null} */
+      /** @type {ReturnType<typeof setTimeout> | null} */
       this.timerID = null
     })
   }

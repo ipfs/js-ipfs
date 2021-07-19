@@ -4,7 +4,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const { isNode } = require('ipfs-utils/src/env')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { CID } = require('multiformats/cid')
 const { nanoid } = require('nanoid')
 const PeerId = require('peer-id')
 const { supportedKeys } = require('libp2p-crypto/src/keys')
@@ -109,7 +109,7 @@ describe('init', function () {
 
   it('should write init docs', async () => {
     await init({ bits: 512 })
-    const multihash = 'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB'
+    const multihash = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
     const node = await ipfs.object.get(multihash, { enc: 'base58' })
     expect(node.Links).to.exist()
@@ -119,8 +119,8 @@ describe('init', function () {
     await init({ bits: 512, emptyRepo: true })
 
     // Should not have default assets
-    const multihash = uint8ArrayFromString('12205e7c3ce237f936c76faf625e90f7751a9f5eeb048f59873303c215e9cce87599', 'base16')
-    await expect(ipfs.object.get(multihash, {})).to.eventually.be.rejected()
+    const multihash = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    await expect(ipfs.object.get(multihash, {})).to.eventually.be.rejected().with.property('code', 'ERR_NOT_FOUND')
   })
 
   it('should apply one profile', async () => {

@@ -8,7 +8,7 @@ const createRm = require('./rm')
 class BootstrapAPI {
   /**
    * @param {Object} config
-   * @param {import('ipfs-repo')} config.repo
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
   constructor ({ repo }) {
     this.add = createAdd({ repo })

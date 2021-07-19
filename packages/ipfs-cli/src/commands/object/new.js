@@ -1,7 +1,5 @@
 'use strict'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
@@ -13,7 +11,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -25,7 +23,7 @@ module.exports = {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {'unixfs-dir'} argv.template
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, template, cidBase, timeout }) {
@@ -33,6 +31,7 @@ module.exports = {
       template,
       timeout
     })
-    print(cidToString(cid, { base: cidBase, upgrade: false }))
+    const base = await ipfs.bases.getBase(cidBase)
+    print(cid.toString(base.encoder))
   }
 }

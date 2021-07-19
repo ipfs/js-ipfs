@@ -7,7 +7,7 @@ const cli = require('./utils/cli')
 const sinon = require('sinon')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 describe('dht', () => {
   let ipfs
@@ -60,7 +60,7 @@ describe('dht', () => {
     }
 
     it('should be able to get a value from the dht', async () => {
-      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       const value = uint8ArrayFromString('testvalue')
 
       ipfs.dht.get.withArgs(key.bytes, defaultOptions).resolves(value)
@@ -72,7 +72,7 @@ describe('dht', () => {
     })
 
     it('should be able to get a value from the dht with a timeout', async () => {
-      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       const value = uint8ArrayFromString('testvalue')
 
       ipfs.dht.get.withArgs(key.bytes, {
@@ -94,7 +94,7 @@ describe('dht', () => {
     }
 
     it('should be able to provide data', async () => {
-      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key}`, {
         ipfs
@@ -103,7 +103,7 @@ describe('dht', () => {
     })
 
     it('should be able to provide data recursively', async () => {
-      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key} --recursive`, {
         ipfs
@@ -115,7 +115,7 @@ describe('dht', () => {
     })
 
     it('should be able to provide data recursively (short option)', async () => {
-      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key} -r`, {
         ipfs
@@ -127,7 +127,7 @@ describe('dht', () => {
     })
 
     it('should be able to provide data with a timeout', async () => {
-      const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+      const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
 
       await cli(`dht provide ${key} --timeout=1s`, {
         ipfs
@@ -144,7 +144,7 @@ describe('dht', () => {
       numProviders: 20,
       timeout: undefined
     }
-    const key = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+    const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const prov = {
       id: 'prov-id'
     }

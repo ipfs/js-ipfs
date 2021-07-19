@@ -40,7 +40,7 @@ export interface API<OptionExtension = {}> {
    */
   unsubscribe: (topic: string, handler: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
 
-   /**
+  /**
    * Publish a data message to a pubsub topic
    *
    * @example
@@ -89,4 +89,4 @@ export interface SubscribeOptions extends AbortOptions {
   onError?: (err: Error) => void
 }
 
-export type MessageHandlerFn = (message: Message) => void
+export interface MessageHandlerFn { (message: Message): void }

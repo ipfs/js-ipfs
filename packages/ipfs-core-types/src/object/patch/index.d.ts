@@ -1,6 +1,6 @@
-import type CID from 'cids';
+import type { CID } from 'multiformts/cid'
 import type { AbortOptions } from '../../utils'
-import type { DAGLink } from 'ipld-dag-pb'
+import type { PBLink as DAGLink } from '@ipld/dag-pb'
 
 export interface API<OptionExtension = {}> {
   addLink: (cid: CID, link: DAGLink, options?: AbortOptions & OptionExtension) => Promise<CID>

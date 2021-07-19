@@ -56,7 +56,7 @@ module.exports = {
    * @param {string} argv.path
    * @param {number} argv.mode
    * @param {boolean} argv.recursive
-   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {string} argv.hashAlg
    * @param {boolean} argv.flush
    * @param {number} argv.shardSplitThreshold
    * @param {number} argv.timeout

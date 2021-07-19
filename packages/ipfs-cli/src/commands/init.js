@@ -83,11 +83,10 @@ module.exports = {
 
     // Required inline to reduce startup time
     const IPFS = require('ipfs-core')
-    const Repo = require('ipfs-repo')
 
     try {
       await IPFS.create({
-        repo: new Repo(repoPath),
+        repo: repoPath,
         init: {
           algorithm: argv.algorithm,
           bits: argv.bits,
