@@ -1,9 +1,11 @@
+'use strict'
+
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const abortSignal = require('../lib/abort-signal')
 const multipartRequest = require('../lib/multipart-request')
 const { AbortController } = require('native-abort-controller')
-const { default: CID } = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -30,7 +32,7 @@ module.exports = configure(api => {
     for await (const { BlockCount, Root } of res.ndjson()) {
       if (Root !== undefined) {
         const { Cid, PinErrorMsg } = Root
-        yield { root: { cid: new CID(Cid), pinErrorMsg: PinErrorMsg === '' ? undefined : PinErrorMsg } }
+        yield { root: { cid: CID.parse(Cid), pinErrorMsg: PinErrorMsg === '' ? undefined : PinErrorMsg } }
       } else {
         yield { blockCount: BlockCount }
       }

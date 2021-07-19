@@ -1,7 +1,7 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
@@ -27,7 +27,7 @@ module.exports = {
    */
   async handler ({ ctx: { ipfs }, rootcid, timeout }) {
     const options = { timeout }
-    const cid = new CID(rootcid)
+    const cid = CID.parse(rootcid)
 
     const exporter = ipfs.dag.export(cid, options)
     for await (const chunk of exporter) {

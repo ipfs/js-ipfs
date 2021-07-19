@@ -4,7 +4,7 @@ const { CarBlockIterator } = require('@ipld/car/iterator')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('multiformats/cid).CID} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  * @typedef {import('ipfs-core-types/src/dag/').ImportRootStatus} RootStatus

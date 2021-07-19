@@ -1,6 +1,5 @@
 'use strict'
 
-const CID = require('cids')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -14,11 +13,12 @@ module.exports = configure(api => {
    * @type {DAGAPI["export"]}
    */
   async function * dagExport (root, options = {}) {
-    const arg = new CID(root).toString()
     const res = await api.post('dag/export', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams({ arg }),
+      searchParams: toUrlSearchParams({
+        arg: root.toString()
+      }),
       headers: options.headers
     })
 
