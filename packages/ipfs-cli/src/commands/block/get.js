@@ -23,7 +23,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.key
+   * @param {import('multiformats/cid').CID} argv.key
    * @param {number} argv.timeout
    */
   async handler ({ ctx, key, timeout }) {
@@ -32,7 +32,7 @@ module.exports = {
       timeout
     })
     if (block) {
-      print(uint8ArrayToString(block.data), false)
+      print(uint8ArrayToString(block), false)
     } else {
       print('Block was unwanted before it could be remotely retrieved')
     }

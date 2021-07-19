@@ -6,7 +6,7 @@ const { waitForWantlistKey, waitForWantlistKeyToBeRemoved } = require('./utils')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const testTimeout = require('../utils/test-timeout')
 const { AbortController } = require('native-abort-controller')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const delay = require('delay')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
@@ -32,7 +32,7 @@ module.exports = (common, options) => {
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB
-      ipfsB.block.get(key).catch(() => { /* is ok, expected on teardown */ })
+      ipfsB.block.get(CID.parse(key)).catch(() => { /* is ok, expected on teardown */ })
 
       await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
     })
@@ -58,7 +58,7 @@ module.exports = (common, options) => {
 
     it('should remove blocks from the wantlist when requests are cancelled', async () => {
       const controller = new AbortController()
-      const cid = new CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KaGa')
+      const cid = CID.parse('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KaGa')
 
       const getPromise = ipfsA.dag.get(cid, {
         signal: controller.signal
@@ -76,7 +76,7 @@ module.exports = (common, options) => {
     it('should keep blocks in the wantlist when only one request is cancelled', async () => {
       const controller = new AbortController()
       const otherController = new AbortController()
-      const cid = new CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1Kaaa')
+      const cid = CID.parse('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1Kaaa')
 
       const getPromise = ipfsA.dag.get(cid, {
         signal: controller.signal

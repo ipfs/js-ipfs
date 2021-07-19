@@ -1,21 +1,14 @@
 'use strict'
 
 const multipart = require('../../utils/multipart-request-parser')
-const mha = require('multihashing-async')
-const mh = mha.multihash
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const {
-  cidToString
-} = require('ipfs-core-utils/src/cid')
 const all = require('it-all')
 const uint8ArrayToString = require('uint8arrays/to-string')
-const Block = require('ipld-block')
-const CID = require('cids')
 
 /**
  * @param {undefined | Uint8Array | Record<string, any>} obj
- * @param {import('multibase').BaseName | 'utf8' | 'utf-8' | 'ascii'} encoding
+ * @param {'base64pad' | 'base16' | 'utf8'} encoding
  */
 const encodeBufferKeys = (obj, encoding) => {
   if (!obj) {
@@ -174,10 +167,13 @@ exports.put = {
           // the node is an uncommon format which the client should have
           // serialized so add it to the block store and fetch it deserialized
           // before continuing
-          const hash = await mha(data, request.query.hash)
-          const cid = new CID(request.query.cidVersion, format, hash)
+          const cidVersion = format === 'dag-pb' && request.query.hashAlg === 'sha2-256' ? request.query.version : 1
 
-          await request.server.app.ipfs.block.put(new Block(data, cid))
+          const cid = await request.server.app.ipfs.block.put(data, {
+            version: cidVersion,
+            format,
+            mhtype: request.query.hash
+          })
 
           const {
             value
@@ -201,9 +197,9 @@ exports.put = {
         format: Joi.string().default('cbor'),
         inputEncoding: Joi.string().default('json'),
         pin: Joi.boolean().default(false),
-        hash: Joi.string().valid(...Object.keys(mh.names)).default('sha2-256'),
-        cidBase: Joi.cidBase(),
-        cidVersion: Joi.number().integer().valid(0, 1).default(1),
+        hash: Joi.string().default('sha2-256'),
+        cidBase: Joi.string().default('base32'),
+        version: Joi.number().integer().valid(0, 1).default(1),
         timeout: Joi.timeout()
       })
         .rename('input-enc', 'inputEncoding', {
@@ -211,10 +207,6 @@ exports.put = {
           ignoreUndefined: true
         })
         .rename('cid-base', 'cidBase', {
-          override: true,
-          ignoreUndefined: true
-        })
-        .rename('cid-version', 'cidVersion', {
           override: true,
           ignoreUndefined: true
         })
@@ -245,16 +237,19 @@ exports.put = {
       query: {
         pin,
         cidBase,
-        timeout
+        timeout,
+        version
       }
     } = request
 
+    const cidVersion = format === 'dag-pb' && hashAlg === 'sha2-256' ? version : 1
     let cid
 
     try {
       cid = await ipfs.dag.put(node, {
         format,
         hashAlg,
+        version: cidVersion,
         pin,
         signal,
         timeout
@@ -263,11 +258,11 @@ exports.put = {
       throw Boom.boomify(err, { message: 'Failed to put node' })
     }
 
+    const base = await ipfs.bases.getBase(cidVersion === 0 ? 'base58btc' : cidBase)
+
     return h.response({
       Cid: {
-        '/': cidToString(cid, {
-          base: cidBase
-        })
+        '/': cid.toString(base.encoder)
       }
     })
   }
@@ -282,7 +277,7 @@ exports.resolve = {
       },
       query: Joi.object().keys({
         arg: Joi.cidAndPath().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout(),
         path: Joi.string()
       })
@@ -327,11 +322,11 @@ exports.resolve = {
         timeout
       })
 
+      const base = await ipfs.bases.getBase(cidBase)
+
       return h.response({
         Cid: {
-          '/': cidToString(result.cid, {
-            base: cidBase
-          })
+          '/': result.cid.toString(base.encoder)
         },
         RemPath: result.remainderPath
       })

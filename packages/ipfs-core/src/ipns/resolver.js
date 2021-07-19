@@ -89,7 +89,7 @@ class IpnsResolver {
    * @param {string} name
    */
   async _resolveName (name) {
-    const peerId = PeerId.createFromCID(name)
+    const peerId = PeerId.parse(name)
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
     let record
 

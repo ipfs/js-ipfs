@@ -29,15 +29,6 @@ describe('/ping', function () {
     return testHttpMethod('/api/v0/ping')
   })
 
-  it('returns 400 if both n and count are provided', async () => {
-    const res = await http({
-      method: 'POST',
-      url: '/api/v0/ping?arg=peerid&n=1&count=1'
-    }, { ipfs })
-
-    expect(res).to.have.property('statusCode', 400)
-  })
-
   it('returns 400 if arg is not provided', async () => {
     const res = await http({
       method: 'POST',

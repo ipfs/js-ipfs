@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -18,7 +18,7 @@ function toPin (type, cid, metadata) {
   /** @type {import('ipfs-core-types/src/pin').LsResult} */
   const pin = {
     type,
-    cid: new CID(cid)
+    cid: CID.parse(cid)
   }
 
   if (metadata) {

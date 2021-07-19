@@ -34,7 +34,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')[]} argv.hash
+   * @param {import('multiformats/cid').CID[]} argv.hash
    * @param {boolean} argv.force
    * @param {boolean} argv.quiet
    * @param {number} argv.timeout

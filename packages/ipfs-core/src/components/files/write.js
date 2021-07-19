@@ -2,6 +2,11 @@
 
 const log = require('debug')('ipfs:mfs:write')
 const { importer } = require('ipfs-unixfs-importer')
+const {
+  decode
+// @ts-ignore - TODO vmx 2021-03-31
+} = require('@ipld/dag-pb')
+const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const stat = require('./stat')
 const mkdir = require('./mkdir')
 const addLink = require('./utils/add-link')
@@ -25,12 +30,13 @@ const {
 } = require('ipfs-unixfs')
 
 /**
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {import('./utils/to-mfs-path').FilePath} FilePath
  * @typedef {import('./utils/to-mfs-path').MfsPath} MfsPath
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ *
  * @typedef {object} DefaultOptions
  * @property {number} offset
  * @property {number} length
@@ -39,7 +45,7 @@ const {
  * @property {boolean} rawLeaves
  * @property {boolean} reduceSingleLeafToSelf
  * @property {CIDVersion} cidVersion
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {boolean} parents
  * @property {import('ipfs-core-types/src/root').AddProgressFn} progress
  * @property {'trickle' | 'balanced'} strategy
@@ -173,7 +179,8 @@ const updateOrImport = async (context, path, source, destination, options) => {
       throw errCode(new Error(`cannot write to ${parent.name}: Not a directory`), 'ERR_NOT_A_DIRECTORY')
     }
 
-    const parentNode = await context.ipld.get(parent.cid)
+    const parentBlock = await context.repo.blocks.get(parent.cid)
+    const parentNode = decode(parentBlock)
 
     const result = await addLink(context, {
       parent: parentNode,
@@ -286,21 +293,32 @@ const write = async (context, source, destination, options) => {
     mtime = destination.unixfs.mtime
   }
 
+  let hasher
+  switch (options.hashAlg) {
+    case 'sha2-256':
+      hasher = sha256
+      break
+    case 'sha2-512':
+      hasher = sha512
+      break
+    default:
+      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
+  }
+
   const result = await last(importer([{
     content: content,
 
     // persist mode & mtime if set previously
     mode,
     mtime
-  }], context.block, {
+  }], context.repo.blocks, {
     progress: options.progress,
-    hashAlg: options.hashAlg,
+    hasher,
     cidVersion: options.cidVersion,
     strategy: options.strategy,
     rawLeaves: options.rawLeaves,
     reduceSingleLeafToSelf: options.reduceSingleLeafToSelf,
-    leafType: options.leafType,
-    pin: false
+    leafType: options.leafType
   }))
 
   if (!result) {

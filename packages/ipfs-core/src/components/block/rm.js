@@ -1,10 +1,8 @@
 'use strict'
 
-const CID = require('cids')
 const errCode = require('err-code')
 const { parallelMap, filter } = require('streaming-iterables')
 const { pipe } = require('it-pipe')
-const { PinTypes } = require('../pin/pin-manager')
 const { cleanCid } = require('./utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
@@ -12,11 +10,9 @@ const BLOCK_RM_CONCURRENCY = 8
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
- * @param {import('../pin/pin-manager')} config.pinManager
- * @param {import('.').GCLock} config.gcLock
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ blockService, gcLock, pinManager }) => {
+module.exports = ({ repo }) => {
   /**
    * @type {import('ipfs-core-types/src/block').API["rm"]}
    */
@@ -27,7 +23,7 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
 
     // We need to take a write lock here to ensure that adding and removing
     // blocks are exclusive operations
-    const release = await gcLock.writeLock()
+    const release = await repo.gcLock.writeLock()
 
     try {
       yield * pipe(
@@ -39,25 +35,13 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
           const result = { cid }
 
           try {
-            const pinResult = await pinManager.isPinnedWithType(cid, PinTypes.all)
-
-            if (pinResult.pinned) {
-              if (CID.isCID(pinResult.reason)) { // eslint-disable-line max-depth
-                throw errCode(new Error(`pinned via ${pinResult.reason}`), 'ERR_BLOCK_PINNED')
-              }
-
-              throw errCode(new Error(`pinned: ${pinResult.reason}`), 'ERR_BLOCK_PINNED')
-            }
-
-            // remove has check when https://github.com/ipfs/js-ipfs-block-service/pull/88 is merged
-            // @ts-ignore - this accesses some internals
-            const has = await blockService._repo.blocks.has(cid)
+            const has = await repo.blocks.has(cid)
 
             if (!has) {
               throw errCode(new Error('block not found'), 'ERR_BLOCK_NOT_FOUND')
             }
 
-            await blockService.delete(cid)
+            await repo.blocks.delete(cid)
           } catch (err) {
             if (!options.force) {
               err.message = `cannot remove ${cid}: ${err.message}`

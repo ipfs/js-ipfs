@@ -1,7 +1,6 @@
 'use strict'
 
 const debug = require('debug')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 const log = Object.assign(debug('ipfs:mfs-preload'), {
   error: debug('ipfs:mfs-preload:error')
 })
@@ -35,7 +34,7 @@ module.exports = ({ preload, files, options = {} }) => {
   const preloadMfs = async () => {
     try {
       const stats = await files.stat('/')
-      const nextRootCid = cidToString(stats.cid, { base: 'base32' })
+      const nextRootCid = stats.cid.toString()
 
       if (rootCid !== nextRootCid) {
         log(`preloading updated MFS root ${rootCid} -> ${stats.cid}`)
@@ -55,7 +54,7 @@ module.exports = ({ preload, files, options = {} }) => {
      */
     async start () {
       const stats = await files.stat('/')
-      rootCid = cidToString(stats.cid, { base: 'base32' })
+      rootCid = stats.cid.toString()
       log(`monitoring MFS root ${stats.cid}`)
       timeoutId = setTimeout(preloadMfs, options.interval)
     },

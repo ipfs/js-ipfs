@@ -3,7 +3,7 @@
 /* eslint-env browser */
 const Client = require('./client')
 const { decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @typedef {import('ipfs-message-port-server').FilesService} FilesService
@@ -50,7 +50,7 @@ module.exports = FilesClient
  * @param {string|CID} pathOrCID
  */
 const encodeLocation = pathOrCID =>
-  CID.isCID(pathOrCID) ? `/ipfs/${pathOrCID.toString()}` : pathOrCID
+  pathOrCID instanceof CID ? `/ipfs/${pathOrCID.toString()}` : pathOrCID
 
 /**
  * @param {EncodedStat} data

@@ -92,7 +92,7 @@ class IpnsPublisher {
    * @param {IPNSEntry} entry
    */
   async _publishEntry (key, entry) {
-    if (!(Key.isKey(key))) {
+    if (!(key instanceof Key)) {
       const errMsg = 'datastore key does not have a valid format'
 
       log.error(errMsg)
@@ -130,7 +130,7 @@ class IpnsPublisher {
    * @param {PublicKey} publicKey
    */
   async _publishPublicKey (key, publicKey) {
-    if ((!Key.isKey(key))) {
+    if (!(key instanceof Key)) {
       const errMsg = 'datastore key does not have a valid format'
       log.error(errMsg)
 

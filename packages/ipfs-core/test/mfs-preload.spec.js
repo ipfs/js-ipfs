@@ -3,16 +3,16 @@
 
 const { expect } = require('aegir/utils/chai')
 const delay = require('delay')
-const multihashing = require('multihashing-async')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { nanoid } = require('nanoid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const waitFor = require('./utils/wait-for')
 const mfsPreload = require('../src/mfs-preload')
 
 const fakeCid = async () => {
-  const mh = await multihashing(uint8ArrayFromString(nanoid()), 'sha2-256')
-  return new CID(mh)
+  const mh = await sha256.digest(uint8ArrayFromString(nanoid()))
+  return CID.createV0(mh)
 }
 
 const createMockFilesStat = (cids = []) => {

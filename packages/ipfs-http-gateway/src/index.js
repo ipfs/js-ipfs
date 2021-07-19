@@ -77,7 +77,6 @@ class HttpGateway {
     this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
 
     this._log('started')
-    return this
   }
 
   /**

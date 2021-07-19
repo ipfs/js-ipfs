@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeCID, decodeCID } = require('./cid')
 
 /**
@@ -68,7 +68,7 @@ exports.encodeNode = encodeNode
  */
 const collectNode = (value, cids, transfer) => {
   if (value != null && typeof value === 'object') {
-    if (CID.isCID(value)) {
+    if (value instanceof CID) {
       cids.push(value)
       encodeCID(value, transfer)
     } else if (value instanceof ArrayBuffer) {

@@ -2,7 +2,7 @@
 
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const IPFS = require('../../')
-const createTempRepo = require('./create-repo-nodejs')
+const createTempRepo = require('./create-repo')
 
 module.exports = async (config = {}) => {
   const repo = await createTempRepo()
@@ -25,7 +25,6 @@ module.exports = async (config = {}) => {
     repo,
     cleanup: async () => {
       await ipfs.stop()
-      await repo.teardown()
     }
   }
 }

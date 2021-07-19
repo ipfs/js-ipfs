@@ -3,6 +3,7 @@
 const isIPFS = require('is-ipfs')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 const drain = require('it-drain')
+const { resolve } = require('../../utils')
 
 /**
  * resolves the given path by parsing out protocol-specific entries
@@ -10,10 +11,12 @@ const drain = require('it-drain')
  *
  * @param {Object} context
  * @param {import('../ipns')} context.ipns
- * @param {import('ipld')} context.ipld
+ * @param {import('ipfs-repo').IPFSRepo} context.repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} context.codecs
  * @param {string} name
+ * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-exports.resolvePath = async ({ ipns, ipld }, name) => {
+exports.resolvePath = async ({ ipns, repo, codecs }, name, options) => {
   // ipns path
   if (isIPFS.ipnsPath(name)) {
     return ipns.resolve(name)
@@ -25,5 +28,5 @@ exports.resolvePath = async ({ ipns, ipld }, name) => {
   } = toCidAndPath(name)
 
   // ipfs path
-  await drain(ipld.resolve(cid, path || ''))
+  await drain(resolve(cid, path || '', codecs, repo, options))
 }

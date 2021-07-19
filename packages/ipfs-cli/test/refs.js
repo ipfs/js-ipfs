@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 
@@ -18,7 +18,7 @@ const defaultOptions = {
 // Note: There are more comprehensive tests in interface-js-ipfs-core
 describe('refs', () => {
   let ipfs
-  const cid = new CID('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+  const cid = CID.parse('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
   const err = 'err'
   const ref = 'ref'
 
