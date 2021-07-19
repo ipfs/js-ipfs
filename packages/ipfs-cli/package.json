@@ -74,6 +74,6 @@
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1",
     "string-argv": "^0.3.1",
-    "temp-write": "^4.0.0"
+    "temp-write": "^5.0.0"
   }
 }
