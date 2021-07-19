@@ -10,6 +10,10 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { sha256 } = require('multiformats/hashes/sha2')
 
+const WS = require('libp2p-websockets')
+const transportKey = WS.prototype[Symbol.toStringTag]
+const filters = require('libp2p-websockets/src/filters')
+
 const { sleep, Logger, onEnterPress, catchAndLog } = require("./util");
 
 async function main() {
@@ -40,6 +44,17 @@ async function main() {
   ipfsBrowser = await IPFS.create({
     pass: "01234567890123456789",
     EXPERIMENTAL: { ipnsPubsub: true },
+    libp2p: {
+      config: {
+        transport: {
+          // This is added for local demo!
+          // In a production environment the default filter should be used
+          // where only DNS + WSS addresses will be dialed by websockets in the browser.
+          [transportKey]: {
+            filter: filters.all
+          }
+        }
+      }}
   });
   const { id } = await ipfsBrowser.id();
   log(`Browser IPFS ready! Node id: ${id}`);
