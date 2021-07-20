@@ -6,7 +6,7 @@ export interface API<OptionExtension = {}> {
    * Returns a value from the currently being used config. If the daemon
    * is off, it returns the value from the stored config.
    */
-  get: (key: string, options?: AbortOptions & OptionExtension) => Promise<string | object>
+  get: <T = string | object>(key: string, options?: AbortOptions & OptionExtension) => Promise<T>
 
   /**
    * Returns the full config been used. If the daemon is off, it returns the
