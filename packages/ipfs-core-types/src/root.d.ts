@@ -166,6 +166,7 @@ export interface Directory {
    * Directory path
    */
   path: string
+  content?: undefined
   mode?: number
   mtime?: Mtime
   size: number
