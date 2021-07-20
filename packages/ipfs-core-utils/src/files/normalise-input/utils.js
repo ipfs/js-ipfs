@@ -10,10 +10,12 @@ function isBytes (obj) {
 
 /**
  * @param {any} obj
- * @returns {obj is Blob}
+ * @returns {obj is globalThis.Blob}
  */
 function isBlob (obj) {
-  return obj.constructor && (obj.constructor.name === 'Blob' || obj.constructor.name === 'File')
+  return obj.constructor &&
+    (obj.constructor.name === 'Blob' || obj.constructor.name === 'File') &&
+    typeof obj.stream === 'function'
 }
 
 /**
