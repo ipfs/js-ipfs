@@ -64,6 +64,7 @@
     "multiformats": "^9.4.1",
     "nanoid": "^3.1.12",
     "native-abort-controller": "^1.0.3",
+    "p-defer": "^3.0.0",
     "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^2.1.6"
@@ -77,7 +78,6 @@
     "it-concat": "^2.0.0",
     "it-first": "^1.0.4",
     "nock": "^13.0.2",
-    "p-defer": "^3.0.0",
     "rimraf": "^3.0.2"
   },
   "engines": {

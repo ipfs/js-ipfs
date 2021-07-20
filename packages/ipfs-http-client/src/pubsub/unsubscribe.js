@@ -15,7 +15,7 @@ module.exports = (options, subsTracker) => {
    * @type {PubsubAPI["unsubscribe"]}
    */
   async function unsubscribe (topic, handler) {
-    subsTracker.unsubscribe(topic, handler)
+    await subsTracker.unsubscribe(topic, handler)
   }
   return unsubscribe
 }

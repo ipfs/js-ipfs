@@ -8,6 +8,7 @@ const { AbortController } = require('native-abort-controller')
  * @typedef {Object} Subscription
  * @property {MessageHandlerFn} handler
  * @property {AbortController} controller
+ * @property {Promise<void>} end
  */
 
 class SubscriptionTracker {
@@ -19,9 +20,10 @@ class SubscriptionTracker {
   /**
    * @param {string} topic
    * @param {MessageHandlerFn} handler
+   * @param {Promise<void>} end
    * @param {AbortSignal} [signal]
    */
-  subscribe (topic, handler, signal) {
+  subscribe (topic, handler, end, signal) {
     const topicSubs = this._subs.get(topic) || []
 
     if (topicSubs.find(s => s.handler === handler)) {
@@ -31,7 +33,7 @@ class SubscriptionTracker {
     // Create controller so a call to unsubscribe can cancel the request
     const controller = new AbortController()
 
-    this._subs.set(topic, [{ handler, controller }].concat(topicSubs))
+    this._subs.set(topic, [{ handler, controller, end }].concat(topicSubs))
 
     // If there is an external signal, forward the abort event
     if (signal) {
@@ -45,7 +47,7 @@ class SubscriptionTracker {
    * @param {string} topic
    * @param {MessageHandlerFn} [handler]
    */
-  unsubscribe (topic, handler) {
+  async unsubscribe (topic, handler) {
     const subs = this._subs.get(topic) || []
     let unsubs
 
@@ -62,6 +64,10 @@ class SubscriptionTracker {
     }
 
     unsubs.forEach(s => s.controller.abort())
+
+    await Promise.all(
+      unsubs.map(sub => sub.end)
+    )
   }
 }
 

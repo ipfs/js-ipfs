@@ -5,6 +5,7 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
+const defer = require('p-defer')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -24,7 +25,9 @@ module.exports = (options, subsTracker) => {
      * @type {PubsubAPI["subscribe"]}
      */
     async function subscribe (topic, handler, options = {}) { // eslint-disable-line require-await
-      options.signal = subsTracker.subscribe(topic, handler, options.signal)
+      const end = defer()
+
+      options.signal = subsTracker.subscribe(topic, handler, end.promise, options.signal)
 
       /** @type {(value?: any) => void} */
       let done
@@ -72,6 +75,9 @@ module.exports = (options, subsTracker) => {
             })
 
             done()
+          })
+          .finally(() => {
+            end.resolve()
           })
       }, 0)
 
