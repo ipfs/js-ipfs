@@ -206,16 +206,10 @@ export interface ImportOptions extends AbortOptions, PreloadOptions {
 }
 
 export interface ImportResult {
-  // may only be one of these
-  /**
-   * The number of blocks imported during this import operation. Cumulative if multiple CARs have been imported.
-   */
-  blockCount?: number
-
   /**
    * A list of roots and their pin status if `pinRoots` was set.
    */
-  root?: ImportRootStatus
+  root: ImportRootStatus
 }
 
 export interface ImportRootStatus {

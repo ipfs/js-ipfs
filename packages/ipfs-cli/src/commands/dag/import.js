@@ -38,16 +38,9 @@ module.exports = {
    * @param {string} argv.cidBase
    */
   async handler ({ ctx: { ipfs, print, getStdin }, path, pinRoots, timeout, cidBase }) {
-    const handleResult = async (/** @type {ImportResult} */ { blockCount, root }) => {
-      if ((blockCount === undefined) === (root === undefined)) { // should only have one of these
-        throw new Error('Unexpected result from dag.import')
-      }
-      if (blockCount !== undefined) {
-        print(`imported ${blockCount} blocks`)
-      } else if (root !== undefined) {
-        const base = await ipfs.bases.getBase(cidBase)
-        print(`pinned root\t${root.cid.toString(base.encoder)}\t${root.pinErrorMsg || 'success'}`)
-      }
+    const handleResult = async (/** @type {ImportResult} */ { root }) => {
+      const base = await ipfs.bases.getBase(cidBase)
+      print(`pinned root\t${root.cid.toString(base.encoder)}\t${root.pinErrorMsg || 'success'}`)
     }
 
     const options = { timeout, pinRoots }

@@ -29,12 +29,16 @@ module.exports = configure(api => {
       searchParams: toUrlSearchParams({ pinRoots: options.pinRoots })
     })
 
-    for await (const { BlockCount, Root } of res.ndjson()) {
+    for await (const { Root } of res.ndjson()) {
       if (Root !== undefined) {
-        const { Cid, PinErrorMsg } = Root
-        yield { root: { cid: CID.parse(Cid), pinErrorMsg: PinErrorMsg === '' ? undefined : PinErrorMsg } }
-      } else {
-        yield { blockCount: BlockCount }
+        const { Cid: { '/': Cid }, PinErrorMsg } = Root
+
+        yield {
+          root: {
+            cid: CID.parse(Cid),
+            pinErrorMsg: PinErrorMsg === '' ? undefined : PinErrorMsg
+          }
+        }
       }
     }
   }

@@ -448,6 +448,21 @@ exports.import = {
           timeout,
           signal
         })
+      },
+      /**
+       * @param {AsyncIterable<import('ipfs-core-types/src/dag').ImportResult>} source
+       */
+      async function * (source) {
+        for await (const res of source) {
+          yield {
+            Root: {
+              Cid: {
+                '/': res.root.cid.toString()
+              },
+              PinErrorMsg: res.root.pinErrorMsg
+            }
+          }
+        }
       }
     ), {
       onError (err) {
