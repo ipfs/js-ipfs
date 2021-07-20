@@ -1,7 +1,5 @@
 'use strict'
 
-const { Blob } = globalThis
-
 /**
  * @param {any} obj
  * @returns {obj is ArrayBufferView|ArrayBuffer}
@@ -15,7 +13,7 @@ function isBytes (obj) {
  * @returns {obj is Blob}
  */
 function isBlob (obj) {
-  return typeof Blob !== 'undefined' && obj instanceof Blob
+  return obj.constructor && (obj.constructor.name === 'Blob' || obj.constructor.name === 'File')
 }
 
 /**
