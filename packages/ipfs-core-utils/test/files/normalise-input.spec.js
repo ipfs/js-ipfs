@@ -6,7 +6,7 @@ const { expect } = require('aegir/utils/chai')
 const blobToIt = require('blob-to-it')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const all = require('it-all')
-const { File } = require('@web-std/file')
+const { File, Blob: WsBlob } = require('@web-std/file')
 const { Blob, ReadableStream } = globalThis
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 
@@ -39,8 +39,8 @@ async function verifyNormalisation (input) {
     try {
       expect(content).to.be.an.instanceOf(Blob)
     } catch (err) {
-      // Fallback to instance of File
-      expect(content).to.be.an.instanceOf(File)
+      // Fallback to instance of WsBlob
+      expect(content).to.be.an.instanceOf(WsBlob)
     }
     content = blobToIt(content)
   }
