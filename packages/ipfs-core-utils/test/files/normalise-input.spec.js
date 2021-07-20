@@ -6,7 +6,7 @@ const { expect } = require('aegir/utils/chai')
 const blobToIt = require('blob-to-it')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const all = require('it-all')
-const { File, Blob: WsBlob } = require('@web-std/file')
+const { File } = require('@web-std/file')
 const { Blob, ReadableStream } = globalThis
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 
@@ -36,12 +36,7 @@ async function verifyNormalisation (input) {
   let content = input[0].content
 
   if (isBrowser || isWebWorker || isElectronRenderer) {
-    try {
-      expect(content).to.be.an.instanceOf(Blob)
-    } catch (err) {
-      // Fallback to instance of WsBlob
-      expect(content).to.be.an.instanceOf(WsBlob)
-    }
+    expect(content).to.be.an.instanceOf(Blob)
     content = blobToIt(content)
   }
 
@@ -182,6 +177,8 @@ describe('normalise-input', function () {
   describe('@web-std/file', () => {
     it('normalizes File input', async () => {
       const FILE = new File([BUFFER()], 'test-file.txt')
+
+      // expect(FILE).to.be.an.instanceOf(globalThis.Blob)
 
       await testContent(FILE)
     })
