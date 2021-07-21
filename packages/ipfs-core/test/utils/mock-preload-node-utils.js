@@ -49,7 +49,7 @@ module.exports.waitForCids = async (cids, opts) => {
     }, { missing: [], duplicates: [] })
 
     if (duplicates.length) {
-      throw errCode(new Error(`Multiple occurances of ${duplicates} found`), 'ERR_DUPLICATE')
+      throw errCode(new Error(`Multiple occurrences of ${duplicates} found`), 'ERR_DUPLICATE')
     }
 
     return missing.length === 0

@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const toCamel = require('./lib/object-to-camel')
 const configure = require('./lib/configure')
 const multipartRequest = require('./lib/multipart-request')
@@ -107,13 +107,19 @@ const createOnUploadProgress = (size, parts, progress) => {
 }
 
 /**
- * @param {any} input
+ * @param {object} input
+ * @param {string} input.name
+ * @param {string} input.hash
+ * @param {string} input.size
+ * @param {string} [input.mode]
+ * @param {number} [input.mtime]
+ * @param {number} [input.mtimeNsecs]
  */
 function toCoreInterface ({ name, hash, size, mode, mtime, mtimeNsecs }) {
   /** @type {AddResult} */
   const output = {
     path: name,
-    cid: new CID(hash),
+    cid: CID.parse(hash),
     size: parseInt(size)
   }
 

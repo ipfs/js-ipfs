@@ -13,6 +13,7 @@ const {
 const {
   parseMtime,
   parseMode
+// @ts-ignore - TODO vmx 2021-03-30 enable again
 } = require('ipfs-unixfs')
 
 /**
@@ -117,6 +118,7 @@ async function toFileObject (input, normaliseContent) {
   }
 
   if (content) {
+  // @ts-ignore TODO vmx 2021-03-30 enable again
     file.content = await normaliseContent(content)
   } else if (!path) { // Not already a file object with path or content prop
     // @ts-ignore - input still can be different ToContent

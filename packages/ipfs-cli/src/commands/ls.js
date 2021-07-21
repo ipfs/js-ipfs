@@ -1,8 +1,6 @@
 'use strict'
 
-const multibase = require('multibase')
 const { rightpad, stripControlCharacters } = require('../utils')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 const formatMode = require('ipfs-core-utils/src/files/format-mode')
 const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
 const { default: parseDuration } = require('parse-duration')
@@ -33,7 +31,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -47,7 +45,7 @@ module.exports = {
    * @param {string} argv.key
    * @param {boolean} argv.recursive
    * @param {boolean} argv.headers
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, recursive, headers, cidBase, timeout }) {
@@ -99,10 +97,12 @@ module.exports = {
       )
     }
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     for await (const link of ipfs.ls(key, { recursive, timeout })) {
       const mode = link.mode != null ? formatMode(link.mode, link.type === 'dir') : ''
       const mtime = link.mtime != null ? formatMtime(link.mtime) : '-'
-      const cid = cidToString(link.cid, { base: cidBase })
+      const cid = link.cid.toString(base.encoder)
       const size = link.size ? String(link.size) : '-'
       const name = stripControlCharacters(link.type === 'dir' ? `${link.name || ''}/` : link.name)
 

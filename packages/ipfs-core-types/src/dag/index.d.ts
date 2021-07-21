@@ -1,7 +1,5 @@
 import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
-import CID, { CIDVersion } from 'cids'
-import { CodecName } from 'multicodec'
-import { HashName } from 'multihashes'
+import { CID, CIDVersion } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -56,50 +54,13 @@ export interface API<OptionExtension = {}> {
    * @example
    * ```js
    * const obj = { simple: 'object' }
-   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha3-512' })
+   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-512' })
    *
    * console.log(cid.toString())
    * // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
    * ```
    */
   put: (node: any, options?: PutOptions & OptionExtension) => Promise<CID>
-
-  /**
-   * Enumerate all the entries in a graph
-   *
-   * @example
-   * ```js
-   * // example obj
-   * const obj = {
-   *   a: 1,
-   *   b: [1, 2, 3],
-   *   c: {
-   *     ca: [5, 6, 7],
-   *     cb: 'foo'
-   *   }
-   * }
-   *
-   * const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
-   * console.log(cid.toString())
-   * // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
-   *
-   * const result = await ipfs.dag.tree('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5')
-   * console.log(result)
-   * // Logs:
-   * // a
-   * // b
-   * // b/0
-   * // b/1
-   * // b/2
-   * // c
-   * // c/ca
-   * // c/ca/0
-   * // c/ca/1
-   * // c/ca/2
-   * // c/cb
-   * ```
-   */
-  tree: (cid: CID, options?: TreeOptions & OptionExtension) => Promise<string[]>
 
   /**
    * Returns the CID and remaining path of the node at the end of the passed IPFS path
@@ -158,22 +119,17 @@ export interface GetResult {
 
 export interface PutOptions extends AbortOptions, PreloadOptions {
   /**
-   *  CID to store the value with
+   * The codec to use to create the CID (defaults to 'dag-cbor')
    */
-  cid?: CID
+  format?: string
 
   /**
-   * The codec to use to create the CID (ignored if `cid` is passed)
+   * Multihash hashing algorithm to use (defaults to 'sha2-256')
    */
-  format?: CodecName
+  hashAlg?: string
 
   /**
-   * Multihash hashing algorithm to use (ignored if `cid` is passed)
-   */
-  hashAlg?: HashName
-
-  /**
-   * The version to use to create the CID (ignored if `cid` is passed)
+   * The version to use to create the CID (default to 1)
    */
   version?: CIDVersion
 

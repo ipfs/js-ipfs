@@ -1,5 +1,5 @@
 import { IPFS, create } from 'ipfs'
-import CID from 'cids'
+import { CID } from 'multiformats/cid'
 
 export default async function main() {
   const node = await create()
@@ -14,7 +14,7 @@ export default async function main() {
 
   console.log('Added file:', file.path, file.cid.toString())
   try {
-    // @ts-expect-error CID has no toUpperCase method 
+    // @ts-expect-error CID has no toUpperCase method
     file.cid.toUpperCase()
   } catch (error) {
 

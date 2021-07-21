@@ -62,7 +62,7 @@ An optional object which may have the following keys:
 
 ```JavaScript
 const obj = { simple: 'object' }
-const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha3-512' })
+const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-512' })
 
 console.log(cid.toString())
 // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG

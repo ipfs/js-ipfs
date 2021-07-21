@@ -2,10 +2,11 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
+const dagPB = require('@ipld/dag-pb')
+const { nanoid } = require('nanoid')
+const { CID } = require('multiformats/cid')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { asDAGLink } = require('./utils')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -36,75 +37,48 @@ module.exports = (common, options) => {
       const cid = await ipfs.object.put(testObj)
       const stats = await ipfs.object.stat(cid)
       const expected = {
-        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
+        Hash: CID.parse('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ'),
         NumLinks: 0,
         BlockSize: 17,
         LinksSize: 2,
         DataSize: 15,
         CumulativeSize: 17
       }
-      expect(expected).to.deep.equal(stats)
+
+      expect(stats).to.deep.equal(expected)
     })
 
     it('should get stats for object with links by multihash', async () => {
-      const node1a = new DAGNode(uint8ArrayFromString('Some data 1'))
-      const node2 = new DAGNode(uint8ArrayFromString('Some data 2'))
-
-      const link = await asDAGLink(node2, 'some-link')
-
-      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+      const node1a = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
+      const node2 = {
+        Data: uint8ArrayFromString(nanoid()),
+        Links: []
+      }
+      const node2Buf = dagPB.encode(node2)
+      const link = {
+        Name: 'some-link',
+        Tsize: node2Buf.length,
+        Hash: CID.createV0(await sha256.digest(node2Buf))
+      }
+      const node1b = {
+        Data: node1a.Data,
+        Links: node1a.Links.concat(link)
+      }
       const node1bCid = await ipfs.object.put(node1b)
 
       const stats = await ipfs.object.stat(node1bCid)
       const expected = {
-        Hash: 'QmPR7W4kaADkAo4GKEVVPQN81EDUFCHJtqejQZ5dEG7pBC',
+        Hash: node1bCid,
         NumLinks: 1,
-        BlockSize: 64,
+        BlockSize: 74,
         LinksSize: 53,
-        DataSize: 11,
-        CumulativeSize: 77
+        DataSize: 21,
+        CumulativeSize: 97
       }
-      expect(expected).to.eql(stats)
-    })
-
-    it('should get stats by base58 encoded multihash', async () => {
-      const testObj = {
-        Data: uint8ArrayFromString('get test object'),
-        Links: []
-      }
-
-      const cid = await ipfs.object.put(testObj)
-
-      const stats = await ipfs.object.stat(cid.bytes)
-      const expected = {
-        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-        NumLinks: 0,
-        BlockSize: 17,
-        LinksSize: 2,
-        DataSize: 15,
-        CumulativeSize: 17
-      }
-      expect(expected).to.deep.equal(stats)
-    })
-
-    it('should get stats by base58 encoded multihash string', async () => {
-      const testObj = {
-        Data: uint8ArrayFromString('get test object'),
-        Links: []
-      }
-
-      const cid = await ipfs.object.put(testObj)
-
-      const stats = await ipfs.object.stat(cid.toBaseEncodedString())
-      const expected = {
-        Hash: 'QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ',
-        NumLinks: 0,
-        BlockSize: 17,
-        LinksSize: 2,
-        DataSize: 15,
-        CumulativeSize: 17
-      }
-      expect(expected).to.deep.equal(stats)
+      expect(stats).to.deep.equal(expected)
     })
 
     it('returns error for request without argument', () => {

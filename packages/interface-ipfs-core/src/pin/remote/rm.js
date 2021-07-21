@@ -3,7 +3,7 @@
 
 const { clearRemotePins, addRemotePins, clearServices } = require('../utils')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
@@ -19,10 +19,10 @@ module.exports = (common, options) => {
   const KEY = process.env.PINNING_SERVIEC_KEY
   const SERVICE = 'pinbot'
 
-  const cid1 = new CID('QmbKtKBrmeRHjNCwR4zAfCJdMVu6dgmwk9M9AE9pUM9RgG')
-  const cid2 = new CID('QmdFyxZXsFiP4csgfM5uPu99AvFiKH62CSPDw5TP92nr7w')
-  const cid3 = new CID('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-  const cid4 = new CID('QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu')
+  const cid1 = CID.parse('QmbKtKBrmeRHjNCwR4zAfCJdMVu6dgmwk9M9AE9pUM9RgG')
+  const cid2 = CID.parse('QmdFyxZXsFiP4csgfM5uPu99AvFiKH62CSPDw5TP92nr7w')
+  const cid3 = CID.parse('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+  const cid4 = CID.parse('QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu')
 
   describe('.pin.remote.rm()', function () {
     this.timeout(50 * 1000)

@@ -7,13 +7,13 @@ const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const PeerId = require('peer-id')
-const { mergeOptions } = require('../utils')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const configService = require('./config')
 const { NotEnabledError, NotInitializedError } = require('../errors')
 const createLibP2P = require('./libp2p')
 
 /**
- * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('../types').InitOptions} InitOptions
  * @typedef {import('../types').Print} Print
@@ -42,13 +42,14 @@ class Storage {
 
   /**
    * @param {Print} print
+   * @param {import('ipfs-core-utils/src/multicodecs')} codecs
    * @param {IPFSOptions} options
    */
-  static async start (print, options) {
+  static async start (print, codecs, options) {
     const { repoAutoMigrate, repo: inputRepo, onMigrationProgress } = options
 
     const repo = (typeof inputRepo === 'string' || inputRepo == null)
-      ? createRepo(print, {
+      ? createRepo(print, codecs, {
         path: inputRepo,
         autoMigrate: repoAutoMigrate,
         onMigrationProgress: onMigrationProgress

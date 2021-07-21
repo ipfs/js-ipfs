@@ -1,7 +1,7 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const errCode = require('err-code')
 const { NotEnabledError } = require('../errors')
 const get = require('dlv')
@@ -10,7 +10,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 /**
  * @param {Object} config
  * @param {import('../types').NetworkService} config.network
- * @param {import('ipfs-repo')} config.repo
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 module.exports = ({ network, repo }) => {
   const { get, put, findProvs, findPeer, provide, query } = {
@@ -52,7 +52,7 @@ module.exports = ({ network, repo }) => {
      */
     async findPeer (peerId, options) {
       const { libp2p } = await use(network, options)
-      const peer = await libp2p._dht.findPeer(PeerId.createFromCID(peerId))
+      const peer = await libp2p._dht.findPeer(PeerId.createFromB58String(peerId))
 
       return {
         id: peer.id.toB58String(),
@@ -65,12 +65,13 @@ module.exports = ({ network, repo }) => {
      */
     async * provide (cids, options = { recursive: false }) {
       const { libp2p } = await use(network, options)
-      cids = Array.isArray(cids) ? cids : [cids]
+      /** @type {CID[]} */
+      const cidArr = Array.isArray(cids) ? cids : [cids]
 
       for (const i in cids) {
         if (typeof cids[i] === 'string') {
           try {
-            cids[i] = new CID(cids[i])
+            cids[i] = CID.parse(cids[i])
           } catch (err) {
             throw errCode(err, 'ERR_INVALID_CID')
           }
@@ -78,7 +79,7 @@ module.exports = ({ network, repo }) => {
       }
 
       // ensure blocks are actually local
-      const hasCids = await Promise.all(cids.map(cid => repo.blocks.has(cid)))
+      const hasCids = await Promise.all(cidArr.map(cid => repo.blocks.has(cid)))
       const hasAll = hasCids.every(has => has)
 
       if (!hasAll) {
@@ -101,7 +102,7 @@ module.exports = ({ network, repo }) => {
     async * query (peerId, options) {
       const { libp2p } = await use(network, options)
 
-      for await (const closerPeerId of libp2p._dht.getClosestPeers(PeerId.createFromCID(peerId).toBytes())) {
+      for await (const closerPeerId of libp2p._dht.getClosestPeers(PeerId.createFromB58String(peerId).toBytes())) {
         yield {
           id: closerPeerId.toB58String(),
           addrs: [] // TODO: get addrs?
@@ -132,7 +133,7 @@ const parseCID = cid => {
     const cidStr = cid.toString().split('/')
       .filter((/** @type {string} */ part) => part && part !== 'ipfs' && part !== 'ipns')[0]
 
-    return (new CID(cidStr)).bytes
+    return CID.parse(cidStr).bytes
   } catch (error) {
     throw errCode(error, 'ERR_INVALID_CID')
   }

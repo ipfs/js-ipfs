@@ -9,16 +9,13 @@
   ],
   "rows": [
     "Files",
-    ["ipfs/js-ipfs-unixfs", "ipfs-unixfs-exporter"],
-    ["ipfs/js-ipfs-unixfs", "ipfs-unixfs-importer"],
     ["ipfs/js-ipfs-unixfs", "ipfs-unixfs"],
 
     "Repo",
     ["ipfs/js-ipfs-repo", "ipfs-repo"],
+    ["ipfs/js-ipfs-repo-migrations", "ipfs-repo-migrations"],
 
     "Exchange",
-    ["ipfs/js-ipfs-block-service", "ipfs-block-service"],
-    ["ipfs/js-ipfs-block", "ipfs-block"],
     ["ipfs/js-ipfs-bitswap", "ipfs-bitswap"],
 
     "IPNS",
@@ -31,7 +28,6 @@
     ["ipfs/js-ipfsd-ctl", "ipfsd-ctl"],
     ["ipfs/is-ipfs", "is-ipfs"],
     ["ipfs/aegir", "aegir"],
-    ["ipfs/js-ipfs-repo-migrations", "ipfs-repo-migrations"],
 
     "libp2p",
     ["libp2p/js-libp2p", "libp2p"],
@@ -51,14 +47,12 @@
     ["libp2p/js-libp2p-delegated-peer-routing", "libp2p-delegated-peer-routing"],
 
     "IPLD",
-    ["ipld/js-ipld", "ipld"],
-    ["ipld/js-ipld-dag-pb", "ipld-dag-pb"],
-    ["ipld/js-ipld-dag-cbor", "ipld-dag-cbor"],
+    ["ipld/js-dag-pb", "@ipld/dag-pb"],
+    ["ipld/js-dag-cbor", "@ipld/dag-cbor"],
 
     "Multiformats",
-    ["multiformats/js-multihashing", "multihashing"],
+    ["multiformats/js-multiformats", "multiformats"],
     ["multiformats/js-mafmt", "mafmt"],
-    ["multiformats/js-multiaddr", "multiaddr"],
-    ["multiformats/js-multihash", "multihashes"]
+    ["multiformats/js-multiaddr", "multiaddr"]
   ]
 }

@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = function traverseLeafNodes (ipfs, cid) {
+module.exports = async function * traverseLeafNodes (ipfs, cid) {
   async function * traverse (cid) {
     const { value: node } = await ipfs.dag.get(cid)
 
@@ -13,8 +13,10 @@ module.exports = function traverseLeafNodes (ipfs, cid) {
       return
     }
 
-    node.Links.forEach(link => traverse(link.Hash))
+    for (const link of node.Links) {
+      yield * traverse(link.Hash)
+    }
   }
 
-  return traverse(cid)
+  yield * traverse(cid)
 }

@@ -1,8 +1,5 @@
 'use strict'
 
-const { encodeCID, decodeCID } = require('./cid')
-const Block = require('ipld-block')
-
 /**
  * @typedef {import('./error').EncodedError} EncodedError
  * @typedef {import('./cid').EncodedCID} EncodedCID
@@ -13,38 +10,19 @@ const Block = require('ipld-block')
  */
 
 /**
- * @typedef {Object} EncodedBlock
- * @property {Uint8Array} data
- * @property {EncodedCID} cid
- */
-
-/**
- * Encodes Block for over the message channel transfer.
+ * Encodes Uint8Array for transfer over the message channel.
  *
  * If `transfer` array is provided all the encountered `ArrayBuffer`s within
  * this block will be added to the transfer so they are moved across without
  * copy.
  *
- * @param {Block} block
+ * @param {Uint8Array} data
  * @param {Transferable[]} [transfer]
- * @returns {EncodedBlock}
  */
-const encodeBlock = ({ cid, data }, transfer) => {
+const encodeBlock = (data, transfer) => {
   if (transfer) {
     transfer.push(data.buffer)
   }
-  return { cid: encodeCID(cid, transfer), data }
+  return data
 }
 exports.encodeBlock = encodeBlock
-
-/**
- * @param {EncodedBlock} encodedBlock
- * @returns {Block}
- */
-const decodeBlock = ({ cid, data }) => {
-  return new Block(data, decodeCID(cid))
-}
-
-exports.decodeBlock = decodeBlock
-
-exports.Block = Block

@@ -11,7 +11,7 @@ module.exports = ({ network }) => {
    * @type {import('ipfs-core-types/src/bitswap').API["stat"]}
    */
   async function stat (options = {}) {
-    /** @type {import('ipfs-bitswap')} */
+    /** @type {import('ipfs-bitswap').IPFSBitswap} */
     const bitswap = (await network.use(options)).bitswap
     const snapshot = bitswap.stat().snapshot
 

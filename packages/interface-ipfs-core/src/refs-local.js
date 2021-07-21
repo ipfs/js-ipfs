@@ -6,8 +6,9 @@ const { getDescribe, getIt, expect } = require('./utils/mocha')
 const all = require('it-all')
 const { importer } = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const uint8ArrayEquals = require('uint8arrays/equals')
+const blockstore = require('./utils/blockstore-adapter')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -40,7 +41,7 @@ module.exports = (common, options) => {
         content('holmes.txt')
       ]
 
-      const imported = await all(importer(dirs, ipfs.block))
+      const imported = await all(importer(dirs, blockstore(ipfs)))
 
       // otherwise go-ipfs doesn't show them in the local refs
       await drain(ipfs.pin.addAll(imported.map(i => i.cid)))
@@ -50,17 +51,17 @@ module.exports = (common, options) => {
 
       expect(
         cids.find(cid => {
-          const multihash = new CID(cid).multihash
+          const multihash = CID.parse(cid).multihash.bytes
 
-          return uint8ArrayEquals(imported[0].cid.multihash, multihash)
+          return uint8ArrayEquals(imported[0].cid.multihash.bytes, multihash)
         })
       ).to.be.ok()
 
       expect(
         cids.find(cid => {
-          const multihash = new CID(cid).multihash
+          const multihash = CID.parse(cid).multihash.bytes
 
-          return uint8ArrayEquals(imported[1].cid.multihash, multihash)
+          return uint8ArrayEquals(imported[1].cid.multihash.bytes, multihash)
         })
       ).to.be.ok()
     })

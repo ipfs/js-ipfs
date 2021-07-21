@@ -5,13 +5,13 @@ const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { AbortSignal } = require('native-abort-controller')
 const allNdjson = require('../utils/all-ndjson')
 
 describe('/repo', () => {
-  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
-  const cid2 = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgda')
+  const cid = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  const cid2 = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgda')
   let ipfs
 
   beforeEach(() => {

@@ -1,11 +1,10 @@
 import type { AbortOptions } from '../utils'
 import { API as BitswapAPI } from '../bitswap'
 import { API as RepoAPI } from '../repo'
-import type CID from 'cids'
 
 export interface API<OptionExtension = {}> {
-  bitswap: BitswapAPI<OptionExtension>["stat"]
-  repo: RepoAPI<OptionExtension>["stat"]
+  bitswap: BitswapAPI<OptionExtension>['stat']
+  repo: RepoAPI<OptionExtension>['stat']
 
   /**
    * Return bandwith usage stats
@@ -21,8 +20,8 @@ export interface BWOptions extends AbortOptions {
 }
 
 export interface BWResult {
-  totalIn: BigInt
-  totalOut: BigInt
-  rateIn: BigInt
-  rateOut: BigInt
+  totalIn: bigint
+  totalOut: bigint
+  rateIn: bigint
+  rateOut: bigint
 }

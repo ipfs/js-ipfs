@@ -5,7 +5,6 @@ const multipart = require('../../utils/multipart-request-parser')
 const tar = require('it-tar')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 const { pipe } = require('it-pipe')
 const all = require('it-all')
 const streamResponse = require('../../utils/stream-response')
@@ -165,7 +164,7 @@ exports.add = {
         .keys({
           cidVersion: Joi.number().integer().min(0).max(1),
           hashAlg: Joi.string(),
-          cidBase: Joi.cidBase(),
+          cidBase: Joi.string().default('base58btc'),
           rawLeaves: Joi.boolean(),
           onlyHash: Joi.boolean(),
           pin: Joi.boolean(),
@@ -328,10 +327,12 @@ exports.add = {
               timeout
             }),
             async function * (source) {
+              const base = await ipfs.bases.getBase(cidBase)
+
               yield * map(source, file => {
                 return {
                   Name: file.path,
-                  Hash: cidToString(file.cid, { base: cidBase }),
+                  Hash: file.cid.toString(base.encoder),
                   Size: file.size,
                   Mode: file.mode === undefined ? undefined : file.mode.toString(8).padStart(4, '0'),
                   Mtime: file.mtime ? file.mtime.secs : undefined,
@@ -359,7 +360,7 @@ exports.ls = {
       query: Joi.object()
         .keys({
           path: Joi.ipfsPath().required(),
-          cidBase: Joi.cidBase(),
+          cidBase: Joi.string().default('base58btc'),
           stream: Joi.boolean().default(false),
           recursive: Joi.boolean().default(false),
           timeout: Joi.timeout()
@@ -398,6 +399,8 @@ exports.ls = {
       }
     } = request
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     /**
      * TODO: can be ipfs.files.stat result or ipfs.ls result
      *
@@ -405,7 +408,7 @@ exports.ls = {
      */
     const mapLink = link => {
       return {
-        Hash: cidToString(link.cid, { base: cidBase }),
+        Hash: link.cid.toString(base.encoder),
         Size: link.size,
         Type: toTypeCode(link.type),
         Depth: link.depth,

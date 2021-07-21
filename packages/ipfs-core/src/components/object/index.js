@@ -9,28 +9,26 @@ const createStat = require('./stat')
 const ObjectPatchAPI = require('./patch')
 
 /**
- * @typedef {import('ipld')} IPLD
  * @typedef {import('../../types').Preload} Preload
- * @typedef {import('../gc-lock').GCLock} GCLock
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 class ObjectAPI {
   /**
    * @param {Object} config
-   * @param {IPLD} config.ipld
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
+   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
    * @param {Preload} config.preload
-   * @param {GCLock} config.gcLock
    */
-  constructor ({ ipld, preload, gcLock }) {
-    this.data = createData({ ipld, preload })
-    this.get = createGet({ ipld, preload })
-    this.links = createLinks({ ipld })
-    this.new = createNew({ ipld, preload })
-    this.put = createPut({ ipld, preload, gcLock })
-    this.stat = createStat({ ipld, preload })
-    this.patch = new ObjectPatchAPI({ ipld, preload, gcLock })
+  constructor ({ repo, codecs, preload }) {
+    this.data = createData({ repo, preload })
+    this.get = createGet({ repo, preload })
+    this.links = createLinks({ repo, codecs })
+    this.new = createNew({ repo, preload })
+    this.put = createPut({ repo, preload })
+    this.stat = createStat({ repo, preload })
+    this.patch = new ObjectPatchAPI({ repo, preload })
   }
 }
 

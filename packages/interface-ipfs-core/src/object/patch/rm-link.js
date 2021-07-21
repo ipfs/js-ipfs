@@ -2,8 +2,10 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const dagPB = require('@ipld/dag-pb')
+const { CID } = require('multiformats/cid')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const { asDAGLink } = require('../utils')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -39,7 +41,12 @@ module.exports = (common, options) => {
       const nodeCid = await ipfs.object.put(obj1)
       const childCid = await ipfs.object.put(obj2)
       const child = await ipfs.object.get(childCid)
-      const childAsDAGLink = await asDAGLink(child, 'my-link')
+      const childBuf = dagPB.encode(child)
+      const childAsDAGLink = {
+        Name: 'my-link',
+        Tsize: childBuf.length,
+        Hash: CID.createV0(await sha256.digest(childBuf))
+      }
       const parentCid = await ipfs.object.patch.addLink(nodeCid, childAsDAGLink)
       const withoutChildCid = await ipfs.object.patch.rmLink(parentCid, childAsDAGLink)
 

@@ -7,7 +7,7 @@ const createBitswap = require('../bitswap/stat')
 class StatsAPI {
   /**
    * @param {Object} config
-   * @param {import('ipfs-repo')} config.repo
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {import('../../types').NetworkService} config.network
    */
   constructor ({ repo, network }) {

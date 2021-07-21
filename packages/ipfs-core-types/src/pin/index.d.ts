@@ -1,5 +1,5 @@
 import type { AbortOptions, AwaitIterable } from '../utils'
-import type CID from 'cids'
+import type { CID } from 'multiformts/cid'
 import type { API as Remote } from './remote'
 
 export interface API<OptionExtension = {}> {
@@ -9,7 +9,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * const cid = CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * const pinned of ipfs.pin.add(cid))
    * console.log(pinned)
    * // Logs:
@@ -24,7 +24,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * const cid = CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * for await (const cid of ipfs.pin.addAll([cid])) {
    *   console.log(cid)
    * }
@@ -47,9 +47,9 @@ export interface API<OptionExtension = {}> {
    * // { cid: CID(QmSo73bmN47gBxMNqbdV6rZ4KJiqaArqJ1nu5TvFhqqj1R), type: 'indirect' }
    *
    * const paths = [
-   *   CID.from('Qmc5..'),
-   *   CID.from('QmZb..'),
-   *   CID.from('QmSo..')
+   *   CID.parse('Qmc5..'),
+   *   CID.parse('QmZb..'),
+   *   CID.parse('QmSo..')
    * ]
    * for await (const { cid, type } of ipfs.pin.ls({ paths })) {
    *   console.log({ cid, type })
@@ -66,7 +66,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const cid = CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   * const cid = CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * const result = await ipfs.pin.rm(cid)
    * console.log(result)
    * // prints the CID that was unpinned
@@ -81,7 +81,7 @@ export interface API<OptionExtension = {}> {
    * @example
    * ```js
    * const source = [
-   *   CID.from('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
+   *   CID.parse('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u')
    * ]
    * for await (const cid of ipfs.pin.rmAll(source)) {
    *   console.log(cid)
@@ -150,7 +150,7 @@ export type PinType = 'recursive' | 'direct' | 'indirect' | 'all'
 
 export type PinQueryType = 'recursive' | 'direct' | 'indirect' | 'all'
 
-export interface LsOptions  extends AbortOptions {
+export interface LsOptions extends AbortOptions {
   paths?: CID | CID[] | string | string[]
   type?: PinQueryType
 }
@@ -170,4 +170,3 @@ export interface RmAllInput {
   path?: string
   recursive?: boolean
 }
-

@@ -1,15 +1,16 @@
 import type { KeyType } from 'libp2p-crypto'
 import type PeerId from 'peer-id'
 import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
-import type { Options as IPLDOptions } from 'ipld'
-import type Libp2p from 'libp2p'
-import type { Libp2pOptions } from 'libp2p'
+import type Libp2p, { Libp2pOptions } from 'libp2p'
+
 import type IPFSRepo from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
-import type Network from './components/network'
-import type { Options as NetworkOptions } from './components/network'
+import type Network, { Options as NetworkOptions } from './components/network'
+
 import type Service from './utils/service'
-import CID from 'cids'
+import type { CID } from 'multiformats/cid'
+import type { BlockCodec, MultibaseCodec } from 'multiformats/codecs/interface'
+import type { MultihashHasher } from 'multiformats/hashes/interface'
 
 export interface Options {
   /**
@@ -18,7 +19,7 @@ export interface Options {
    * [`ipfs-repo`](https://github.com/ipfs/js-ipfs-repo). The IPFS constructor
    * sets many special properties when initializing a repo, so you should usually
    * not try and call `repoInstance.init()` yourself.
-  */
+   */
   init?: InitOptions
 
   /**
@@ -92,36 +93,36 @@ export interface Options {
 
   /**
    * Modify the default IPLD config. This object
- * will be *merged* with the default config; it will not replace it. Check IPLD
- * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
- * on the available options. (Default: [`ipld.js`]
- * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
- * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
- * in browsers)
+   * will be *merged* with the default config; it will not replace it. Check IPLD
+   * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
+   * on the available options. (Default: [`ipld.js`]
+   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
+   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
+   * in browsers)
    */
   ipld?: Partial<IPLDOptions>
 
   /**
    * The libp2p option allows you to build
- * your libp2p node by configuration, or via a bundle function. If you are
- * looking to just modify the below options, using the object format is the
- * quickest way to get the default features of libp2p. If you need to create a
- * more customized libp2p node, such as with custom transports or peer/content
- * routers that need some of the ipfs data on startup, a custom bundle is a
- * great way to achieve this.
- * - You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
- * - Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md)
- * for the list of options libp2p supports.
- * - Default: [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js)
- * in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
- * browsers.
+   * your libp2p node by configuration, or via a bundle function. If you are
+   * looking to just modify the below options, using the object format is the
+   * quickest way to get the default features of libp2p. If you need to create a
+   * more customized libp2p node, such as with custom transports or peer/content
+   * routers that need some of the ipfs data on startup, a custom bundle is a
+   * great way to achieve this.
+   * - You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
+   * - Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md)
+   * for the list of options libp2p supports.
+   * - Default: [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js)
+   * in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
+   * browsers.
    */
   libp2p?: Partial<Libp2pOptions> | Libp2pFactoryFn
 
   silent?: boolean
 }
 
-export type Libp2pFactoryFn = ({ libp2pOptions: Libp2pOptions, options: Options, config: IPFSConfig, datastore: Datastore, peerId: PeerId }) => Libp2p
+export interface Libp2pFactoryFn { ({ libp2pOptions: Libp2pOptions, options: Options, config: IPFSConfig, datastore: Datastore, peerId: PeerId }): Libp2p }
 
 /**
  * On first run js-IPFS will initialize a repo which can be customized through this settings
@@ -213,7 +214,7 @@ export interface ExperimentalOptions {
 /**
  * Prints output to the console
  */
-export type Print = (...args:any[]) => void
+export interface Print { (...args: any[]): void }
 
 export interface Preload {
   (cid: CID): void
@@ -227,3 +228,29 @@ export interface MfsPreload {
 }
 
 export type NetworkService = Service<NetworkOptions, Network>
+
+export interface Block {
+  cid: CID
+  bytes: Uint8Array
+}
+
+export interface LoadBaseFn { (codeOrName: number | string): Promise<MultibaseCodec<any>> }
+export interface LoadCodecFn { (codeOrName: number | string): Promise<BlockCodec<any, any>> }
+export interface LoadHasherFn { (codeOrName: number | string): Promise<MultihashHasher> }
+
+export interface IPLDOptions {
+  loadBase: LoadBaseFn
+  loadCodec: LoadCodecFn
+  loadHasher: LoadHasherFn
+  bases: Array<MultibaseCodec<any>>
+  codecs: Array<BlockCodec<any, any>>
+  hashers: Array<MultihashHasher<any, any>>
+}
+
+export interface BlockCodecStore {
+  getCodec: (codeOrName: number | string) => Promise<BlockCodec<any, any>>
+}
+
+export interface MultihashHasherStore {
+  getHasher: (codeOrName: number | string) => Promise<MultihashHasher<any, any>>
+}

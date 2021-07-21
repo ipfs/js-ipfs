@@ -22,7 +22,7 @@
     "execa": "^5.0.0",
     "go-ipfs": "0.8.0",
     "ipfs": "^0.55.4",
-    "ipfsd-ctl": "^8.0.1",
+    "ipfsd-ctl": "^9.0.0",
     "parcel": "2.0.0-beta.2",
     "test-ipfs-example": "^3.0.0"
   }

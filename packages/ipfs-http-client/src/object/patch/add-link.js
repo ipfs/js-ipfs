@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../../lib/configure')
 const toUrlSearchParams = require('../../lib/to-url-search-params')
 
@@ -19,7 +19,7 @@ module.exports = configure(api => {
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: [
-          `${cid instanceof Uint8Array ? new CID(cid) : cid}`,
+          `${cid}`,
           // @ts-ignore loose types
           dLink.Name || dLink.name || '',
           // @ts-ignore loose types
@@ -32,7 +32,8 @@ module.exports = configure(api => {
 
     const { Hash } = await res.json()
 
-    return new CID(Hash)
+    return CID.parse(Hash)
   }
+
   return addLink
 })

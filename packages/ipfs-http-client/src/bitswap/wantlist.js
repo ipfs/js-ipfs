@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -21,7 +21,7 @@ module.exports = configure(api => {
       headers: options.headers
     })).json()
 
-    return (res.Keys || []).map((/** @type {{ '/': string }} */ k) => new CID(k['/']))
+    return (res.Keys || []).map((/** @type {{ '/': string }} */ k) => CID.parse(k['/']))
   }
   return wantlist
 })
