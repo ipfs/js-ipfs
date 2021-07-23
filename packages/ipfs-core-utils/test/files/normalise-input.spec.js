@@ -178,8 +178,6 @@ describe('normalise-input', function () {
     it('normalizes File input', async () => {
       const FILE = new File([BUFFER()], 'test-file.txt')
 
-      // expect(FILE).to.be.an.instanceOf(globalThis.Blob)
-
       await testContent(FILE)
     })
   })
