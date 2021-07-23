@@ -7,6 +7,8 @@ const { CarReader } = require('@ipld/car')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const dagPb = require('@ipld/dag-pb')
 const dagCbor = require('@ipld/dag-cbor')
+const loadFixture = require('aegir/utils/fixtures')
+const toBuffer = require('it-to-buffer')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -63,6 +65,26 @@ module.exports = (common, options) => {
       const cids = await all(reader.cids())
 
       expect(cids).to.deep.equal(expectedCids)
+    })
+
+    it('export of shuffled devnet export identical to canonical original', async function () {
+      this.timeout(360000)
+
+      const input = loadFixture('test/fixtures/car/lotus_devnet_genesis.car', 'interface-ipfs-core')
+      const result = await all(ipfs.dag.import(async function * () { yield input }()))
+      const exported = await toBuffer(ipfs.dag.export(result[0].root.cid))
+
+      expect(exported).to.equalBytes(input)
+    })
+
+    it('export of shuffled testnet export identical to canonical original', async function () {
+      this.timeout(360000)
+
+      const input = loadFixture('test/fixtures/car/lotus_testnet_export_128.car', 'interface-ipfs-core')
+      const result = await all(ipfs.dag.import(async function * () { yield input }()))
+      const exported = await toBuffer(ipfs.dag.export(result[0].root.cid))
+
+      expect(exported).to.equalBytes(input)
     })
   })
 }

@@ -3,6 +3,8 @@
 const { CarBlockIterator } = require('@ipld/car/iterator')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const itPeekable = require('it-peekable')
+const drain = require('it-drain')
+const map = require('it-map')
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -24,18 +26,17 @@ module.exports = ({ repo }) => {
 
     try {
       const abortOptions = { signal: options.signal, timeout: options.timeout }
-      /** @type {Promise<CID[]>[]}} */
-      const importers = []
-
       const peekable = itPeekable(sources)
-      /** @type {any} value **/
+
       const { value, done } = await peekable.peek()
 
       if (done) {
         return
       }
 
-      peekable.push(value)
+      if (value) {
+        peekable.push(value)
+      }
 
       /**
        * @type {AsyncIterable<AsyncIterable<Uint8Array>> | Iterable<AsyncIterable<Uint8Array>>}
@@ -50,21 +51,23 @@ module.exports = ({ repo }) => {
       }
 
       for await (const car of cars) {
-        importers.push(importCar(repo, abortOptions, car))
-      }
+        const roots = await importCar(repo, abortOptions, car)
 
-      const results = await Promise.all(importers)
-      const roots = results.reduce((accum, roots) => {
-        return accum.concat(roots)
-      }, [])
+        if (options.pinRoots !== false) { // default=true
+          for (const cid of roots) {
+            let pinErrorMsg = ''
 
-      if (options.pinRoots !== false) { // default=true
-        for (const cid of roots) {
-          try {
-            await repo.pins.pinRecursively(cid)
-            yield { root: { cid, pinErrorMsg: '' } }
-          } catch (err) {
-            yield { root: { cid, pinErrorMsg: err.message } }
+            try { // eslint-disable-line max-depth
+              if (await repo.blocks.has(cid)) { // eslint-disable-line max-depth
+                await repo.pins.pinRecursively(cid)
+              } else {
+                pinErrorMsg = 'blockstore: block not found'
+              }
+            } catch (err) {
+              pinErrorMsg = err.message
+            }
+
+            yield { root: { cid, pinErrorMsg } }
           }
         }
       }
@@ -86,11 +89,12 @@ async function importCar (repo, options, source) {
   const reader = await CarBlockIterator.fromIterable(source)
   const roots = await reader.getRoots()
 
-  for await (const { cid, bytes } of reader) {
-    // TODO: would there be any benefit to queueing up these put() to allow them
-    // to work in parallel while we parse the incoming stream?
-    await repo.blocks.put(cid, bytes, { signal: options.signal })
-  }
+  await drain(
+    repo.blocks.putMany(
+      map(reader, ({ cid: key, bytes: value }) => ({ key, value })),
+      { signal: options.signal }
+    )
+  )
 
   return roots
 }

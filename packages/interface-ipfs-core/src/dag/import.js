@@ -5,9 +5,10 @@ const all = require('it-all')
 const { CID } = require('multiformats/cid')
 const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { CarWriter } = require('@ipld/car')
+const { CarWriter, CarReader } = require('@ipld/car')
 const raw = require('multiformats/codecs/raw')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const loadFixture = require('aegir/utils/fixtures')
 
 /**
  *
@@ -75,6 +76,20 @@ module.exports = (common, options) => {
       for (const { cid } of blocks) {
         await expect(ipfs.block.get(cid)).to.eventually.be.ok()
       }
+
+      await expect(all(ipfs.pin.ls({ paths: blocks[0].cid }))).to.eventually.have.lengthOf(1)
+        .and.have.nested.property('[0].type', 'recursive')
+    })
+
+    it('should import a car file without pinning the roots', async () => {
+      const blocks = await createBlocks(5)
+      const car = await createCar(blocks)
+
+      await all(ipfs.dag.import(car, {
+        pinRoots: false
+      }))
+
+      await expect(all(ipfs.pin.ls({ paths: blocks[0].cid }))).to.eventually.be.rejectedWith(/is not pinned/)
     })
 
     it('should import multiple car files', async () => {
@@ -95,6 +110,30 @@ module.exports = (common, options) => {
       for (const { cid } of blocks2) {
         await expect(ipfs.block.get(cid)).to.eventually.be.ok()
       }
+    })
+
+    it('should import multiroot car', async () => {
+      const input = loadFixture('test/fixtures/car/combined_naked_roots_genesis_and_128.car', 'interface-ipfs-core')
+      const reader = await CarReader.fromBytes(input)
+      const cids = await reader.getRoots()
+
+      expect(cids).to.have.lengthOf(2)
+
+      const result = await all(ipfs.dag.import(async function * () { yield input }()))
+      expect(result).to.have.nested.deep.property('[0].root.cid', cids[0])
+      expect(result).to.have.nested.deep.property('[1].root.cid', cids[1])
+    })
+
+    it('should import lotus devnet genesis shuffled nulroot', async () => {
+      const input = loadFixture('test/fixtures/car/lotus_devnet_genesis_shuffled_nulroot.car', 'interface-ipfs-core')
+      const reader = await CarReader.fromBytes(input)
+      const cids = await reader.getRoots()
+
+      expect(cids).to.have.lengthOf(1)
+      expect(cids[0].toString()).to.equal('bafkqaaa')
+
+      const result = await all(ipfs.dag.import(async function * () { yield input }()))
+      expect(result).to.have.nested.deep.property('[0].root.cid', cids[0])
     })
   })
 }

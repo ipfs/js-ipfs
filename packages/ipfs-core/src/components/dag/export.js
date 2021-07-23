@@ -93,6 +93,7 @@ async function traverseWrite (repo, options, cid, writer, codecs, seen = new Set
   if (seen.has(b58Cid)) {
     return
   }
+
   const block = await getBlock(repo, options, cid, codecs)
   await writer.put(block)
   seen.add(b58Cid)

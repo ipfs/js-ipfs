@@ -1,6 +1,8 @@
 'use strict'
 
 const { BlockstoreAdapter } = require('interface-blockstore')
+const merge = require('it-merge')
+const pushable = require('it-pushable')
 
 /**
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
@@ -81,7 +83,7 @@ class BlockStorage extends BlockstoreAdapter {
    * @param {AbortOptions} [options]
    */
   async get (cid, options = {}) {
-    if (this.bitswap.isStarted()) {
+    if (!(await this.has(cid)) && this.bitswap.isStarted()) {
       return this.bitswap.get(cid, options)
     } else {
       return this.child.get(cid, options)
@@ -95,11 +97,26 @@ class BlockStorage extends BlockstoreAdapter {
    * @param {AbortOptions} [options]
    */
   async * getMany (cids, options = {}) {
-    if (this.bitswap.isStarted()) {
-      yield * this.bitswap.getMany(cids, options)
-    } else {
-      yield * this.child.getMany(cids, options)
-    }
+    const getFromBitswap = pushable()
+    const getFromChild = pushable()
+
+    Promise.resolve().then(async () => {
+      for await (const cid of cids) {
+        if (!(await this.has(cid)) && this.bitswap.isStarted()) {
+          getFromBitswap.push(cid)
+        } else {
+          getFromChild.push(cid)
+        }
+      }
+
+      getFromBitswap.end()
+      getFromChild.end()
+    })
+
+    yield * merge(
+      this.bitswap.getMany(getFromBitswap, options),
+      this.child.getMany(getFromChild, options)
+    )
   }
 
   /**
