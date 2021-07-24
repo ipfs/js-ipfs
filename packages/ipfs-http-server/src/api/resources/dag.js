@@ -403,6 +403,10 @@ exports.import = {
         pinRoots: Joi.boolean().default(true),
         timeout: Joi.timeout()
       })
+        .rename('pin-roots', 'pinRoots', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
   },
 

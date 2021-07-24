@@ -26,7 +26,7 @@ module.exports = configure(api => {
       signal,
       headers,
       body,
-      searchParams: toUrlSearchParams({ pinRoots: options.pinRoots })
+      searchParams: toUrlSearchParams({ 'pin-roots': options.pinRoots })
     })
 
     for await (const { Root } of res.ndjson()) {
