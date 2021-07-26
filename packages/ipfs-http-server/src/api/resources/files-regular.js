@@ -258,12 +258,8 @@ exports.add = {
        * @param {AsyncIterable<import('../../types').MultipartEntry>} source
        */
       async function * (source) {
-        let filesParsed = false
-
         for await (const entry of source) {
           if (entry.type === 'file') {
-            filesParsed = true
-
             yield {
               path: entry.name,
               content: entry.content,
@@ -273,18 +269,12 @@ exports.add = {
           }
 
           if (entry.type === 'directory') {
-            filesParsed = true
-
             yield {
               path: entry.name,
               mode: entry.mode,
               mtime: entry.mtime
             }
           }
-        }
-
-        if (!filesParsed) {
-          throw new Error("File argument 'data' is required.")
         }
       },
       /**
@@ -346,7 +336,9 @@ exports.add = {
           )
         )
       }
-    ))
+    ), {
+      allowEmptyRequest: false
+    })
   }
 }
 

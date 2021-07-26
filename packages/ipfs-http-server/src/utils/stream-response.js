@@ -5,6 +5,7 @@ const { pipe } = require('it-pipe')
 const log = require('debug')('ipfs:http-api:utils:stream-response')
 // @ts-ignore no types
 const toIterable = require('stream-to-it')
+const Boom = require('@hapi/boom')
 
 const ERROR_TRAILER = 'X-Stream-Error'
 
@@ -13,7 +14,7 @@ const ERROR_TRAILER = 'X-Stream-Error'
  * @param {import('../types').Request} request
  * @param {import('@hapi/hapi').ResponseToolkit} h
  * @param {() => AsyncIterable<any>} getSource
- * @param {{ onError?: (error: Error) => void }} [options]
+ * @param {{ onError?: (error: Error) => void, allowEmptyRequest?: boolean }} [options]
  */
 async function streamResponse (request, h, getSource, options = {}) {
   // eslint-disable-next-line no-async-promise-executor
@@ -39,7 +40,10 @@ async function streamResponse (request, h, getSource, options = {}) {
             }
 
             if (!started) { // Maybe it was an empty source?
-              started = true
+              if (options.allowEmptyRequest === false) {
+                throw Boom.badRequest("File argument 'data' is required.")
+              }
+
               resolve(stream)
             }
           } catch (err) {

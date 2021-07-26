@@ -415,10 +415,6 @@ exports.import = {
    * @param {import('@hapi/hapi').ResponseToolkit} h
    */
   async handler (request, h) {
-    if (!request.payload) {
-      throw Boom.badRequest('Array, Buffer, or String is required.')
-    }
-
     const {
       app: {
         signal
@@ -442,8 +438,9 @@ exports.import = {
       async function * (source) {
         for await (const entry of source) {
           if (entry.type !== 'file') {
-            throw new Error('Unexpected upload type')
+            throw Boom.badRequest('Unexpected upload type')
           }
+
           yield entry.content
         }
       },
@@ -461,11 +458,7 @@ exports.import = {
        * @param {AsyncIterable<import('ipfs-core-types/src/dag').ImportResult>} source
        */
       async function * (source) {
-        let filesParsed = false
-
         for await (const res of source) {
-          filesParsed = true
-
           yield {
             Root: {
               Cid: {
@@ -475,12 +468,9 @@ exports.import = {
             }
           }
         }
-
-        if (!filesParsed) {
-          throw Boom.badRequest("File argument 'data' is required.")
-        }
       }
     ), {
+      allowEmptyRequest: false,
       onError (err) {
         err.message = 'Failed to import DAG: ' + err.message
       }
