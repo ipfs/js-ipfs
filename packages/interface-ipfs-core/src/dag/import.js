@@ -101,8 +101,9 @@ module.exports = (common, options) => {
       const car2 = await createCar(blocks2)
 
       const result = await all(ipfs.dag.import([car1, car2]))
-      expect(result).to.have.nested.deep.property('[0].root.cid', blocks1[0].cid)
-      expect(result).to.have.nested.deep.property('[1].root.cid', blocks2[0].cid)
+      expect(result).to.have.lengthOf(2)
+      expect(result).to.deep.include({ root: { cid: blocks1[0].cid, pinErrorMsg: '' } })
+      expect(result).to.deep.include({ root: { cid: blocks2[0].cid, pinErrorMsg: '' } })
 
       for (const { cid } of blocks1) {
         await expect(ipfs.block.get(cid)).to.eventually.be.ok()
