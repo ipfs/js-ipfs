@@ -430,6 +430,8 @@ exports.import = {
       }
     } = request
 
+    let filesParsed = false
+
     return streamResponse(request, h, () => pipe(
       multipart(request.raw.req),
       /**
@@ -441,6 +443,7 @@ exports.import = {
             throw Boom.badRequest('Unexpected upload type')
           }
 
+          filesParsed = true
           yield entry.content
         }
       },
@@ -470,9 +473,13 @@ exports.import = {
         }
       }
     ), {
-      allowEmptyRequest: false,
       onError (err) {
         err.message = 'Failed to import DAG: ' + err.message
+      },
+      onEnd () {
+        if (!filesParsed) {
+          throw Boom.badRequest("File argument 'data' is required.")
+        }
       }
     })
   }

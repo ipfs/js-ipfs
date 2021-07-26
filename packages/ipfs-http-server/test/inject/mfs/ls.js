@@ -98,7 +98,13 @@ describe('/files/ls', () => {
   })
 
   it('should stream a path', async () => {
-    ipfs.files.ls.withArgs(path, defaultOptions).returns([file])
+    ipfs.files.ls.withArgs(path, {
+      ...defaultOptions
+    })
+      .callsFake(async function * () {
+        yield file
+      })
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
     await http({
       method: 'POST',
@@ -131,7 +137,10 @@ describe('/files/ls', () => {
     ipfs.files.ls.withArgs(path, {
       ...defaultOptions,
       timeout: 1000
-    }).returns([file])
+    }).callsFake(async function * () {
+      yield file
+    })
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
     await http({
       method: 'POST',

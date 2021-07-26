@@ -252,6 +252,8 @@ exports.add = {
       }
     } = request
 
+    let filesParsed = false
+
     return streamResponse(request, h, () => pipe(
       multipart(request.raw.req),
       /**
@@ -260,6 +262,8 @@ exports.add = {
       async function * (source) {
         for await (const entry of source) {
           if (entry.type === 'file') {
+            filesParsed = true
+
             yield {
               path: entry.name,
               content: entry.content,
@@ -269,6 +273,8 @@ exports.add = {
           }
 
           if (entry.type === 'directory') {
+            filesParsed = true
+
             yield {
               path: entry.name,
               mode: entry.mode,
@@ -337,7 +343,11 @@ exports.add = {
         )
       }
     ), {
-      allowEmptyRequest: false
+      onEnd () {
+        if (!filesParsed) {
+          throw Boom.badRequest("File argument 'data' is required.")
+        }
+      }
     })
   }
 }
@@ -441,7 +451,6 @@ exports.ls = {
         throw Boom.boomify(err, { message: 'Failed to list dir' })
       }
     }
-
     return streamResponse(request, h, () => pipe(
       ipfs.ls(path, {
         recursive,
