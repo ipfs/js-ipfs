@@ -15,10 +15,7 @@ const toBuffer = require('it-to-buffer')
 const { AbortSignal } = require('native-abort-controller')
 const { base58btc } = require('multiformats/bases/base58')
 const { base64 } = require('multiformats/bases/base64')
-
-function matchIterable () {
-  return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
-}
+const matchIterable = require('../utils/match-iterable')
 
 describe('/files', () => {
   const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')

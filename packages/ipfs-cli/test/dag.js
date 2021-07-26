@@ -12,6 +12,7 @@ const { base58btc } = require('multiformats/bases/base58')
 const { base64 } = require('multiformats/bases/base64')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
+const matchIterable = require('./utils/match-iterable')
 
 describe('dag', () => {
   const dagPbCid = CID.parse('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
@@ -24,7 +25,9 @@ describe('dag', () => {
       dag: {
         get: sinon.stub(),
         resolve: sinon.stub(),
-        put: sinon.stub()
+        put: sinon.stub(),
+        import: sinon.stub(),
+        export: sinon.stub()
       },
       bases: {
         getBase: sinon.stub()
@@ -480,6 +483,151 @@ describe('dag', () => {
 
       const out = await cli('dag put "{}" --timeout=1s', { ipfs })
       expect(out).to.equal(`${dagCborCid.toString(base58btc)}\n`)
+    })
+  })
+
+  describe('import', () => {
+    const defaultOptions = {
+      pinRoots: true,
+      timeout: undefined
+    }
+
+    it('imports car from stdin', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.import.withArgs([matchIterable()], {
+        ...defaultOptions
+      }).returns([{ root: { cid, pinErrorMsg: '' } }])
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+      const proc = cli('dag import', {
+        ipfs,
+        getStdin: function * () {
+          yield uint8ArrayFromString('hello\n')
+        }
+      })
+
+      const out = await proc
+      expect(out).to.equal(`importing CAR from stdin...\npinned root\t${cid}\tsuccess\n`)
+    })
+
+    it('imports car from path', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions
+      }).returns([{ root: { cid, pinErrorMsg: '' } }])
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+      const proc = cli('dag import README.md', {
+        ipfs
+      })
+
+      const out = await proc
+      expect(out).to.equal(`pinned root\t${cid}\tsuccess\n`)
+    })
+
+    it('imports car from path and fails to pin', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions
+      }).returns([{ root: { cid, pinErrorMsg: 'oh noes' } }])
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+      const proc = cli('dag import README.md', {
+        ipfs
+      })
+
+      const out = await proc
+      expect(out).to.equal(`pinned root\t${cid}\toh noes\n`)
+    })
+
+    it('imports car from path with no pin arg', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions,
+        pinRoots: false
+      }).returns([{ root: { cid, pinErrorMsg: '' } }])
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+      const proc = cli('dag import README.md --pin-roots=false', {
+        ipfs
+      })
+
+      const out = await proc
+      expect(out).to.equal(`pinned root\t${cid}\tsuccess\n`)
+    })
+
+    it('imports car from path with different base', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions
+      }).returns([{ root: { cid, pinErrorMsg: '' } }])
+      ipfs.bases.getBase.withArgs('derp').returns(base58btc)
+
+      const proc = cli('dag import README.md --cid-base=derp', {
+        ipfs
+      })
+
+      const out = await proc
+      expect(out).to.equal(`pinned root\t${cid}\tsuccess\n`)
+    })
+
+    it('imports car from path with timeout', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns([{ root: { cid, pinErrorMsg: '' } }])
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+      const proc = cli('dag import README.md --timeout=1s', {
+        ipfs
+      })
+
+      const out = await proc
+      expect(out).to.equal(`pinned root\t${cid}\tsuccess\n`)
+    })
+  })
+
+  describe('export', () => {
+    const defaultOptions = {
+      timeout: undefined
+    }
+
+    it('exports car', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.export.withArgs(cid, {
+        ...defaultOptions
+      }).returns(['some bytes'])
+
+      const proc = cli(`dag export ${cid}`, {
+        ipfs
+      })
+
+      const out = await proc
+      expect(out).to.equal('some bytes')
+    })
+
+    it('exports car with timeout', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.export.withArgs(cid, {
+        ...defaultOptions,
+        timeout: 1000
+      }).returns(['some bytes'])
+
+      const proc = cli(`dag export ${cid} --timeout=1s`, {
+        ipfs
+      })
+
+      const out = await proc
+      expect(out).to.equal('some bytes')
     })
   })
 })

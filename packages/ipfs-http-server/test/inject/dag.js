@@ -9,10 +9,12 @@ const streamToPromise = require('stream-to-promise')
 const { CID } = require('multiformats/cid')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
+const matchIterable = require('../utils/match-iterable')
 const sinon = require('sinon')
 const { AbortSignal } = require('native-abort-controller')
 const { base58btc } = require('multiformats/bases/base58')
 const { base32 } = require('multiformats/bases/base32')
+const { randomBytes } = require('iso-random-stream')
 
 const toHeadersAndPayload = async (thing) => {
   const stream = new Readable()
@@ -37,7 +39,9 @@ describe('/dag', () => {
       dag: {
         get: sinon.stub(),
         put: sinon.stub(),
-        resolve: sinon.stub()
+        resolve: sinon.stub(),
+        import: sinon.stub(),
+        export: sinon.stub()
       },
       block: {
         put: sinon.stub()
@@ -517,6 +521,220 @@ describe('/dag', () => {
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toString() })
       expect(res).to.have.nested.property('result.RemPath', '')
+    })
+  })
+
+  describe('/import', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined,
+      pinRoots: true
+    }
+
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/dag/import')
+    })
+
+    it('returns error for request without body', async () => {
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions
+      }).returns([])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/dag/import'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+    })
+
+    it('imports car', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      const payload = Buffer.from([
+        '',
+        '------------287032381131322',
+        'Content-Disposition: form-data; name="test"; filename="test.txt"',
+        'Content-Type: text/plain',
+        '',
+        randomBytes(1024 * 1024 * 2).toString('hex'),
+        '------------287032381131322--'
+      ].join('\r\n'))
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions
+      })
+        .returns([{ root: { cid, pinErrorMsg: '' } }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/dag/import',
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=----------287032381131322'
+        },
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+
+      const response = JSON.parse(res.result)
+      expect(response).to.have.nested.property('Root.Cid./', cid.toString())
+      expect(response).to.have.nested.property('Root.PinErrorMsg').that.is.empty()
+    })
+
+    it('imports car with pin error', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      const payload = Buffer.from([
+        '',
+        '------------287032381131322',
+        'Content-Disposition: form-data; name="test"; filename="test.txt"',
+        'Content-Type: text/plain',
+        '',
+        randomBytes(1024 * 1024 * 2).toString('hex'),
+        '------------287032381131322--'
+      ].join('\r\n'))
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions
+      })
+        .returns([{ root: { cid, pinErrorMsg: 'derp' } }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/dag/import',
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=----------287032381131322'
+        },
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+
+      const response = JSON.parse(res.result)
+      expect(response).to.have.nested.property('Root.Cid./', cid.toString())
+      expect(response).to.have.nested.property('Root.PinErrorMsg').that.equals('derp')
+    })
+
+    it('imports car without pinning', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      const payload = Buffer.from([
+        '',
+        '------------287032381131322',
+        'Content-Disposition: form-data; name="test"; filename="test.txt"',
+        'Content-Type: text/plain',
+        '',
+        randomBytes(1024 * 1024 * 2).toString('hex'),
+        '------------287032381131322--'
+      ].join('\r\n'))
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions,
+        pinRoots: false
+      })
+        .returns([{ root: { cid, pinErrorMsg: '' } }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/dag/import?pin-roots=false',
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=----------287032381131322'
+        },
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+
+      const response = JSON.parse(res.result)
+      expect(response).to.have.nested.property('Root.Cid./', cid.toString())
+      expect(response).to.have.nested.property('Root.PinErrorMsg').that.equals('')
+    })
+
+    it('imports car with timeout', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+      const payload = Buffer.from([
+        '',
+        '------------287032381131322',
+        'Content-Disposition: form-data; name="test"; filename="test.txt"',
+        'Content-Type: text/plain',
+        '',
+        randomBytes(1024 * 1024 * 2).toString('hex'),
+        '------------287032381131322--'
+      ].join('\r\n'))
+
+      ipfs.dag.import.withArgs(matchIterable(), {
+        ...defaultOptions,
+        timeout: 1000
+      })
+        .returns([{ root: { cid, pinErrorMsg: '' } }])
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/dag/import?timeout=1s',
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=----------287032381131322'
+        },
+        payload
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+
+      const response = JSON.parse(res.result)
+      expect(response).to.have.nested.property('Root.Cid./', cid.toString())
+      expect(response).to.have.nested.property('Root.PinErrorMsg').that.equals('')
+    })
+  })
+
+  describe('/export', () => {
+    const defaultOptions = {
+      signal: sinon.match.instanceOf(AbortSignal),
+      timeout: undefined
+    }
+
+    it('only accepts POST', () => {
+      return testHttpMethod('/api/v0/dag/export')
+    })
+
+    it('returns error for request without root', async () => {
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/dag/export'
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 400)
+    })
+
+    it('exports car', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.export.withArgs(cid, {
+        ...defaultOptions
+      })
+        .returns(['some data'])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/dag/export?arg=${cid}`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result', 'some data')
+    })
+
+    it('exports car with a timeout', async () => {
+      const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+      ipfs.dag.export.withArgs(cid, {
+        ...defaultOptions,
+        timeout: 1000
+      })
+        .returns(['some data'])
+
+      const res = await http({
+        method: 'POST',
+        url: `/api/v0/dag/export?arg=${cid}&timeout=1s`
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result', 'some data')
     })
   })
 })

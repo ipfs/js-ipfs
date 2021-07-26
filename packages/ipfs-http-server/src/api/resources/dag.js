@@ -346,10 +346,10 @@ exports.export = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.cid().required(),
+        root: Joi.cid().required(),
         timeout: Joi.timeout()
       })
-        .rename('root', 'arg', {
+        .rename('arg', 'root', {
           override: true,
           ignoreUndefined: true
         })
@@ -371,12 +371,12 @@ exports.export = {
         }
       },
       query: {
-        arg,
+        root,
         timeout
       }
     } = request
 
-    return streamResponse(request, h, () => ipfs.dag.export(arg, {
+    return streamResponse(request, h, () => ipfs.dag.export(root, {
       timeout,
       signal
     }), {
@@ -415,6 +415,10 @@ exports.import = {
    * @param {import('@hapi/hapi').ResponseToolkit} h
    */
   async handler (request, h) {
+    if (!request.payload) {
+      throw Boom.badRequest('Array, Buffer, or String is required.')
+    }
+
     const {
       app: {
         signal
@@ -457,7 +461,11 @@ exports.import = {
        * @param {AsyncIterable<import('ipfs-core-types/src/dag').ImportResult>} source
        */
       async function * (source) {
+        let filesParsed = false
+
         for await (const res of source) {
+          filesParsed = true
+
           yield {
             Root: {
               Cid: {
@@ -466,6 +474,10 @@ exports.import = {
               PinErrorMsg: res.root.pinErrorMsg
             }
           }
+        }
+
+        if (!filesParsed) {
+          throw Boom.badRequest("File argument 'data' is required.")
         }
       }
     ), {

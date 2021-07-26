@@ -5,6 +5,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const itPeekable = require('it-peekable')
 const drain = require('it-drain')
 const map = require('it-map')
+const log = require('debug')('ipfs:components:dag:import')
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -59,6 +60,7 @@ module.exports = ({ repo }) => {
 
             try { // eslint-disable-line max-depth
               if (await repo.blocks.has(cid)) { // eslint-disable-line max-depth
+                log(`Pinning root ${cid}`)
                 await repo.pins.pinRecursively(cid)
               } else {
                 pinErrorMsg = 'blockstore: block not found'
@@ -91,7 +93,11 @@ async function importCar (repo, options, source) {
 
   await drain(
     repo.blocks.putMany(
-      map(reader, ({ cid: key, bytes: value }) => ({ key, value })),
+      map(reader, ({ cid: key, bytes: value }) => {
+        log(`Import block ${key}`)
+
+        return { key, value }
+      }),
       { signal: options.signal }
     )
   )

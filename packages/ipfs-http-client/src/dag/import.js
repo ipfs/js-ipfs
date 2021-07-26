@@ -36,7 +36,7 @@ module.exports = configure(api => {
         yield {
           root: {
             cid: CID.parse(Cid),
-            pinErrorMsg: PinErrorMsg === '' ? undefined : PinErrorMsg
+            pinErrorMsg: PinErrorMsg
           }
         }
       }

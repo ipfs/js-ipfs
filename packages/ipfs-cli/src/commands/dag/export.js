@@ -25,13 +25,13 @@ module.exports = {
    * @param {string} argv.rootcid
    * @param {number} argv.timeout
    */
-  async handler ({ ctx: { ipfs }, rootcid, timeout }) {
+  async handler ({ ctx: { ipfs, print }, rootcid, timeout }) {
     const options = { timeout }
     const cid = CID.parse(rootcid)
 
     const exporter = ipfs.dag.export(cid, options)
     for await (const chunk of exporter) {
-      process.stdout.write(chunk)
+      print.write(chunk)
     }
   }
 }

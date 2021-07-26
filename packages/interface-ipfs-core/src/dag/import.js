@@ -2,6 +2,7 @@
 'use strict'
 
 const all = require('it-all')
+const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
 const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
@@ -112,16 +113,31 @@ module.exports = (common, options) => {
       }
     })
 
-    it('should import multiroot car', async () => {
+    it('should import car with roots but no blocks', async () => {
       const input = loadFixture('test/fixtures/car/combined_naked_roots_genesis_and_128.car', 'interface-ipfs-core')
       const reader = await CarReader.fromBytes(input)
       const cids = await reader.getRoots()
 
       expect(cids).to.have.lengthOf(2)
 
-      const result = await all(ipfs.dag.import(async function * () { yield input }()))
-      expect(result).to.have.nested.deep.property('[0].root.cid', cids[0])
-      expect(result).to.have.nested.deep.property('[1].root.cid', cids[1])
+      // naked roots car does not contain blocks
+      const result1 = await all(ipfs.dag.import(async function * () { yield input }()))
+      expect(result1).to.deep.include({ root: { cid: cids[0], pinErrorMsg: 'blockstore: block not found' } })
+      expect(result1).to.deep.include({ root: { cid: cids[1], pinErrorMsg: 'blockstore: block not found' } })
+
+      await drain(ipfs.dag.import(async function * () { yield loadFixture('test/fixtures/car/lotus_devnet_genesis_shuffled_nulroot.car', 'interface-ipfs-core') }()))
+
+      // have some of the blocks now, should be able to pin one root
+      const result2 = await all(ipfs.dag.import(async function * () { yield input }()))
+      expect(result2).to.deep.include({ root: { cid: cids[0], pinErrorMsg: '' } })
+      expect(result2).to.deep.include({ root: { cid: cids[1], pinErrorMsg: 'blockstore: block not found' } })
+
+      await drain(ipfs.dag.import(async function * () { yield loadFixture('test/fixtures/car/lotus_testnet_export_128.car', 'interface-ipfs-core') }()))
+
+      // have all of the blocks now, should be able to pin both
+      const result3 = await all(ipfs.dag.import(async function * () { yield input }()))
+      expect(result3).to.deep.include({ root: { cid: cids[0], pinErrorMsg: '' } })
+      expect(result3).to.deep.include({ root: { cid: cids[1], pinErrorMsg: '' } })
     })
 
     it('should import lotus devnet genesis shuffled nulroot', async () => {

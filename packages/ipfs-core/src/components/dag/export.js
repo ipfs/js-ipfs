@@ -5,6 +5,7 @@ const Block = require('multiformats/block')
 const { base58btc } = require('multiformats/bases/base58')
 const { CarWriter } = require('@ipld/car/writer')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const log = require('debug')('ipfs:components:dag:import')
 const dagCbor = require('@ipld/dag-cbor')
 const raw = require('multiformats/codecs/raw')
 const json = require('multiformats/codecs/json')
@@ -44,6 +45,7 @@ module.exports = ({ repo, preload, codecs }) => {
       throw new Error(`Unexpected error converting CID type: ${root}`)
     }
 
+    log(`Exporting ${cid} as car`)
     const { writer, out } = await CarWriter.create([cid])
 
     // we need to write with one async channel and send the CarWriter output
@@ -95,6 +97,8 @@ async function traverseWrite (repo, options, cid, writer, codecs, seen = new Set
   }
 
   const block = await getBlock(repo, options, cid, codecs)
+
+  log(`Adding block ${cid} to car`)
   await writer.put(block)
   seen.add(b58Cid)
 
