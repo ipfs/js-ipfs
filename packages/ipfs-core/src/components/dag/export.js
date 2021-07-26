@@ -6,14 +6,12 @@ const { base58btc } = require('multiformats/bases/base58')
 const { CarWriter } = require('@ipld/car/writer')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const log = require('debug')('ipfs:components:dag:import')
-const dagCbor = require('@ipld/dag-cbor')
 const raw = require('multiformats/codecs/raw')
 const json = require('multiformats/codecs/json')
 
 // blocks that we're OK with not inspecting for links
 /** @type {number[]} */
 const NO_LINKS_CODECS = [
-  dagCbor.code, // CBOR
   raw.code, // raw
   json.code // JSON
 ]
