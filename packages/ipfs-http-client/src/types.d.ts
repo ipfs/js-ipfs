@@ -2,6 +2,7 @@ import { Agent as HttpAgent } from 'http'
 import { Agent as HttpsAgent } from 'https'
 import { Multiaddr } from 'multiaddr'
 import type { BlockCodec } from 'multiformats/codecs/interface'
+import type { IPFS } from 'ipfs-core-types'
 
 export interface Options {
   host?: string
@@ -39,4 +40,8 @@ export interface EndpointConfig {
   protocol: string
   pathname: string
   'api-path': string
+}
+
+export interface IPFSHTTPClient extends IPFS<HTTPClientExtraOptions> {
+  getEndpointConfig: () => EndpointConfig
 }
