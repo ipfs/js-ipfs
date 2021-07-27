@@ -3,7 +3,8 @@
 
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 const { getTopic } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+const { getDescribe, getIt } = require('../utils/mocha')
+const waitFor = require('../utils/wait-for')
 
 /** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
@@ -40,7 +41,18 @@ module.exports = (common, options) => {
         await ipfs.pubsub.unsubscribe(someTopic, handlers[i])
       }
 
-      return expect(ipfs.pubsub.ls()).to.eventually.eql([])
+      // Unsubscribing in the http client aborts the connection we hold open
+      // but does not wait for it to close so the subscription list sometimes
+      // takes a little time to empty
+      await waitFor(async () => {
+        const subs = await ipfs.pubsub.ls()
+
+        return subs.length === 0
+      }, {
+        interval: 1000,
+        timeout: 30000,
+        name: 'subscriptions to be empty'
+      })
     })
 
     it(`should subscribe ${count} handlers and unsubscribe once with no reference to the handlers`, async () => {
@@ -50,7 +62,18 @@ module.exports = (common, options) => {
       }
       await ipfs.pubsub.unsubscribe(someTopic)
 
-      return expect(ipfs.pubsub.ls()).to.eventually.eql([])
+      // Unsubscribing in the http client aborts the connection we hold open
+      // but does not wait for it to close so the subscription list sometimes
+      // takes a little time to empty
+      await waitFor(async () => {
+        const subs = await ipfs.pubsub.ls()
+
+        return subs.length === 0
+      }, {
+        interval: 1000,
+        timeout: 30000,
+        name: 'subscriptions to be empty'
+      })
     })
   })
 }
