@@ -20,7 +20,7 @@
     "ipns": "^0.13.2",
     "it-last": "^1.0.4",
     "p-retry": "^4.2.0",
-    "uint8arrays": "npm:@vascosantos/uint8arrays^2.1.6"
+    "uint8arrays": "npm:@vascosantos/uint8arrays@^2.1.6"
   },
   "browserslist": [
     "last 2 versions and not dead and > 2%"
