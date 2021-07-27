@@ -102,11 +102,15 @@ const errorHandler = async (response) => {
   // This is what go-ipfs returns where there's a timeout
   if (msg && msg.includes('context deadline exceeded')) {
     error = new HTTP.TimeoutError('Request timed out')
+    // @ts-ignore
+    error.response = response
   }
 
   // This also gets returned
   if (msg && msg.includes('request timed out')) {
     error = new HTTP.TimeoutError('Request timed out')
+    // @ts-ignore
+    error.response = response
   }
 
   // If we managed to extract a message from the response, use it
