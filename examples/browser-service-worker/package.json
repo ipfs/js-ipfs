@@ -22,10 +22,10 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "ipfs": "^0.55.4",
-    "ipfs-message-port-client": "^0.6.4",
-    "ipfs-message-port-protocol": "^0.7.3",
-    "ipfs-message-port-server": "^0.7.3",
+    "ipfs": "^0.56.0",
+    "ipfs-message-port-client": "^0.7.0",
+    "ipfs-message-port-protocol": "^0.8.0",
+    "ipfs-message-port-server": "^0.8.0",
     "process": "0.11.10"
   },
   "browserslist": [
