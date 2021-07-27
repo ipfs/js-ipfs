@@ -41,7 +41,9 @@ module.exports = (print, codecs, options = {}) => {
   }
 
   return createRepo(repoPath, (codeOrName) => codecs.getCodec(codeOrName), {
-    root: new DatastoreFS(repoPath),
+    root: new DatastoreFS(repoPath, {
+      extension: ''
+    }),
     blocks: new BlockstoreDatastoreAdapter(
       new ShardingDatastore(
         new DatastoreFS(`${repoPath}/blocks`, {
