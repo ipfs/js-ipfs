@@ -65,7 +65,7 @@ module.exports = (common, options) => {
     })
 
     it('should respect timeout option when getting a DAG node', () => {
-      return testTimeout(() => ipfs.dag.get(CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ'), {
+      return testTimeout(() => ipfs.dag.get(CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAd'), {
         timeout: 1
       }))
     })
