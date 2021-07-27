@@ -91,6 +91,19 @@ export interface API<OptionExtension = {}> {
    * ```
    */
   resolve: (ipfsPath: IPFSPath, options?: ResolveOptions & OptionExtension) => Promise<ResolveResult>
+
+  /**
+   * Exports a CAR for the entire DAG available from the given root CID. The CAR will have a single
+   * root and IPFS will attempt to fetch and bundle all blocks that are linked within the connected
+   * DAG.
+   */
+  export: (root: CID, options?: ExportOptions & OptionExtension) => AsyncIterable<Uint8Array>
+
+  /**
+   * Import all blocks from one or more CARs and optionally recursively pin the roots identified
+   * within the CARs.
+   */
+  import: (sources: AsyncIterable<AsyncIterable<Uint8Array>> | Iterable<AsyncIterable<Uint8Array>>, options?: ImportOptions & OptionExtension) => AsyncIterable<ImportResult>
 }
 
 export interface GetOptions extends AbortOptions, PreloadOptions {
@@ -180,4 +193,33 @@ export interface ResolveResult {
    * The remainder of the Path that the node was unable to resolve
    */
   remainderPath?: string
+}
+
+export interface ExportOptions extends AbortOptions, PreloadOptions {
+}
+
+export interface ImportOptions extends AbortOptions, PreloadOptions {
+  /**
+   * Recursively pin roots for the imported CARs, defaults to true.
+   */
+  pinRoots?: boolean
+}
+
+export interface ImportResult {
+  /**
+   * A list of roots and their pin status if `pinRoots` was set.
+   */
+  root: ImportRootStatus
+}
+
+export interface ImportRootStatus {
+  /**
+   * CID of a root that was recursively pinned.
+   */
+  cid: CID
+
+  /**
+   * The error message if the pin was unsuccessful.
+   */
+  pinErrorMsg?: string
 }

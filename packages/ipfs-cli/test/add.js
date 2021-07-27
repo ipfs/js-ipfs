@@ -9,6 +9,7 @@ const first = require('it-first')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const matchIterable = require('./utils/match-iterable')
 
 // TODO: Test against all algorithms Object.keys(mh.names)
 // This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05
@@ -37,10 +38,6 @@ const defaultOptions = {
   blockWriteConcurrency: 10,
   progress: sinon.match.func,
   timeout: undefined
-}
-
-function matchIterable () {
-  return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
 }
 
 describe('add', () => {

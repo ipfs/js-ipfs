@@ -41,7 +41,7 @@
     "ipfs-grpc-protocol": "^0.3.0",
     "ipfs-unixfs": "^5.0.0",
     "it-first": "^1.0.4",
-    "it-pushable": "^1.4.0",
+    "it-pushable": "^1.4.2",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.4.1",
     "protobufjs": "^6.10.2",

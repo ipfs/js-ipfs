@@ -15,10 +15,8 @@ const toBuffer = require('it-to-buffer')
 const { AbortSignal } = require('native-abort-controller')
 const { base58btc } = require('multiformats/bases/base58')
 const { base64 } = require('multiformats/bases/base64')
-
-function matchIterable () {
-  return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
-}
+const matchIterable = require('../utils/match-iterable')
+const drain = require('it-drain')
 
 describe('/files', () => {
   const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
@@ -116,16 +114,20 @@ describe('/files', () => {
         '------------287032381131322--'
       ].join('\r\n'))
 
-      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
-        path: cid.toString(),
-        cid,
-        size: 1024 * 1024 * 2,
-        mode: 0o420,
-        mtime: {
-          secs: 100,
-          nsecs: 0
-        }
-      }])
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions)
+        .callsFake(async function * (source) {
+          await drain(source)
+          yield {
+            path: cid.toString(),
+            cid,
+            size: 1024 * 1024 * 2,
+            mode: 0o420,
+            mtime: {
+              secs: 100,
+              nsecs: 0
+            }
+          }
+        })
 
       const res = await http({
         method: 'POST',
@@ -143,16 +145,20 @@ describe('/files', () => {
       ipfs.bases.getBase.withArgs('base64').returns(base64)
       const content = Buffer.from('TEST' + Date.now())
 
-      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
-        path: cid.toString(),
-        cid: cid.toV1(),
-        size: content.byteLength,
-        mode: 0o420,
-        mtime: {
-          secs: 100,
-          nsecs: 0
-        }
-      }])
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions)
+        .callsFake(async function * (source) {
+          await drain(source)
+          yield {
+            path: cid.toString(),
+            cid: cid.toV1(),
+            size: content.byteLength,
+            mode: 0o420,
+            mtime: {
+              secs: 100,
+              nsecs: 0
+            }
+          }
+        })
 
       const form = new FormData()
       form.append('data', content)

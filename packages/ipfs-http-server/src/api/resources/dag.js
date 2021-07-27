@@ -1,9 +1,11 @@
 'use strict'
 
 const multipart = require('../../utils/multipart-request-parser')
+const streamResponse = require('../../utils/stream-response')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const all = require('it-all')
+const { pipe } = require('it-pipe')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
@@ -333,5 +335,152 @@ exports.resolve = {
     } catch (err) {
       throw Boom.boomify(err)
     }
+  }
+}
+
+exports.export = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        root: Joi.cid().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'root', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        root,
+        timeout
+      }
+    } = request
+
+    return streamResponse(request, h, () => ipfs.dag.export(root, {
+      timeout,
+      signal
+    }), {
+      onError (err) {
+        err.message = 'Failed to export DAG: ' + err.message
+      }
+    })
+  }
+}
+
+exports.import = {
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream',
+      maxBytes: Number.MAX_SAFE_INTEGER
+    },
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        pinRoots: Joi.boolean().default(true),
+        timeout: Joi.timeout()
+      })
+        .rename('pin-roots', 'pinRoots', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        pinRoots,
+        timeout
+      }
+    } = request
+
+    let filesParsed = false
+
+    return streamResponse(request, h, () => pipe(
+      multipart(request.raw.req),
+      /**
+       * @param {AsyncIterable<import('../../types').MultipartEntry>} source
+       */
+      async function * (source) {
+        for await (const entry of source) {
+          if (entry.type !== 'file') {
+            throw Boom.badRequest('Unexpected upload type')
+          }
+
+          filesParsed = true
+          yield entry.content
+        }
+      },
+      /**
+       * @param {AsyncIterable<AsyncIterable<Uint8Array>>} source
+       */
+      async function * (source) {
+        yield * ipfs.dag.import(source, {
+          pinRoots,
+          timeout,
+          signal
+        })
+      },
+      /**
+       * @param {AsyncIterable<import('ipfs-core-types/src/dag').ImportResult>} source
+       */
+      async function * (source) {
+        for await (const res of source) {
+          yield {
+            Root: {
+              Cid: {
+                '/': res.root.cid.toString()
+              },
+              PinErrorMsg: res.root.pinErrorMsg
+            }
+          }
+        }
+      }
+    ), {
+      onError (err) {
+        err.message = 'Failed to import DAG: ' + err.message
+      },
+      onEnd () {
+        if (!filesParsed) {
+          throw Boom.badRequest("File argument 'data' is required.")
+        }
+      }
+    })
   }
 }

@@ -114,6 +114,14 @@ describe('interface-ipfs-core tests', () => {
       {
         name: 'should get tree with CID and path as String',
         reason: 'Passing CID as strings is not supported'
+      },
+      {
+        name: '.dag.export',
+        reason: 'Not implemented yet'
+      },
+      {
+        name: '.dag.import',
+        reason: 'Not implemented yet'
       }
     ]
   })

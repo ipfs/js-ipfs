@@ -1,8 +1,10 @@
 'use strict'
 
+const createExport = require('./export')
 const createGet = require('./get')
-const createResolve = require('./resolve')
+const createImport = require('./import')
 const createPut = require('./put')
+const createResolve = require('./resolve')
 
 class DagAPI {
   /**
@@ -13,7 +15,9 @@ class DagAPI {
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
   constructor ({ repo, codecs, hashers, preload }) {
+    this.export = createExport({ repo, preload, codecs })
     this.get = createGet({ codecs, repo, preload })
+    this.import = createImport({ repo })
     this.resolve = createResolve({ repo, codecs, preload })
     this.put = createPut({ repo, codecs, hashers, preload })
   }
