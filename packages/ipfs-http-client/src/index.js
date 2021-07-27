@@ -20,6 +20,7 @@ const { base58btc } = require('multiformats/bases/base58')
  * @typedef {import('./types').EndpointConfig} EndpointConfig
  * @typedef {import('./types').Options} Options
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
+ * @typedef {import('./types').IPFSHTTPClient} IPFSHTTPClient
  */
 
 /**
@@ -49,7 +50,7 @@ function create (options = {}) {
     loadHasher: options.ipld && options.ipld.loadHasher
   })
 
-  /** @type {import('ipfs-core-types').IPFS & { getEndpointConfig: () => EndpointConfig }} */
+  /** @type {IPFSHTTPClient} */
   const client = {
     add: require('./add')(options),
     addAll: require('./add-all')(options),
