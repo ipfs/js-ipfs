@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.6.4...ipfs-message-port-client@0.7.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* flaky timeout test ([#3767](https://github.com/ipfs/js-ipfs/issues/3767)) ([55afc2f](https://github.com/ipfs/js-ipfs/commit/55afc2f8ee483f4b2807598b7371561d39229e17))
+
+
+### Features
+
+* implement dag import/export ([#3728](https://github.com/ipfs/js-ipfs/issues/3728)) ([700765b](https://github.com/ipfs/js-ipfs/commit/700765be2634fa5d2d71d8b87cf68c9cd328d2c4)), closes [#2953](https://github.com/ipfs/js-ipfs/issues/2953) [#2745](https://github.com/ipfs/js-ipfs/issues/2745)
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
 ## [0.6.4](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.6.3...ipfs-message-port-client@0.6.4) (2021-06-18)
 
 **Note:** Version bump only for package ipfs-message-port-client
