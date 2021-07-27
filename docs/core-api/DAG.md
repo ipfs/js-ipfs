@@ -2,26 +2,31 @@
 
 > The dag API comes to replace the `object API`, it supports the creation and manipulation of dag-pb object, as well as other IPLD formats (i.e dag-cbor, ethereum-block, git, etc)
 
-- [`ipfs.dag.put(dagNode, [options])`](#ipfsdagputdagnode-options)
+- [`ipfs.dag.export(cid, [options])`](#ipfsdagexportcid-options)
   - [Parameters](#parameters)
   - [Options](#options)
   - [Returns](#returns)
   - [Example](#example)
-- [`ipfs.dag.get(cid, [options])`](#ipfsdaggetcid-options)
+- [`ipfs.dag.put(dagNode, [options])`](#ipfsdagputdagnode-options)
   - [Parameters](#parameters-1)
   - [Options](#options-1)
   - [Returns](#returns-1)
   - [Example](#example-1)
-- [`ipfs.dag.tree(cid, [options])`](#ipfsdagtreecid-options)
+- [`ipfs.dag.get(cid, [options])`](#ipfsdaggetcid-options)
   - [Parameters](#parameters-2)
   - [Options](#options-2)
   - [Returns](#returns-2)
   - [Example](#example-2)
-- [`ipfs.dag.resolve(ipfsPath, [options])`](#ipfsdagresolveipfspath-options)
+- [`ipfs.dag.import(source, [options])`](#ipfsdagimportsource-options)
   - [Parameters](#parameters-3)
   - [Options](#options-3)
   - [Returns](#returns-3)
   - [Example](#example-3)
+- [`ipfs.dag.resolve(ipfsPath, [options])`](#ipfsdagresolveipfspath-options)
+  - [Parameters](#parameters-4)
+  - [Options](#options-4)
+  - [Returns](#returns-4)
+  - [Example](#example-4)
 
 _Explore the DAG API through interactive coding challenges in our ProtoSchool tutorials:_
 - _[P2P data links with content addressing](https://proto.school/#/basics/) (beginner)_
@@ -224,68 +229,6 @@ for await (const result of ipfs.dag.import(fs.createReadStream('./path/to/archiv
   console.info(result)
   // Qmfoo
 }
-```
-
-A great source of [examples][] can be found in the tests for this API.
-
-## `ipfs.dag.tree(cid, [options])`
-
-> Enumerate all the entries in a graph
-
-### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| cid | [CID][] | A DAG node that follows one of the supported IPLD formats |
-
-### Options
-
-An optional object which may have the following keys:
-
-| Name | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| path | `String` | An optional path within the DAG to resolve |
-| recursive | `boolean` | `false` | If set to true, it will follow the links and continuously run tree on them, returning all the paths in the graph |
-| timeout | `Number` | `undefined` | A timeout in ms |
-| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
-
-### Returns
-
-| Type | Description |
-| -------- | -------- |
-| `Promise<Array>` | An array with the paths passed |
-
-### Example
-
-```JavaScript
-// example obj
-const obj = {
-  a: 1,
-  b: [1, 2, 3],
-  c: {
-    ca: [5, 6, 7],
-    cb: 'foo'
-  }
-}
-
-const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
-console.log(cid.toString())
-// zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
-
-const result = await ipfs.dag.tree('zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5')
-console.log(result)
-// Logs:
-// a
-// b
-// b/0
-// b/1
-// b/2
-// c
-// c/ca
-// c/ca/0
-// c/ca/1
-// c/ca/2
-// c/cb
 ```
 
 A great source of [examples][] can be found in the tests for this API.
