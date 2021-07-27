@@ -59,6 +59,7 @@
     "uint8arrays": "^2.1.6"
   },
   "devDependencies": {
+    "@web-std/file": "^1.1.2",
     "aegir": "^34.0.2",
     "rimraf": "^3.0.2"
   }
