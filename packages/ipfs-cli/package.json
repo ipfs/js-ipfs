@@ -61,7 +61,7 @@
     "progress": "^2.0.3",
     "stream-to-it": "^0.2.2",
     "streaming-iterables": "^6.0.0",
-    "uint8arrays": "^2.1.6",
+    "uint8arrays": "npm:@vascosantos/uint8arrays^2.1.6",
     "yargs": "^16.0.3"
   },
   "devDependencies": {
