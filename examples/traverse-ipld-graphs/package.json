@@ -13,10 +13,10 @@
     "test-ipfs-example": "^3.0.0"
   },
   "dependencies": {
+    "@multiformats/sha3": "^2.0.0",
     "ipfs": "^0.56.0",
     "ipld-ethereum": "^6.0.0",
     "ipld-format-to-blockcodec": "0.0.1",
-    "ipld-git": "^0.6.1",
-    "js-sha3": "^0.8.0"
+    "ipld-git": "^0.6.1"
   }
 }

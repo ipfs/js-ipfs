@@ -3,11 +3,10 @@
 const createNode = require('./create-node')
 const path = require('path')
 const { CID } = require('multiformats/cid')
-const MultihashDigest = require('multiformats/hashes/digest')
 const fs = require('fs').promises
 const uint8ArrayToString = require('uint8arrays/to-string')
 const { convert } = require('ipld-format-to-blockcodec')
-const sha3 = require('js-sha3')
+const { keccak256 } = require('@multiformats/sha3')
 
 async function main () {
   const ipfs = await createNode({
@@ -15,16 +14,9 @@ async function main () {
       codecs: [
         ...Object.values(require('ipld-ethereum')).map(format => convert(format))
       ],
-      hashers: [{
-        name: 'keccak-256',
-        code: 0x1b,
-        digest: async (buf) => {
-          return MultihashDigest.create(
-            0x1b,
-            new Uint8Array(sha3.keccak256.arrayBuffer(buf))
-          )
-        }
-      }]
+      hashers: [
+        keccak256
+      ]
     }
   })
 
