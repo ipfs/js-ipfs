@@ -18,6 +18,12 @@ async function runTest () {
   console.info('Testing get-path-accross-formats.js')
   await waitForOutput('capoeira', path.resolve(__dirname, 'get-path-accross-formats.js'))
 
+  console.info('Testing eth.js')
+  await waitForOutput('302516', path.resolve(__dirname, 'eth.js'))
+
+  console.info('Testing git.js')
+  await waitForOutput("CID(baf4bcfhoohhpkaa3qsydcrby65wpblgthcrp2ii)", path.resolve(__dirname, 'git.js'))
+
   console.info('Done!')
 }
 
