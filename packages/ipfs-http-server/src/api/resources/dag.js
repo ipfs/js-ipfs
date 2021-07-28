@@ -6,7 +6,7 @@ const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const all = require('it-all')
 const { pipe } = require('it-pipe')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 /**
  * @param {undefined | Uint8Array | Record<string, any>} obj

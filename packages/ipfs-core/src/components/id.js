@@ -3,7 +3,7 @@
 const pkgversion = require('../../package.json').version
 const { Multiaddr } = require('multiaddr')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const PeerId = require('peer-id')
 const { NotStartedError } = require('../errors')
 

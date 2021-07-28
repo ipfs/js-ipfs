@@ -1,7 +1,7 @@
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')

@@ -3,7 +3,7 @@
 
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
 const dagPb = require('@ipld/dag-pb')
 const dagCbor = require('@ipld/dag-cbor')

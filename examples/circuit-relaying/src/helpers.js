@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 'use strict'
 
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 const Room = require('ipfs-pubsub-room')
 const $message = document.querySelector('#message')
@@ -34,9 +34,9 @@ module.exports = (ipfs, peersSet) => {
 
     // send and receive messages
     room.on('message', (message) => {
-      console.log('got message from ' + message.from + ': ' + uint8ArrayToString(message.data))
+      console.log('got message from ' + message.from + ': ' + { toString: uint8ArrayToString }(message.data))
       const node = document.createElement('li')
-      node.innerText = `${message.from.substr(-4)}: ${uint8ArrayToString(message.data)}`
+      node.innerText = `${message.from.substr(-4)}: ${{ toString: uint8ArrayToString }(message.data)}`
       $msgs.appendChild(node)
     })
 

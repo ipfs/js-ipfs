@@ -1,6 +1,6 @@
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const { default: parseDuration } = require('parse-duration')
 const { base32 } = require('multiformats/bases/base32')
 

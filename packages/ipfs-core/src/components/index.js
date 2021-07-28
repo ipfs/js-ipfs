@@ -12,7 +12,7 @@ const { bases, hashes, codecs } = require('multiformats/basics')
 
 const initAssets = require('../runtime/init-assets-nodejs')
 const { AlreadyInitializedError } = require('../errors')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 const createStartAPI = require('./start')
 const createStopAPI = require('./stop')

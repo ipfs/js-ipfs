@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const { AbortController } = require('native-abort-controller')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const defer = require('p-defer')
 
 const f = require('./utils/factory')()

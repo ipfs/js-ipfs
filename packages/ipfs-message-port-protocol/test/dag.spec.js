@@ -5,7 +5,7 @@
 const { CID } = require('multiformats/cid')
 const { encodeNode } = require('../src/dag')
 const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 describe('dag', function () {
   this.timeout(10 * 1000)

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayConcat = require('uint8arrays/concat')
+const { concat: uint8ArrayConcat } = require('@vascosantos/uint8arrays/concat')
 const drain = require('it-drain')
 const all = require('it-all')
 const { fixtures } = require('../utils')

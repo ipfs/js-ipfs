@@ -2,7 +2,7 @@
 
 const { default: parseDuration } = require('parse-duration')
 const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const {
   stripControlCharacters,
   makeEntriesPrintable,

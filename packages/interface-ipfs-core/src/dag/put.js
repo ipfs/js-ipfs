@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const dagCbor = require('@ipld/dag-cbor')
 const { CID } = require('multiformats/cid')
 const { sha256, sha512 } = require('multiformats/hashes/sha2')

@@ -12,7 +12,7 @@ const IpnsRepublisher = require('./republisher')
 const IpnsResolver = require('./resolver')
 const TLRU = require('../utils/tlru')
 const defaultRecordTtl = 60 * 1000
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 /**
  * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey

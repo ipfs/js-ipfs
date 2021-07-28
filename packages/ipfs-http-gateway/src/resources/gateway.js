@@ -1,7 +1,7 @@
 'use strict'
 
 const debug = require('debug')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const Boom = require('@hapi/boom')
 const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const last = require('it-last')

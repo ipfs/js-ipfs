@@ -7,7 +7,7 @@ const { CID } = require('multiformats/cid')
 const PeerId = require('peer-id')
 // @ts-ignore no types
 const isDomain = require('is-domain-name')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 const log = Object.assign(debug('ipfs:name:resolve'), {
   error: debug('ipfs:name:resolve:error')

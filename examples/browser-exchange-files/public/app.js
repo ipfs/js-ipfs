@@ -7,8 +7,8 @@ const filters = require('libp2p-websockets/src/filters')
 const transportKey = WS.prototype[Symbol.toStringTag]
 
 const all = require('it-all')
-const uint8ArrayConcat = require('uint8arrays/concat')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { concat: uint8ArrayConcat } = require('vascosantos/uint8arrays/concat')
+const { fromString: uint8ArrayFromString } = require('vascosantos/uint8arrays/from-string')
 
 // Node
 const $nodeId = document.querySelector('.node-id')

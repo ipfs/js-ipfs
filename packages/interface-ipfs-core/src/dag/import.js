@@ -8,7 +8,7 @@ const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { CarWriter, CarReader } = require('@ipld/car')
 const raw = require('multiformats/codecs/raw')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const loadFixture = require('aegir/utils/fixtures')
 
 /**

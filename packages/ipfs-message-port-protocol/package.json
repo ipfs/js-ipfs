@@ -52,7 +52,7 @@
   "devDependencies": {
     "aegir": "^34.0.2",
     "rimraf": "^3.0.2",
-    "uint8arrays": "^2.1.6"
+    "@vascosantos/uint8arrays": "^3.0.2"
   },
   "engines": {
     "node": ">=14.0.0",

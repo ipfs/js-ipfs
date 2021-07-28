@@ -8,8 +8,8 @@ const ipns = require('ipns')
 const delay = require('delay')
 const last = require('it-last')
 const waitFor = require('../utils/wait-for')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'

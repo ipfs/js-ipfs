@@ -7,8 +7,8 @@ const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:publisher'), {
   error: debug('ipfs:ipns:publisher:error')
 })
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayEquals = require('uint8arrays/equals')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
+const { equals: uint8ArrayEquals } = require('@vascosantos/uint8arrays/equals')
 
 const ipns = require('ipns')
 

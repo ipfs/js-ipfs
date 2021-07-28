@@ -53,7 +53,7 @@
     "it-to-stream": "^1.0.0",
     "joi": "^17.2.1",
     "multiformats": "^9.4.1",
-    "uint8arrays": "^2.1.6",
+    "@vascosantos/uint8arrays": "^3.0.2",
     "uri-to-multiaddr": "^6.0.0"
   },
   "devDependencies": {

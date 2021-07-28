@@ -64,7 +64,7 @@
     "native-abort-controller": "^1.0.3",
     "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
-    "uint8arrays": "^2.1.6"
+    "@vascosantos/uint8arrays": "^3.0.2"
   },
   "devDependencies": {
     "aegir": "^34.0.2",

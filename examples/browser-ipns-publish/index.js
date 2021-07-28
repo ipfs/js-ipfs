@@ -6,8 +6,8 @@ const IPFS = require("ipfs");
 const pRetry = require("p-retry");
 const last = require("it-last");
 const cryptoKeys = require("human-crypto-keys"); // { getKeyPairFromSeed }
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const { sha256 } = require('multiformats/hashes/sha2')
 
 const WS = require('libp2p-websockets')

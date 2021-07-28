@@ -1,7 +1,7 @@
 'use strict'
 
 const { CID } = require('multiformats/cid')
-const fromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const loadFixture = require('aegir/utils/fixtures')
 
 const ONE_MEG = Math.pow(2, 20)
@@ -21,7 +21,7 @@ exports.fixtures = Object.freeze({
   }),
   smallFile: Object.freeze({
     cid: CID.parse('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP'),
-    data: fromString('Plz add me!\n')
+    data: uint8ArrayFromString('Plz add me!\n')
   }),
   bigFile: Object.freeze({
     cid: CID.parse('QmcKEs7mbxbGPPc2zo77E6CPwgaSbY4SmD2MFh16AqaR9e'),

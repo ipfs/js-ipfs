@@ -5,7 +5,7 @@ const log = require('debug')('ipfs:mfs:utils:to-async-iterator')
 const {
   MFS_MAX_CHUNK_SIZE
 } = require('../../../utils')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 /**
  * @param {*} content

@@ -1,7 +1,7 @@
 'use strict'
 
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const uint8ArrayConcat = require('uint8arrays/concat')
+const { concat: uint8ArrayConcat } = require('@vascosantos/uint8arrays/concat')
 
 /**
  * @param {Object} config

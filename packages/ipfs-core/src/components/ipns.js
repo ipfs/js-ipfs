@@ -88,7 +88,7 @@ class IPNSAPI {
     }
     const routing = routingConfig({ libp2p, repo, peerId, options: this.options })
 
-    // @ts-ignore routing is a TieredDatastore which wants keys to be Keys, IPNS needs keys to be Uint8Arrays
+    // @ts-ignore routing is a TieredDatastore which wants keys to be Keys, IPNS needs keys to be uint8arrays
     const ipns = new IPNS(routing, repo.datastore, peerId, keychain, this.options)
     await ipns.republisher.start()
     this.online = ipns

@@ -1,7 +1,7 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const { coerceCID } = require('../../utils')
 
 module.exports = {

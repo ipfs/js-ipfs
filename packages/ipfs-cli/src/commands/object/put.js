@@ -3,8 +3,8 @@
 const concat = require('it-concat')
 const dagPB = require('@ipld/dag-pb')
 const { default: parseDuration } = require('parse-duration')
-const uint8arrayToString = require('uint8arrays/to-string')
-const uint8arrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 module.exports = {
   command: 'put [data]',
@@ -40,7 +40,7 @@ module.exports = {
     let buf
 
     if (data) {
-      buf = uint8arrayFromString(data)
+      buf = uint8ArrayFromString(data)
     } else {
       buf = (await concat(getStdin(), { type: 'buffer' })).slice()
     }
@@ -50,7 +50,7 @@ module.exports = {
     if (inputEnc === 'protobuf') {
       node = dagPB.decode(buf)
     } else {
-      node = JSON.parse(uint8arrayToString(buf))
+      node = JSON.parse(uint8ArrayToString(buf))
     }
 
     const base = await ipfs.bases.getBase(cidBase)

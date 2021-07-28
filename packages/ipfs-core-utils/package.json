@@ -56,7 +56,7 @@
     "multiformats": "^9.4.1",
     "parse-duration": "^1.0.0",
     "timeout-abort-controller": "^1.1.1",
-    "uint8arrays": "^2.1.6"
+    "@vascosantos/uint8arrays": "^3.0.2"
   },
   "devDependencies": {
     "@web-std/file": "^1.1.2",

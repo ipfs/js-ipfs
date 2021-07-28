@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const execa = require('execa')
 const which = require('which')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 async function startServer(dir) {
   async function serveFrom(appDir) {

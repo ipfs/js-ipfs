@@ -1,8 +1,8 @@
 'use strict'
 
 const IPFS = require('ipfs-core')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 async function main () {
   // see https://github.com/multiformats/js-multiformats#multicodec-encoders--decoders--codecs for the interface definition

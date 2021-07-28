@@ -5,7 +5,7 @@
 const { encodeBlock } = require('../src/block')
 const { ipc } = require('./util')
 const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 describe('block (browser)', function () {
   this.timeout(10 * 1000)

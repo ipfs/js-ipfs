@@ -10,7 +10,7 @@ const byteman = require('byteman')
 const IPFS = require('ipfs-core')
 const { CID } = require('multiformats/cid')
 const { Multiaddr } = require('multiaddr')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 const getRepoPath = () => {
   return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')

@@ -6,7 +6,7 @@ const { isWebWorker } = require('ipfs-utils/src/env')
 const { randomBytes } = require('iso-random-stream')
 const concat = require('it-concat')
 const { nanoid } = require('nanoid')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const pmap = require('p-map')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 

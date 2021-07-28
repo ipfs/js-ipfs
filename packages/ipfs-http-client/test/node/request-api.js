@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const ipfsClient = require('../../src').create
 
 describe('\'deal with HTTP weirdness\' tests', () => {

@@ -2,7 +2,7 @@
 
 const { default: parseDuration } = require('parse-duration')
 const { coerceCID } = require('../../utils')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 module.exports = {
   command: 'get <key>',

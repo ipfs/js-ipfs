@@ -7,7 +7,7 @@ const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:resolver'), {
   error: debug('ipfs:ipns:resolver:error')
 })
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code

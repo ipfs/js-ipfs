@@ -1,6 +1,6 @@
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const { CID } = require('multiformats/cid')
 const { sha256 } = require('multiformats/hashes/sha2')
 

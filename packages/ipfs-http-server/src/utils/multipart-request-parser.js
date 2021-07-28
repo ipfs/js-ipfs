@@ -3,8 +3,8 @@
 // @ts-ignore no types
 const Content = require('@hapi/content')
 const multipart = require('it-multipart')
-const uint8ArrayConcat = require('uint8arrays/concat')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { concat: uint8ArrayConcat } = require('@vascosantos/uint8arrays/concat')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const qs = require('querystring')
 const drain = require('it-drain')
 

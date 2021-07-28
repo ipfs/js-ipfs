@@ -1,7 +1,7 @@
 'use strict'
 
 const { default: parseDuration } = require('parse-duration')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 module.exports = {
   command: 'put <key> <value>',

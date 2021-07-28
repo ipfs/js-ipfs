@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const { nanoid } = require('nanoid')
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')

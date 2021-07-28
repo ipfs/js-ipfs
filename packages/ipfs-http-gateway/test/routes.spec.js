@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const FileType = require('file-type')
 const { CID } = require('multiformats/cid')
 const { base32 } = require('multiformats/bases/base32')

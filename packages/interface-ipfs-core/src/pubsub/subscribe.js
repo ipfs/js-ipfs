@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const { nanoid } = require('nanoid')
 const pushable = require('it-pushable')
 const all = require('it-all')

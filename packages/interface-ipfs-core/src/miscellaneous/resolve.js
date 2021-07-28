@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const isIpfs = require('is-ipfs')
 const { nanoid } = require('nanoid')
 const { base64url } = require('multiformats/bases/base64')
