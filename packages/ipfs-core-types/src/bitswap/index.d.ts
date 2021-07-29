@@ -1,4 +1,4 @@
-import type { CID } from 'multiformts/cid'
+import type { CID } from 'multiformats/cid'
 import type { AbortOptions } from '../utils'
 
 export interface API<OptionExtension = {}> {
