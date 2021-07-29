@@ -2,7 +2,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
 const all = require('it-all')
 const MockPreloadNode = require('./utils/mock-preload-node-utils')

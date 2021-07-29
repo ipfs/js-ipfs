@@ -1,7 +1,7 @@
 'use strict'
 
 const PATH = require('path')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 /**
  * Uses an object in an S3 bucket as a lock to signal that an IPFS repo is in use.

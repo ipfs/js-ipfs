@@ -4,7 +4,7 @@ const createNode = require('./create-node')
 const path = require('path')
 const { CID } = require('multiformats/cid')
 const fs = require('fs').promises
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const { convert } = require('ipld-format-to-blockcodec')
 const { keccak256 } = require('@multiformats/sha3')
 

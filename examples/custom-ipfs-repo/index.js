@@ -8,8 +8,8 @@ const {
   }
 } = require('ipfs-repo')
 const all = require('it-all')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayConcat = require('uint8arrays/concat')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
+const { concat: uint8ArrayConcat } = require('@vascosantos/uint8arrays/concat')
 const DatastoreFS = require('datastore-fs')
 const BlockstoreDatastoreAdapter = require('blockstore-datastore-adapter')
 

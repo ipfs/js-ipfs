@@ -5,7 +5,7 @@ const { expect } = require('aegir/utils/chai')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 const { base32 } = require('multiformats/bases/base32')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 const defaultOptions = {
   timeout: undefined

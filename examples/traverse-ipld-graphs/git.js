@@ -5,7 +5,7 @@ const path = require('path')
 const { CID } = require('multiformats/cid')
 const MultihashDigest = require('multiformats/hashes/digest')
 const fs = require('fs').promises
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const { convert } = require('ipld-format-to-blockcodec')
 const crypto = require('crypto')
 

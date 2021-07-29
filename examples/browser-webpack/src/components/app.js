@@ -2,8 +2,8 @@
 
 const React = require('react')
 const IPFS = require('ipfs')
-const uint8ArrayConcat = require('uint8arrays/concat')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { concat: uint8ArrayConcat } = require('@vascosantos/uint8arrays/concat')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 const stringToUse = 'hello world from webpacked IPFS'
 

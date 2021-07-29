@@ -1,6 +1,6 @@
 import IPFS from 'ipfs'
-import uint8ArrayConcat from 'uint8arrays/concat'
-import uint8ArrayToString from 'uint8arrays/to-string'
+import uint8ArrayConcat from '@vascosantos/uint8arrays/concat'
+import uint8ArrayToString from '@vascosantos/uint8arrays/to-string'
 
 document.addEventListener('DOMContentLoaded', async () => {
   // IPFS node setup

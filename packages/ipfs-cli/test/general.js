@@ -14,7 +14,7 @@ const clean = require('./utils/clean')
 const { isWindows } = require('./utils/platforms')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 describe.skip('general cli options', () => {
   let ipfs

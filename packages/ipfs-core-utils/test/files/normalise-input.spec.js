@@ -4,7 +4,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const blobToIt = require('blob-to-it')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const all = require('it-all')
 const { File } = require('@web-std/file')
 const { Blob, ReadableStream } = globalThis

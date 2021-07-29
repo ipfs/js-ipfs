@@ -2,7 +2,7 @@
 
 const { create: IpfsHttpClient } = require('ipfs-http-client')
 const { sleep, Logger, onEnterPress, catchAndLog } = require('./util')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 async function main () {
   const apiUrlInput = document.getElementById('api-url')

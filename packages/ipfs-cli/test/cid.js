@@ -9,7 +9,7 @@ const { base58btc } = require('multiformats/bases/base58')
 const raw = require('multiformats/codecs/raw')
 const { sha256 } = require('multiformats/hashes/sha2')
 const dagPb = require('@ipld/dag-pb')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 describe('cid', () => {
   let ipfs

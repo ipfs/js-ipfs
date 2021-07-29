@@ -10,8 +10,8 @@ const { CID } = require('multiformats/cid')
 const raw = require('multiformats/codecs/raw')
 const { base58btc } = require('multiformats/bases/base58')
 const { base64 } = require('multiformats/bases/base64')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 const matchIterable = require('./utils/match-iterable')
 
 describe('dag', () => {

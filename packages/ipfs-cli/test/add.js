@@ -8,7 +8,7 @@ const { base64 } = require('multiformats/bases/base64')
 const first = require('it-first')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 const matchIterable = require('./utils/match-iterable')
 
 // TODO: Test against all algorithms Object.keys(mh.names)

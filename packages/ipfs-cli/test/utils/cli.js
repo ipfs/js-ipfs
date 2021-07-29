@@ -2,7 +2,7 @@
 
 const { parseArgsStringToArgv } = require('string-argv')
 const cli = require('../../src')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
 
 const output = () => {
   const output = []

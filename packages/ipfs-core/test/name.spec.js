@@ -13,7 +13,7 @@ const IpnsRepublisher = require('../src/ipns/republisher')
 const IpnsResolver = require('../src/ipns/resolver')
 const OfflineDatastore = require('../src/ipns/routing/offline-datastore')
 const PubsubDatastore = require('../src/ipns/routing/pubsub-datastore')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 

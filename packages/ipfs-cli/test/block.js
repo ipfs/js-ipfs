@@ -7,7 +7,7 @@ const { base58btc } = require('multiformats/bases/base58')
 const { base64 } = require('multiformats/bases/base64')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
 
 describe('block', () => {
   const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
