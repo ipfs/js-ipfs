@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [51.0.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@51.0.0...ipfs-http-client@51.0.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-http-client
+
+
+
+
+
 # [51.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.1.2...ipfs-http-client@51.0.0) (2021-07-27)
 
 

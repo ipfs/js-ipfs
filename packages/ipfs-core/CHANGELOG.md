@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.9.0...ipfs-core@0.9.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* restore default level-js options ([#3779](https://github.com/ipfs/js-ipfs/issues/3779)) ([8380d71](https://github.com/ipfs/js-ipfs/commit/8380d7160e7205bed9cc4aecfc46882bc97d42c3))
+* typo in 'multiformats' type defs ([#3778](https://github.com/ipfs/js-ipfs/issues/3778)) ([1bf35f8](https://github.com/ipfs/js-ipfs/commit/1bf35f8a1622dea1e88bfbd701205df4f96998b1))
+
+
+
+
+
 # [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.8.0...ipfs-core@0.9.0) (2021-07-27)
 
 
