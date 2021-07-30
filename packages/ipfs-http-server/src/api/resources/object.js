@@ -399,9 +399,10 @@ exports.stat = {
 
     const base = await ipfs.bases.getBase(cidBase)
 
-    stats.Hash = stats.Hash.toString(base.encoder)
-
-    return h.response(stats)
+    return h.response({
+      ...stats,
+      Hash: stats.Hash.toString(base.encoder)
+    })
   }
 }
 

@@ -78,7 +78,7 @@ export interface API<OptionExtension = {}> {
    * // Logs: 3739
    * ```
    */
-  stat: (ipfsPath: IPFSPath, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
+  stat: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
 }
 
 export interface PutOptions extends AbortOptions, PreloadOptions {
