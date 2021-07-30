@@ -1,5 +1,5 @@
 import type { AbortOptions } from '../utils'
-import { CID } from 'multiformts/cid'
+import { CID } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
   /**

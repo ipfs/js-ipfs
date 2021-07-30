@@ -1,4 +1,4 @@
-import { CID } from 'multiformts/cid'
+import { CID } from 'multiformats/cid'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =

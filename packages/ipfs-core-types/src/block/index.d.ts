@@ -1,4 +1,4 @@
-import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
+import { AbortOptions, PreloadOptions } from '../utils'
 import { CID, CIDVersion } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
@@ -78,7 +78,7 @@ export interface API<OptionExtension = {}> {
    * // Logs: 3739
    * ```
    */
-  stat: (ipfsPath: IPFSPath, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
+  stat: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
 }
 
 export interface PutOptions extends AbortOptions, PreloadOptions {

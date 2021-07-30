@@ -65,18 +65,7 @@ module.exports = ({ network, repo }) => {
      */
     async * provide (cids, options = { recursive: false }) {
       const { libp2p } = await use(network, options)
-      /** @type {CID[]} */
       const cidArr = Array.isArray(cids) ? cids : [cids]
-
-      for (const i in cids) {
-        if (typeof cids[i] === 'string') {
-          try {
-            cids[i] = CID.parse(cids[i])
-          } catch (err) {
-            throw errCode(err, 'ERR_INVALID_CID')
-          }
-        }
-      }
 
       // ensure blocks are actually local
       const hasCids = await Promise.all(cidArr.map(cid => repo.blocks.has(cid)))
@@ -91,7 +80,7 @@ module.exports = ({ network, repo }) => {
         throw errCode(new Error('not implemented yet'), 'ERR_NOT_IMPLEMENTED_YET')
       }
 
-      for (const cid of cids) {
+      for (const cid of cidArr) {
         yield libp2p._dht.provide(cid)
       }
     },
