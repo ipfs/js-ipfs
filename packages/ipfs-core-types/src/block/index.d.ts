@@ -1,4 +1,4 @@
-import { AbortOptions, PreloadOptions, IPFSPath } from '../utils'
+import { AbortOptions, PreloadOptions } from '../utils'
 import { CID, CIDVersion } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
