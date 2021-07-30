@@ -21,29 +21,24 @@ module.exports = (print, codecs, options) => {
 
   return createRepo(repoPath, (codeOrName) => codecs.getCodec(codeOrName), {
     root: new DatastoreLevel(repoPath, {
-      extension: '',
       prefix: '',
       version: 2
     }),
     blocks: new BlockstoreDatastoreAdapter(
       new DatastoreLevel(`${repoPath}/blocks`, {
-        extension: '',
         prefix: '',
         version: 2
       })
     ),
     datastore: new DatastoreLevel(`${repoPath}/datastore`, {
-      extension: '',
       prefix: '',
       version: 2
     }),
     keys: new DatastoreLevel(`${repoPath}/keys`, {
-      extension: '',
       prefix: '',
       version: 2
     }),
     pins: new DatastoreLevel(`${repoPath}/pins`, {
-      extension: '',
       prefix: '',
       version: 2
     })
