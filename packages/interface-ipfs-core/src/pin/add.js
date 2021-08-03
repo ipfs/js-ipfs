@@ -7,21 +7,25 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pin.add', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
 
       await drain(
         ipfs.addAll(
@@ -43,7 +47,7 @@ module.exports = (common, options) => {
       )
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     beforeEach(() => {
       return clearPins(ipfs)
@@ -94,12 +98,13 @@ module.exports = (common, options) => {
       return expect(ipfs.pin.add(fixtures.directory.cid, {
         recursive: false
       }))
-        .to.eventually.be.rejected()
-        .with(/already pinned recursively/)
+        .to.eventually.be.rejectedWith(/already pinned recursively/)
     })
 
     it('should fail to pin a hash not in datastore', async function () {
+      // @ts-ignore this is mocha
       this.slow(3 * 1000)
+      // @ts-ignore this is mocha
       this.timeout(5 * 1000)
       const falseHash = `${`${fixtures.directory.cid}`.slice(0, -2)}ss`
 
@@ -108,7 +113,9 @@ module.exports = (common, options) => {
     })
 
     it('needs all children in datastore to pin recursively', async function () {
+      // @ts-ignore this is mocha
       this.slow(3 * 1000)
+      // @ts-ignore this is mocha
       this.timeout(5 * 1000)
       await all(ipfs.block.rm(fixtures.directory.files[0].cid))
 

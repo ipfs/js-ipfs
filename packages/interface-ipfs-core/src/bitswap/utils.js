@@ -2,6 +2,11 @@
 
 const delay = require('delay')
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {string} key
+ * @param {{ timeout?: number, interval?: number, peerId?: string }} [opts]
+ */
 async function waitForWantlistKey (ipfs, key, opts = {}) {
   opts.timeout = opts.timeout || 10000
   opts.interval = opts.interval || 100
@@ -27,6 +32,11 @@ async function waitForWantlistKey (ipfs, key, opts = {}) {
   throw new Error(`Timed out waiting for ${key} in wantlist`)
 }
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {string} key
+ * @param {{ timeout?: number, interval?: number, peerId?: string }} [opts]
+ */
 async function waitForWantlistKeyToBeRemoved (ipfs, key, opts = {}) {
   opts.timeout = opts.timeout || 10000
   opts.interval = opts.interval || 100

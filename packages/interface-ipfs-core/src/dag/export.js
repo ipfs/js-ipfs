@@ -10,22 +10,26 @@ const dagCbor = require('@ipld/dag-cbor')
 const loadFixture = require('aegir/utils/fixtures')
 const toBuffer = require('it-to-buffer')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dag.export', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should export a car file', async () => {
       const child = dagPb.encode({
@@ -68,6 +72,7 @@ module.exports = (common, options) => {
     })
 
     it('export of shuffled devnet export identical to canonical original', async function () {
+      // @ts-ignore this is mocha
       this.timeout(360000)
 
       const input = loadFixture('test/fixtures/car/lotus_devnet_genesis.car', 'interface-ipfs-core')
@@ -78,6 +83,7 @@ module.exports = (common, options) => {
     })
 
     it('export of shuffled testnet export identical to canonical original', async function () {
+      // @ts-ignore this is mocha
       this.timeout(360000)
 
       const input = loadFixture('test/fixtures/car/lotus_testnet_export_128.car', 'interface-ipfs-core')

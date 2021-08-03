@@ -10,27 +10,34 @@ const { CID } = require('multiformats/cid')
 const uint8ArrayEquals = require('uint8arrays/equals')
 const blockstore = require('./utils/blockstore-adapter')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.refs.local', function () {
     this.timeout(60 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get local refs', async function () {
+      /**
+       * @param {string} name
+       */
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
@@ -44,7 +51,7 @@ module.exports = (common, options) => {
       const imported = await all(importer(dirs, blockstore(ipfs)))
 
       // otherwise go-ipfs doesn't show them in the local refs
-      await drain(ipfs.pin.addAll(imported.map(i => i.cid)))
+      await drain(ipfs.pin.addAll(imported.map(i => ({ cid: i.cid }))))
 
       const refs = await all(ipfs.refs.local())
       const cids = refs.map(r => r.ref)

@@ -4,12 +4,15 @@
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -18,16 +21,18 @@ module.exports = (common, options) => {
       { type: 'rsa', size: 2048 }
     ]
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     keyTypes.forEach((kt) => {
       it(`should generate a new ${kt.type} key`, async function () {
+        // @ts-ignore this is mocha
         this.timeout(20 * 1000)
         const name = nanoid()
         const key = await ipfs.key.gen(name, kt)

@@ -10,12 +10,15 @@ const { CID } = require('multiformats/cid')
 const delay = require('delay')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
@@ -23,21 +26,25 @@ module.exports = (common, options) => {
   describe('.bitswap.wantlist', function () {
     this.timeout(60 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsA
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsB
     const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
     before(async () => {
-      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB
       ipfsB.block.get(CID.parse(key)).catch(() => { /* is ok, expected on teardown */ })
 
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      const ipfsBId = await ipfsB.id()
+
+      await ipfsA.swarm.connect(ipfsBId.addresses[0])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when getting bitswap wantlist', () => {
       return testTimeout(() => ipfsA.bitswap.wantlist({
@@ -50,7 +57,7 @@ module.exports = (common, options) => {
     })
 
     it('should not get the wantlist when offline', async () => {
-      const node = await common.spawn()
+      const node = await factory.spawn()
       await node.stop()
 
       return expect(node.api.bitswap.stat()).to.eventually.be.rejected()

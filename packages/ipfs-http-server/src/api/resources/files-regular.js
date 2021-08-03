@@ -1,8 +1,6 @@
 'use strict'
 
 const multipart = require('../../utils/multipart-request-parser')
-// @ts-ignore no types
-const tar = require('it-tar')
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { pipe } = require('it-pipe')
@@ -11,15 +9,6 @@ const streamResponse = require('../../utils/stream-response')
 const merge = require('it-merge')
 const { PassThrough } = require('stream')
 const map = require('it-map')
-
-/**
- * @param {AsyncIterable<Uint8Array>} source
- */
-const toBuffer = async function * (source) {
-  for await (const chunk of source) {
-    yield chunk.slice()
-  }
-}
 
 exports.cat = {
   options: {
@@ -98,6 +87,10 @@ exports.get = {
           override: true,
           ignoreUndefined: true
         })
+        .rename('compression-level', 'compressionLevel', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
   },
 
@@ -117,34 +110,20 @@ exports.get = {
       },
       query: {
         path,
+        archive,
+        compress,
+        compressionLevel,
         timeout
       }
     } = request
 
-    return streamResponse(request, h, () => pipe(
-      ipfs.get(path, {
-        timeout,
-        signal
-      }),
-      /**
-       * @param {AsyncIterable<import('ipfs-core-types/src/root').IPFSEntry>} source
-       */
-      async function * (source) {
-        for await (const file of source) {
-          const header = {
-            name: file.path
-          }
-
-          if (file.type === 'file' && file.content != null) {
-            yield { header: { ...header, size: file.size }, body: toBuffer(file.content) }
-          } else {
-            yield { header: { ...header, type: 'directory' } }
-          }
-        }
-      },
-      tar.pack(),
-      toBuffer
-    ))
+    return streamResponse(request, h, () => ipfs.get(path, {
+      timeout,
+      archive,
+      compress,
+      compressionLevel,
+      signal
+    }))
   }
 }
 

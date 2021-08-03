@@ -4,6 +4,10 @@ const { expect } = require('./mocha')
 const isShardAtPath = require('./is-shard-at-path')
 const last = require('it-last')
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {number} [files]
+ */
 module.exports = async (ipfs, files = 1001) => {
   const dirPath = `/sharded-dir-${Math.random()}`
 
@@ -18,6 +22,10 @@ module.exports = async (ipfs, files = 1001) => {
     preload: false,
     pin: false
   }))
+
+  if (!result) {
+    throw new Error('No result received from ipfs.addAll')
+  }
 
   await ipfs.files.cp(`/ipfs/${result.cid}`, dirPath)
 

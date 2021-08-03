@@ -7,12 +7,15 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
@@ -20,17 +23,22 @@ module.exports = (common, options) => {
   describe('.swarm.addrs', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsA
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsB
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfsBId
 
     before(async () => {
-      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsBId = await ipfsB.id()
+      await ipfsA.swarm.connect(ipfsBId.addresses[0])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get a list of node addresses', async () => {
       const peers = await ipfsA.swarm.addrs()

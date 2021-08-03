@@ -7,27 +7,34 @@ const all = require('it-all')
 const { CID } = require('multiformats/cid')
 const testTimeout = require('./utils/test-timeout')
 
+/**
+ * @param {string} prefix
+ */
 const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.ls', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when listing files', () => {
       return testTimeout(() => ipfs.ls(CID.parse('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
@@ -36,11 +43,17 @@ module.exports = (common, options) => {
     })
 
     it('should ls with a base58 encoded CID', async function () {
+      /**
+       * @param {string} name
+       */
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
       })
 
+      /**
+       * @param {string} name
+       */
       const emptyDir = (name) => ({ path: `test-folder/${name}` })
 
       const dirs = [

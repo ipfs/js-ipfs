@@ -10,25 +10,29 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const first = require('it-first')
 const drain = require('it-drain')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.object.put', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should put an object', async () => {
       const obj = {
@@ -84,6 +88,7 @@ module.exports = (common, options) => {
     })
 
     it('should fail if a string is passed', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.put(nanoid())).to.eventually.be.rejected()
     })
 
@@ -104,7 +109,7 @@ module.exports = (common, options) => {
       }
       const node1b = {
         Data: node1a.Data,
-        Links: node1a.Links.concat(link)
+        Links: [link]
       }
 
       const cid = await ipfs.object.put(node1b)

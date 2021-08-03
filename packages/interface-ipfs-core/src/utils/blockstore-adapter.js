@@ -7,12 +7,18 @@ const dagCbor = require('@ipld/dag-cbor')
 const { sha256 } = require('multiformats/hashes/sha2')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
+/**
+ * @type {Record<number, string>}
+ */
 const formats = {
   [raw.code]: raw.name,
   [dagPb.code]: dagPb.name,
   [dagCbor.code]: dagCbor.name
 }
 
+/**
+ * @type {Record<number, string>}
+ */
 const hashes = {
   [sha256.code]: sha256.name
 }
@@ -28,7 +34,7 @@ class IPFSBlockstore extends BlockstoreAdapter {
   }
 
   /**
-   * @param {import(multiformats/cid).CID} cid
+   * @param {import('multiformats/cid').CID} cid
    * @param {Uint8Array} buf
    */
   async put (cid, buf) {

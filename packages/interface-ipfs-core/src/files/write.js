@@ -16,17 +16,23 @@ const all = require('it-all')
 const isShardAtPath = require('../utils/is-shard-at-path')
 const raw = require('multiformats/codecs/raw')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const smallFile = randomBytes(13)
   const largeFile = randomBytes(490668)
 
+  /**
+   * @param {(arg: { type: string, path: string, content: Uint8Array | AsyncIterable<Uint8Array>, contentSize: number }) => void} fn
+   */
   const runTest = (fn) => {
     const iterations = 5
     const files = [{
@@ -60,8 +66,13 @@ module.exports = (common, options) => {
   describe('.files.write', function () {
     this.timeout(300 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
+    /**
+     * @param {number | string} mode
+     * @param {number} expectedMode
+     */
     async function testMode (mode, expectedMode) {
       const testPath = `/test-${nanoid()}`
 
@@ -75,6 +86,10 @@ module.exports = (common, options) => {
       expect(stats).to.have.property('mode', expectedMode)
     }
 
+    /**
+     * @param {import('ipfs-unixfs').MtimeLike} mtime
+     * @param {import('ipfs-unixfs').MtimeLike} expectedMtime
+     */
     async function testMtime (mtime, expectedMtime) {
       const testPath = `/test-${nanoid()}`
 
@@ -89,18 +104,20 @@ module.exports = (common, options) => {
     }
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('explodes if it cannot convert content to a source', async () => {
+      // @ts-expect-error invalid arg
       await expect(ipfs.files.write('/foo-bad-source', -1, {
         create: true
       })).to.eventually.be.rejected()
     })
 
     it('explodes if given an invalid path', async () => {
+      // @ts-expect-error invalid arg
       await expect(ipfs.files.write('foo-no-slash', null, {
         create: true
       })).to.eventually.be.rejected()
@@ -126,7 +143,7 @@ module.exports = (common, options) => {
       })
 
       await expect(all(ipfs.files.ls(path))).to.eventually.have.lengthOf(1)
-        .and.to.have.nested.property('[0]').that.includes({
+        .and.to.have.nested.property('[0]').that.include({
           name: 'foo-zero-length',
           size: 0
         })
@@ -171,6 +188,7 @@ module.exports = (common, options) => {
 
     it('writes a small file using a Node stream (Node only)', async function () {
       if (!isNode) {
+        // @ts-ignore this is mocha
         this.skip()
       }
       const filePath = `/small-file-${Math.random()}.txt`
@@ -187,6 +205,7 @@ module.exports = (common, options) => {
 
     it('writes a small file using an HTML5 Blob (Browser only)', async function () {
       if (!global.Blob) {
+        // @ts-ignore this is mocha
         return this.skip()
       }
 
@@ -325,7 +344,7 @@ module.exports = (common, options) => {
           length: offset
         })))
 
-        expect(buffer).to.deep.equal(new Uint8Array(offset, 0))
+        expect(buffer).to.deep.equal(new Uint8Array(offset))
       })
     })
 
@@ -368,7 +387,7 @@ module.exports = (common, options) => {
 
         const buffer = uint8ArrayConcat(await all(ipfs.files.read(path)))
 
-        if (content[Symbol.asyncIterator]) {
+        if (!(content instanceof Uint8Array)) {
           content = uint8ArrayConcat(await all(content))
         }
 
@@ -416,6 +435,7 @@ module.exports = (common, options) => {
     })
 
     it('supports concurrent writes', async function () {
+      /** @type {{ name: string, source: ReturnType<randomBytes>}[]} */
       const files = []
 
       for (let i = 0; i < 10; i++) {
@@ -630,10 +650,11 @@ module.exports = (common, options) => {
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

@@ -36,6 +36,7 @@ module.exports = ({ repo }) => {
       }
 
       if (value) {
+        // @ts-ignore
         peekable.push(value)
       }
 
@@ -48,6 +49,7 @@ module.exports = ({ repo }) => {
         // @ts-ignore
         cars = [peekable]
       } else {
+        // @ts-ignore
         cars = peekable
       }
 

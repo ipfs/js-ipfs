@@ -11,21 +11,25 @@ const { CID } = require('multiformats/cid')
 const raw = require('multiformats/codecs/raw')
 const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.block.rm', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when removing a block', () => {
       return testTimeout(() => drain(ipfs.block.rm(CID.parse('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
@@ -93,8 +97,7 @@ module.exports = (common, options) => {
       const result = await all(ipfs.block.rm(cid))
 
       expect(result).to.be.an('array').and.to.have.lengthOf(1)
-      expect(result[0]).to.have.property('error')
-      expect(result[0].error.message).to.include('block not found')
+      expect(result).to.have.nested.property('[0].error.message').that.includes('block not found')
     })
 
     it('should not error when force removing non-existent blocks', async () => {
@@ -138,6 +141,7 @@ module.exports = (common, options) => {
     })
 
     it('should throw error for invalid CID input', () => {
+      // @ts-expect-error invalid input
       return expect(all(ipfs.block.rm('INVALID CID')))
         .to.eventually.be.rejected()
     })

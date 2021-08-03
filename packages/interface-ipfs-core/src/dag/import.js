@@ -31,7 +31,7 @@ async function createBlocks (num) {
 
 /**
  * @param {{ cid: CID, bytes: Uint8Array }[]} blocks
- * @returns {AsyncIterable<Uint8Array>}
+ * @returns {Promise<AsyncIterable<Uint8Array>>}
  */
 async function createCar (blocks) {
   const rootBlock = blocks[0]
@@ -49,22 +49,26 @@ async function createCar (blocks) {
   return out
 }
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dag.import', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should import a car file', async () => {
       const blocks = await createBlocks(5)
@@ -72,6 +76,7 @@ module.exports = (common, options) => {
 
       const result = await all(ipfs.dag.import(car))
       expect(result).to.have.lengthOf(1)
+      // @ts-ignore chai types are messed up
       expect(result).to.have.nested.deep.property('[0].root.cid', blocks[0].cid)
 
       for (const { cid } of blocks) {
@@ -150,6 +155,7 @@ module.exports = (common, options) => {
       expect(cids[0].toString()).to.equal('bafkqaaa')
 
       const result = await all(ipfs.dag.import(async function * () { yield input }()))
+      // @ts-ignore chai types are messed up
       expect(result).to.have.nested.deep.property('[0].root.cid', cids[0])
     })
   })

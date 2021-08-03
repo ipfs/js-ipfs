@@ -14,12 +14,15 @@ const { isWebWorker, isNode } = require('ipfs-utils/src/env')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 const first = require('it-first')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
@@ -27,18 +30,29 @@ module.exports = (common, options) => {
   describe('.pubsub.subscribe', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs1
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs2
+    /** @type {string} */
     let topic
+    /** @type {string[]} */
     let subscribedTopics = []
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfs1Id
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfs2Id
 
     before(async () => {
-      ipfs1 = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfs1 = (await factory.spawn({ type: 'proc', ipfsOptions })).api
       // TODO 'multiple connected nodes' tests fails with go in Firefox
       // and JS is flaky everywhere
 
       // webworkers are not dialable because webrtc is not available
-      ipfs2 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfs2 = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+
+      ipfs1Id = await ipfs1.id()
+      ipfs2Id = await ipfs2.id()
     })
 
     beforeEach(() => {
@@ -56,7 +70,7 @@ module.exports = (common, options) => {
       await delay(100)
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     describe('single node', () => {
       it('should subscribe to one topic', async () => {
@@ -74,7 +88,7 @@ module.exports = (common, options) => {
         expect(msg).to.have.property('seqno')
         expect(msg.seqno).to.be.an.instanceof(Uint8Array)
         expect(msg.topicIDs[0]).to.eq(topic)
-        expect(msg).to.have.property('from', ipfs1.peerId.id)
+        expect(msg).to.have.property('from', ipfs1Id.id)
       })
 
       it('should subscribe to one topic with options', async () => {
@@ -92,7 +106,7 @@ module.exports = (common, options) => {
           expect(msg).to.have.property('seqno')
           expect(msg.seqno).to.be.an.instanceof(Uint8Array)
           expect(msg.topicIDs[0]).to.eq(topic)
-          expect(msg).to.have.property('from', ipfs1.peerId.id)
+          expect(msg).to.have.property('from', ipfs1Id.id)
         }
       })
 
@@ -100,10 +114,12 @@ module.exports = (common, options) => {
         const msgStream1 = pushable()
         const msgStream2 = pushable()
 
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const handler1 = msg => {
           msgStream1.push(msg)
           msgStream1.end()
         }
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const handler2 = msg => {
           msgStream2.push(msg)
           msgStream2.end()
@@ -161,19 +177,24 @@ module.exports = (common, options) => {
           ipfs2.pubsub.setMaxListeners(100)
         }
 
-        const ipfs2Addr = ipfs2.peerId.addresses
+        const ipfs2Addr = ipfs2Id.addresses
           .find(ma => ma.nodeAddress().address === '127.0.0.1')
+
+        if (!ipfs2Addr) {
+          throw new Error('No address found')
+        }
 
         return ipfs1.swarm.connect(ipfs2Addr)
       })
 
       it('should receive messages from a different node with floodsub', async function () {
         if (!isNode) {
+          // @ts-ignore this is mocha
           return this.skip()
         }
         const expectedString = 'should receive messages from a different node with floodsub'
         const topic = `floodsub-${nanoid()}`
-        const ipfs1 = (await common.spawn({
+        const ipfs1 = (await factory.spawn({
           ipfsOptions: {
             config: {
               Pubsub: {
@@ -182,7 +203,7 @@ module.exports = (common, options) => {
             }
           }
         })).api
-        const ipfs2 = (await common.spawn({
+        const ipfs2 = (await factory.spawn({
           type: isWebWorker ? 'go' : undefined,
           ipfsOptions: {
             config: {
@@ -192,15 +213,17 @@ module.exports = (common, options) => {
             }
           }
         })).api
-        await ipfs1.swarm.connect(ipfs2.peerId.addresses[0])
+        await ipfs1.swarm.connect(ipfs2Id.addresses[0])
 
         const msgStream1 = pushable()
         const msgStream2 = pushable()
 
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub1 = msg => {
           msgStream1.push(msg)
           msgStream1.end()
         }
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub2 = msg => {
           msgStream2.push(msg)
           msgStream2.end()
@@ -213,16 +236,16 @@ module.exports = (common, options) => {
           ipfs2.pubsub.subscribe(topic, sub2, { signal: abort2.signal })
         ])
 
-        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
+        await waitForPeers(ipfs2, topic, [ipfs1Id.id], 30000)
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
         const [sub1Msg] = await all(msgStream1)
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
-        expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
+        expect(sub1Msg.from).to.eql(ipfs2Id.id)
 
         const [sub2Msg] = await all(msgStream2)
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
-        expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
+        expect(sub2Msg.from).to.eql(ipfs2Id.id)
         abort1.abort()
         abort2.abort()
       })
@@ -233,10 +256,12 @@ module.exports = (common, options) => {
         const msgStream1 = pushable()
         const msgStream2 = pushable()
 
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub1 = msg => {
           msgStream1.push(msg)
           msgStream1.end()
         }
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub2 = msg => {
           msgStream2.push(msg)
           msgStream2.end()
@@ -247,17 +272,17 @@ module.exports = (common, options) => {
           ipfs2.pubsub.subscribe(topic, sub2)
         ])
 
-        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
+        await waitForPeers(ipfs2, topic, [ipfs1Id.id], 30000)
         await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
         const [sub1Msg] = await all(msgStream1)
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
-        expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
+        expect(sub1Msg.from).to.eql(ipfs2Id.id)
 
         const [sub2Msg] = await all(msgStream2)
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
-        expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
+        expect(sub2Msg.from).to.eql(ipfs2Id.id)
       })
 
       it('should round trip a non-utf8 binary buffer', async () => {
@@ -267,10 +292,12 @@ module.exports = (common, options) => {
         const msgStream1 = pushable()
         const msgStream2 = pushable()
 
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub1 = msg => {
           msgStream1.push(msg)
           msgStream1.end()
         }
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub2 = msg => {
           msgStream2.push(msg)
           msgStream2.end()
@@ -281,17 +308,17 @@ module.exports = (common, options) => {
           ipfs2.pubsub.subscribe(topic, sub2)
         ])
 
-        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
+        await waitForPeers(ipfs2, topic, [ipfs1Id.id], 30000)
         await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         await ipfs2.pubsub.publish(topic, buffer)
 
         const [sub1Msg] = await all(msgStream1)
         expect(uint8ArrayToString(sub1Msg.data, 'base16')).to.be.eql(expectedHex)
-        expect(sub1Msg.from).to.eql(ipfs2.peerId.id)
+        expect(sub1Msg.from).to.eql(ipfs2Id.id)
 
         const [sub2Msg] = await all(msgStream2)
         expect(uint8ArrayToString(sub2Msg.data, 'base16')).to.be.eql(expectedHex)
-        expect(sub2Msg.from).to.eql(ipfs2.peerId.id)
+        expect(sub2Msg.from).to.eql(ipfs2Id.id)
       })
 
       it('should receive multiple messages', async () => {
@@ -300,26 +327,28 @@ module.exports = (common, options) => {
         const msgStream1 = pushable()
         const msgStream2 = pushable()
 
+        let sub1Called = 0
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub1 = msg => {
           msgStream1.push(msg)
-          sub1.called++
-          if (sub1.called === outbox.length) msgStream1.end()
+          sub1Called++
+          if (sub1Called === outbox.length) msgStream1.end()
         }
-        sub1.called = 0
 
+        let sub2Called = 0
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub2 = msg => {
           msgStream2.push(msg)
-          sub2.called++
-          if (sub2.called === outbox.length) msgStream2.end()
+          sub2Called++
+          if (sub2Called === outbox.length) msgStream2.end()
         }
-        sub2.called = 0
 
         await Promise.all([
           ipfs1.pubsub.subscribe(topic, sub1),
           ipfs2.pubsub.subscribe(topic, sub2)
         ])
 
-        await waitForPeers(ipfs2, topic, [ipfs1.peerId.id], 30000)
+        await waitForPeers(ipfs2, topic, [ipfs1Id.id], 30000)
         await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
 
         for (let i = 0; i < outbox.length; i++) {
@@ -327,36 +356,38 @@ module.exports = (common, options) => {
         }
 
         const sub1Msgs = await all(msgStream1)
-        sub1Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2.peerId.id))
+        sub1Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2Id.id))
         const inbox1 = sub1Msgs.map(msg => uint8ArrayToString(msg.data))
         expect(inbox1.sort()).to.eql(outbox.sort())
 
         const sub2Msgs = await all(msgStream2)
-        sub2Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2.peerId.id))
+        sub2Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2Id.id))
         const inbox2 = sub2Msgs.map(msg => uint8ArrayToString(msg.data))
         expect(inbox2.sort()).to.eql(outbox.sort())
       })
 
       it('should send/receive 100 messages', async function () {
+        // @ts-ignore this is mocha
         this.timeout(2 * 60 * 1000)
 
         const msgBase = 'msg - '
         const count = 100
         const msgStream = pushable()
 
+        let subCalled = 0
+        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
         const sub = msg => {
           msgStream.push(msg)
-          sub.called++
-          if (sub.called === count) msgStream.end()
+          subCalled++
+          if (subCalled === count) msgStream.end()
         }
-        sub.called = 0
 
         await Promise.all([
           ipfs1.pubsub.subscribe(topic, sub),
           ipfs2.pubsub.subscribe(topic, () => {})
         ])
 
-        await waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000)
+        await waitForPeers(ipfs1, topic, [ipfs2Id.id], 30000)
         await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         const startTime = new Date().getTime()
 
@@ -373,7 +404,7 @@ module.exports = (common, options) => {
         console.log(`Send/Receive 100 messages took: ${duration} ms, ${opsPerSec} ops / s`)
 
         msgs.forEach(msg => {
-          expect(msg.from).to.eql(ipfs2.peerId.id)
+          expect(msg.from).to.eql(ipfs2Id.id)
           expect(uint8ArrayToString(msg.data).startsWith(msgBase)).to.be.true()
         })
       })

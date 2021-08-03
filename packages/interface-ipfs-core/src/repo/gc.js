@@ -8,37 +8,52 @@ const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
 const { base64 } = require('multiformats/bases/base64')
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ */
 async function getBaseEncodedMultihashes (ipfs) {
   const refs = await all(ipfs.refs.local())
 
   return refs.map(r => base64.encode(CID.parse(r.ref).multihash.bytes))
 }
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {CID} cid
+ */
 async function shouldHaveRef (ipfs, cid) {
   return expect(getBaseEncodedMultihashes(ipfs)).to.eventually.include(base64.encode(cid.multihash.bytes))
 }
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {CID} cid
+ */
 async function shouldNotHaveRef (ipfs, cid) {
   return expect(getBaseEncodedMultihashes(ipfs)).to.eventually.not.include(base64.encode(cid.multihash.bytes))
 }
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.repo.gc', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should run garbage collection', async () => {
       const res = await ipfs.add(uint8ArrayFromString('apples'))
@@ -189,7 +204,7 @@ module.exports = (common, options) => {
 
       // The data should now be indirectly pinned
       const pins = await all(ipfs.pin.ls())
-      expect(pins.find(p => p.cid.toString() === dataCid.toString()).type).to.eql('indirect')
+      expect(pins.find(p => p.cid.toString() === dataCid.toString())).to.have.property('type', 'indirect')
 
       // Run garbage collection
       await drain(ipfs.repo.gc())

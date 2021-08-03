@@ -3,6 +3,13 @@
 const { nanoid } = require('nanoid')
 const delay = require('delay')
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {string} topic
+ * @param {string[]} peersToWait
+ * @param {number} waitForMs
+ * @returns
+ */
 async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
   const start = Date.now()
 
