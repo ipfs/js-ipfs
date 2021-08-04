@@ -64,7 +64,7 @@
     "it-map": "^1.0.4",
     "it-pipe": "^1.1.0",
     "it-pushable": "^1.4.2",
-    "it-tar": "^3.0.0",
+    "it-tar": "achingbrain/it-tar#feat/add-types",
     "it-to-buffer": "^2.0.0",
     "libp2p-crypto": "^0.19.6",
     "libp2p-websockets": "^0.16.1",

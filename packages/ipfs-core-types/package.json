@@ -7,7 +7,7 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "test": "aegir ts -p check"
   },
   "files": [

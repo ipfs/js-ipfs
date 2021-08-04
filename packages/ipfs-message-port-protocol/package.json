@@ -40,7 +40,7 @@
     "test:webworker": "aegir test -t webworker",
     "test:chrome": "aegir test -t browser -t webworker",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers firefox",
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"

@@ -21,7 +21,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
@@ -51,7 +51,7 @@
     "it-map": "^1.0.5",
     "it-pipe": "^1.1.0",
     "it-split": "^0.0.1",
-    "it-tar": "^3.0.0",
+    "it-tar": "achingbrain/it-tar#feat/add-types",
     "jsondiffpatch": "^0.4.1",
     "libp2p-crypto": "^0.19.6",
     "mafmt": "^10.0.0",
