@@ -16,7 +16,7 @@
   "devDependencies": {
     "execa": "^5.0.0",
     "ipfs": "^0.56.1",
-    "ipfsd-ctl": "ipfs/js-ipfsd-ctl#fix/make-types-dev-dep",
+    "ipfsd-ctl": "^10.0.3",
     "parcel": "2.0.0-beta.2",
     "rimraf": "^3.0.2",
     "test-ipfs-example": "^3.0.0"

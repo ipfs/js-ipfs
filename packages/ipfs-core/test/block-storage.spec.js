@@ -10,15 +10,26 @@ const BlockStorage = require('../src/block-storage')
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
  */
 
+class MockBitswap extends MemoryBlockstore {
+  /**
+   * @param {boolean} started
+   */
+  constructor (started) {
+    super()
+
+    this.isStarted = () => started
+  }
+}
+
 describe('block-storage', () => {
   describe('interface-blockstore (bitswap online)', () => {
     suite({
       setup: () => {
         // bitswap forwards on to the blockstore so just
         // use the same instance to represent both
-        const blockstore = new MemoryBlockstore()
-        blockstore.isStarted = () => true
+        const blockstore = new MockBitswap(true)
 
+        // @ts-ignore MockBitswap is missing some properties
         return new BlockStorage(blockstore, blockstore)
       },
       teardown: () => {}
@@ -30,9 +41,9 @@ describe('block-storage', () => {
       setup: () => {
         // bitswap forwards on to the blockstore so just
         // use the same instance to represent both
-        const blockstore = new MemoryBlockstore()
-        blockstore.isStarted = () => false
+        const blockstore = new MockBitswap(false)
 
+        // @ts-ignore MockBitswap is missing some properties
         return new BlockStorage(blockstore, blockstore)
       },
       teardown: () => {}

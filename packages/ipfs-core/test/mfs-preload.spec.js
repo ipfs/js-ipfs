@@ -15,6 +15,9 @@ const fakeCid = async () => {
   return CID.createV0(mh)
 }
 
+/**
+ * @param {CID[]} cids
+ */
 const createMockFilesStat = (cids = []) => {
   let n = 0
   return () => {
@@ -23,15 +26,22 @@ const createMockFilesStat = (cids = []) => {
 }
 
 const createMockPreload = () => {
+  /** @type {import('../src/types').Preload & { cids: CID[] }} */
   const preload = cid => preload.cids.push(cid)
+  preload.start = () => {}
+  preload.stop = () => {}
   preload.cids = []
+
   return preload
 }
 
 describe('MFS preload', () => {
   // CIDs returned from our mock files.stat function
+  /** @type {{ initial: CID, same: CID, updated: CID }} */
   let testCids
+  /** @type {ReturnType<createMockPreload>} */
   let mockPreload
+  /** @type {import('ipfs-core-types/src/files').API} */
   let mockFiles
 
   beforeEach(async () => {
@@ -43,6 +53,7 @@ describe('MFS preload', () => {
       updated: await fakeCid()
     }
 
+    // @ts-ignore not whole file api
     mockFiles = { stat: createMockFilesStat([testCids.initial, testCids.same, testCids.same, testCids.updated]) }
   })
 

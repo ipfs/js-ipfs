@@ -10,9 +10,13 @@ const all = require('it-all')
 const codecs = require('./utils/codecs')
 
 describe('utils', () => {
+  /** @type {import('multiformats/cid').CID} */
   let rootCid
+  /** @type {import('multiformats/cid').CID} */
   let aboutCid
+  /** @type {string} */
   let aboutPath
+  /** @type {Uint8Array} */
   let aboutMultihash
 
   describe('resolvePath', function () {
@@ -69,7 +73,7 @@ describe('utils', () => {
       return expect(utils.resolvePath(repo, codecs, `${aboutPath}/fusion`))
         .to.eventually.be.rejected()
         .and.have.property('message')
-        .that.includes(`no link named "fusion" under ${aboutCid}`)
+        .that.include(`no link named "fusion" under ${aboutCid}`)
     })
   })
 })

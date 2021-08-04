@@ -69,7 +69,7 @@ const normalizeCidPath = (path) => {
  *
  * @param {import('ipfs-repo').IPFSRepo} repo
  * @param {import('ipfs-core-utils/src/multicodecs')} codecs
- * @param {CID | string} ipfsPath - A CID or IPFS path
+ * @param {CID | string | Uint8Array} ipfsPath - A CID or IPFS path
  * @param {{ path?: string, signal?: AbortSignal }} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<{ cid: CID, remainderPath: string}>}
  */
