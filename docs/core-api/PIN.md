@@ -81,7 +81,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| [CID][] | The CIDs that was pinned |
+| [CID][] | The CID that was pinned |
 
 ### Example
 
@@ -295,13 +295,13 @@ An object may have the following optional fields:
 
 | Type | Description |
 | ---- | -------- |
-| Promise<void> | Resolves if added succesfully, or fails with error e.g. if service with such name is already registered |
+| Promise<void> | Resolves if added successfully, or fails with error e.g. if service with such name is already registered |
 
 
 ### Example
 
 ```JavaScript
-await ipfs.pin.remote.sevice.add('pinata', {
+await ipfs.pin.remote.service.add('pinata', {
   endpoint: new URL('https://api.pinata.cloud'),
   key: 'your-pinata-key'
 })
@@ -349,7 +349,7 @@ If stats could not be fetched from service (e.g. endpoint was unreachable) objec
 | status | `'invalid'` | Service status |
 
 
-If stats were fetched from service succesfully object has following form:
+If stats were fetched from service successfully object has following form:
 
 | Name | Type | Description |
 | ---- | ---- | -------- |
@@ -372,7 +372,7 @@ Object has following fields:
 ### Example
 
 ```JavaScript
-await ipfs.pin.remote.sevice.ls()
+await ipfs.pin.remote.service.ls()
 // [{
 //   service: 'pinata'
 //   endpoint: new URL('https://api.pinata.cloud'),
@@ -426,7 +426,7 @@ An object may have the following optional fields:
 ### Example
 
 ```JavaScript
-await ipfs.pin.remote.sevice.rm('pinata')
+await ipfs.pin.remote.service.rm('pinata')
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -529,21 +529,20 @@ An object may have the following optional fields:
 
 | Type | Description |
 | ---- | -------- |
-| AyncIterable<[Pin][]> | Pin Objects |
+| AysncIterable<[Pin][]> | Pin Objects |
 
 ### Example
 
 ```JavaScript
-const pins = await ipfs.pin.remote.ls({
-  service: 'pinata'
-})
-console.log(pins)
+for await (const pin of ipfs.pin.remote.ls({ service: 'pinata' })) {
+  console.log(pin)
+}
 // Logs:
-// [{
+// {
 //    status: 'pinned',
 //    cid: CID('QmWATWQ7fVPP2EFGu71UkfnqhYXDYH566qy47CnJDgvs8u'),
 //    name: 'block-party'
-// }]
+// }
 ```
 
 A great source of [examples][] can be found in the tests for this API.
