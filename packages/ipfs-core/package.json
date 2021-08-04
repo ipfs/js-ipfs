@@ -130,7 +130,7 @@
     "go-ipfs": "0.8.0",
     "interface-blockstore-tests": "^1.0.0",
     "interface-ipfs-core": "^0.148.0",
-    "ipfsd-ctl": "^9.0.0",
+    "ipfsd-ctl": "^10.0.2",
     "iso-url": "^1.0.0",
     "nanoid": "^3.1.12",
     "p-defer": "^3.0.0",
