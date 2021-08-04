@@ -30,11 +30,6 @@ module.exports = (factory, options) => {
 
     after(() => factory.clean())
 
-    it('should publish message from string', () => {
-      const topic = getTopic()
-      return ipfs.pubsub.publish(topic, 'hello friend')
-    })
-
     it('should fail with undefined msg', async () => {
       const topic = getTopic()
       // @ts-ignore invalid parameter
