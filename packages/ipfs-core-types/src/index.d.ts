@@ -62,7 +62,7 @@ interface Codecs {
 
 interface Hashers {
   getHasher: (code: number | string) => Promise<MultihashHasher>
-  listHashers: () => Array<MultihashHasher>
+  listHashers: () => MultihashHasher[]
 }
 
 export type {
