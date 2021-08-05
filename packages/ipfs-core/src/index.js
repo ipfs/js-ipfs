@@ -13,6 +13,7 @@ const { create } = require('./components')
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('./types').Options} Options
  * @typedef {import('./types').Libp2pFactoryFn} Libp2pFactoryFn
+ * @typedef {import('./types').Libp2pFactoryFnArgs} Libp2pFactoryFnArgs
  * @typedef {import('./types').InitOptions} InitOptions
  * @typedef {import('./types').RelayOptions} RelayOptions
  * @typedef {import('./types').PreloadOptions} PreloadOptions
