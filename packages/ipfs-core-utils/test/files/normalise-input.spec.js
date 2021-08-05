@@ -13,7 +13,7 @@ const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/e
 let { normaliseInput } = require('../../src/files/normalise-input')
 
 if (isBrowser || isWebWorker || isElectronRenderer) {
-  normaliseInput = require('../../src/files/normalise-input/index.browser')
+  normaliseInput = require('../../src/files/normalise-input/index.browser').normaliseInput
 }
 
 const STRING = () => 'hello world'
