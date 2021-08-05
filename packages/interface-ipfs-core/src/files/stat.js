@@ -227,7 +227,7 @@ module.exports = (factory, options) => {
 
       const stat = await ipfs.files.stat(testDir)
 
-      expect({}).to.include({
+      expect(stat).to.include({
         type: 'directory',
         blocks: 1,
         size: 0,
