@@ -344,7 +344,7 @@ describe('/files', () => {
       ipfs.get.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000
-      }).returns(async function * () { yield { path: 'path' }}())
+      }).returns(async function * () { yield { path: 'path' } }())
 
       const res = await http({
         method: 'POST',

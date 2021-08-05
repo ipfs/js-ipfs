@@ -18,6 +18,7 @@ const normalise = require('./normalise-input')
  * See https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsadddata-options
  *
  * @param {ImportCandidateStream} input
+ * @returns {AsyncGenerator<BrowserImportCandidate, void, undefined>}
  */
 function normaliseInput (input) {
   // @ts-ignore normaliseContent returns Blob and not AsyncIterator
