@@ -134,7 +134,7 @@ export interface Libp2pFactoryFnArgs {
 }
 
 export interface Libp2pFactoryFn {
-  (args: Libp2pFactoryFnArgs): Libp2p
+  (args: Libp2pFactoryFnArgs): Promise<Libp2p>
 }
 
 /**
