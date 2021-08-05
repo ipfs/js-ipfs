@@ -330,7 +330,10 @@ describe('/files', () => {
   describe('/get', () => {
     const defaultOptions = {
       signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      timeout: undefined,
+      archive: undefined,
+      compress: undefined,
+      compressionLevel: undefined
     }
 
     it('only accepts POST', () => {
@@ -341,9 +344,7 @@ describe('/files', () => {
       ipfs.get.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000
-      }).returns([{
-        path: 'path'
-      }])
+      }).returns(async function * () { yield { path: 'path' }}())
 
       const res = await http({
         method: 'POST',

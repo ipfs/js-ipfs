@@ -78,8 +78,8 @@ exports.get = {
       query: Joi.object()
         .keys({
           path: Joi.ipfsPath().required(),
-          archive: Joi.boolean().default(false),
-          compress: Joi.boolean().default(false),
+          archive: Joi.boolean(),
+          compress: Joi.boolean(),
           compressionLevel: Joi.number().integer().min(1).max(9),
           timeout: Joi.timeout()
         })
