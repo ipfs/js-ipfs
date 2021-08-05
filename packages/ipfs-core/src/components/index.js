@@ -55,6 +55,8 @@ const Multibases = require('ipfs-core-utils/src/multibases')
  * @typedef {import('../types').Print} Print
  * @typedef {import('./storage')} StorageAPI
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ * @typedef {import('multiformats/bases/interface').MultibaseCodec<any>} MultibaseCodec
  */
 
 class IPFS {
@@ -77,13 +79,23 @@ class IPFS {
     // libp2p can be a function, while IPNS router config expects libp2p config
     const ipns = new IPNSAPI(options)
 
+    /** @type {MultihashHasher[]} */
+    const multihashHashers = Object.values(hashes);
+
+    (options.ipld && options.ipld.hashers ? options.ipld.hashers : []).forEach(hasher => multihashHashers.push(hasher))
+
     this.hashers = new Multihashes({
-      hashers: Object.values(hashes).concat(options.ipld && options.ipld.hashers ? options.ipld.hashers : []),
+      hashers: multihashHashers,
       loadHasher: options.ipld && options.ipld.loadHasher
     })
 
+    /** @type {MultibaseCodec[]} */
+    const multibaseCodecs = Object.values(bases);
+
+    (options.ipld && options.ipld.bases ? options.ipld.bases : []).forEach(base => multibaseCodecs.push(base))
+
     this.bases = new Multibases({
-      bases: Object.values(bases).concat(options.ipld && options.ipld.bases ? options.ipld.bases : []),
+      bases: multibaseCodecs,
       loadBase: options.ipld && options.ipld.loadBase
     })
 
@@ -233,8 +245,13 @@ class IPFS {
       decode: (id) => id
     }
 
+    /** @type {BlockCodec[]} */
+    const blockCodecs = Object.values(codecs);
+
+    [dagPb, dagCbor, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
+
     const multicodecs = new Multicodecs({
-      codecs: Object.values(codecs).concat([dagPb, dagCbor, id]).concat((options.ipld && options.ipld.codecs) || []),
+      codecs: blockCodecs,
       loadCodec: options.ipld && options.ipld.loadCodec
     })
 

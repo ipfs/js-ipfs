@@ -2,6 +2,8 @@ import { Agent as HttpAgent } from 'http'
 import { Agent as HttpsAgent } from 'https'
 import { Multiaddr } from 'multiaddr'
 import type { BlockCodec } from 'multiformats/codecs/interface'
+import type { MultihashHasher } from 'multiformats/hashes/interface'
+import type { MultibaseCodec } from 'multiformats/bases/interface'
 import type { IPFS } from 'ipfs-core-types'
 
 export interface Options {
@@ -12,7 +14,7 @@ export interface Options {
   timeout?: number | string
   apiPath?: string
   url?: URL|string|Multiaddr
-  ipld?: IPLDOptions
+  ipld?: Partial<IPLDOptions>
   agent?: HttpAgent | HttpsAgent
 }
 

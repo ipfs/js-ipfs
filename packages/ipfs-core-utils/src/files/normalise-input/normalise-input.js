@@ -13,7 +13,6 @@ const {
 const {
   parseMtime,
   parseMode
-// @ts-ignore - TODO vmx 2021-03-30 enable again
 } = require('ipfs-unixfs')
 
 /**

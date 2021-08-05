@@ -1,13 +1,12 @@
 import type { KeyType } from 'libp2p-crypto'
 import type PeerId from 'peer-id'
 import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
-import type Libp2p from 'libp2p'
-import type { Libp2pOptions } from 'libp2p'
+import type Libp2p, { Libp2pOptions } from 'libp2p'
 
 import type { IPFSRepo } from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
-import type Network from './components/network'
-import type { Options as NetworkOptions } from './components/network'
+import type Network, { Options as NetworkOptions } from './components/network'
+
 import type { Datastore } from 'interface-datastore'
 
 import type Service from './utils/service'
@@ -127,7 +126,11 @@ export interface Options {
 }
 
 export interface Libp2pFactoryFnArgs {
-  libp2pOptions: Libp2pOptions, options: Options, config: IPFSConfig, datastore: Datastore, peerId: PeerId
+  libp2pOptions: Libp2pOptions
+  options: Options
+  config: IPFSConfig
+  datastore: Datastore
+  peerId: PeerId
 }
 
 export interface Libp2pFactoryFn {
@@ -249,5 +252,5 @@ export interface IPLDOptions {
   loadHasher: LoadHasherFn
   bases: Array<MultibaseCodec<any>>
   codecs: Array<BlockCodec<any, any>>
-  hashers: Array<MultihashHasher<any, any>>
+  hashers: MultihashHasher[]
 }

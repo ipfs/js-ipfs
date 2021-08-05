@@ -94,7 +94,7 @@
     "it-peekable": "^1.0.2",
     "it-pipe": "^1.1.0",
     "it-pushable": "^1.4.2",
-    "it-tar": "achingbrain/it-tar#feat/add-types",
+    "it-tar": "^4.0.0",
     "it-to-buffer": "^2.0.0",
     "just-safe-set": "^2.2.1",
     "libp2p": "^0.32.0",

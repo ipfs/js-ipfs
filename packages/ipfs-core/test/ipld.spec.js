@@ -31,13 +31,17 @@ describe('ipld', function () {
       code: 1338
     }
 
-    /** @type {import('multiformats/bases/interface').BaseCodec} */
+    /** @type {import('multiformats/bases/interface').MultibaseCodec<any>} */
     const customBase = {
+      name: 'custom-base',
+      prefix: '1339',
       encoder: {
-        baseEncode: (input) => uint8ArrayToString(input)
+        name: 'custom-base',
+        prefix: '1339',
+        encode: (input) => uint8ArrayToString(input)
       },
       decoder: {
-        baseDecode: (input) => uint8ArrayFromString(input)
+        decode: (input) => uint8ArrayFromString(input)
       }
     }
 

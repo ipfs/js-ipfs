@@ -2,7 +2,7 @@
 
 const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
-const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
+const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 /**

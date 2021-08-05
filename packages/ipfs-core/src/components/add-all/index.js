@@ -1,7 +1,7 @@
 'use strict'
 
 const { importer } = require('ipfs-unixfs-importer')
-const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
+const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input/index')
 const { parseChunkerString } = require('./utils')
 const { pipe } = require('it-pipe')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
@@ -84,7 +84,7 @@ module.exports = ({ repo, preload, options }) => {
     }
 
     const iterator = pipe(
-      normaliseAddInput(source),
+      normaliseInput(source),
       /**
        * @param {AsyncIterable<import('ipfs-unixfs-importer').ImportCandidate>} source
        */

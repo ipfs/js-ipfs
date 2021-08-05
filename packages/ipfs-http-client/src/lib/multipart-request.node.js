@@ -1,6 +1,6 @@
 'use strict'
 
-const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
+const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input')
 const { nanoid } = require('nanoid')
 const modeToString = require('./mode-to-string')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
