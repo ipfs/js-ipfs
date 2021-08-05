@@ -22,8 +22,8 @@ import type { BlockCodec } from 'multiformats/codecs/interface'
 import type { MultibaseCodec } from 'multiformats/bases/interface'
 import type { MultihashHasher } from 'multiformats/hashes/interface'
 
-interface RefsAPI extends Refs {
-  local: Local
+interface RefsAPI<OptionExtension = {}> extends Refs<OptionExtension> {
+  local: Local<OptionExtension>
 }
 
 export interface IPFS<OptionExtension = {}> extends RootAPI<OptionExtension> {
@@ -61,8 +61,8 @@ interface Codecs {
 }
 
 interface Hashers {
-  getHasher: (code: number | string) => Promise<MultihashHasher<any, any>>
-  listHashers: () => Array<MultihashHasher<any, any>>
+  getHasher: (code: number | string) => Promise<MultihashHasher>
+  listHashers: () => MultihashHasher[]
 }
 
 export type {
