@@ -357,7 +357,6 @@ describe('/files', () => {
 
   describe('/ls', () => {
     const defaultOptions = {
-      recursive: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -456,44 +455,6 @@ describe('/files', () => {
           Depth: 1,
           Hash: cid.toString(),
           Mode: undefined,
-          Mtime: undefined,
-          MtimeNsecs: undefined,
-          Name: 'link',
-          Size: 10,
-          Type: 2
-        }]
-      })
-    })
-
-    it('should list directory contents recursively', async () => {
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
-      ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
-        type: 'directory'
-      })
-      ipfs.ls.withArgs(`${cid}`, {
-        ...defaultOptions,
-        recursive: true
-      }).returns([{
-        name: 'link',
-        cid,
-        size: 10,
-        type: 'file',
-        depth: 1,
-        mode: 0o420
-      }])
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/ls?arg=${cid}&recursive=true`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: `${cid}`,
-        Links: [{
-          Depth: 1,
-          Hash: cid.toString(),
-          Mode: '0420',
           Mtime: undefined,
           MtimeNsecs: undefined,
           Name: 'link',

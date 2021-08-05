@@ -289,15 +289,14 @@ const encodeLsResult = entries => {
 /**
  * @param {IPFSEntry} entry
  */
-const encodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+const encodeLsEntry = ({ name, path, size, cid, type, mode, mtime }) => ({
   cid: encodeCID(cid),
   type,
   name,
   path,
   mode,
   mtime,
-  size,
-  depth
+  size
 })
 
 /**

@@ -1,6 +1,6 @@
 'use strict'
 
-const { exporter, recursive } = require('ipfs-unixfs-exporter')
+const { exporter } = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
 const { normalizeCidPath, mapFile } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
@@ -26,32 +26,16 @@ module.exports = function ({ repo, preload }) {
     }
 
     const ipfsPathOrCid = CID.asCID(legacyPath) || legacyPath
-
     const file = await exporter(ipfsPathOrCid, repo.blocks, options)
 
     if (file.type === 'file') {
-      yield mapFile(file, options)
+      yield mapFile(file)
       return
     }
 
     if (file.type === 'directory') {
-      if (options.recursive) {
-        for await (const child of recursive(file.cid, repo.blocks, options)) {
-          if (file.cid.toString() === child.cid.toString()) {
-            continue
-          }
-
-          yield mapFile(child, options)
-        }
-
-        return
-      }
-
       for await (const child of file.content()) {
-        const entry = mapFile(child, options)
-        entry.depth--
-
-        yield entry
+        yield mapFile(child)
       }
 
       return

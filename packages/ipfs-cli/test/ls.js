@@ -9,7 +9,6 @@ const { base58btc } = require('multiformats/bases/base58')
 const { base64 } = require('multiformats/bases/base64')
 
 const defaultOptions = {
-  recursive: false,
   timeout: undefined
 }
 
@@ -29,16 +28,14 @@ describe('ls', () => {
       mtime: null,
       cid: CID.parse('QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT'),
       type: 'dir',
-      name: 'blocks',
-      depth: 0
+      name: 'blocks'
     }, {
       mode: 0o644,
       mtime: null,
       cid: CID.parse('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN'),
       type: 'file',
       name: 'config',
-      size: 3928,
-      depth: 0
+      size: 3928
     }])
 
     ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', {
@@ -49,16 +46,14 @@ describe('ls', () => {
       mtime: null,
       cid: CID.parse('QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT'),
       type: 'dir',
-      name: 'blocks',
-      depth: 0
+      name: 'blocks'
     }, {
       mode: 0o644,
       mtime: null,
       cid: CID.parse('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN'),
       type: 'file',
       name: 'config',
-      size: 3928,
-      depth: 0
+      size: 3928
     }])
 
     ipfs.ls.withArgs('/ipfs/Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', defaultOptions).returns([{
@@ -66,16 +61,14 @@ describe('ls', () => {
       mtime: null,
       cid: CID.parse('QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT'),
       type: 'dir',
-      name: 'blocks',
-      depth: 0
+      name: 'blocks'
     }, {
       mode: 0o644,
       mtime: null,
       cid: CID.parse('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN'),
       type: 'file',
       name: 'config',
-      size: 3928,
-      depth: 0
+      size: 3928
     }])
 
     ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z/blocks', defaultOptions).returns([{
@@ -84,52 +77,14 @@ describe('ls', () => {
       cid: CID.parse('QmQ8ag7ysVyCMzJGFjxrUStwWtniQ69c7G9aezbmsKeNYD'),
       type: 'file',
       name: 'CIQLBK52T5EHVHZY5URTG5JS3JCUJDQM2DRB5RVF33DCUUOFJNGVDUI.data',
-      size: 10849,
-      depth: 0
+      size: 10849
     }, {
       mode: 0o644,
       mtime: null,
       cid: CID.parse('QmaSjzSSRanYzRGPXQY6m5SWfSkkfcnzNkurJEQc4chPJx'),
       type: 'file',
       name: 'CIQLBS5HG4PRCRQ7O4EBXFD5QN6MTI5YBYMCVQJDXPKCOVR6RMLHZFQ.data',
-      size: 10807,
-      depth: 0
-    }])
-
-    ipfs.ls.withArgs('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', {
-      ...defaultOptions,
-      recursive: true
-    }).returns([{
-      mode: 0o755,
-      mtime: null,
-      cid: CID.parse('QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT'),
-      type: 'dir',
-      name: 'blocks',
-      depth: 0
-    }, {
-      mode: 0o644,
-      mtime: null,
-      cid: CID.parse('QmQ8ag7ysVyCMzJGFjxrUStwWtniQ69c7G9aezbmsKeNYD'),
-      type: 'file',
-      name: 'CIQLBK52T5EHVHZY5URTG5JS3JCUJDQM2DRB5RVF33DCUUOFJNGVDUI.data',
-      size: 10849,
-      depth: 1
-    }, {
-      mode: 0o644,
-      mtime: null,
-      cid: CID.parse('QmaSjzSSRanYzRGPXQY6m5SWfSkkfcnzNkurJEQc4chPJx'),
-      type: 'file',
-      name: 'CIQLBS5HG4PRCRQ7O4EBXFD5QN6MTI5YBYMCVQJDXPKCOVR6RMLHZFQ.data',
-      size: 10807,
-      depth: 1
-    }, {
-      mode: 0o644,
-      mtime: null,
-      cid: CID.parse('QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN'),
-      type: 'file',
-      name: 'config',
-      size: 3928,
-      depth: 0
+      size: 10807
     }])
 
     ipfs.ls.withArgs('bafyreicyer3d34cutdzlsbe2nqu5ye62mesuhwkcnl2ypdwpccrsecfmjq', defaultOptions).returns([{
@@ -200,18 +155,6 @@ describe('ls', () => {
       'Mode       Mtime Hash                                           Size Name\n' +
       'drwxr-xr-x -     QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT -    blocks/\n' +
       '-rw-r--r-- -     QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928 config\n'
-    )
-  })
-
-  it('recursively follows folders, -r', async () => {
-    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
-
-    const out = await cli('ls -r Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z', { ipfs })
-    expect(out).to.eql(
-      'drwxr-xr-x - QmamKEPmEH9RUsqRQsfNf5evZQDQPYL9KXg1ADeT7mkHkT - blocks/\n' +
-      '-rw-r--r-- - QmQ8ag7ysVyCMzJGFjxrUStwWtniQ69c7G9aezbmsKeNYD 10849 CIQLBK52T5EHVHZY5URTG5JS3JCUJDQM2DRB5RVF33DCUUOFJNGVDUI.data\n' +
-      '-rw-r--r-- - QmaSjzSSRanYzRGPXQY6m5SWfSkkfcnzNkurJEQc4chPJx 10807 CIQLBS5HG4PRCRQ7O4EBXFD5QN6MTI5YBYMCVQJDXPKCOVR6RMLHZFQ.data\n' +
-      '-rw-r--r-- - QmPkWYfSLCEBLZu7BZt4kigGDMe3cpogMbeVf97gN2xJDN 3928  config\n'
     )
   })
 

@@ -343,7 +343,6 @@ exports.ls = {
           path: Joi.ipfsPath().required(),
           cidBase: Joi.string().default('base58btc'),
           stream: Joi.boolean().default(false),
-          recursive: Joi.boolean().default(false),
           timeout: Joi.timeout()
         })
         .rename('arg', 'path', {
@@ -374,7 +373,6 @@ exports.ls = {
       query: {
         path,
         cidBase,
-        recursive,
         stream,
         timeout
       }
@@ -420,7 +418,6 @@ exports.ls = {
     if (!stream) {
       try {
         const links = await all(ipfs.ls(path, {
-          recursive,
           signal,
           timeout
         }))
@@ -432,7 +429,6 @@ exports.ls = {
     }
     return streamResponse(request, h, () => pipe(
       ipfs.ls(path, {
-        recursive,
         signal,
         timeout
       }),

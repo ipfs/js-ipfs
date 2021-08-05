@@ -146,7 +146,6 @@ export interface IPFSEntry {
   mode?: number
   mtime?: Mtime
   size: number
-  depth: number
 }
 
 export interface AddProgressFn { (bytes: number, path?: string): void }
@@ -264,8 +263,7 @@ export interface GetOptions extends AbortOptions, PreloadOptions {
 }
 
 export interface ListOptions extends AbortOptions, PreloadOptions {
-  recursive?: boolean
-  includeContent?: boolean
+
 }
 
 export interface IDOptions extends AbortOptions {

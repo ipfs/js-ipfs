@@ -17,17 +17,6 @@ module.exports = {
       type: 'boolean',
       default: false
     },
-    r: {
-      alias: 'recursive',
-      desc: 'List subdirectories recursively',
-      type: 'boolean',
-      default: false
-    },
-    'resolve-type': {
-      desc: 'Resolve linked objects to find out their types. (not implemented yet)',
-      type: 'boolean',
-      default: false // should be true when implemented
-    },
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
@@ -43,12 +32,11 @@ module.exports = {
    * @param {object} argv
    * @param {import('../types').Context} argv.ctx
    * @param {string} argv.key
-   * @param {boolean} argv.recursive
    * @param {boolean} argv.headers
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
-  async handler ({ ctx: { ipfs, print }, key, recursive, headers, cidBase, timeout }) {
+  async handler ({ ctx: { ipfs, print }, key, headers, cidBase, timeout }) {
     // replace multiple slashes
     key = key.replace(/\/(\/+)/g, '/')
 
@@ -99,7 +87,7 @@ module.exports = {
 
     const base = await ipfs.bases.getBase(cidBase)
 
-    for await (const link of ipfs.ls(key, { recursive, timeout })) {
+    for await (const link of ipfs.ls(key, { timeout })) {
       const mode = link.mode != null ? formatMode(link.mode, link.type === 'dir') : ''
       const mtime = link.mtime != null ? formatMtime(link.mtime) : '-'
       const cid = link.cid.toString(base.encoder)
@@ -115,7 +103,7 @@ module.exports = {
         }
       }
 
-      printLink(mode, mtime, cid, size, name, link.depth)
+      printLink(mode, mtime, cid, size, name)
     }
   }
 }

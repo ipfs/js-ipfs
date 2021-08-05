@@ -159,15 +159,14 @@ const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
  * @param {EncodedIPFSEntry} encodedEntry
  * @returns {import('ipfs-core-types/src/root').IPFSEntry}
  */
-const decodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+const decodeLsEntry = ({ name, path, size, cid, type, mode, mtime }) => ({
   cid: decodeCID(cid),
   type,
   name,
   path,
   mode,
   mtime,
-  size,
-  depth
+  size
 })
 
 /**
