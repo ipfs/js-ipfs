@@ -393,5 +393,31 @@ module.exports = (factory, options) => {
 
       await expect(all(ipfs.get(invalidCid))).to.eventually.be.rejected()
     })
+
+    it('get path containing "+"s', async () => {
+      const filename = 'ti,c64x+mega++mod-pic.txt'
+      const subdir = 'tmp/c++files'
+      const expectedCid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
+      const path = `${subdir}/${filename}`
+      const files = await all(ipfs.addAll([{
+        path,
+        content: path
+      }]))
+
+      expect(files[2].cid.toString()).to.equal(expectedCid)
+
+      const cid = 'QmPkmARcqjo5fqK1V1o8cFsuaXxWYsnwCNLJUYS4KeZyff'
+
+      const output = await pipe(
+        ipfs.get(CID.parse(cid)),
+        tarballed,
+        collect
+      )
+
+      expect(output).to.be.an('array').with.lengthOf(3)
+      expect(output).to.have.nested.property('[0].header.name', cid)
+      expect(output).to.have.nested.property('[1].header.name', `${cid}/c++files`)
+      expect(output).to.have.nested.property('[2].header.name', `${cid}/c++files/ti,c64x+mega++mod-pic.txt`)
+    })
   })
 }

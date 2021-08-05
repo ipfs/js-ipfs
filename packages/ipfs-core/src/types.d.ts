@@ -229,11 +229,6 @@ export interface MfsPreload {
 
 export type NetworkService = Service<NetworkOptions, Network>
 
-export interface Block {
-  cid: CID
-  bytes: Uint8Array
-}
-
 export interface LoadBaseFn { (codeOrName: number | string): Promise<MultibaseCodec<any>> }
 export interface LoadCodecFn { (codeOrName: number | string): Promise<BlockCodec<any, any>> }
 export interface LoadHasherFn { (codeOrName: number | string): Promise<MultihashHasher> }
@@ -245,12 +240,4 @@ export interface IPLDOptions {
   bases: Array<MultibaseCodec<any>>
   codecs: Array<BlockCodec<any, any>>
   hashers: Array<MultihashHasher<any, any>>
-}
-
-export interface BlockCodecStore {
-  getCodec: (codeOrName: number | string) => Promise<BlockCodec<any, any>>
-}
-
-export interface MultihashHasherStore {
-  getHasher: (codeOrName: number | string) => Promise<MultihashHasher<any, any>>
 }

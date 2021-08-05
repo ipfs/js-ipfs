@@ -71,7 +71,7 @@ class Daemon {
 }
 
 /**
- * @type {import('ipfs-core/src/types').Libp2pFactoryFn}
+ * @type {import('ipfs-core').Libp2pFactoryFn}
  */
 function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   // Attempt to use any of the WebRTC versions available globally
