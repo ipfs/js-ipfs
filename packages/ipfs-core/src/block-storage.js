@@ -3,6 +3,7 @@
 const { BlockstoreAdapter } = require('interface-blockstore')
 const merge = require('it-merge')
 const pushable = require('it-pushable')
+const filter = require('it-filter')
 
 /**
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
@@ -55,6 +56,10 @@ class BlockStorage extends BlockstoreAdapter {
    * @param {AbortOptions} [options]
    */
   async put (cid, block, options = {}) {
+    if (await this.has(cid)) {
+      return
+    }
+
     if (this.bitswap.isStarted()) {
       await this.bitswap.put(cid, block, options)
     } else {
@@ -69,10 +74,12 @@ class BlockStorage extends BlockstoreAdapter {
    * @param {AbortOptions} [options]
    */
   async * putMany (blocks, options = {}) {
+    const missingBlocks = filter(blocks, async ({ key }) => { return !(await this.has(key)) })
+
     if (this.bitswap.isStarted()) {
-      yield * this.bitswap.putMany(blocks, options)
+      yield * this.bitswap.putMany(missingBlocks, options)
     } else {
-      yield * this.child.putMany(blocks, options)
+      yield * this.child.putMany(missingBlocks, options)
     }
   }
 
