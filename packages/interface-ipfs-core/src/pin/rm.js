@@ -61,16 +61,18 @@ module.exports = (factory, options) => {
     })
 
     it('should fail to remove an indirect pin', async () => {
-      await ipfs.pin.add(fixtures.directory.cid)
+      await ipfs.pin.add(fixtures.directory.cid, {
+        recursive: true
+      })
 
       await expect(ipfs.pin.rm(fixtures.directory.files[0].cid))
-        .to.eventually.be.rejectedWith(/is pinned indirectly under/)
+        .to.eventually.be.rejectedWith(/pinned indirectly/)
       await expectPinned(ipfs, fixtures.directory.files[0].cid)
     })
 
     it('should fail when an item is not pinned', async () => {
       await expect(ipfs.pin.rm(fixtures.directory.cid))
-        .to.eventually.be.rejectedWith(/is not pinned/)
+        .to.eventually.be.rejectedWith(/not pinned/)
     })
   })
 }
