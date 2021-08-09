@@ -1,4 +1,5 @@
 import type { AbortOptions } from '../../utils'
+import type { Config } from '../'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -21,8 +22,7 @@ export interface Profile {
 export interface ProfilesApplyOptions extends AbortOptions {
   dryRun?: boolean
 }
-
 export interface ProfilesApplyResult {
-  original: object
-  updated: object
+  original: Config
+  updated: Config
 }

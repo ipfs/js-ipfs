@@ -5,25 +5,29 @@ const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.object.data', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get data by CID', async () => {
       const testObj = {
@@ -38,10 +42,12 @@ module.exports = (common, options) => {
     })
 
     it('returns error for request without argument', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.data(null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with invalid argument', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.data('invalid', { enc: 'base58' })).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })

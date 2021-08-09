@@ -2,7 +2,7 @@
 
 // Import browser version otherwise electron-renderer will end up with node
 // version and fail.
-const normaliseInput = require('ipfs-core-utils/src/files/normalise-input/index.browser')
+const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input/index.browser')
 const modeToString = require('./mode-to-string')
 
 /**

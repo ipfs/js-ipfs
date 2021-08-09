@@ -23,7 +23,7 @@ export interface API<OptionExtension = {}> {
    * Fetch a file or an entire directory tree from IPFS that is addressed by a
    * valid IPFS Path
    */
-  get: (ipfsPath: IPFSPath, options?: GetOptions & OptionExtension) => AsyncIterable<IPFSEntry>
+  get: (ipfsPath: IPFSPath, options?: GetOptions & OptionExtension) => AsyncIterable<Uint8Array>
 
   /**
    * Lists a directory from IPFS that is addressed by a valid IPFS Path
@@ -138,40 +138,15 @@ export interface API<OptionExtension = {}> {
   isOnline: () => boolean
 }
 
-export interface File {
-  readonly type: 'file'
+export interface IPFSEntry {
+  readonly type: 'dir' | 'file'
   readonly cid: CID
   readonly name: string
-
-  /**
-   * File path
-   */
   readonly path: string
-  /**
-   * File content
-   */
-  readonly content?: AsyncIterable<Uint8Array>
   mode?: number
   mtime?: Mtime
   size: number
-  depth: number
 }
-
-export interface Directory {
-  type: 'dir'
-  cid: CID
-  name: string
-  /**
-   * Directory path
-   */
-  path: string
-  mode?: number
-  mtime?: Mtime
-  size: number
-  depth: number
-}
-
-export type IPFSEntry = File | Directory
 
 export interface AddProgressFn { (bytes: number, path?: string): void }
 
@@ -281,11 +256,14 @@ export interface CatOptions extends AbortOptions, PreloadOptions {
   length?: number
 }
 
-export interface GetOptions extends AbortOptions, PreloadOptions {}
+export interface GetOptions extends AbortOptions, PreloadOptions {
+  archive?: boolean
+  compress?: boolean
+  compressionLevel?: number
+}
 
 export interface ListOptions extends AbortOptions, PreloadOptions {
-  recursive?: boolean
-  includeContent?: boolean
+
 }
 
 export interface IDOptions extends AbortOptions {

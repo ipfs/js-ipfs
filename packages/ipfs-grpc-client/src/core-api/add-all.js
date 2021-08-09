@@ -1,6 +1,6 @@
 'use strict'
 
-const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
+const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input')
 const { CID } = require('multiformats/cid')
 const bidiToDuplex = require('../utils/bidi-to-duplex')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')

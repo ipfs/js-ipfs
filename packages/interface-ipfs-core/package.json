@@ -13,9 +13,10 @@
     "ipfs-utils/src/files/glob-source": false
   },
   "scripts": {
+    "build": "aegir build",
     "lint": "aegir lint",
     "test": "echo 'No tests here'",
-    "dep-check": "aegir dep-check -i abort-controller"
+    "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types"
   },
   "files": [
     "src/",
@@ -35,17 +36,21 @@
       "test/fixtures/*"
     ]
   },
+  "types": "dist/src/index.d.ts",
   "dependencies": {
     "@ipld/car": "^3.1.6",
     "@ipld/dag-cbor": "^6.0.5",
     "@ipld/dag-pb": "^2.1.3",
+    "@types/readable-stream": "^2.3.11",
+    "@types/pako": "^1.0.2",
     "abort-controller": "^3.0.0",
     "aegir": "^34.0.2",
     "delay": "^5.0.0",
     "err-code": "^3.0.1",
     "interface-blockstore": "^1.0.0",
+    "ipfs-core-types": "^0.6.0",
     "ipfs-unixfs": "^5.0.0",
-    "ipfs-unixfs-importer": "^8.0.0",
+    "ipfs-unixfs-importer": "^8.0.2",
     "ipfs-utils": "^8.1.4",
     "ipns": "^0.13.2",
     "is-ipfs": "^6.0.1",
@@ -57,7 +62,9 @@
     "it-first": "^1.0.4",
     "it-last": "^1.0.4",
     "it-map": "^1.0.4",
+    "it-pipe": "^1.1.0",
     "it-pushable": "^1.4.2",
+    "it-tar": "^4.0.0",
     "it-to-buffer": "^2.0.0",
     "libp2p-crypto": "^0.19.6",
     "libp2p-websockets": "^0.16.1",
@@ -67,6 +74,7 @@
     "native-abort-controller": "^1.0.3",
     "p-map": "^4.0.0",
     "p-retry": "^4.5.0",
+    "pako": "^1.0.2",
     "peer-id": "^0.15.1",
     "readable-stream": "^3.4.0",
     "uint8arrays": "^2.1.6"

@@ -8,7 +8,7 @@ const { multiaddr } = require('multiaddr')
 const PeerId = require('peer-id')
 const { expect } = require('aegir/utils/chai')
 
-const Ipfs = require('../')
+const Ipfs = require('../src')
 
 describe('exports', () => {
   it('should export the expected types and utilities', () => {

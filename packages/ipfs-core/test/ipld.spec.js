@@ -5,14 +5,18 @@ const { expect } = require('aegir/utils/chai')
 const createNode = require('./utils/create-node')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const Digest = require('multiformats/hashes/digest')
 
 describe('ipld', function () {
   this.timeout(10 * 1000)
 
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {
+    /** @type {import('multiformats/codecs/interface').BlockCodec<1337, string>} */
     const customCodec = {
       name: 'custom-codec',
       code: 1337,
@@ -20,10 +24,37 @@ describe('ipld', function () {
       decode: (buf) => uint8ArrayToString(buf)
     }
 
+    /** @type {import('multiformats/hashes/interface').MultihashHasher} */
+    const customHasher = {
+      digest: (input) => Promise.resolve(Digest.create(1338, input)),
+      name: 'custom-hasher',
+      code: 1338
+    }
+
+    /** @type {import('multiformats/bases/interface').MultibaseCodec<any>} */
+    const customBase = {
+      name: 'custom-base',
+      prefix: '1339',
+      encoder: {
+        name: 'custom-base',
+        prefix: '1339',
+        encode: (input) => uint8ArrayToString(input)
+      },
+      decoder: {
+        decode: (input) => uint8ArrayFromString(input)
+      }
+    }
+
     const res = await createNode({
       ipld: {
         codecs: [
           customCodec
+        ],
+        hashers: [
+          customHasher
+        ],
+        bases: [
+          customBase
         ]
       }
     })

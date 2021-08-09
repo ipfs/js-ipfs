@@ -1,6 +1,7 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
+// @ts-expect-error locks is missing from types?
 const { createRepo, locks: { memory } } = require('ipfs-repo')
 const codecs = require('./codecs')
 const createBackend = require('./create-backend')
@@ -11,7 +12,7 @@ const { Key } = require('interface-datastore')
  * @param {string} [options.path]
  * @param {number} [options.version]
  * @param {number} [options.spec]
- * @param {boolean} [options.true]
+ * @param {boolean} [options.autoMigrate]
  * @param {(version: number, percentComplete: string, message: string) => void} [options.onMigrationProgress]
  * @param {import('ipfs-core-types/src/config').Config} [options.config]
  */

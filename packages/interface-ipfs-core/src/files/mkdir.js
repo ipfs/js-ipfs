@@ -8,20 +8,28 @@ const createShardedDirectory = require('../utils/create-sharded-directory')
 const all = require('it-all')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.mkdir', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
+    /**
+     * @param {number | string | undefined} mode
+     * @param {number} expectedMode
+     */
     async function testMode (mode, expectedMode) {
       const testPath = `/test-${nanoid()}`
       await ipfs.files.mkdir(testPath, {
@@ -32,6 +40,10 @@ module.exports = (common, options) => {
       expect(stats).to.have.property('mode', expectedMode)
     }
 
+    /**
+     * @param {import('ipfs-unixfs').MtimeLike} mtime
+     * @param {import('ipfs-unixfs').MtimeLike} expectedMtime
+     */
     async function testMtime (mtime, expectedMtime) {
       const testPath = `/test-${nanoid()}`
       await ipfs.files.mkdir(testPath, {
@@ -42,9 +54,9 @@ module.exports = (common, options) => {
       expect(stats).to.have.deep.property('mtime', expectedMtime)
     }
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('requires a directory', async () => {
       await expect(ipfs.files.mkdir('')).to.eventually.be.rejected()
@@ -212,10 +224,11 @@ module.exports = (common, options) => {
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

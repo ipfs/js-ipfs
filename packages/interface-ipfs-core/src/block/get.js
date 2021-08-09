@@ -7,25 +7,31 @@ const { CID } = require('multiformats/cid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.block.get', () => {
     const data = uint8ArrayFromString('blorb')
-    let ipfs, cid
+    /** @type {import('ipfs-core-types').IPFS} */
+    let ipfs
+    /** @type {CID} */
+    let cid
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
       cid = await ipfs.block.put(data)
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when getting a block', () => {
       return testTimeout(() => ipfs.block.get(CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rA3'), {
@@ -86,6 +92,7 @@ module.exports = (common, options) => {
     })
 
     it('should return an error for an invalid CID', () => {
+      // @ts-expect-error invalid input
       return expect(ipfs.block.get('Non-base58 character')).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
     })

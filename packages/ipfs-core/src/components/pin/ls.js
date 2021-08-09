@@ -2,7 +2,7 @@
 'use strict'
 
 const { PinTypes } = require('ipfs-repo')
-const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
+const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
 const { resolvePath } = require('../../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const errCode = require('err-code')

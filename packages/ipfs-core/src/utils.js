@@ -69,7 +69,7 @@ const normalizeCidPath = (path) => {
  *
  * @param {import('ipfs-repo').IPFSRepo} repo
  * @param {import('ipfs-core-utils/src/multicodecs')} codecs
- * @param {CID | string} ipfsPath - A CID or IPFS path
+ * @param {CID | string | Uint8Array} ipfsPath - A CID or IPFS path
  * @param {{ path?: string, signal?: AbortSignal }} [options] - Optional options passed directly to dag.resolve
  * @returns {Promise<{ cid: CID, remainderPath: string}>}
  */
@@ -122,10 +122,8 @@ const resolvePath = async function (repo, codecs, ipfsPath, options = {}) {
  * @typedef {import('ipfs-unixfs-exporter').UnixFSEntry} UnixFSEntry
  *
  * @param {UnixFSEntry} file
- * @param {Object} [options]
- * @param {boolean} [options.includeContent]
  */
-const mapFile = (file, options = {}) => {
+const mapFile = (file) => {
   if (file.type !== 'file' && file.type !== 'directory' && file.type !== 'raw') {
     // file.type === object | identity not supported yet
     throw new Error(`Unknown node type '${file.type}'`)
@@ -136,7 +134,6 @@ const mapFile = (file, options = {}) => {
     cid: file.cid,
     path: file.path,
     name: file.name,
-    depth: file.path.split('/').length,
     size: file.size,
     type: 'file'
   }
@@ -155,13 +152,6 @@ const mapFile = (file, options = {}) => {
 
     if (file.unixfs.mtime !== undefined) {
       output.mtime = file.unixfs.mtime
-    }
-  }
-
-  if (options.includeContent) {
-    if (file.type === 'file' || file.type === 'raw') {
-      // @ts-expect-error - content is readonly
-      output.content = file.content()
     }
   }
 

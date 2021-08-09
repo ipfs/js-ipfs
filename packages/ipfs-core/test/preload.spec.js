@@ -10,7 +10,9 @@ const createNode = require('./utils/create-node')
 const dagPb = require('@ipld/dag-pb')
 
 describe('preload', () => {
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {
@@ -77,6 +79,10 @@ describe('preload', () => {
     const rootDir = res.find(file => file.path === 'dir0')
     expect(rootDir).to.exist()
 
+    if (!rootDir) {
+      throw new Error('rootDir did not exist')
+    }
+
     await MockPreloadNode.waitForCids(rootDir.cid)
   })
 
@@ -96,6 +102,10 @@ describe('preload', () => {
 
     const wrappingDir = res.find(file => file.path === '')
     expect(wrappingDir).to.exist()
+
+    if (!wrappingDir) {
+      throw new Error('wrappingDir did not exist')
+    }
 
     await MockPreloadNode.waitForCids(wrappingDir.cid)
   })
@@ -131,6 +141,10 @@ describe('preload', () => {
     const wrappingDir = res.find(file => file.path === '')
     expect(wrappingDir).to.exist()
 
+    if (!wrappingDir) {
+      throw new Error('wrappingDir did not exist')
+    }
+
     // Adding these files with have preloaded wrappingDir.hash, clear it out
     await MockPreloadNode.clearPreloadCids()
 
@@ -165,7 +179,7 @@ describe('preload', () => {
     const cid = await ipfs.object.patch.addLink(parent.cid, {
       Name: 'link',
       Hash: link.cid,
-      Tsize: link.node.size
+      Tsize: dagPb.encode(link.node).length
     })
     await MockPreloadNode.waitForCids(cid)
   })
@@ -187,7 +201,7 @@ describe('preload', () => {
     })
 
     await MockPreloadNode.clearPreloadCids()
-    const cid = await ipfs.object.patch.rmLink(parentCid, { Name: 'link' })
+    const cid = await ipfs.object.patch.rmLink(parentCid, 'link')
     await MockPreloadNode.waitForCids(cid)
   })
 
@@ -286,7 +300,9 @@ describe('preload', () => {
 
 describe('preload disabled', function () {
   this.timeout(50 * 1000)
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {

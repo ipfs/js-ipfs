@@ -6,27 +6,32 @@ const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dht.provide', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
-      const nodeB = (await common.spawn()).api
-      await ipfs.swarm.connect(nodeB.peerId.addresses[0])
+      ipfs = (await factory.spawn()).api
+      const nodeB = (await factory.spawn()).api
+      const nodeBId = await nodeB.id()
+      await ipfs.swarm.connect(nodeBId.addresses[0])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should provide local CID', async () => {
       const res = await ipfs.add(uint8ArrayFromString('test'))
@@ -58,10 +63,12 @@ module.exports = (common, options) => {
     })
 
     it('should error on non CID arg', () => {
+      // @ts-expect-error invalid arg
       return expect(all(ipfs.dht.provide({}))).to.eventually.be.rejected()
     })
 
     it('should error on array containing non CID arg', () => {
+      // @ts-expect-error invalid arg
       return expect(all(ipfs.dht.provide([{}]))).to.eventually.be.rejected()
     })
   })

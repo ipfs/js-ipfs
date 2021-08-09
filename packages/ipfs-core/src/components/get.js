@@ -1,10 +1,18 @@
 'use strict'
 
-const exporter = require('ipfs-unixfs-exporter')
+const { exporter, recursive } = require('ipfs-unixfs-exporter')
 const errCode = require('err-code')
-const { normalizeCidPath, mapFile } = require('../utils')
+const { normalizeCidPath } = require('../utils')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { CID } = require('multiformats/cid')
+const { pack } = require('it-tar')
+const { pipe } = require('it-pipe')
+const { gzip } = require('pako')
+const map = require('it-map')
+const toBuffer = require('it-to-buffer')
+
+// https://www.gnu.org/software/gzip/manual/gzip.html
+const DEFAULT_COMPRESSION_LEVEL = 6
 
 /**
  * @typedef {Object} Context
@@ -18,6 +26,10 @@ module.exports = function ({ repo, preload }) {
    * @type {import('ipfs-core-types/src/root').API["get"]}
    */
   async function * get (ipfsPath, options = {}) {
+    if (options.compressionLevel < 0 || options.compressionLevel > 9) {
+      throw errCode(new Error('Compression level must be between 1 and 9'), 'ERR_INVALID_PARAMS')
+    }
+
     if (options.preload !== false) {
       let pathComponents
 
@@ -31,13 +43,126 @@ module.exports = function ({ repo, preload }) {
     }
 
     const ipfsPathOrCid = CID.asCID(ipfsPath) || ipfsPath
+    const file = await exporter(ipfsPathOrCid, repo.blocks, options)
 
-    for await (const file of exporter.recursive(ipfsPathOrCid, repo.blocks, options)) {
-      yield mapFile(file, {
-        ...options,
-        includeContent: true
-      })
+    if (file.type === 'file' || file.type === 'raw') {
+      const args = []
+
+      if (!options.compress || options.archive === true) {
+        args.push([{
+          header: {
+            name: file.path,
+            mode: file.type === 'file' && file.unixfs.mode,
+            mtime: file.type === 'file' && file.unixfs.mtime ? new Date(file.unixfs.mtime.secs * 1000) : undefined,
+            size: file.size,
+            type: 'file'
+          },
+          body: file.content()
+        }],
+        pack(),
+        /**
+         * @param {AsyncIterable<Uint8Array>} source
+         */
+        (source) => map(source, buf => buf.slice())
+        )
+      } else {
+        args.push(
+          file.content
+        )
+      }
+
+      if (options.compress) {
+        args.push(
+          /**
+           * @param {AsyncIterable<Uint8Array>} source
+           */
+          async function * (source) {
+            const buf = await toBuffer(source)
+
+            yield gzip(buf, {
+              level: options.compressionLevel || DEFAULT_COMPRESSION_LEVEL
+            })
+          }
+        )
+      }
+
+      // @ts-ignore cannot derive type
+      yield * pipe(...args)
+
+      return
     }
+
+    if (file.type === 'directory') {
+      /** @type {any[]} */
+      const args = [
+        recursive(ipfsPathOrCid, repo.blocks, options),
+        /**
+         * @param {AsyncIterable<import('ipfs-unixfs-exporter').UnixFSEntry>} source
+         */
+        async function * (source) {
+          for await (const entry of source) {
+            /** @type {import('it-tar').TarImportCandidate} */
+            const output = {
+              header: {
+                name: entry.path,
+                size: entry.size
+              }
+            }
+
+            if (entry.type === 'file') {
+              output.header.type = 'file'
+              output.header.mode = entry.unixfs.mode != null ? entry.unixfs.mode : undefined
+              output.header.mtime = entry.unixfs.mtime ? new Date(entry.unixfs.mtime.secs * 1000) : undefined
+              output.body = entry.content()
+            } else if (entry.type === 'raw') {
+              output.header.type = 'file'
+              output.body = entry.content()
+            } else if (entry.type === 'directory') {
+              output.header.type = 'directory'
+              output.header.mode = entry.unixfs.mode != null ? entry.unixfs.mode : undefined
+              output.header.mtime = entry.unixfs.mtime ? new Date(entry.unixfs.mtime.secs * 1000) : undefined
+            } else {
+              throw errCode(new Error('Not a UnixFS node'), 'ERR_NOT_UNIXFS')
+            }
+
+            yield output
+          }
+        },
+        pack(),
+        /**
+         * @param {AsyncIterable<Uint8Array>} source
+         */
+        (source) => map(source, buf => buf.slice())
+      ]
+
+      if (options.compress) {
+        if (!options.archive) {
+          throw errCode(new Error('file is not regular'), 'ERR_INVALID_PATH')
+        }
+
+        if (options.compress) {
+          args.push(
+            /**
+             * @param {AsyncIterable<Uint8Array>} source
+             */
+            async function * (source) {
+              const buf = await toBuffer(source)
+
+              yield gzip(buf, {
+                level: options.compressionLevel || DEFAULT_COMPRESSION_LEVEL
+              })
+            }
+          )
+        }
+      }
+
+      // @ts-ignore cannot derive type
+      yield * pipe(...args)
+
+      return
+    }
+
+    throw errCode(new Error('Not a UnixFS node'), 'ERR_NOT_UNIXFS')
   }
 
   return withTimeoutOption(get)

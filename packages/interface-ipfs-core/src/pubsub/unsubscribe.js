@@ -6,31 +6,36 @@ const { getTopic } = require('./utils')
 const { getDescribe, getIt } = require('../utils/mocha')
 const waitFor = require('../utils/wait-for')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pubsub.unsubscribe', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     // Browser/worker has max ~5 open HTTP requests to the same origin
     const count = isBrowser || isWebWorker || isElectronRenderer ? 5 : 10
 
     it(`should subscribe and unsubscribe ${count} times`, async () => {
       const someTopic = getTopic()
+      /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn[]} */
       const handlers = Array.from(Array(count), () => msg => {})
 
       for (let i = 0; i < count; i++) {

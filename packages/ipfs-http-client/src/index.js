@@ -10,16 +10,15 @@ const Multihashes = require('ipfs-core-utils/src/multihashes')
 const Multibases = require('ipfs-core-utils/src/multibases')
 const dagPb = require('@ipld/dag-pb')
 const dagCbor = require('@ipld/dag-cbor')
-const raw = require('multiformats/codecs/raw')
-const json = require('multiformats/codecs/json')
-const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const { identity } = require('multiformats/hashes/identity')
-const { base58btc } = require('multiformats/bases/base58')
+const { bases, hashes, codecs } = require('multiformats/basics')
 
 /**
  * @typedef {import('./types').EndpointConfig} EndpointConfig
  * @typedef {import('./types').Options} Options
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ * @typedef {import('multiformats/bases/interface').MultibaseCodec<any>} MultibaseCodec
  * @typedef {import('./types').IPFSHTTPClient} IPFSHTTPClient
  */
 
@@ -37,16 +36,33 @@ function create (options = {}) {
     decode: (id) => id
   }
 
-  const bases = new Multibases({
-    bases: [base58btc].concat(options.ipld && options.ipld.bases ? options.ipld.bases : []),
+  /** @type {MultibaseCodec[]} */
+  const multibaseCodecs = Object.values(bases);
+
+  (options.ipld && options.ipld.bases ? options.ipld.bases : []).forEach(base => multibaseCodecs.push(base))
+
+  const multibases = new Multibases({
+    bases: multibaseCodecs,
     loadBase: options.ipld && options.ipld.loadBase
   })
-  const codecs = new Multicodecs({
-    codecs: [dagPb, dagCbor, raw, json, id].concat(options.ipld?.codecs || []),
+
+  /** @type {BlockCodec[]} */
+  const blockCodecs = Object.values(codecs);
+
+  [dagPb, dagCbor, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
+
+  const multicodecs = new Multicodecs({
+    codecs: blockCodecs,
     loadCodec: options.ipld && options.ipld.loadCodec
   })
-  const hashers = new Multihashes({
-    hashers: [sha256, sha512, identity].concat(options.ipld && options.ipld.hashers ? options.ipld.hashers : []),
+
+  /** @type {MultihashHasher[]} */
+  const multihashHashers = Object.values(hashes);
+
+  (options.ipld && options.ipld.hashers ? options.ipld.hashers : []).forEach(hasher => multihashHashers.push(hasher))
+
+  const multihashes = new Multihashes({
+    hashers: multihashHashers,
     loadHasher: options.ipld && options.ipld.loadHasher
   })
 
@@ -60,7 +76,7 @@ function create (options = {}) {
     cat: require('./cat')(options),
     commands: require('./commands')(options),
     config: require('./config')(options),
-    dag: require('./dag')(codecs, options),
+    dag: require('./dag')(multicodecs, options),
     dht: require('./dht')(options),
     diag: require('./diag')(options),
     dns: require('./dns')(options),
@@ -74,7 +90,7 @@ function create (options = {}) {
     ls: require('./ls')(options),
     mount: require('./mount')(options),
     name: require('./name')(options),
-    object: require('./object')(codecs, options),
+    object: require('./object')(multicodecs, options),
     pin: require('./pin')(options),
     ping: require('./ping')(options),
     pubsub: require('./pubsub')(options),
@@ -86,9 +102,9 @@ function create (options = {}) {
     stop: require('./stop')(options),
     swarm: require('./swarm')(options),
     version: require('./version')(options),
-    bases,
-    codecs,
-    hashers
+    bases: multibases,
+    codecs: multicodecs,
+    hashers: multihashes
   }
 
   return client

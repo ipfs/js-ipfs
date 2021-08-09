@@ -13,37 +13,45 @@ const { randomBytes } = require('iso-random-stream')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const isShardAtPath = require('../utils/is-shard-at-path')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.cp', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('refuses to copy files without a source', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp()).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
     it('refuses to copy files without a source, even with options', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp({})).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
     it('refuses to copy files without a destination', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp('/source')).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
     it('refuses to copy files without a destination, even with options', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp('/source', {})).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
@@ -275,7 +283,7 @@ module.exports = (common, options) => {
       const seconds = Math.floor(mtime.getTime() / 1000)
       const expectedMtime = {
         secs: seconds,
-        nsecs: (mtime - (seconds * 1000)) * 1000
+        nsecs: (mtime.getTime() - (seconds * 1000)) * 1000
       }
 
       await ipfs.files.write(testSrcPath, uint8ArrayFromString('TEST'), {
@@ -298,7 +306,7 @@ module.exports = (common, options) => {
       const seconds = Math.floor(mtime.getTime() / 1000)
       const expectedMtime = {
         secs: seconds,
-        nsecs: (mtime - (seconds * 1000)) * 1000
+        nsecs: (mtime.getTime() - (seconds * 1000)) * 1000
       }
 
       await ipfs.files.mkdir(testSrcPath, {
@@ -321,7 +329,7 @@ module.exports = (common, options) => {
       const seconds = Math.floor(mtime.getTime() / 1000)
       const expectedMtime = {
         secs: seconds,
-        nsecs: (mtime - (seconds * 1000)) * 1000
+        nsecs: (mtime.getTime() - (seconds * 1000)) * 1000
       }
 
       const {
@@ -339,10 +347,11 @@ module.exports = (common, options) => {
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

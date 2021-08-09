@@ -71,9 +71,9 @@ class Daemon {
 }
 
 /**
- * @type {import('ipfs-core/src/types').Libp2pFactoryFn}
+ * @type {import('ipfs-core').Libp2pFactoryFn}
  */
-function getLibp2p ({ libp2pOptions, options, config, peerId }) {
+async function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   // Attempt to use any of the WebRTC versions available globally
   let electronWebRTC
   let wrtc
@@ -103,7 +103,7 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   }
 
   const Libp2p = require('libp2p')
-  return new Libp2p(libp2pOptions)
+  return Libp2p.create(libp2pOptions)
 }
 
 module.exports = Daemon

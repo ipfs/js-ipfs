@@ -124,7 +124,9 @@ export interface AddAllOptions extends AbortOptions {
   lock?: boolean
 }
 
-export interface AddInput {
+export type AddInput = CID | AddInputWithOptions
+
+export interface AddInputWithOptions {
   /**
    * A CID to pin - nb. you must pass either `cid` or `path`, not both
    */

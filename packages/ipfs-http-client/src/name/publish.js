@@ -18,7 +18,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: path,
+        arg: `${path}`,
         ...options
       }),
       headers: options.headers

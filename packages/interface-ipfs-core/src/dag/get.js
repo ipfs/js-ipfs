@@ -16,26 +16,48 @@ const { identity } = require('multiformats/hashes/identity')
 const dagCbor = require('@ipld/dag-cbor')
 const blockstore = require('../utils/blockstore-adapter')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dag.get', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
+    /**
+     * @type {dagPB.PBNode}
+     */
     let pbNode
+    /**
+     * @type {any}
+     */
     let cborNode
+    /**
+     * @type {dagPB.PBNode}
+     */
     let nodePb
+    /**
+     * @type {any}
+     */
     let nodeCbor
+    /**
+     * @type {CID}
+     */
     let cidPb
+    /**
+     * @type {CID}
+     */
     let cidCbor
 
     before(async () => {
@@ -252,11 +274,13 @@ module.exports = (common, options) => {
     })
 
     it('should throw error for invalid string CID input', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.dag.get('INVALID CID'))
         .to.eventually.be.rejected()
     })
 
     it('should throw error for invalid buffer CID input', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.dag.get(uint8ArrayFromString('INVALID CID')))
         .to.eventually.be.rejected()
     })

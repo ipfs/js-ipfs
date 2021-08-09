@@ -3,13 +3,16 @@ import type PeerId from 'peer-id'
 import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
 import type Libp2p, { Libp2pOptions } from 'libp2p'
 
-import type IPFSRepo from 'ipfs-repo'
+import type { IPFSRepo } from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
 import type Network, { Options as NetworkOptions } from './components/network'
 
+import type { Datastore } from 'interface-datastore'
+
 import type Service from './utils/service'
 import type { CID } from 'multiformats/cid'
-import type { BlockCodec, MultibaseCodec } from 'multiformats/codecs/interface'
+import type { BlockCodec } from 'multiformats/codecs/interface'
+import type { MultibaseCodec } from 'multiformats/bases/interface'
 import type { MultihashHasher } from 'multiformats/hashes/interface'
 
 export interface Options {
@@ -122,7 +125,17 @@ export interface Options {
   silent?: boolean
 }
 
-export interface Libp2pFactoryFn { ({ libp2pOptions: Libp2pOptions, options: Options, config: IPFSConfig, datastore: Datastore, peerId: PeerId }): Libp2p }
+export interface Libp2pFactoryFnArgs {
+  libp2pOptions: Libp2pOptions
+  options: Options
+  config: IPFSConfig
+  datastore: Datastore
+  peerId: PeerId
+}
+
+export interface Libp2pFactoryFn {
+  (args: Libp2pFactoryFnArgs): Promise<Libp2p>
+}
 
 /**
  * On first run js-IPFS will initialize a repo which can be customized through this settings
@@ -229,11 +242,6 @@ export interface MfsPreload {
 
 export type NetworkService = Service<NetworkOptions, Network>
 
-export interface Block {
-  cid: CID
-  bytes: Uint8Array
-}
-
 export interface LoadBaseFn { (codeOrName: number | string): Promise<MultibaseCodec<any>> }
 export interface LoadCodecFn { (codeOrName: number | string): Promise<BlockCodec<any, any>> }
 export interface LoadHasherFn { (codeOrName: number | string): Promise<MultihashHasher> }
@@ -244,13 +252,5 @@ export interface IPLDOptions {
   loadHasher: LoadHasherFn
   bases: Array<MultibaseCodec<any>>
   codecs: Array<BlockCodec<any, any>>
-  hashers: Array<MultihashHasher<any, any>>
-}
-
-export interface BlockCodecStore {
-  getCodec: (codeOrName: number | string) => Promise<BlockCodec<any, any>>
-}
-
-export interface MultihashHasherStore {
-  getHasher: (codeOrName: number | string) => Promise<MultihashHasher<any, any>>
+  hashers: MultihashHasher[]
 }

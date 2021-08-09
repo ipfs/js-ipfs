@@ -10,25 +10,29 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { CID } = require('multiformats/cid')
 const { sha256 } = require('multiformats/hashes/sha2')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.object.get', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get object by multihash', async () => {
       const obj = {
@@ -70,7 +74,7 @@ module.exports = (common, options) => {
       }
       const node1b = {
         Data: node1a.Data,
-        Links: node1a.Links.concat(link)
+        Links: [link]
       }
 
       const node1bCid = await ipfs.object.put(node1b)
@@ -121,16 +125,23 @@ module.exports = (common, options) => {
       })
 
       const node = await ipfs.object.get(result.cid)
+
+      if (!node.Data) {
+        throw new Error('Node did not have data')
+      }
+
       const meta = UnixFS.unmarshal(node.Data)
 
       expect(meta.fileSize()).to.equal(data.length)
     })
 
     it('should error for request without argument', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.get(null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with invalid argument', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.get('invalid', { enc: 'base58' })).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })

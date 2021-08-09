@@ -27,7 +27,7 @@
     "build": "aegir build",
     "test": "echo 'Only interface tests live here'",
     "test:interface:message-port-client": "aegir test -t browser --bail -f ./test/interface-message-port-client.js",
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i esbuild"

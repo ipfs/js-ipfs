@@ -2,6 +2,9 @@
 
 const { expect } = require('../utils/mocha')
 
+/**
+ * @param {*} obj
+ */
 function expectIsPingResponse (obj) {
   expect(obj).to.have.a.property('success')
   expect(obj).to.have.a.property('time')
@@ -13,7 +16,11 @@ function expectIsPingResponse (obj) {
 
 exports.expectIsPingResponse = expectIsPingResponse
 
-// Determine if a ping response object is a pong, or something else, like a status message
+/**
+ * Determine if a ping response object is a pong, or something else, like a status message
+ *
+ * @param {*} pingResponse
+ */
 function isPong (pingResponse) {
   return Boolean(pingResponse && pingResponse.success && !pingResponse.text)
 }

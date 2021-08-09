@@ -9,6 +9,7 @@ const ONE_MEG = Math.pow(2, 20)
 exports.fixtures = Object.freeze({
   directory: Object.freeze({
     cid: CID.parse('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'),
+    /** @type {Record<string, Buffer>} */
     files: Object.freeze({
       'pp.txt': loadFixture('test/fixtures/test-folder/pp.txt', 'interface-ipfs-core'),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt', 'interface-ipfs-core'),

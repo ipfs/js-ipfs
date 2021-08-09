@@ -10,10 +10,10 @@ const { File } = require('@web-std/file')
 const { Blob, ReadableStream } = globalThis
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 
-let normalise = require('../../src/files/normalise-input')
+let { normaliseInput } = require('../../src/files/normalise-input')
 
 if (isBrowser || isWebWorker || isElectronRenderer) {
-  normalise = require('../../src/files/normalise-input/index.browser')
+  normaliseInput = require('../../src/files/normalise-input/index.browser').normaliseInput
 }
 
 const STRING = () => 'hello world'
@@ -46,7 +46,7 @@ async function verifyNormalisation (input) {
 }
 
 async function testContent (input) {
-  const result = await all(normalise(input))
+  const result = await all(normaliseInput(input))
 
   await verifyNormalisation(result)
 }

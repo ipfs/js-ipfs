@@ -10,7 +10,11 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const pmap = require('p-map')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
+/**
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ * @typedef {import('multiformats').CID} CID
+ */
+
 /**
  * @param {Factory} factory
  * @param {Object} options
@@ -29,8 +33,9 @@ module.exports = (factory, options) => {
       it('2 peers', async function () {
         // webworkers are not dialable because webrtc is not available
         const remote = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+        const remoteId = await remote.id()
         const local = (await factory.spawn({ type: 'proc', ipfsOptions })).api
-        await local.swarm.connect(remote.peerId.addresses[0])
+        await local.swarm.connect(remoteId.addresses[0])
         const data = uint8ArrayFromString(`IPFS is awesome ${nanoid()}`)
 
         const cid = await local.block.put(data)
@@ -42,13 +47,16 @@ module.exports = (factory, options) => {
       it('3 peers', async () => {
         const blocks = Array(6).fill(0).map(() => uint8ArrayFromString(`IPFS is awesome ${nanoid()}`))
         const remote1 = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+        const remote1Id = await remote1.id()
         const remote2 = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+        const remote2Id = await remote2.id()
         const local = (await factory.spawn({ type: 'proc', ipfsOptions })).api
-        await local.swarm.connect(remote1.peerId.addresses[0])
-        await local.swarm.connect(remote2.peerId.addresses[0])
-        await remote1.swarm.connect(remote2.peerId.addresses[0])
+        await local.swarm.connect(remote1Id.addresses[0])
+        await local.swarm.connect(remote2Id.addresses[0])
+        await remote1.swarm.connect(remote2Id.addresses[0])
 
         // order is important
+        /** @type {CID[]} */
         const cids = []
         cids.push(await remote1.block.put(blocks[0]))
         cids.push(await remote1.block.put(blocks[1]))
@@ -69,8 +77,9 @@ module.exports = (factory, options) => {
       it('2 peers', async () => {
         const content = randomBytes(1024)
         const remote = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+        const remoteId = await remote.id()
         const local = (await factory.spawn({ type: 'proc', ipfsOptions })).api
-        local.swarm.connect(remote.peerId.addresses[0])
+        local.swarm.connect(remoteId.addresses[0])
 
         const file = await remote.add({ path: 'awesome.txt', content })
         const data = await concat(local.cat(file.cid))

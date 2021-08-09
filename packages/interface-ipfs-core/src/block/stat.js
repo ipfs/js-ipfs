@@ -6,25 +6,31 @@ const { CID } = require('multiformats/cid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.block.stat', () => {
     const data = uint8ArrayFromString('blorb')
-    let ipfs, cid
+    /** @type {import('ipfs-core-types').IPFS} */
+    let ipfs
+    /** @type {CID} */
+    let cid
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
       cid = await ipfs.block.put(data)
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when statting a block', () => {
       return testTimeout(() => ipfs.block.stat(CID.parse('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
@@ -39,11 +45,13 @@ module.exports = (common, options) => {
     })
 
     it('should return error for missing argument', () => {
+      // @ts-expect-error invalid input
       return expect(ipfs.block.stat(null)).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
     })
 
     it('should return error for invalid argument', () => {
+      // @ts-expect-error invalid input
       return expect(ipfs.block.stat('invalid')).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
     })

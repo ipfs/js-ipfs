@@ -9,33 +9,39 @@ const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
 const all = require('it-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.mv', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
     before(async () => {
       await ipfs.files.mkdir('/test/lv1/lv2', { parents: true })
       await ipfs.files.write('/test/a', uint8ArrayFromString('Hello, world!'), { create: true })
     })
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('refuses to move files without arguments', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.mv()).to.eventually.be.rejected()
     })
 
     it('refuses to move files without enough arguments', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.mv()).to.eventually.be.rejected()
     })
 
@@ -103,10 +109,11 @@ module.exports = (common, options) => {
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

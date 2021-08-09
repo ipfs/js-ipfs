@@ -39,8 +39,7 @@ module.exports = configure((api, opts) => {
         path: pathStr + (link.Name ? `/${link.Name}` : ''),
         size: link.Size,
         cid: hash,
-        type: typeOf(link),
-        depth: link.Depth || 1
+        type: typeOf(link)
       }
 
       if (link.Mode) {

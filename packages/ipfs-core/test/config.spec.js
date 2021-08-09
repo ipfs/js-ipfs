@@ -11,7 +11,9 @@ const bootstrapList = require('../src/runtime/config-nodejs.js')().Bootstrap
 describe('config', function () {
   this.timeout(10 * 1000)
 
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {

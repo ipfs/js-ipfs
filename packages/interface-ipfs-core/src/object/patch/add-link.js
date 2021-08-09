@@ -7,25 +7,29 @@ const { CID } = require('multiformats/cid')
 const { sha256 } = require('multiformats/hashes/sha2')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.object.patch.addLink', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should add a link to an existing node', async () => {
       const obj = {
@@ -54,7 +58,7 @@ module.exports = (common, options) => {
       }
       const node1b = {
         Data: node1a.Data,
-        Links: node1a.Links.concat(link)
+        Links: [link]
       }
       const node1bCid = await ipfs.object.put(node1b)
 
@@ -87,10 +91,12 @@ module.exports = (common, options) => {
     })
 
     it('returns error for request without arguments', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.patch.addLink(null, null, null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with only one invalid argument', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.patch.addLink('invalid', null, null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })
