@@ -84,6 +84,7 @@ jobs:
     - stage: test
       name: lint
       script:
+        - npm run build
         - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
