@@ -49,7 +49,7 @@
   },
   "optionalDependencies": {
     "electron-webrtc": "^0.3.0",
-    "prom-client": "^12.0.0",
+    "prom-client": "^13.2.0",
     "prometheus-gc-stats": "^0.6.0",
     "wrtc": "^0.4.6"
   }

@@ -79,6 +79,6 @@
     "stream-to-promise": "^3.0.0"
   },
   "optionalDependencies": {
-    "prom-client": "^12.0.0"
+    "prom-client": "^13.2.0"
   }
 }
