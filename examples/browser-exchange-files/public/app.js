@@ -239,9 +239,9 @@ async function getFile () {
 
   FILES.push(hash)
 
-  for await (const file of node.get(hash)) {
-    if (file.content) {
-      const content = uint8ArrayConcat(await all(file.content))
+  for await (const file of node.ls(hash)) {
+    if (file.type === 'file') {
+      const content = uint8ArrayConcat(await all(node.cat(file.cid)))
 
       await appendFile(file.name, hash, file.size, content)
       onSuccess(`The ${file.name} file was added.`)
