@@ -51,7 +51,7 @@
     "assert": "^2.0.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "0.8.0",
+    "go-ipfs": "0.9.1",
     "interface-ipfs-core": "^0.148.0",
     "ipfs-client": "^0.5.1",
     "ipfs-core-types": "^0.6.1",
