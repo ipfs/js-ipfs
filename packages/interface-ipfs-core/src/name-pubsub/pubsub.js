@@ -155,13 +155,14 @@ module.exports = (factory, options) => {
       }
 
       const alreadySubscribed = () => {
-        return publishedMessage !== null
+        return Boolean(publishedMessage)
       }
 
       // Create account for publish
       const testAccount = await nodeA.key.gen(testAccountName, {
         type: 'rsa',
-        size: 2048
+        size: 2048,
+        'ipns-base': 'b58mh'
       })
 
       const keys = ipns.getIdKeys(uint8ArrayFromString(testAccount.id, 'base58btc'))

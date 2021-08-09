@@ -203,6 +203,7 @@ module.exports = (factory, options) => {
             }
           }
         })).api
+        const ipfs1Id = await ipfs1.id()
         const ipfs2 = (await factory.spawn({
           type: isWebWorker ? 'go' : undefined,
           ipfsOptions: {
@@ -213,6 +214,7 @@ module.exports = (factory, options) => {
             }
           }
         })).api
+        const ipfs2Id = await ipfs2.id()
         await ipfs1.swarm.connect(ipfs2Id.addresses[0])
 
         const msgStream1 = pushable()
