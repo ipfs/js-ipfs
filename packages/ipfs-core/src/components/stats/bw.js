@@ -14,8 +14,8 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @typedef {Object} BandwidthInfo
  * @property {bigint} totalIn
  * @property {bigint} totalOut
- * @property {bigint} rateIn
- * @property {bigint} rateOut
+ * @property {number} rateIn
+ * @property {number} rateOut
  *
  * @typedef {import('libp2p')} libp2p
  * @typedef {import('peer-id')} PeerId

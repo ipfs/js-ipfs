@@ -62,8 +62,8 @@ for await (const stats of ipfs.stats.bw()) {
 }
 // { totalIn: BigInt {...},
 //   totalOut: BigInt {...},
-//   rateIn: float {...},
-//   rateOut: float {...} }
+//   rateIn: number {...},
+//   rateOut: number {...} }
 ```
 
 A great source of [examples][] can be found in the tests for this API.
