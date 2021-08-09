@@ -31,8 +31,9 @@ module.exports = (factory, options) => {
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
+      const nodeAId = await nodeA.id()
       nodeBId = await nodeB.id()
-      await nodeB.swarm.connect(nodeBId.addresses[0])
+      await nodeB.swarm.connect(nodeAId.addresses[0])
     })
 
     after(() => factory.clean())

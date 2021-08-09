@@ -7,6 +7,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -22,12 +23,11 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
 
-    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('dht/put', {
       timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: key,
+        arg: uint8ArrayToString(key),
         ...options
       }),
       ...(
