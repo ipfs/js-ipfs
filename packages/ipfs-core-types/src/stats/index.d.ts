@@ -22,6 +22,6 @@ export interface BWOptions extends AbortOptions {
 export interface BWResult {
   totalIn: bigint
   totalOut: bigint
-  rateIn: bigint
-  rateOut: bigint
+  rateIn: number
+  rateOut: number
 }

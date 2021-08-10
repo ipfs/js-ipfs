@@ -61,8 +61,8 @@ exports.bw = {
         yield * map(source, stat => ({
           TotalIn: stat.totalIn.toString(),
           TotalOut: stat.totalOut.toString(),
-          RateIn: stat.rateIn.toString(),
-          RateOut: stat.rateOut.toString()
+          RateIn: stat.rateIn,
+          RateOut: stat.rateOut
         }))
       }
     ))

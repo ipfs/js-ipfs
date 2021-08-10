@@ -14,8 +14,8 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @typedef {Object} BandwidthInfo
  * @property {bigint} totalIn
  * @property {bigint} totalOut
- * @property {bigint} rateIn
- * @property {bigint} rateOut
+ * @property {number} rateIn
+ * @property {number} rateOut
  *
  * @typedef {import('libp2p')} libp2p
  * @typedef {import('peer-id')} PeerId
@@ -45,8 +45,8 @@ function getBandwidthStats (libp2p, opts) {
     return {
       totalIn: BigInt(0),
       totalOut: BigInt(0),
-      rateIn: BigInt(0),
-      rateOut: BigInt(0)
+      rateIn: 0.0,
+      rateOut: 0.0
     }
   }
 
@@ -55,8 +55,8 @@ function getBandwidthStats (libp2p, opts) {
   return {
     totalIn: BigInt(snapshot.dataReceived.integerValue().toString()),
     totalOut: BigInt(snapshot.dataSent.integerValue().toString()),
-    rateIn: BigInt(Math.round(movingAverages.dataReceived[60000].movingAverage() / 60)),
-    rateOut: BigInt(Math.round(movingAverages.dataSent[60000].movingAverage() / 60))
+    rateIn: movingAverages.dataReceived[60000].movingAverage() / 60,
+    rateOut: movingAverages.dataSent[60000].movingAverage() / 60
   }
 }
 
