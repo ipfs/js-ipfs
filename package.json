@@ -45,7 +45,7 @@
   "devDependencies": {
     "aegir": "^34.0.2",
     "get-stream": "^6.0.0",
-    "ipfs-core": "^0.8.0",
+    "ipfs-core": "^0.9.1",
     "ipfsd-ctl": "^10.0.1",
     "it-all": "^1.0.5",
     "path": "^0.12.7",
