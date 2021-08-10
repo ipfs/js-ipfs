@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "execa": "^5.0.0",
-    "go-ipfs": "0.8.0",
+    "go-ipfs": "0.9.1",
     "ipfsd-ctl": "^10.0.3",
     "parcel": "2.0.0-beta.2",
     "rimraf": "^3.0.2",
