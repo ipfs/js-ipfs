@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('./lib/configure')
 const toUrlSearchParams = require('./lib/to-url-search-params')
 const stat = require('./files/stat')
@@ -15,7 +15,7 @@ module.exports = configure((api, opts) => {
    * @type {RootAPI["ls"]}
    */
   async function * ls (path, options = {}) {
-    const pathStr = `${path instanceof Uint8Array ? new CID(path) : path}`
+    const pathStr = `${path instanceof Uint8Array ? CID.decode(path) : path}`
 
     /**
      * @param {*} link
@@ -29,6 +29,8 @@ module.exports = configure((api, opts) => {
         const stats = await stat(opts)(ipfsPath)
 
         hash = stats.cid
+      } else {
+        hash = CID.parse(hash)
       }
 
       /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
@@ -36,9 +38,8 @@ module.exports = configure((api, opts) => {
         name: link.Name,
         path: pathStr + (link.Name ? `/${link.Name}` : ''),
         size: link.Size,
-        cid: new CID(hash),
-        type: typeOf(link),
-        depth: link.Depth || 1
+        cid: hash,
+        type: typeOf(link)
       }
 
       if (link.Mode) {

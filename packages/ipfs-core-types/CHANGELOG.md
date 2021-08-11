@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.6.0...ipfs-core-types@0.6.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* typo in 'multiformats' type defs ([#3778](https://github.com/ipfs/js-ipfs/issues/3778)) ([1bf35f8](https://github.com/ipfs/js-ipfs/commit/1bf35f8a1622dea1e88bfbd701205df4f96998b1))
+
+
+
+
+
+# [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.5.2...ipfs-core-types@0.6.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* export ipfs http client type and use option extension for client ([#3763](https://github.com/ipfs/js-ipfs/issues/3763)) ([31bddd4](https://github.com/ipfs/js-ipfs/commit/31bddd40ab85848cd283ec66001fb7555b4f2d88)), closes [#3749](https://github.com/ipfs/js-ipfs/issues/3749) [#3736](https://github.com/ipfs/js-ipfs/issues/3736)
+* **ipfs-core-types:** wrong extension ([#3753](https://github.com/ipfs/js-ipfs/issues/3753)) ([4bad1c6](https://github.com/ipfs/js-ipfs/commit/4bad1c61f5946e32cf75196cd2c45c5316500b0f))
+
+
+### Features
+
+* implement dag import/export ([#3728](https://github.com/ipfs/js-ipfs/issues/3728)) ([700765b](https://github.com/ipfs/js-ipfs/commit/700765be2634fa5d2d71d8b87cf68c9cd328d2c4)), closes [#2953](https://github.com/ipfs/js-ipfs/issues/2953) [#2745](https://github.com/ipfs/js-ipfs/issues/2745)
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+## [0.5.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.5.1...ipfs-core-types@0.5.2) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-core-types
+
+
+
+
+
+## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.5.0...ipfs-core-types@0.5.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* add onError to pubsub.subscribe types ([#3706](https://github.com/ipfs/js-ipfs/issues/3706)) ([d910aea](https://github.com/ipfs/js-ipfs/commit/d910aead8c8be6798cf838245511331b3f69634c)), closes [#3468](https://github.com/ipfs/js-ipfs/issues/3468)
+
+
+
+
+
+# [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.4.0...ipfs-core-types@0.5.0) (2021-05-26)
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
 # [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.3.1...ipfs-core-types@0.4.0) (2021-05-10)
 
 

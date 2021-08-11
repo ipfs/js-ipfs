@@ -7,9 +7,12 @@ const { expect } = require('aegir/utils/chai')
 const all = require('it-all')
 const MockPreloadNode = require('./utils/mock-preload-node-utils')
 const createNode = require('./utils/create-node')
+const dagPb = require('@ipld/dag-pb')
 
 describe('preload', () => {
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {
@@ -76,6 +79,10 @@ describe('preload', () => {
     const rootDir = res.find(file => file.path === 'dir0')
     expect(rootDir).to.exist()
 
+    if (!rootDir) {
+      throw new Error('rootDir did not exist')
+    }
+
     await MockPreloadNode.waitForCids(rootDir.cid)
   })
 
@@ -95,6 +102,10 @@ describe('preload', () => {
 
     const wrappingDir = res.find(file => file.path === '')
     expect(wrappingDir).to.exist()
+
+    if (!wrappingDir) {
+      throw new Error('wrappingDir did not exist')
+    }
 
     await MockPreloadNode.waitForCids(wrappingDir.cid)
   })
@@ -130,6 +141,10 @@ describe('preload', () => {
     const wrappingDir = res.find(file => file.path === '')
     expect(wrappingDir).to.exist()
 
+    if (!wrappingDir) {
+      throw new Error('wrappingDir did not exist')
+    }
+
     // Adding these files with have preloaded wrappingDir.hash, clear it out
     await MockPreloadNode.clearPreloadCids()
 
@@ -164,7 +179,7 @@ describe('preload', () => {
     const cid = await ipfs.object.patch.addLink(parent.cid, {
       Name: 'link',
       Hash: link.cid,
-      Tsize: link.node.size
+      Tsize: dagPb.encode(link.node).length
     })
     await MockPreloadNode.waitForCids(cid)
   })
@@ -174,18 +189,19 @@ describe('preload', () => {
 
     const linkCid = await ipfs.object.put({ Data: uint8ArrayFromString(nanoid()), Links: [] })
     const linkNode = await ipfs.object.get(linkCid)
+    const linkBuf = dagPb.encode(linkNode)
 
     const parentCid = await ipfs.object.put({
       Data: uint8ArrayFromString(nanoid()),
       Links: [{
-        name: 'link',
-        cid: linkCid,
-        size: linkNode.size
+        Name: 'link',
+        Hash: linkCid,
+        Tsize: linkBuf.length
       }]
     })
 
     await MockPreloadNode.clearPreloadCids()
-    const cid = await ipfs.object.patch.rmLink(parentCid, { name: 'link' })
+    const cid = await ipfs.object.patch.rmLink(parentCid, 'link')
     await MockPreloadNode.waitForCids(cid)
   })
 
@@ -215,24 +231,24 @@ describe('preload', () => {
 
   it('should preload content added with block.put', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()))
-    await MockPreloadNode.waitForCids(block.cid)
+    const cid = await ipfs.block.put(uint8ArrayFromString(nanoid()))
+    await MockPreloadNode.waitForCids(cid)
   })
 
   it('should preload content retrieved with block.get', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
+    const cid = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
     await MockPreloadNode.clearPreloadCids()
-    await ipfs.block.get(block.cid)
-    await MockPreloadNode.waitForCids(block.cid)
+    await ipfs.block.get(cid)
+    await MockPreloadNode.waitForCids(cid)
   })
 
   it('should preload content retrieved with block.stat', async function () {
     this.timeout(50 * 1000)
-    const block = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
+    const cid = await ipfs.block.put(uint8ArrayFromString(nanoid()), { preload: false })
     await MockPreloadNode.clearPreloadCids()
-    await ipfs.block.stat(block.cid)
-    await MockPreloadNode.waitForCids(block.cid)
+    await ipfs.block.stat(cid)
+    await MockPreloadNode.waitForCids(cid)
   })
 
   it('should preload content added with dag.put', async function () {
@@ -284,7 +300,9 @@ describe('preload', () => {
 
 describe('preload disabled', function () {
   this.timeout(50 * 1000)
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {

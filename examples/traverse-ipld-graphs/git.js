@@ -2,18 +2,26 @@
 
 const createNode = require('./create-node')
 const path = require('path')
-const multihashing = require('multihashing-async')
-const Block = require('ipld-block')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
+const MultihashDigest = require('multiformats/hashes/digest')
 const fs = require('fs').promises
 const uint8ArrayToString = require('uint8arrays/to-string')
+const { convert } = require('ipld-format-to-blockcodec')
+const crypto = require('crypto')
 
 async function main () {
   const ipfs = await createNode({
     ipld: {
-      formats: [
-        require('ipld-git')
-      ]
+      codecs: [
+        convert(require('ipld-git'))
+      ],
+      hashers: [{
+        name: 'sha1',
+        code: 0x11,
+        digest: async (buf) => {
+          return MultihashDigest.create(0x11, crypto.createHash('sha1').update(buf).digest())
+        }
+      }]
     }
   })
 
@@ -34,15 +42,17 @@ async function main () {
 
   await Promise.all(gitObjects.map(async gitObjectsPath => {
     const data = await fs.readFile(gitObjectsPath)
-    const multihash = await multihashing(data, 'sha1')
 
-    const cid = new CID(1, 'git-raw', multihash)
+    const cid = await ipfs.block.put(data, {
+      format: 'git-raw',
+      mhtype: 'sha1',
+      version: 1
+    })
+
     console.log(cid.toString())
-
-    await ipfs.block.put(new Block(data, cid))
   }))
 
-  const v1tag = new CID('z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue')
+  const v1tag = CID.parse('z8mWaGfwSWLMPJ6Q2JdsAjGiXTf61Nbue')
 
   async function logResult (fn, comment) {
     const result = await fn()
@@ -61,6 +71,12 @@ async function main () {
   await logResult(() => ipfs.dag.get(v1tag, { path: '/object/parents/0/message' }), 'Parent of tagged commit:')
   await logResult(() => ipfs.dag.get(v1tag, { path: '/object/tree/src/hash/hello/hash' }), '/src/hello file:')
   await logResult(() => ipfs.dag.get(v1tag, { path: '/object/parents/0/tree/src/hash/hello/hash' }), 'previous version of /src/hello file:')
+
+  await ipfs.stop()
 }
 
 main()
+  .catch(err => {
+    console.error(err)
+    process.exit(1)
+  })

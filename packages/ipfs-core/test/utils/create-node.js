@@ -1,12 +1,15 @@
 'use strict'
 
 const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const IPFS = require('../../')
-const createTempRepo = require('./create-repo-nodejs')
+const { create } = require('../../src')
+const createTempRepo = require('./create-repo')
 
+/**
+ * @param {import('../../src/types').Options} config
+ */
 module.exports = async (config = {}) => {
-  const repo = createTempRepo()
-  const ipfs = await IPFS.create(mergeOptions({
+  const repo = await createTempRepo()
+  const ipfs = await create(mergeOptions({
     silent: true,
     repo,
     config: {
@@ -25,7 +28,6 @@ module.exports = async (config = {}) => {
     repo,
     cleanup: async () => {
       await ipfs.stop()
-      await repo.teardown()
     }
   }
 }

@@ -1,4 +1,6 @@
 import Ipfs from 'ipfs'
+// ipfs is the core API, a CLI and a HTTP server that functions as a HTTP to IPFS bridge
+// and an RPC endpoint. See https://www.npmjs.com/package/ipfs
 import { useEffect, useState } from 'react'
 
 let ipfs = null
@@ -14,44 +16,45 @@ let ipfs = null
  * it to be passed in.
  */
 export default function useIpfsFactory () {
-  const [isIpfsReady, setIpfsReady] = useState(Boolean(ipfs))
-  const [ipfsInitError, setIpfsInitError] = useState(null)
+    // initialise state variables, React hooks
+    const [isIpfsReady, setIpfsReady] = useState(Boolean(ipfs))
+    const [ipfsInitError, setIpfsInitError] = useState(null)
 
-  useEffect(() => {
-    // The fn to useEffect should not return anything other than a cleanup fn,
-    // So it cannot be marked async, which causes it to return a promise,
-    // Hence we delegate to a async fn rather than making the param an async fn.
-    async function startIpfs () {
-      if (ipfs) {
-        console.log('IPFS already started')
-      } else if (window.ipfs && window.ipfs.enable) {
-        console.log('Found window.ipfs')
-        ipfs = await window.ipfs.enable({ commands: ['id'] })
-      } else {
-        try {
-          console.time('IPFS Started')
-          ipfs = await Ipfs.create()
-          console.timeEnd('IPFS Started')
-        } catch (error) {
-          console.error('IPFS init error:', error)
-          ipfs = null
-          setIpfsInitError(error)
+    useEffect(() => {
+        // useEffect -as used here- is equivalent to componentDidMount in old React
+        // The hook useEffect should not return anything other than a cleanup fn,
+        // in addition, in a true life application there are many other context init things
+        // hence in this example we make only a call to an async that initialises IPFS
+        startIpfs()
+        // ... add here any other init fn as required by an application
+        return function cleanup () {
+            if (ipfs && ipfs.stop) {
+                console.log('Stopping IPFS')
+                ipfs.stop().catch(err => console.error(err))
+                ipfs = null
+                setIpfsReady(false)
+            }
         }
-      }
+    }, [])
 
-      setIpfsReady(Boolean(ipfs))
+    async function startIpfs () {
+        // initialise IPFS daemon
+        if (ipfs) {
+            console.log('IPFS already started')
+        } else {
+            try {
+                console.time('IPFS Started')    // start timer
+                ipfs = await Ipfs.create()
+                console.timeEnd('IPFS Started') // stop timer and log duration in console
+            } catch (error) {
+                console.error('IPFS init error:', error)
+                ipfs = null
+                setIpfsInitError(error)
+            }
+        }
+
+        setIpfsReady(Boolean(ipfs))
     }
 
-    startIpfs()
-    return function cleanup () {
-      if (ipfs && ipfs.stop) {
-        console.log('Stopping IPFS')
-        ipfs.stop().catch(err => console.error(err))
-        ipfs = null
-        setIpfsReady(false)
-      }
-    }
-  }, [])
-
-  return { ipfs, isIpfsReady, ipfsInitError }
+    return { ipfs, isIpfsReady, ipfsInitError }
 }

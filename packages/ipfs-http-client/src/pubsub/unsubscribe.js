@@ -1,18 +1,16 @@
 'use strict'
 
-const SubscriptionTracker = require('./subscription-tracker')
-
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
+ * @typedef {import('../types').Options} Options
  */
 
 /**
- * @param {import('../types').Options} config
+ * @param {Options} options
+ * @param {import('./subscription-tracker')} subsTracker
  */
-module.exports = config => {
-  const subsTracker = SubscriptionTracker.singleton()
-
+module.exports = (options, subsTracker) => {
   /**
    * @type {PubsubAPI["unsubscribe"]}
    */

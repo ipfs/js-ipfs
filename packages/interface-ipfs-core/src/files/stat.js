@@ -6,18 +6,21 @@ const { nanoid } = require('nanoid')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
-const CID = require('cids')
-const mh = require('multihashing-async').multihash
-const Block = require('ipld-block')
+const { CID } = require('multiformats/cid')
+const { identity } = require('multiformats/hashes/identity')
 const { randomBytes } = require('iso-random-stream')
 const isShardAtPath = require('../utils/is-shard-at-path')
+const raw = require('multiformats/codecs/raw')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const smallFile = randomBytes(13)
@@ -26,17 +29,18 @@ module.exports = (common, options) => {
   describe('.files.stat', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn({
-        args: common.opts.type === 'go' ? [] : ['--enable-sharding-experiment']
+      ipfs = (await factory.spawn({
+        args: factory.opts.type === 'go' ? [] : ['--enable-sharding-experiment']
       })).api
     })
 
     before(async () => { await ipfs.add(fixtures.smallFile.data) })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('refuses to stat files with an empty path', async () => {
       await expect(ipfs.files.stat('')).to.eventually.be.rejected()
@@ -111,7 +115,7 @@ module.exports = (common, options) => {
       const stats = await ipfs.files.stat(filePath)
       const { value: node } = await ipfs.dag.get(stats.cid)
 
-      expect(node).to.have.nested.property('Links[0].Hash.codec', 'raw')
+      expect(node).to.have.nested.property('Links[0].Hash.code', raw.code)
 
       const child = node.Links[0]
 
@@ -134,7 +138,7 @@ module.exports = (common, options) => {
       const { value: node } = await ipfs.dag.get(stats.cid)
       const child = node.Links[0]
 
-      expect(child.Hash.codec).to.equal('raw')
+      expect(child.Hash.code).to.equal(raw.code)
 
       const dir = `/dir-with-raw-${Math.random()}`
       const path = `${dir}/raw-${Math.random()}`
@@ -165,8 +169,11 @@ module.exports = (common, options) => {
     it('stats an identity CID', async () => {
       const data = uint8ArrayFromString('derp')
       const path = `/test-${nanoid()}/identity.node`
-      const cid = new CID(1, 'identity', mh.encode(data, 'identity'))
-      await ipfs.block.put(new Block(data, cid))
+      const hash = await identity.digest(data)
+      const cid = CID.createV1(identity.code, hash)
+      await ipfs.block.put(data, {
+        mhtype: 'identity'
+      })
       await ipfs.files.cp(`/ipfs/${cid}`, path, {
         parents: true
       })
@@ -219,7 +226,6 @@ module.exports = (common, options) => {
       await ipfs.files.write(`${testDir}/a`, uint8ArrayFromString('Hello, world!'), { create: true })
 
       const stat = await ipfs.files.stat(testDir)
-      stat.cid = stat.cid.toString()
 
       expect(stat).to.include({
         type: 'directory',
@@ -311,9 +317,11 @@ module.exports = (common, options) => {
     // TODO enable this test when this feature gets released on go-ipfs
     it.skip('should stat withLocal file', async function () {
       const stat = await ipfs.files.stat('/test/b', { withLocal: true })
-      stat.cid = stat.cid.toString()
 
-      expect(stat).to.eql({
+      expect({
+        ...stat,
+        cid: stat.cid.toString()
+      }).to.eql({
         type: 'file',
         blocks: 1,
         size: 13,
@@ -328,9 +336,11 @@ module.exports = (common, options) => {
     // TODO enable this test when this feature gets released on go-ipfs
     it.skip('should stat withLocal dir', async function () {
       const stat = await ipfs.files.stat('/test', { withLocal: true })
-      stat.cid = stat.cid.toString()
 
-      expect(stat).to.eql({
+      expect({
+        ...stat,
+        cid: stat.cid.toString()
+      }).to.eql({
         type: 'directory',
         blocks: 2,
         size: 0,
@@ -343,14 +353,16 @@ module.exports = (common, options) => {
     })
 
     it('should stat outside of mfs', async () => {
-      const stat = await ipfs.files.stat('/ipfs/' + fixtures.smallFile.cid)
-      stat.cid = stat.cid.toString()
+      const stat = await ipfs.files.stat(`/ipfs/${fixtures.smallFile.cid}`)
 
-      expect(stat).to.include({
+      expect({
+        ...stat,
+        cid: stat.cid.toString()
+      }).to.include({
         type: 'file',
         blocks: 0,
         size: 12,
-        cid: fixtures.smallFile.cid,
+        cid: fixtures.smallFile.cid.toString(),
         cumulativeSize: 20,
         withLocality: false
       })
@@ -359,10 +371,11 @@ module.exports = (common, options) => {
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

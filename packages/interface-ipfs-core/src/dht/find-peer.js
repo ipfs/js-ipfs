@@ -4,28 +4,37 @@
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dht.findPeer', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let nodeA
+    /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let nodeBId
 
     before(async () => {
-      nodeA = (await common.spawn()).api
-      nodeB = (await common.spawn()).api
-      await nodeB.swarm.connect(nodeA.peerId.addresses[0])
+      nodeA = (await factory.spawn()).api
+      nodeB = (await factory.spawn()).api
+      nodeBId = await nodeB.id()
+
+      await nodeA.swarm.connect(nodeBId.addresses[0])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when finding a peer on the DHT', async () => {
       const nodeBId = await nodeB.id()
@@ -43,7 +52,7 @@ module.exports = (common, options) => {
       const nodeAddresses = nodeBId.addresses.map((addr) => addr.nodeAddress())
       const peerAddresses = res.addrs.map(ma => ma.nodeAddress())
 
-      expect(id).to.be.eql(nodeB.peerId.id)
+      expect(id).to.be.eql(nodeBId.id)
       expect(peerAddresses).to.deep.include(nodeAddresses[0])
     })
 

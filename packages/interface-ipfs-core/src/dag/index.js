@@ -2,10 +2,11 @@
 const { createSuite } = require('../utils/suite')
 
 const tests = {
+  export: require('./export'),
   get: require('./get'),
   put: require('./put'),
-  resolve: require('./resolve'),
-  tree: require('./tree')
+  import: require('./import'),
+  resolve: require('./resolve')
 }
 
 module.exports = createSuite(tests)

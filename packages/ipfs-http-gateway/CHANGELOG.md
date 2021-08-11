@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.5.0...ipfs-http-gateway@0.5.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-http-gateway
+
+
+
+
+
+# [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.4.3...ipfs-http-gateway@0.5.0) (2021-07-27)
+
+
+### Features
+
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+## [0.4.3](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.4.2...ipfs-http-gateway@0.4.3) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-http-gateway
+
+
+
+
+
+## [0.4.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.4.1...ipfs-http-gateway@0.4.2) (2021-06-05)
+
+**Note:** Version bump only for package ipfs-http-gateway
+
+
+
+
+
+## [0.4.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.4.0...ipfs-http-gateway@0.4.1) (2021-05-26)
+
+**Note:** Version bump only for package ipfs-http-gateway
+
+
+
+
+
 # [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.3.2...ipfs-http-gateway@0.4.0) (2021-05-10)
 
 

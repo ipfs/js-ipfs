@@ -9,9 +9,13 @@ const createNode = require('./utils/create-node')
 describe('key exchange', function () {
   this.timeout(20 * 1000)
 
+  /** @type {string} */
   let selfPem
   const passwordPem = nanoid()
+
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {

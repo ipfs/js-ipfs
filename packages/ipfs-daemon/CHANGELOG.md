@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.8.0...ipfs-daemon@0.8.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.7.2...ipfs-daemon@0.8.0) (2021-07-27)
+
+
+### Features
+
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.7.1...ipfs-daemon@0.7.2) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.7.0...ipfs-daemon@0.7.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* move wrtc to optional deps ([#3705](https://github.com/ipfs/js-ipfs/issues/3705)) ([7cf404c](https://github.com/ipfs/js-ipfs/commit/7cf404c8fd11888fa803c6167bd2ec62d94a2b34))
+* stalling subscription on (node) http-client when daemon is stopped ([#3468](https://github.com/ipfs/js-ipfs/issues/3468)) ([0266abf](https://github.com/ipfs/js-ipfs/commit/0266abf0c4b817636172f78c6e91eb4dd5aad451)), closes [#3465](https://github.com/ipfs/js-ipfs/issues/3465)
+
+
+
+
+
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.6.1...ipfs-daemon@0.7.0) (2021-05-26)
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
 ## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.6.0...ipfs-daemon@0.6.1) (2021-05-11)
 
 **Note:** Version bump only for package ipfs-daemon

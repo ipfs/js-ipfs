@@ -6,13 +6,14 @@ const { expect } = require('aegir/utils/chai')
 const blobToIt = require('blob-to-it')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const all = require('it-all')
+const { File } = require('@web-std/file')
 const { Blob, ReadableStream } = globalThis
 const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 
-let normalise = require('../../src/files/normalise-input')
+let { normaliseInput } = require('../../src/files/normalise-input')
 
 if (isBrowser || isWebWorker || isElectronRenderer) {
-  normalise = require('../../src/files/normalise-input/index.browser')
+  normaliseInput = require('../../src/files/normalise-input/index.browser').normaliseInput
 }
 
 const STRING = () => 'hello world'
@@ -45,7 +46,7 @@ async function verifyNormalisation (input) {
 }
 
 async function testContent (input) {
-  const result = await all(normalise(input))
+  const result = await all(normaliseInput(input))
 
   await verifyNormalisation(result)
 }
@@ -171,6 +172,14 @@ describe('normalise-input', function () {
     }
 
     testInputType(BLOB, 'Blob', false)
+  })
+
+  describe('@web-std/file', () => {
+    it('normalizes File input', async () => {
+      const FILE = new File([BUFFER()], 'test-file.txt')
+
+      await testContent(FILE)
+    })
   })
 
   describe('Iterable<Number>', () => {

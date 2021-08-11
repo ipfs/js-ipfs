@@ -4,6 +4,10 @@ const { expect } = require('./mocha')
 const isShardAtPath = require('./is-shard-at-path')
 const last = require('it-last')
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {number} fileCount
+ */
 const createTwoShards = async (ipfs, fileCount) => {
   const dirPath = `/sharded-dir-${Math.random()}`
   const files = new Array(fileCount).fill(0).map((_, index) => ({
@@ -20,18 +24,34 @@ const createTwoShards = async (ipfs, fileCount) => {
   }))
   const nextFile = someFiles.pop()
 
-  const { cid: dirWithAllFiles } = await last(ipfs.addAll(allFiles, {
+  if (!nextFile) {
+    throw new Error('No nextFile found')
+  }
+
+  const res1 = await last(ipfs.addAll(allFiles, {
     // for js-ipfs - go-ipfs shards everything when sharding is turned on
     shardSplitThreshold: files.length - 1,
     preload: false,
     pin: false
   }))
-  const { cid: dirWithSomeFiles } = await last(ipfs.addAll(someFiles, {
+
+  if (!res1) {
+    throw new Error('No result received from ipfs.addAll')
+  }
+
+  const { cid: dirWithAllFiles } = res1
+  const res2 = await last(ipfs.addAll(someFiles, {
     // for js-ipfs - go-ipfs shards everything when sharding is turned on
     shardSplitThreshold: files.length - 1,
     preload: false,
     pin: false
   }))
+
+  if (!res2) {
+    throw new Error('No result received from ipfs.addAll')
+  }
+
+  const { cid: dirWithSomeFiles } = res2
 
   await expect(isShardAtPath(`/ipfs/${dirWithAllFiles}`, ipfs)).to.eventually.be.true()
   await expect(isShardAtPath(`/ipfs/${dirWithSomeFiles}`, ipfs)).to.eventually.be.true()

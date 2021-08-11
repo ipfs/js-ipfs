@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -15,10 +15,12 @@ module.exports = configure(api => {
    * @type {FilesAPI["stat"]}
    */
   async function stat (path, options = {}) {
-    if (path && !CID.isCID(path) && typeof path !== 'string') {
+    if (path && !(path instanceof CID) && typeof path !== 'string') {
       options = path || {}
       path = '/'
     }
+
+    options = options || {}
 
     const res = await api.post('files/stat', {
       timeout: options.timeout,
@@ -41,7 +43,7 @@ module.exports = configure(api => {
  * @param {*} entry
  */
 function toCoreInterface (entry) {
-  entry.cid = new CID(entry.hash)
+  entry.cid = CID.parse(entry.hash)
   delete entry.hash
   return entry
 }

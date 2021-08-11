@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.9.0...ipfs-core@0.9.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* restore default level-js options ([#3779](https://github.com/ipfs/js-ipfs/issues/3779)) ([8380d71](https://github.com/ipfs/js-ipfs/commit/8380d7160e7205bed9cc4aecfc46882bc97d42c3))
+* typo in 'multiformats' type defs ([#3778](https://github.com/ipfs/js-ipfs/issues/3778)) ([1bf35f8](https://github.com/ipfs/js-ipfs/commit/1bf35f8a1622dea1e88bfbd701205df4f96998b1))
+
+
+
+
+
+# [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.8.0...ipfs-core@0.9.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* make "ipfs resolve" cli command recursive by default ([#3707](https://github.com/ipfs/js-ipfs/issues/3707)) ([399ce36](https://github.com/ipfs/js-ipfs/commit/399ce367a1dbc531b52fe228ee4212008c9a1091)), closes [#3692](https://github.com/ipfs/js-ipfs/issues/3692)
+* root datastore extension ([#3768](https://github.com/ipfs/js-ipfs/issues/3768)) ([62311f8](https://github.com/ipfs/js-ipfs/commit/62311f8ffa90ff5d88a23e2da9fabb0841f1b0f5))
+* round bandwidth stats ([#3735](https://github.com/ipfs/js-ipfs/issues/3735)) ([58fb802](https://github.com/ipfs/js-ipfs/commit/58fb802a05f7ea44ef595f118130952176f7190d)), closes [#3726](https://github.com/ipfs/js-ipfs/issues/3726)
+
+
+### Features
+
+* implement dag import/export ([#3728](https://github.com/ipfs/js-ipfs/issues/3728)) ([700765b](https://github.com/ipfs/js-ipfs/commit/700765be2634fa5d2d71d8b87cf68c9cd328d2c4)), closes [#2953](https://github.com/ipfs/js-ipfs/issues/2953) [#2745](https://github.com/ipfs/js-ipfs/issues/2745)
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* resolve is now recursive by default
+
+Co-authored-by: Alex Potsides <alex@achingbrain.net>
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.7.1...ipfs-core@0.8.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* repo auto-migration regression ([#3718](https://github.com/ipfs/js-ipfs/issues/3718)) ([b5470d4](https://github.com/ipfs/js-ipfs/commit/b5470d40ea455069f3f3bd7ab3fb42d7c08926b4)), closes [#3712](https://github.com/ipfs/js-ipfs/issues/3712)
+
+
+### Features
+
+* support v2 ipns signatures ([#3708](https://github.com/ipfs/js-ipfs/issues/3708)) ([ade01d1](https://github.com/ipfs/js-ipfs/commit/ade01d138bb185fda902c0a3f7fa14d5bfd48a5e))
+
+
+
+
+
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.7.0...ipfs-core@0.7.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* stalling subscription on (node) http-client when daemon is stopped ([#3468](https://github.com/ipfs/js-ipfs/issues/3468)) ([0266abf](https://github.com/ipfs/js-ipfs/commit/0266abf0c4b817636172f78c6e91eb4dd5aad451)), closes [#3465](https://github.com/ipfs/js-ipfs/issues/3465)
+
+
+
+
+
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.6.1...ipfs-core@0.7.0) (2021-05-26)
+
+
+### Bug Fixes
+
+* remove optional chaining from code that will be transpiled ([#3698](https://github.com/ipfs/js-ipfs/issues/3698)) ([96b3909](https://github.com/ipfs/js-ipfs/commit/96b39099efb051b7a76f0afc2ff9429997c73971))
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
 ## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.6.0...ipfs-core@0.6.1) (2021-05-11)
 
 

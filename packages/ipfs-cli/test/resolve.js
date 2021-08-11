@@ -2,19 +2,19 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
 
 const defaultOptions = {
-  recursive: false,
-  cidBase: undefined,
+  recursive: true,
+  cidBase: 'base58btc',
   timeout: undefined
 }
 
 describe('resolve', () => {
   let ipfs
-  const cid = new CID('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
+  const cid = CID.parse('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
 
   beforeEach(() => {
     ipfs = {
@@ -31,27 +31,24 @@ describe('resolve', () => {
     expect(out).to.equal(resolved + '\n')
   })
 
-  it('resolves a CID recursively', async () => {
+  it('resolves a CID recursively by default', async () => {
     const resolved = `/ipfs/${cid}`
 
-    ipfs.resolve.withArgs(cid.toString(), {
-      ...defaultOptions,
-      recursive: true
-    }).resolves(resolved)
+    ipfs.resolve.withArgs(cid.toString(), defaultOptions).resolves(resolved)
 
     const out = await cli(`resolve ${cid} --recursive`, { ipfs })
     expect(out).to.equal(resolved + '\n')
   })
 
-  it('resolves a CID recursively (short option)', async () => {
+  it('allows non-recursive lookups with flag', async () => {
     const resolved = `/ipfs/${cid}`
 
     ipfs.resolve.withArgs(cid.toString(), {
       ...defaultOptions,
-      recursive: true
+      recursive: false
     }).resolves(resolved)
 
-    const out = await cli(`resolve ${cid} -r`, { ipfs })
+    const out = await cli(`resolve ${cid} --recursive=false`, { ipfs })
     expect(out).to.equal(resolved + '\n')
   })
 

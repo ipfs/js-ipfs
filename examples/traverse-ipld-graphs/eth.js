@@ -2,17 +2,20 @@
 
 const createNode = require('./create-node')
 const path = require('path')
-const multihashing = require('multihashing-async')
-const Block = require('ipld-block')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const fs = require('fs').promises
 const uint8ArrayToString = require('uint8arrays/to-string')
+const { convert } = require('ipld-format-to-blockcodec')
+const { keccak256 } = require('@multiformats/sha3')
 
 async function main () {
   const ipfs = await createNode({
     ipld: {
-      formats: [
-        ...Object.values(require('ipld-ethereum'))
+      codecs: [
+        ...Object.values(require('ipld-ethereum')).map(format => convert(format))
+      ],
+      hashers: [
+        keccak256
       ]
     }
   })
@@ -26,16 +29,18 @@ async function main () {
 
   for (const ethBlockPath of ethBlocks) {
     const data = await fs.readFile(ethBlockPath)
-    const multihash = await multihashing(data, 'keccak-256')
 
-    const cid = new CID(1, 'eth-block', multihash)
-    // console.log(cid.toBaseEncodedString())
+    const cid = await ipfs.block.put(data, {
+      format: 'eth-block',
+      mhtype: 'keccak-256',
+      version: 1
+    })
 
-    await ipfs.block.put(new Block(data, cid))
+    console.log(cid.toString())
   }
 
-  const block302516 = new CID('z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA')
-  const block302517 = new CID('z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj')
+  const block302516 = CID.parse('z43AaGEywSDX5PUJcrn5GfZmb6FjisJyR7uahhWPk456f7k7LDA')
+  const block302517 = CID.parse('z43AaGF42R2DXsU65bNnHRCypLPr9sg6D7CUws5raiqATVaB1jj')
   let res
 
   res = await ipfs.dag.get(block302516, { path: 'number' })
@@ -43,6 +48,12 @@ async function main () {
 
   res = await ipfs.dag.get(block302517, { path: 'parent/number' })
   console.log(uint8ArrayToString(res.value, 'base16'))
+
+  await ipfs.stop()
 }
 
 main()
+  .catch(err => {
+    console.error(err)
+    process.exit(1)
+  })

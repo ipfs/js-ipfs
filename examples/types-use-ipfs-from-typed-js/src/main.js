@@ -1,7 +1,7 @@
 const { create } = require('ipfs')
 /**
  * @typedef {import('ipfs').IPFS} IPFS
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  */
 
 async function main () {
@@ -17,7 +17,7 @@ async function main () {
 
   console.log('Added file:', file.path, file.cid.toString())
   try {
-    // @ts-expect-error CID has no toUpperCase method 
+    // @ts-expect-error CID has no toUpperCase method
     file.cid.toUpperCase()
   } catch(error) {
 

@@ -1,7 +1,5 @@
 'use strict'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
 const { default: parseDuration } = require('parse-duration')
 const {
   makeEntriesPrintable
@@ -30,7 +28,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -44,20 +42,21 @@ module.exports = {
    * @param {string[]} argv.ipfsPath
    * @param {'direct' | 'indirect' | 'recursive' | 'all'} argv.type
    * @param {boolean} argv.quiet
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, ipfsPath, type, quiet, cidBase, timeout }) {
+    const base = await ipfs.bases.getBase(cidBase)
     /**
      * @param {import('ipfs-core-types/src/pin').LsResult} res
      */
     const printPin = res => {
-      let line = cidToString(res.cid, { base: cidBase })
+      let line = res.cid.toString(base.encoder)
       if (!quiet) {
         line += ` ${res.type}`
 
         if (res.metadata) {
-          line += ` ${JSON.stringify(makeEntriesPrintable(res.metadata))}`
+          line += ` ${JSON.stringify(makeEntriesPrintable(res.metadata, base))}`
         }
       }
       print(line)

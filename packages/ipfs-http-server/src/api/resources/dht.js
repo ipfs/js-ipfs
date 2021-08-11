@@ -3,18 +3,8 @@
 const Joi = require('../../utils/joi')
 const Boom = require('@hapi/boom')
 const { pipe } = require('it-pipe')
-// @ts-ignore no types
-const ndjson = require('iterable-ndjson')
-// @ts-ignore no types
-const toStream = require('it-to-stream')
-const { map } = require('streaming-iterables')
-const { PassThrough } = require('stream')
-// @ts-ignore no types
-const toIterable = require('stream-to-it')
-const debug = require('debug')
-const log = Object.assign(debug('ipfs:http-api:dht'), {
-  error: debug('ipfs:http-api:dht:error')
-})
+const map = require('it-map')
+const streamResponse = require('../../utils/stream-response')
 
 exports.findPeer = {
   options: {
@@ -24,7 +14,7 @@ exports.findPeer = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peerId: Joi.cid().required(),
+        peerId: Joi.string().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -123,51 +113,26 @@ exports.findProvs = {
       }
     } = request
 
-    let providersFound = false
-    const output = new PassThrough()
-
-    pipe(
-      ipfs.dht.findProvs(cid, {
-        numProviders,
-        signal,
-        timeout
-      }),
-      map(({ id, addrs }) => {
-        providersFound = true
-
-        return {
-          Responses: [{
-            ID: id.toString(),
-            Addrs: (addrs || []).map((/** @type {import('multiaddr').Multiaddr} */ a) => a.toString())
-          }],
-          Type: 4
-        }
-      }),
-      ndjson.stringify,
-      toIterable.sink(output)
-    )
-      .catch((/** @type {Error} */ err) => {
-        log.error(err)
-
-        if (!providersFound && output.writable) {
-          output.write(' ')
-        }
-
-        request.raw.res.addTrailers({
-          'X-Stream-Error': JSON.stringify({
-            Message: err.message,
-            Code: 0
+    return streamResponse(request, h, () => {
+      return pipe(
+        ipfs.dht.findProvs(cid, {
+          numProviders,
+          signal,
+          timeout
+        }),
+        async function * (source) {
+          yield * map(source, ({ id, addrs }) => {
+            return {
+              Responses: [{
+                ID: id.toString(),
+                Addrs: (addrs || []).map(a => a.toString())
+              }],
+              Type: 4
+            }
           })
-        })
-      })
-      .finally(() => {
-        output.end()
-      })
-
-    return h.response(output)
-      .header('x-chunked-output', '1')
-      .header('content-type', 'application/json')
-      .header('Trailer', 'X-Stream-Error')
+        }
+      )
+    })
   }
 }
 
@@ -322,7 +287,7 @@ exports.query = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peerId: Joi.cid().required(),
+        peerId: Joi.string().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -352,17 +317,16 @@ exports.query = {
       }
     } = request
 
-    const response = toStream.readable(
-      pipe(
+    return streamResponse(request, h, () => {
+      return pipe(
         ipfs.dht.query(peerId, {
           signal,
           timeout
         }),
-        map(({ id }) => ({ ID: id.toString() })),
-        ndjson.stringify
+        async function * (source) {
+          yield * map(source, ({ id }) => ({ ID: id.toString() }))
+        }
       )
-    )
-
-    return h.response(response)
+    })
   }
 }

@@ -2,10 +2,17 @@
 
 const { expect } = require('../utils/mocha')
 
+/**
+ * @param {any} n
+ */
 const isBigInt = (n) => {
   return typeof n === 'bigint'
 }
 
+/**
+ * @param {Error | null} err
+ * @param {import('ipfs-core-types/src/bitswap').Stats} stats
+ */
 exports.expectIsBitswap = (err, stats) => {
   expect(err).to.not.exist()
   expect(stats).to.exist()
@@ -30,6 +37,10 @@ exports.expectIsBitswap = (err, stats) => {
   expect(isBigInt(stats.dupDataReceived)).to.eql(true)
 }
 
+/**
+ * @param {Error | null} err
+ * @param {import('ipfs-core-types/src/stats').BWResult} stats
+ */
 exports.expectIsBandwidth = (err, stats) => {
   expect(err).to.not.exist()
   expect(stats).to.exist()
@@ -39,10 +50,14 @@ exports.expectIsBandwidth = (err, stats) => {
   expect(stats).to.have.a.property('rateOut')
   expect(isBigInt(stats.totalIn)).to.eql(true)
   expect(isBigInt(stats.totalOut)).to.eql(true)
-  expect(isBigInt(stats.rateIn)).to.eql(true)
-  expect(isBigInt(stats.rateOut)).to.eql(true)
+  expect(stats.rateIn).to.be.a('number')
+  expect(stats.rateOut).to.be.a('number')
 }
 
+/**
+ * @param {Error | null} err
+ * @param {import('ipfs-core-types/src/repo').StatResult} res
+ */
 exports.expectIsRepo = (err, res) => {
   expect(err).to.not.exist()
   expect(res).to.exist()

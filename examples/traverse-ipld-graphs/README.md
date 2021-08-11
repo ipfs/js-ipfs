@@ -50,8 +50,6 @@ See [ipld/interface-ipld-format](https://github.com/ipld/interface-ipld-format) 
 
 ## [resolve through graphs of different kind](./get-path-accross-formats.js)
 
-## [explore a graph with the .tree](./tree.js)
-
 ## [traverse through a slice of the ethereum blockchain](./eth.js)
 
 ## [traverse through a git repo](./git.js)

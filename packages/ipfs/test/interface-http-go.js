@@ -94,12 +94,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ]
   })
 
-  tests.block(commonFactory, {
-    skip: [{
-      name: 'should get a block added as CIDv1 with a CIDv0',
-      reason: 'go-ipfs does not support the `version` param'
-    }]
-  })
+  tests.block(commonFactory)
 
   tests.bootstrap(commonFactory)
 
@@ -123,11 +118,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
 
   tests.dag(commonFactory, {
     skip: [
-      // dag.tree
-      {
-        name: 'tree',
-        reason: 'TODO vmx 2018-02-22: Currently the tree API is not exposed in go-ipfs'
-      },
       // dag.get:
       {
         name: 'should get a dag-pb node local value',
@@ -524,14 +514,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ipfsOptions: {
       offline: true
     }
-  }), {
-    skip: [
-      {
-        name: 'should resolve a record from peerid as cidv1 in base32',
-        reason: 'TODO not implemented in go-ipfs yet: https://github.com/ipfs/go-ipfs/issues/5287'
-      }
-    ]
-  })
+  }))
 
   tests.namePubsub(factory({
     type: 'go',

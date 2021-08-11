@@ -1,5 +1,5 @@
 {
-  "name": "skipped-example-custom-ipld-formats",
+  "name": "example-custom-ipld-formats",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -11,12 +11,11 @@
     "test-ipfs-example": "^3.0.0"
   },
   "dependencies": {
-    "cids": "^1.1.6",
-    "ipfs-daemon": "^0.6.1",
-    "ipfs-core": "^0.6.1",
-    "ipfs-http-client": "^50.0.0",
-    "multicodec": "^3.0.1",
-    "multihashing-async": "^2.1.2",
-    "uint8arrays": "^2.1.3"
+    "dag-jose": "^1.0.0",
+    "ipfs-daemon": "^0.8.1",
+    "ipfs-core": "^0.9.1",
+    "ipfs-http-client": "^51.0.1",
+    "multiformats": "^9.4.1",
+    "uint8arrays": "^2.1.6"
   }
 }

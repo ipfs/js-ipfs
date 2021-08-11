@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const errCode = require('err-code')
 
 const IPFS_PREFIX = '/ipfs/'
@@ -12,13 +12,13 @@ const IPFS_PREFIX = '/ipfs/'
 const toCidAndPath = (string) => {
   if (string instanceof Uint8Array) {
     try {
-      string = new CID(string)
+      string = CID.decode(string)
     } catch (err) {
       throw errCode(err, 'ERR_INVALID_CID')
     }
   }
 
-  if (CID.isCID(string)) {
+  if (string instanceof CID) {
     return {
       cid: string,
       path: undefined
@@ -34,7 +34,7 @@ const toCidAndPath = (string) => {
   let path
 
   try {
-    cid = new CID(/** @type {string} */(parts.shift()))
+    cid = CID.parse(parts.shift() || '')
   } catch (err) {
     throw errCode(err, 'ERR_INVALID_CID')
   }

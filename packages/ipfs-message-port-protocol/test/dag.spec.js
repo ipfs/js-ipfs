@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeNode } = require('../src/dag')
 const { expect } = require('aegir/utils/chai')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -12,10 +12,10 @@ describe('dag', function () {
 
   describe('encodeNode / decodeNode', () => {
     it('shoud encode node', () => {
-      const cid1 = new CID(
+      const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid2 = CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
       const dagNode = {
         hi: 'hello',
         link: cid1,
@@ -36,10 +36,10 @@ describe('dag', function () {
     })
 
     it('shoud encode and add buffers to transfer list', () => {
-      const cid1 = new CID(
+      const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid2 = CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
 
       const hi = uint8ArrayFromString('hello world')
       const dagNode = {
@@ -67,16 +67,16 @@ describe('dag', function () {
 
       expect(transfer).to.be.an.instanceOf(Array)
       expect(transfer).to.have.property('length', 3)
-      expect(transfer).to.include(cid1.multihash.buffer)
-      expect(transfer).to.include(cid2.multihash.buffer)
+      expect(transfer).to.include(cid1.multihash.bytes.buffer)
+      expect(transfer).to.include(cid2.multihash.bytes.buffer)
       expect(transfer).to.include(hi.buffer)
     })
 
     it('shoud decode node', () => {
-      const cid1 = new CID(
+      const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid2 = CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
 
       const hi = uint8ArrayFromString('hello world')
       const dagNode = {
@@ -104,8 +104,8 @@ describe('dag', function () {
 
       expect(transfer).to.be.an.instanceOf(Array)
       expect(transfer).to.have.property('length', 3)
-      expect(transfer).to.include(cid1.multihash.buffer)
-      expect(transfer).to.include(cid2.multihash.buffer)
+      expect(transfer).to.include(cid1.multihash.bytes.buffer)
+      expect(transfer).to.include(cid2.multihash.bytes.buffer)
       expect(transfer).to.include(hi.buffer)
     })
   })

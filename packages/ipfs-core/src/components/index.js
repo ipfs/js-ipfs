@@ -1,11 +1,15 @@
 'use strict'
 
-const { mergeOptions } = require('../utils')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const { isTest } = require('ipfs-utils/src/env')
 const log = require('debug')('ipfs')
 const errCode = require('err-code')
-const { DAGNode } = require('ipld-dag-pb')
 const { UnixFS } = require('ipfs-unixfs')
+const dagPb = require('@ipld/dag-pb')
+const dagCbor = require('@ipld/dag-cbor')
+const { identity } = require('multiformats/hashes/identity')
+const { bases, hashes, codecs } = require('multiformats/basics')
+
 const initAssets = require('../runtime/init-assets-nodejs')
 const { AlreadyInitializedError } = require('../errors')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -28,7 +32,6 @@ const createVersionAPI = require('./version')
 const createIDAPI = require('./id')
 const createConfigAPI = require('./config')
 const DagAPI = require('./dag')
-const PinManagerAPI = require('./pin/pin-manager')
 const createPreloadAPI = require('../preload')
 const createMfsPreloadAPI = require('../mfs-preload')
 const createFilesAPI = require('./files')
@@ -36,21 +39,24 @@ const KeyAPI = require('./key')
 const ObjectAPI = require('./object')
 const RepoAPI = require('./repo')
 const StatsAPI = require('./stats')
-const BlockService = require('ipfs-block-service')
-const createIPLD = require('./ipld')
 const Storage = require('./storage')
 const Network = require('./network')
 const Service = require('../utils/service')
 const SwarmAPI = require('./swarm')
-const createGCLockAPI = require('./gc-lock')
 const createPingAPI = require('./ping')
 const createDHTAPI = require('./dht')
 const createPubSubAPI = require('./pubsub')
+const Multicodecs = require('ipfs-core-utils/src/multicodecs')
+const Multihashes = require('ipfs-core-utils/src/multihashes')
+const Multibases = require('ipfs-core-utils/src/multibases')
 
 /**
  * @typedef {import('../types').Options} Options
  * @typedef {import('../types').Print} Print
  * @typedef {import('./storage')} StorageAPI
+ * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ * @typedef {import('multiformats/bases/interface').MultibaseCodec<any>} MultibaseCodec
  */
 
 class IPFS {
@@ -58,59 +64,71 @@ class IPFS {
    * @param {Object} config
    * @param {Print} config.print
    * @param {StorageAPI} config.storage
+   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
    * @param {Options} config.options
    */
-  constructor ({ print, storage, options }) {
+  constructor ({ print, storage, codecs, options }) {
     const { peerId, repo, keychain } = storage
     const network = Service.create(Network)
 
     const preload = createPreloadAPI(options.preload)
 
-    const blockService = new BlockService(storage.repo)
-    const ipld = createIPLD({ blockService, options: options.ipld })
-
-    const gcLock = createGCLockAPI({
-      path: repo.path,
-      repoOwner: options.repoOwner
-    })
     const dns = createDNSAPI()
     const isOnline = createIsOnlineAPI({ network })
     // @ts-ignore This type check fails as options.
     // libp2p can be a function, while IPNS router config expects libp2p config
     const ipns = new IPNSAPI(options)
 
+    /** @type {MultihashHasher[]} */
+    const multihashHashers = Object.values(hashes);
+
+    (options.ipld && options.ipld.hashers ? options.ipld.hashers : []).forEach(hasher => multihashHashers.push(hasher))
+
+    this.hashers = new Multihashes({
+      hashers: multihashHashers,
+      loadHasher: options.ipld && options.ipld.loadHasher
+    })
+
+    /** @type {MultibaseCodec[]} */
+    const multibaseCodecs = Object.values(bases);
+
+    (options.ipld && options.ipld.bases ? options.ipld.bases : []).forEach(base => multibaseCodecs.push(base))
+
+    this.bases = new Multibases({
+      bases: multibaseCodecs,
+      loadBase: options.ipld && options.ipld.loadBase
+    })
+
+    const pin = new PinAPI({ repo, codecs })
+    const block = new BlockAPI({ codecs, hashers: this.hashers, preload, repo })
+
     const name = new NameAPI({
       dns,
       ipns,
-      ipld,
+      repo,
+      codecs,
       peerId,
       isOnline,
       keychain,
       options
     })
-    const resolve = createResolveAPI({ ipld, name })
-    const pinManager = new PinManagerAPI({ repo, ipld })
-    const pin = new PinAPI({ gcLock, pinManager, ipld })
-    const block = new BlockAPI({ blockService, preload, gcLock, pinManager, pin })
-    const dag = new DagAPI({ ipld, preload, gcLock, pin })
-    const refs = Object.assign(createRefsAPI({ ipld, resolve, preload }), {
+
+    const resolve = createResolveAPI({ repo, codecs, bases: this.bases, name })
+
+    const dag = new DagAPI({ repo, codecs, hashers: this.hashers, preload })
+    const refs = Object.assign(createRefsAPI({ repo, codecs, resolve, preload }), {
       local: createRefsLocalAPI({ repo: storage.repo })
     })
     const { add, addAll, cat, get, ls } = new RootAPI({
-      gcLock,
       preload,
-      pin,
-      block,
-      ipld,
+      repo,
       options: options.EXPERIMENTAL
     })
 
     const files = createFilesAPI({
-      ipld,
-      block,
-      blockService,
       repo,
       preload,
+      hashers: this.hashers,
       options
     })
 
@@ -122,7 +140,6 @@ class IPFS {
 
     this.preload = preload
     this.name = name
-    this.ipld = ipld
     this.ipns = ipns
     this.pin = pin
     this.resolve = resolve
@@ -133,7 +150,6 @@ class IPFS {
       network,
       peerId,
       repo,
-      blockService,
       preload,
       ipns,
       mfsPreload,
@@ -146,7 +162,6 @@ class IPFS {
       network,
       preload,
       mfsPreload,
-      blockService,
       ipns,
       repo
     })
@@ -171,8 +186,8 @@ class IPFS {
     this.dag = dag
     this.files = files
     this.key = new KeyAPI({ keychain })
-    this.object = new ObjectAPI({ ipld, preload, gcLock })
-    this.repo = new RepoAPI({ gcLock, pin, repo, refs })
+    this.object = new ObjectAPI({ preload, codecs, repo })
+    this.repo = new RepoAPI({ repo, hashers: this.hashers })
     this.stats = new StatsAPI({ repo, network })
     this.swarm = new SwarmAPI({ network })
 
@@ -199,6 +214,8 @@ class IPFS {
       tail: notImplementedIter
     }
     this.mount = notImplemented
+
+    this.codecs = codecs
   }
 
   /**
@@ -218,14 +235,35 @@ class IPFS {
     options = mergeOptions(getDefaultOptions(), options)
     const initOptions = options.init || {}
 
+    /**
+     * @type {BlockCodec}
+     */
+    const id = {
+      name: identity.name,
+      code: identity.code,
+      encode: (id) => id,
+      decode: (id) => id
+    }
+
+    /** @type {BlockCodec[]} */
+    const blockCodecs = Object.values(codecs);
+
+    [dagPb, dagCbor, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
+
+    const multicodecs = new Multicodecs({
+      codecs: blockCodecs,
+      loadCodec: options.ipld && options.ipld.loadCodec
+    })
+
     // eslint-disable-next-line no-console
     const print = options.silent ? log : console.log
-    const storage = await Storage.start(print, options)
+    const storage = await Storage.start(print, multicodecs, options)
     const config = await storage.repo.config.getAll()
 
     const ipfs = new IPFS({
       storage,
       print,
+      codecs: multicodecs,
       options: { ...options, config }
     })
 
@@ -258,12 +296,14 @@ module.exports = IPFS
  * @param {IPFS} ipfs
  */
 const addEmptyDir = async (ipfs) => {
-  const node = new DAGNode(new UnixFS({ type: 'directory' }).marshal())
-  const cid = await ipfs.dag.put(node, {
-    version: 0,
-    format: 'dag-pb',
-    hashAlg: 'sha2-256',
-    preload: false
+  const buf = dagPb.encode({
+    Data: new UnixFS({ type: 'directory' }).marshal(),
+    Links: []
+  })
+
+  const cid = await ipfs.block.put(buf, {
+    mhtype: 'sha2-256',
+    format: 'dag-pb'
   })
 
   await ipfs.pin.add(cid)

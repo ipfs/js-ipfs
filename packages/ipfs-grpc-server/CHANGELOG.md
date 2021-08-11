@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.4.0...ipfs-grpc-server@0.4.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-grpc-server
+
+
+
+
+
+# [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.3.4...ipfs-grpc-server@0.4.0) (2021-07-27)
+
+
+### Features
+
+* implement dag import/export ([#3728](https://github.com/ipfs/js-ipfs/issues/3728)) ([700765b](https://github.com/ipfs/js-ipfs/commit/700765be2634fa5d2d71d8b87cf68c9cd328d2c4)), closes [#2953](https://github.com/ipfs/js-ipfs/issues/2953) [#2745](https://github.com/ipfs/js-ipfs/issues/2745)
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+## [0.3.4](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.3.3...ipfs-grpc-server@0.3.4) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-grpc-server
+
+
+
+
+
+## [0.3.3](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.3.2...ipfs-grpc-server@0.3.3) (2021-06-05)
+
+**Note:** Version bump only for package ipfs-grpc-server
+
+
+
+
+
+## [0.3.2](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.3.1...ipfs-grpc-server@0.3.2) (2021-05-26)
+
+**Note:** Version bump only for package ipfs-grpc-server
+
+
+
+
+
 ## [0.3.1](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.3.0...ipfs-grpc-server@0.3.1) (2021-05-11)
 
 **Note:** Version bump only for package ipfs-grpc-server

@@ -21,8 +21,8 @@ module.exports = configure(api => {
       transform: (stats) => ({
         totalIn: BigInt(stats.TotalIn),
         totalOut: BigInt(stats.TotalOut),
-        rateIn: BigInt(stats.RateIn),
-        rateOut: BigInt(stats.RateOut)
+        rateIn: parseFloat(stats.RateIn),
+        rateOut: parseFloat(stats.RateOut)
       })
     })
 

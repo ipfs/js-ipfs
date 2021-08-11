@@ -6,16 +6,19 @@ const { waitForWantlistKey, waitForWantlistKeyToBeRemoved } = require('./utils')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const testTimeout = require('../utils/test-timeout')
 const { AbortController } = require('native-abort-controller')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const delay = require('delay')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
@@ -23,21 +26,25 @@ module.exports = (common, options) => {
   describe('.bitswap.wantlist', function () {
     this.timeout(60 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsA
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsB
     const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
     before(async () => {
-      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB
-      ipfsB.block.get(key).catch(() => { /* is ok, expected on teardown */ })
+      ipfsB.block.get(CID.parse(key)).catch(() => { /* is ok, expected on teardown */ })
 
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      const ipfsBId = await ipfsB.id()
+
+      await ipfsA.swarm.connect(ipfsBId.addresses[0])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when getting bitswap wantlist', () => {
       return testTimeout(() => ipfsA.bitswap.wantlist({
@@ -50,7 +57,7 @@ module.exports = (common, options) => {
     })
 
     it('should not get the wantlist when offline', async () => {
-      const node = await common.spawn()
+      const node = await factory.spawn()
       await node.stop()
 
       return expect(node.api.bitswap.stat()).to.eventually.be.rejected()
@@ -58,7 +65,7 @@ module.exports = (common, options) => {
 
     it('should remove blocks from the wantlist when requests are cancelled', async () => {
       const controller = new AbortController()
-      const cid = new CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KaGa')
+      const cid = CID.parse('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KaGa')
 
       const getPromise = ipfsA.dag.get(cid, {
         signal: controller.signal
@@ -76,7 +83,7 @@ module.exports = (common, options) => {
     it('should keep blocks in the wantlist when only one request is cancelled', async () => {
       const controller = new AbortController()
       const otherController = new AbortController()
-      const cid = new CID('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1Kaaa')
+      const cid = CID.parse('QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1Kaaa')
 
       const getPromise = ipfsA.dag.get(cid, {
         signal: controller.signal
