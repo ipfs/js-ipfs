@@ -13,8 +13,9 @@ module.exports = {
   builder: {
     type: {
       alias: 't',
-      describe: 'type of the key to create [rsa, ed25519].',
-      default: 'rsa'
+      describe: 'type of the key to create',
+      choices: ['rsa', 'ed25519'],
+      default: 'ed25519'
     },
     size: {
       alias: 's',

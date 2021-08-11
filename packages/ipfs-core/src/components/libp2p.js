@@ -13,8 +13,15 @@ const { Multiaddr } = require('multiaddr')
 const pkgversion = require('../../package.json').version
 
 /**
+ * @typedef {object} DekOptions
+ * @property {string} hash
+ * @property {string} salt
+ * @property {number} iterationCount
+ * @property {number} keyLength
+ *
  * @typedef {Object} KeychainConfig
  * @property {string} [pass]
+ * @property {DekOptions} [dek]
  *
  * @typedef {import('ipfs-repo').IPFSRepo} Repo
  * @typedef {import('peer-id')} PeerId
