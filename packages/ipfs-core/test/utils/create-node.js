@@ -8,7 +8,18 @@ const createTempRepo = require('./create-repo')
  * @param {import('../../src/types').Options} config
  */
 module.exports = async (config = {}) => {
-  const repo = await createTempRepo()
+  let repo
+
+  if (config.repo) {
+    if (typeof config.repo === 'string') {
+      repo = await createTempRepo({ path: config.repo })
+    } else {
+      repo = config.repo
+    }
+  } else {
+    repo = await createTempRepo()
+  }
+
   const ipfs = await create(mergeOptions({
     silent: true,
     repo,

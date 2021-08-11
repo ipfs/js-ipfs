@@ -130,6 +130,19 @@ const initRepo = async (print, repo, options) => {
 
   log('repo opened')
 
+  /** @type {import('./libp2p').KeychainConfig} */
+  const keychainConfig = {
+    pass: options.pass
+  }
+
+  try {
+    keychainConfig.dek = await repo.config.get('Keychain.DEK')
+  } catch (err) {
+    if (err.code !== 'ERR_NOT_FOUND') {
+      throw err
+    }
+  }
+
   // Create libp2p for Keychain creation
   const libp2p = await createLibP2P({
     options: undefined,
@@ -137,16 +150,14 @@ const initRepo = async (print, repo, options) => {
     peerId,
     repo,
     config,
-    keychainConfig: {
-      pass: options.pass
-    }
+    keychainConfig
   })
 
   if (libp2p.keychain && libp2p.keychain.opts) {
     await libp2p.loadKeychain()
 
     await repo.config.set('Keychain', {
-      dek: libp2p.keychain.opts.dek
+      DEK: libp2p.keychain.opts.dek
     })
   }
 

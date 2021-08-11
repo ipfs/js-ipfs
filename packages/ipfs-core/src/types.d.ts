@@ -84,7 +84,7 @@ export interface Options {
 
   /**
    * Occasionally a repo migration is necessary - pass true here to to this automatically at startup
-   * when a new version of IPFS is being run for the first time and a migration is necssary, otherwise
+   * when a new version of IPFS is being run for the first time and a migration is necessary, otherwise
    * the node will refuse to start
    */
   repoAutoMigrate?: boolean

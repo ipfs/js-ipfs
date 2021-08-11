@@ -24,11 +24,11 @@ describe('init', function () {
   let cleanup
 
   /**
-   * @param {import('../src/types').InitOptions} options
+   * @param {import('../src/types').Options} [options]
    */
   const init = async (options) => {
     const res = await createNode({
-      init: options,
+      ...options,
       start: false
     })
 
@@ -41,33 +41,63 @@ describe('init', function () {
   afterEach(() => cleanup())
 
   it('should init successfully', async () => {
-    await init({ bits: 512 })
+    await init()
 
     const res = await repo.exists()
     expect(res).to.equal(true)
 
     const config = await repo.config.getAll()
 
-    expect(config.Identity).to.exist()
-    expect(config.Keychain).to.exist()
+    expect(config).to.have.property('Identity')
+    expect(config).to.have.nested.property('Keychain.DEK')
   })
 
   it('should init successfully with a keychain pass', async () => {
-    await init({ bits: 512 })
+    await init({
+      pass: 'super-super-secure-1234',
+      init: {
+        algorithm: 'RSA',
+        bits: 512
+      }
+    })
 
     const res = await repo.exists()
     expect(res).to.equal(true)
 
     const config = await repo.config.getAll()
-
     expect(config.Keychain).to.exist()
 
+    const { ipfs: ipfs2, repo: repo2 } = await createNode({
+      repo: repo,
+      pass: 'something-else-that-is-long-enough',
+      start: false,
+      init: {
+        algorithm: 'RSA',
+        bits: 512
+      }
+    })
+
+    // same repo, same peer id
+    expect(repo.path).to.equal(repo2.path)
+    expect(await ipfs2.id()).to.deep.equal(await ipfs.id())
+
+    // opened with correct password
+    await expect(ipfs.key.export('self', 'some-other-password')).to.eventually.be.ok()
+
+    // opened with incorrect password
+    await expect(ipfs2.key.export('self', 'some-other-password')).to.eventually.be.rejected()
+  })
+
+  it('should init with a key algorithm (RSA)', async () => {
+    await init({ init: { algorithm: 'RSA' } })
+
+    const config = await repo.config.getAll()
     const peerId = await PeerId.createFromPrivKey(`${config.Identity?.PrivKey}`)
     expect(peerId.privKey).is.instanceOf(supportedKeys.rsa.RsaPrivateKey)
   })
 
   it('should init with a key algorithm (Ed25519)', async () => {
-    await init({ algorithm: 'Ed25519' })
+    await init({ init: { algorithm: 'Ed25519' } })
 
     const config = await repo.config.getAll()
     const peerId = await PeerId.createFromPrivKey(`${config.Identity?.PrivKey}`)
@@ -75,7 +105,7 @@ describe('init', function () {
   })
 
   it('should init with a key algorithm (secp256k1)', async () => {
-    await init({ algorithm: 'secp256k1' })
+    await init({ init: { algorithm: 'secp256k1' } })
 
     const config = await repo.config.getAll()
     const peerId = await PeerId.createFromPrivKey(`${config.Identity?.PrivKey}`)
@@ -85,35 +115,40 @@ describe('init', function () {
   it('should set # of bits in key', async function () {
     this.timeout(120 * 1000)
 
-    await init({ bits: 1024 })
+    await init({
+      init: {
+        algorithm: 'RSA',
+        bits: 1024
+      }
+    })
 
     const config = await repo.config.getAll()
     expect(config.Identity?.PrivKey.length).is.above(256)
   })
 
   it('should allow a pregenerated key to be used', async () => {
-    await init({ privateKey })
+    await init({ init: { privateKey } })
 
     const config = await repo.config.getAll()
     expect(config.Identity?.PeerID).is.equal('QmRsooYQasV5f5r834NSpdUtmejdQcpxXkK6qsozZWEihC')
   })
 
   it('should allow a pregenerated ed25519 key to be used', async () => {
-    await init({ privateKey: edPrivateKey })
+    await init({ init: { privateKey: edPrivateKey } })
 
     const config = await repo.config.getAll()
     expect(config.Identity?.PeerID).is.equal('12D3KooWRm8J3iL796zPFi2EtGGtUJn58AG67gcqzMFHZnnsTzqD')
   })
 
   it('should allow a pregenerated secp256k1 key to be used', async () => {
-    await init({ privateKey: secpPrivateKey })
+    await init({ init: { privateKey: secpPrivateKey } })
 
     const config = await repo.config.getAll()
     expect(config.Identity?.PeerID).is.equal('16Uiu2HAm5qw8UyXP2RLxQUx5KvtSN8DsTKz8quRGqGNC3SYiaB8E')
   })
 
   it('should write init docs', async () => {
-    await init({ bits: 512 })
+    await init()
     const multihash = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
 
     const node = await ipfs.object.get(multihash, { enc: 'base58' })
@@ -121,7 +156,7 @@ describe('init', function () {
   })
 
   it('should allow init with an empty repo', async () => {
-    await init({ bits: 512, emptyRepo: true })
+    await init({ init: { emptyRepo: true } })
 
     // Should not have default assets
     const multihash = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
@@ -129,14 +164,14 @@ describe('init', function () {
   })
 
   it('should apply one profile', async () => {
-    await init({ bits: 512, profiles: ['test'] })
+    await init({ init: { profiles: ['test'] } })
 
     const config = await repo.config.getAll()
     expect(config.Bootstrap).to.be.empty()
   })
 
   it('should apply multiple profiles', async () => {
-    await init({ bits: 512, profiles: ['test', 'local-discovery'] })
+    await init({ init: { profiles: ['test', 'local-discovery'] } })
 
     const config = await repo.config.getAll()
     expect(config.Bootstrap).to.be.empty()

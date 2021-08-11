@@ -98,7 +98,10 @@ describe('create node', function () {
   it('should throw on boot error', () => {
     return expect(IPFS.create({
       repo: tempRepo,
-      init: { bits: 256 }, // Too few bits will cause error on boot
+      init: {
+        algorithm: 'RSA',
+        bits: 256
+      }, // Too few bits will cause error on boot
       config: { Addresses: { Swarm: [] } }
     })).to.eventually.be.rejected()
   })
@@ -109,6 +112,7 @@ describe('create node', function () {
     const node = await IPFS.create({
       repo: tempRepo,
       init: {
+        algorithm: 'RSA',
         bits: 1024
       },
       config: {
