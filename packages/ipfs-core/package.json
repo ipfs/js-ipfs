@@ -82,7 +82,7 @@
     "ipfs-unixfs-exporter": "^6.0.2",
     "ipfs-unixfs-importer": "^8.0.2",
     "ipfs-utils": "^8.1.4",
-    "ipns": "ipfs/js-ipns#fix/cbor-keys-should-be-pascal-case",
+    "ipns": "^0.13.3",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^6.0.1",
     "it-all": "^1.0.4",
