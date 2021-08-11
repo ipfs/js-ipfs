@@ -1,6 +1,7 @@
 'use strict'
 
 const configure = require('./lib/configure')
+const errCode = require('err-code')
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -12,7 +13,7 @@ module.exports = configure(api => {
    * @type {RootAPI["start"]}
    */
   const start = async (options = {}) => {
-    throw new Error('Not implemented')
+    throw errCode(new Error('Not implemented'), 'ERR_NOT_IMPLEMENTED')
   }
 
   return start

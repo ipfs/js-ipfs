@@ -2,6 +2,7 @@
 
 const isIpfs = require('is-ipfs')
 const { CID } = require('multiformats/cid')
+const PeerID = require('peer-id')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const { resolve: res } = require('../utils')
 
@@ -28,13 +29,17 @@ module.exports = ({ repo, codecs, bases, name }) => {
     }
 
     const [, schema, hash, ...rest] = path.split('/') // ['', 'ipfs', 'hash', ...path]
-    const cid = CID.parse(hash)
     const base = opts.cidBase ? await bases.getBase(opts.cidBase) : undefined
+    const bytes = parseBytes(hash)
 
     // nothing to resolve return the input
     if (rest.length === 0) {
-      return `/${schema}/${cid.toString(base && base.encoder)}`
+      const str = base ? base.encoder.encode(bytes) : hash
+
+      return `/${schema}/${str}`
     }
+
+    const cid = CID.decode(bytes)
 
     path = rest.join('/')
 
@@ -53,4 +58,17 @@ module.exports = ({ repo, codecs, bases, name }) => {
   }
 
   return withTimeoutOption(resolve)
+}
+
+/**
+ * Parse the input as a PeerID or a CID or throw an error
+ *
+ * @param {string} str
+ */
+function parseBytes (str) {
+  try {
+    return PeerID.parse(str).toBytes()
+  } catch {
+    return CID.parse(str).bytes
+  }
 }
