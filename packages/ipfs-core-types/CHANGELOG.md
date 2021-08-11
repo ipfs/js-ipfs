@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.6.1...ipfs-core-types@0.7.0) (2021-08-11)
+
+
+### Bug Fixes
+
+* return rate in/out as number ([#3798](https://github.com/ipfs/js-ipfs/issues/3798)) ([2f3df7a](https://github.com/ipfs/js-ipfs/commit/2f3df7a70fe94d6bdf20947854dc9d0b88cb759a)), closes [#3782](https://github.com/ipfs/js-ipfs/issues/3782)
+* typescript errors ([#3781](https://github.com/ipfs/js-ipfs/issues/3781)) ([79f661e](https://github.com/ipfs/js-ipfs/commit/79f661ef0da859e1fd8ef979df3fb1303d384b8d))
+
+
+### Features
+
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* rateIn/rateOut are returned as numbers
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
 ## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.6.0...ipfs-core-types@0.6.1) (2021-07-30)
 
 

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.9.1...ipfs-core@0.10.0) (2021-08-11)
+
+
+### Bug Fixes
+
+* do not write blocks we already have ([#3801](https://github.com/ipfs/js-ipfs/issues/3801)) ([4f532a5](https://github.com/ipfs/js-ipfs/commit/4f532a541dfd9a1ed73ba8eb68ae86e311caeeb3))
+* return rate in/out as number ([#3798](https://github.com/ipfs/js-ipfs/issues/3798)) ([2f3df7a](https://github.com/ipfs/js-ipfs/commit/2f3df7a70fe94d6bdf20947854dc9d0b88cb759a)), closes [#3782](https://github.com/ipfs/js-ipfs/issues/3782)
+
+
+### Features
+
+* ed25519 keys by default ([#3693](https://github.com/ipfs/js-ipfs/issues/3693)) ([33fa734](https://github.com/ipfs/js-ipfs/commit/33fa7341c3baaf0926d887c071cc6fbce5ac49a8))
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* rateIn/rateOut are returned as numbers
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
 ## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.9.0...ipfs-core@0.9.1) (2021-07-30)
 
 

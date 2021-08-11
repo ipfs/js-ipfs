@@ -1,6 +1,6 @@
 {
   "name": "ipfs-daemon",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -32,11 +32,11 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.5",
     "debug": "^4.1.1",
-    "ipfs-core": "^0.9.1",
-    "ipfs-core-types": "^0.6.1",
-    "ipfs-grpc-server": "^0.4.1",
-    "ipfs-http-gateway": "^0.5.1",
-    "ipfs-http-server": "^0.6.1",
+    "ipfs-core": "^0.10.0",
+    "ipfs-core-types": "^0.7.0",
+    "ipfs-grpc-server": "^0.5.0",
+    "ipfs-http-gateway": "^0.6.0",
+    "ipfs-http-server": "^0.7.0",
     "ipfs-utils": "^8.1.4",
     "just-safe-set": "^2.2.1",
     "libp2p": "^0.32.0",

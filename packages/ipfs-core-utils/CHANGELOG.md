@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.9.1...ipfs-core-utils@0.10.0) (2021-08-11)
+
+
+### Features
+
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
 ## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.9.0...ipfs-core-utils@0.9.1) (2021-07-30)
 
 **Note:** Version bump only for package ipfs-core-utils
