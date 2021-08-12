@@ -1,7 +1,6 @@
 'use strict'
 
 const PeerId = require('peer-id')
-const { CID } = require('multiformats/cid')
 const errCode = require('err-code')
 const { NotEnabledError } = require('../errors')
 const get = require('dlv')
@@ -19,7 +18,7 @@ module.exports = ({ network, repo }) => {
      */
     async get (key, options = {}) {
       const { libp2p } = await use(network, options)
-      return libp2p._dht.get(normalizeCID(key), options)
+      return libp2p._dht.get(key, options)
     },
 
     /**
@@ -27,7 +26,7 @@ module.exports = ({ network, repo }) => {
      */
     async * put (key, value, options) {
       const { libp2p } = await use(network, options)
-      yield * libp2p._dht.put(normalizeCID(key), value)
+      yield * libp2p._dht.put(key, value)
     },
 
     /**
@@ -36,7 +35,7 @@ module.exports = ({ network, repo }) => {
     async * findProvs (cid, options = { numProviders: 20 }) {
       const { libp2p } = await use(network, options)
 
-      for await (const peer of libp2p._dht.findProviders(normalizeCID(cid), {
+      for await (const peer of libp2p._dht.findProviders(cid, {
         maxNumProviders: options.numProviders,
         signal: options.signal
       })) {
@@ -52,7 +51,7 @@ module.exports = ({ network, repo }) => {
      */
     async findPeer (peerId, options) {
       const { libp2p } = await use(network, options)
-      const peer = await libp2p._dht.findPeer(PeerId.createFromB58String(peerId))
+      const peer = await libp2p._dht.findPeer(PeerId.parse(peerId))
 
       return {
         id: peer.id.toB58String(),
@@ -91,7 +90,7 @@ module.exports = ({ network, repo }) => {
     async * query (peerId, options) {
       const { libp2p } = await use(network, options)
 
-      for await (const closerPeerId of libp2p._dht.getClosestPeers(PeerId.createFromB58String(peerId).toBytes())) {
+      for await (const closerPeerId of libp2p._dht.getClosestPeers(PeerId.parse(peerId).toBytes())) {
         yield {
           id: closerPeerId.toB58String(),
           addrs: [] // TODO: get addrs?
@@ -109,32 +108,6 @@ module.exports = ({ network, repo }) => {
     query: withTimeoutOption(query)
   }
 }
-
-/**
- * Turns given cid in some stringifyable representation, to Uint8Array
- * representation. Throws an error if given value isn't a valid CID.
- *
- * @param {any} cid
- * @returns {Uint8Array}
- */
-const parseCID = cid => {
-  try {
-    const cidStr = cid.toString().split('/')
-      .filter((/** @type {string} */ part) => part && part !== 'ipfs' && part !== 'ipns')[0]
-
-    return CID.parse(cidStr).bytes
-  } catch (error) {
-    throw errCode(error, 'ERR_INVALID_CID')
-  }
-}
-
-/**
- * Turns given cid in some representation to Uint8Array representation
- *
- * @param {any} cid
- */
-const normalizeCID = cid =>
-  cid instanceof Uint8Array ? cid : parseCID(cid)
 
 /**
  * @param {import('../types').NetworkService} network
