@@ -70,7 +70,7 @@
     "libp2p-websockets": "^0.16.1",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.4.1",
-    "nanoid": "3.1.23",
+    "nanoid": "3.1.24",
     "native-abort-controller": "^1.0.3",
     "p-map": "^4.0.0",
     "p-retry": "^4.5.0",
