@@ -63,7 +63,7 @@
     "progress": "^2.0.3",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^2.1.6",
-    "yargs": "^16.0.3"
+    "yargs": "^17.1.0"
   },
   "devDependencies": {
     "@types/progress": "^2.0.3",
