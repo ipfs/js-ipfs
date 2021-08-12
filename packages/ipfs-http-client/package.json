@@ -60,7 +60,7 @@
     "merge-options": "^3.0.4",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.4.1",
-    "nanoid": "3.1.23",
+    "nanoid": "^3.1.12",
     "native-abort-controller": "^1.0.3",
     "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
