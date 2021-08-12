@@ -164,7 +164,12 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     go: {
       args: ['--enable-pubsub-experiment']
     }
-  }))
+  }), {
+    skip: [{
+      name: 'should receive messages from a different node on lots of topics',
+      reason: 'HTTP clients cannot hold this many connections open'
+    }]
+  })
 
   tests.repo(commonFactory)
 
