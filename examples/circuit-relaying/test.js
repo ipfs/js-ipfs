@@ -63,7 +63,7 @@ async function runTest () {
     const id = await relay.api.id()
     const address = id.addresses
       .map(ma => ma.toString())
-      .find(addr => addr.includes('/ws/p2p/Qm'))
+      .find(addr => addr.includes('/ws/p2p/'))
 
     if (!address) {
       throw new Error(`Could not find web socket address in ${id.addresses}`)
