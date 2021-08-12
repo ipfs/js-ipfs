@@ -77,6 +77,7 @@
     "pako": "^1.0.2",
     "peer-id": "^0.15.1",
     "readable-stream": "^3.4.0",
+    "sinon": "^11.1.1",
     "uint8arrays": "^2.1.6"
   },
   "contributors": [

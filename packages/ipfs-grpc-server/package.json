@@ -42,6 +42,7 @@
     "it-pipe": "^1.1.0",
     "it-pushable": "^1.4.2",
     "multiaddr": "^10.0.0",
+    "nanoid": "3.1.23",
     "protobufjs": "^6.10.2",
     "ws": "^7.3.1"
   },

@@ -37,10 +37,10 @@ module.exports = (factory, options) => {
     let ipfs3Id
 
     before(async () => {
-      ipfs1 = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfs1 = (await factory.spawn({ ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfs2 = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      ipfs3 = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfs2 = (await factory.spawn({ type: isWebWorker ? 'js' : undefined, ipfsOptions })).api
+      ipfs3 = (await factory.spawn({ type: isWebWorker ? 'js' : undefined, ipfsOptions })).api
 
       ipfs2Id = await ipfs2.id()
       ipfs3Id = await ipfs3.id()

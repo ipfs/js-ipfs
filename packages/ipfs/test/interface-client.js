@@ -146,4 +146,9 @@ describe('interface-ipfs-core ipfs-client tests', () => {
       }
     ]
   })
+
+  tests.pubsub(factory({
+    type: 'js',
+    ipfsClientModule: require('ipfs-client')
+  }))
 })

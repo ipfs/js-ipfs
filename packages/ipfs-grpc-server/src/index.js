@@ -8,7 +8,8 @@ const loadServices = require('./utils/load-services')
 
 const {
   Root,
-  MFS
+  MFS,
+  PubSub
 } = loadServices()
 
 /**
@@ -30,6 +31,12 @@ module.exports = async function createServer (ipfs, options = {}) {
     ls: require('./endpoints/mfs/ls')(ipfs, options),
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     write: require('./endpoints/mfs/write')(ipfs, options)
+  })
+  server.addService(PubSub, {
+    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    subscribe: require('./endpoints/pubsub/subscribe')(ipfs, options),
+    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    unsubscribe: require('./endpoints/pubsub/unsubscribe')(ipfs, options)
   })
 
   const socket = options.socket || await webSocketServer(ipfs, options)
