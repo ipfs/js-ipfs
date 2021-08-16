@@ -69,7 +69,7 @@
     "libp2p-crypto": "^0.19.6",
     "libp2p-websockets": "^0.16.1",
     "multiaddr": "^10.0.0",
-    "multiformats": "^9.4.5",
+    "multiformats": "^9.4.1",
     "nanoid": "^3.1.12",
     "native-abort-controller": "^1.0.3",
     "p-map": "^4.0.0",
