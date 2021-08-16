@@ -5,7 +5,7 @@ const raw = require('multiformats/codecs/raw')
 const dagPb = require('@ipld/dag-pb')
 const dagCbor = require('@ipld/dag-cbor')
 const { sha256 } = require('multiformats/hashes/sha2')
-const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
 /**
  * @type {Record<number, string>}

@@ -1,7 +1,7 @@
 'use strict'
 
 const { CID } = require('multiformats/cid')
-const { fromString: uint8ArrayFromString } = require('@vascosantos/uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const loadFixture = require('aegir/utils/fixtures')
 
 const ONE_MEG = Math.pow(2, 20)

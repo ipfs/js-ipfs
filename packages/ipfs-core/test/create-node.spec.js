@@ -10,7 +10,7 @@ const PeerId = require('peer-id')
 const { keys: { supportedKeys } } = require('libp2p-crypto')
 const IPFS = require('../src')
 const defer = require('p-defer')
-const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 const createTempRepo = require('./utils/create-repo')
 
 describe('create node', function () {

@@ -7,7 +7,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions

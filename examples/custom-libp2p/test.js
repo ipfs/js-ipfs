@@ -7,7 +7,7 @@ const TCP = require('libp2p-tcp')
 const MPLEX = require('libp2p-mplex')
 const { NOISE } = require('@chainsafe/libp2p-noise')
 const PeerId = require('peer-id')
-const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
 async function test () {
   let output = ''

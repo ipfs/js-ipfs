@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 'use strict'
 
-const { toString: uint8ArrayToString } = require('@vascosantos/uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
 const Room = require('ipfs-pubsub-room')
 const $message = document.querySelector('#message')
