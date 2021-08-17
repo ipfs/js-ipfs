@@ -16,6 +16,6 @@
     "test-ipfs-example": "^3.0.0"
   },
   "dependencies": {
-    "ipfs": "^0.57.0"
+    "ipfs": "^0.58.0"
   }
 }
