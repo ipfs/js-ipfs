@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "lerna bootstrap",
     "link": "lerna link",
-    "reset": "lerna run clean && rimraf packages/*/node_modules examples/*/node_modules node_modules",
+    "reset": "lerna run clean && rimraf packages/*/node_modules node_modules",
     "test": "lerna run test",
     "test:node": "lerna run test:node",
     "test:browser": "lerna run test:browser",
@@ -26,9 +26,6 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "configure-examples": "run-s configure-examples:* release:pre:reinstall release:pre:bundle",
-    "configure-examples:add-examples": "json -I -f ./lerna.json -e \"this.packages.push('examples/*'); this.packages = [...new Set(this.packages)]\"",
-    "configure-examples:add-hoisted-modules": "json -I -f ./lerna.json -e \"this.command.bootstrap.nohoist = ['ipfs-css', 'tachyons']; this.command.bootstrap.nohoist = [...new Set(this.command.bootstrap.nohoist)]\"",
     "release": "run-s release:pre:* release:publish docker:release release:post:*",
     "release:pre:non-dirty-repo": "git diff --quiet",
     "release:pre:update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false --types=false",
@@ -41,7 +38,6 @@
     "docker:release:tag-version": "docker tag js-ipfs:latest docker.io/ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
     "docker:release:push-latest": "docker push ipfs/js-ipfs:latest",
     "docker:release:push-version": "docker push ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
-    "release:post:update-example-dependencies": "node scripts/update-example-deps.js",
     "release:rc": "run-s release:pre:* release:canary",
     "release:canary": "lerna publish --canary --preid rc --dist-tag next --force-publish --yes",
     "docker:rc": "run-s docker:rc:*",
@@ -60,7 +56,7 @@
   "devDependencies": {
     "execa": "^5.0.0",
     "json": "^10.0.0",
-    "lerna": "^3.22.1",
+    "lerna": "^3.22.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2"
   },
