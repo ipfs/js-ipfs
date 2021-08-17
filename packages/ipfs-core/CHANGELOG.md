@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.9.1...ipfs-core@0.9.2) (2021-08-17)
+
+
+### Bug Fixes
+
+* use correct datastores ([#3820](https://github.com/ipfs/js-ipfs/issues/3820)) ([4130ae8](https://github.com/ipfs/js-ipfs/commit/4130ae8641e35cc0865238e7245010a7e6b07913))
+
+
+
+
+
 ## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.9.0...ipfs-core@0.9.1) (2021-07-30)
 
 

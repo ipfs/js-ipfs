@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.56.1",
+  "version": "0.56.2",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -39,8 +39,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.7.1",
-    "ipfs-core": "^0.9.1",
+    "ipfs-cli": "^0.7.2",
+    "ipfs-core": "^0.9.2",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
