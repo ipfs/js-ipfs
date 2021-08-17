@@ -53,7 +53,7 @@ module.exports = (print, codecs, options = {}) => {
       )
     ),
     datastore: new DatastoreLevel(`${repoPath}/datastore`),
-    keys: new DatastoreLevel(`${repoPath}/keys`),
+    keys: new DatastoreFS(`${repoPath}/keys`),
     pins: new DatastoreLevel(`${repoPath}/pins`)
   }, {
     autoMigrate: options.autoMigrate != null ? options.autoMigrate : true,
