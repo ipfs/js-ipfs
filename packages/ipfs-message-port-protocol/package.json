@@ -50,7 +50,7 @@
     "multiformats": "^9.4.1"
   },
   "devDependencies": {
-    "aegir": "^34.0.2",
+    "aegir": "^35.0.1",
     "rimraf": "^3.0.2",
     "uint8arrays": "^2.1.6"
   },

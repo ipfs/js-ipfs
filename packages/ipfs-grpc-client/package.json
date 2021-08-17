@@ -50,7 +50,7 @@
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "aegir": "^34.0.2",
+    "aegir": "^35.0.1",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1"
