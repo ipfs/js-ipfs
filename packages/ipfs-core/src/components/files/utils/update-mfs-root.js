@@ -22,7 +22,7 @@ const updateMfsRoot = async (context, cid, options) => {
 
   log(`New MFS root will be ${cid}`)
 
-  await context.repo.datastore.put(MFS_ROOT_KEY, cid.bytes)
+  await context.repo.root.put(MFS_ROOT_KEY, cid.bytes)
 
   return cid
 }
