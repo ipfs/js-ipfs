@@ -22,8 +22,8 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "ipfs": "^0.58.0",
-    "ipfs-message-port-client": "^0.8.1",
+    "ipfs": "^0.58.1",
+    "ipfs-message-port-client": "^0.8.3",
     "ipfs-message-port-protocol": "^0.9.0",
     "ipfs-message-port-server": "^0.9.0",
     "process": "0.11.10"
