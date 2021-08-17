@@ -7,7 +7,7 @@ const PeerId = require('peer-id')
 const Libp2p = require('libp2p')
 const EE = require('events')
 const libp2pComponent = require('../src/components/libp2p')
-const { NOISE: Crypto } = require('libp2p-noise')
+const { NOISE: Crypto } = require('@chainsafe/libp2p-noise')
 
 /**
  * @type {import('libp2p-interfaces/src/transport/types').TransportFactory<any, any>}

@@ -10,13 +10,13 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@chainsafe/libp2p-noise": "^4.0.0",
     "ipfs": "^0.57.0",
     "libp2p": "^0.32.0",
     "libp2p-bootstrap": "^0.12.3",
     "libp2p-kad-dht": "^0.23.1",
     "libp2p-mdns": "^0.16.0",
     "libp2p-mplex": "^0.10.2",
-    "libp2p-noise": "^3.0.0",
     "libp2p-tcp": "^0.15.4"
   },
   "devDependencies": {

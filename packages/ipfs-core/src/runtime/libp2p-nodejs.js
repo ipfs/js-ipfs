@@ -10,7 +10,7 @@ const KadDHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 // @ts-ignore - no types
 const Multiplex = require('libp2p-mplex')
-const { NOISE } = require('libp2p-noise')
+const { NOISE } = require('@chainsafe/libp2p-noise')
 const ipnsUtils = require('../ipns/routing/utils')
 const os = require('os')
 
