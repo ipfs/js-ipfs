@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.150.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.149.0...interface-ipfs-core@0.150.0) (2021-08-17)
+
+
+### Bug Fixes
+
+* pin nanoid version ([#3807](https://github.com/ipfs/js-ipfs/issues/3807)) ([474523a](https://github.com/ipfs/js-ipfs/commit/474523ab8702729f697843d433a7a08baf2d101f))
+* throw error on missing input to add/addAll ([#3818](https://github.com/ipfs/js-ipfs/issues/3818)) ([1343708](https://github.com/ipfs/js-ipfs/commit/1343708f70d7298b6677555803d68ff282d89439)), closes [#3788](https://github.com/ipfs/js-ipfs/issues/3788)
+
+
+### Features
+
+* pubsub over gRPC ([#3813](https://github.com/ipfs/js-ipfs/issues/3813)) ([e7d5509](https://github.com/ipfs/js-ipfs/commit/e7d5509c87e87aed6be3c1d0b2a01ab74cdc1ed9)), closes [#3741](https://github.com/ipfs/js-ipfs/issues/3741)
+
+
+
+
+
 # [0.149.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.148.0...interface-ipfs-core@0.149.0) (2021-08-11)
 
 

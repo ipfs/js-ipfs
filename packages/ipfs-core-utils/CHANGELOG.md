@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.10.0...ipfs-core-utils@0.10.1) (2021-08-17)
+
+
+### Bug Fixes
+
+* throw error on missing input to add/addAll ([#3818](https://github.com/ipfs/js-ipfs/issues/3818)) ([1343708](https://github.com/ipfs/js-ipfs/commit/1343708f70d7298b6677555803d68ff282d89439)), closes [#3788](https://github.com/ipfs/js-ipfs/issues/3788)
+
+
+
+
+
 # [0.10.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.9.1...ipfs-core-utils@0.10.0) (2021-08-11)
 
 

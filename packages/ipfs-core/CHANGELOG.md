@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.10.0...ipfs-core@0.10.1) (2021-08-17)
+
+
+### Bug Fixes
+
+* pass correct types to libp2p dht methods ([#3806](https://github.com/ipfs/js-ipfs/issues/3806)) ([5c8da9a](https://github.com/ipfs/js-ipfs/commit/5c8da9a703b8b043ebc670c6c5dcc7df4f687df7)), closes [#3502](https://github.com/ipfs/js-ipfs/issues/3502)
+* pin nanoid version ([#3807](https://github.com/ipfs/js-ipfs/issues/3807)) ([474523a](https://github.com/ipfs/js-ipfs/commit/474523ab8702729f697843d433a7a08baf2d101f))
+* use correct datastores ([#3820](https://github.com/ipfs/js-ipfs/issues/3820)) ([479e09e](https://github.com/ipfs/js-ipfs/commit/479e09e73c936c5770aa83e4d097b62c3987cf6f))
+
+
+
+
+
 # [0.10.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.9.1...ipfs-core@0.10.0) (2021-08-11)
 
 

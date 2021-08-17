@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [52.0.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@52.0.0...ipfs-http-client@52.0.1) (2021-08-17)
+
+
+### Bug Fixes
+
+* pin nanoid version ([#3807](https://github.com/ipfs/js-ipfs/issues/3807)) ([474523a](https://github.com/ipfs/js-ipfs/commit/474523ab8702729f697843d433a7a08baf2d101f))
+
+
+
+
+
 # [52.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@51.0.1...ipfs-http-client@52.0.0) (2021-08-11)
 
 

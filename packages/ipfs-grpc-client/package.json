@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-client",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A client library for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -37,8 +37,8 @@
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.7.0",
-    "ipfs-core-utils": "^0.10.0",
-    "ipfs-grpc-protocol": "^0.3.0",
+    "ipfs-core-utils": "^0.10.1",
+    "ipfs-grpc-protocol": "^0.4.0",
     "ipfs-unixfs": "^5.0.0",
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.2",

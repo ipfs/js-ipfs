@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.58.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.57.0...ipfs@0.58.0) (2021-08-17)
+
+
+### Features
+
+* pubsub over gRPC ([#3813](https://github.com/ipfs/js-ipfs/issues/3813)) ([e7d5509](https://github.com/ipfs/js-ipfs/commit/e7d5509c87e87aed6be3c1d0b2a01ab74cdc1ed9)), closes [#3741](https://github.com/ipfs/js-ipfs/issues/3741)
+
+
+
+
+
 # [0.57.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.56.1...ipfs@0.57.0) (2021-08-11)
 
 
