@@ -32,8 +32,8 @@ module.exports = (factory, options) => {
 
     it('should fail with undefined msg', async () => {
       const topic = getTopic()
-      // @ts-ignore invalid parameter
-      await expect(ipfs.pubsub.publish(topic)).to.eventually.rejectedWith('argument "data" is required')
+      // @ts-expect-error invalid parameter
+      await expect(ipfs.pubsub.publish(topic)).to.eventually.be.rejected()
     })
 
     it('should publish message from buffer', () => {
