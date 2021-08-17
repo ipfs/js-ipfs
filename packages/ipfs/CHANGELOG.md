@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.58.1](https://github.com/ipfs/js-ipfs/compare/ipfs@0.58.0...ipfs@0.58.1) (2021-08-17)
+
+**Note:** Version bump only for package ipfs
+
+
+
+
+
 # [0.58.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.57.0...ipfs@0.58.0) (2021-08-17)
 
 
