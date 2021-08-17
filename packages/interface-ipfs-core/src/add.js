@@ -233,6 +233,16 @@ module.exports = (factory, options) => {
       await expect(ipfs.add(nonValid)).to.eventually.be.rejected()
     })
 
+    it('should fail when passed undefined input', async () => {
+      // @ts-expect-error undefined is non valid
+      await expect(ipfs.add(undefined)).to.eventually.be.rejected()
+    })
+
+    it('should fail when passed null input', async () => {
+      // @ts-expect-error null is non valid
+      await expect(ipfs.add(null)).to.eventually.be.rejected()
+    })
+
     it('should wrap content in a directory', async () => {
       const data = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
