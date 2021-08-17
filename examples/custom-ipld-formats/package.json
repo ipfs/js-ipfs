@@ -16,6 +16,6 @@
     "ipfs-core": "^0.10.3",
     "ipfs-http-client": "^52.0.1",
     "multiformats": "^9.4.1",
-    "uint8arrays": "^3.0.0-rc.1"
+    "uint8arrays": "^3.0.0"
   }
 }

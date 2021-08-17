@@ -18,7 +18,7 @@
     "ipfs": "^0.58.1",
     "ipfs-pubsub-room": "^2.0.1",
     "libp2p-websockets": "^0.16.1",
-    "uint8arrays": "^3.0.0-rc.1"
+    "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
     "execa": "^5.0.0",
