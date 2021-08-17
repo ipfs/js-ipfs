@@ -290,9 +290,7 @@ jobs:
     - stage: test
       name: examples
       script:
-        # Travis lets scripts continue even if previous steps fail so need to use &&: https://github.com/travis-ci/travis-ci/issues/1066
-        - npm run configure-examples &&
-          npm run test -- $RUN_SINCE --scope=example* --concurrency=1
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-examples.git
 
     - stage: release-rc
       # only run on changes to master
