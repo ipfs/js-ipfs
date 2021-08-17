@@ -7,7 +7,7 @@ const MulticastDNS = require('libp2p-mdns')
 const Bootstrap = require('libp2p-bootstrap')
 const KadDHT = require('libp2p-kad-dht')
 const MPLEX = require('libp2p-mplex')
-const { NOISE } = require('libp2p-noise')
+const { NOISE } = require('@chainsafe/libp2p-noise')
 
 /**
  * Options for the libp2p bundle
