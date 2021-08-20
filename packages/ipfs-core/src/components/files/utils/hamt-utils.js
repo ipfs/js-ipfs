@@ -5,14 +5,16 @@ const {
   Bucket,
   createHAMT
 } = require('hamt-sharding')
-// @ts-ignore - refactor this to not need deep require
-const DirSharded = require('ipfs-unixfs-importer/src/dir-sharded')
-// @ts-ignore - refactor this to not need deep require
-const defaultImporterOptions = require('ipfs-unixfs-importer/src/options')
+const DirSharded = require('./dir-sharded')
 const log = require('debug')('ipfs:mfs:core:utils:hamt-utils')
 const { UnixFS } = require('ipfs-unixfs')
 const last = require('it-last')
 const { CID } = require('multiformats/cid')
+const {
+  hamtHashCode,
+  hamtHashFn,
+  hamtBucketBits
+} = require('./hamt-constants')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -33,8 +35,6 @@ const { CID } = require('multiformats/cid')
  * @param {string} options.hashAlg
  */
 const updateHamtDirectory = async (context, links, bucket, options) => {
-  const importerOptions = defaultImporterOptions()
-
   if (!options.parent.Data) {
     throw new Error('Could not update HAMT directory because parent had no data')
   }
@@ -46,7 +46,7 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     type: 'hamt-sharded-directory',
     data,
     fanout: bucket.tableSize(),
-    hashType: importerOptions.hamtHashCode,
+    hashType: hamtHashCode,
     mode: node.mode,
     mtime: node.mtime
   })
@@ -94,10 +94,9 @@ const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtPare
  * @param {PBLink[]} links
  */
 const recreateInitialHamtLevel = async (links) => {
-  const importerOptions = defaultImporterOptions()
   const bucket = createHAMT({
-    hashFn: importerOptions.hamtHashFn,
-    bits: importerOptions.hamtBucketBits
+    hashFn: hamtHashFn,
+    bits: hamtBucketBits
   })
 
   await addLinksToHamtBucket(links, bucket, bucket)
@@ -253,26 +252,17 @@ const generatePath = async (context, fileName, rootNode) => {
  * @param {number} [options.mode]
  */
 const createShard = async (context, contents, options = {}) => {
-  const importerOptions = defaultImporterOptions()
-
   const shard = new DirSharded({
     root: true,
     dir: true,
-    parent: null,
-    parentKey: null,
+    parent: undefined,
+    parentKey: undefined,
     path: '',
     dirty: true,
     flat: false,
     mtime: options.mtime,
     mode: options.mode
-  }, {
-    hamtHashFn: importerOptions.hamtHashFn,
-    hamtHashCode: importerOptions.hamtHashCode,
-    hamtBucketBits: importerOptions.hamtBucketBits,
-    hasher: importerOptions.hasher,
-    ...options,
-    codec: dagPb
-  })
+  }, options)
 
   for (let i = 0; i < contents.length; i++) {
     await shard._bucket.put(contents[i].name, {
@@ -281,7 +271,13 @@ const createShard = async (context, contents, options = {}) => {
     })
   }
 
-  return last(shard.flush(context.repo.blocks))
+  const res = await last(shard.flush(context.repo.blocks))
+
+  if (!res) {
+    throw new Error('Flushing shard yielded no result')
+  }
+
+  return res
 }
 
 module.exports = {

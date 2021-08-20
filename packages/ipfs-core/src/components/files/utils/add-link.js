@@ -1,15 +1,10 @@
 'use strict'
 
-// @ts-ignore
 const dagPb = require('@ipld/dag-pb')
-const { sha256, sha512 } = require('multiformats/hashes/sha2')
 const { CID } = require('multiformats/cid')
 const log = require('debug')('ipfs:mfs:core:utils:add-link')
 const { UnixFS } = require('ipfs-unixfs')
-// @ts-ignore - refactor this to not need deep require
-const DirSharded = require('ipfs-unixfs-importer/src/dir-sharded')
-// @ts-ignore - refactor this to not need deep require
-const defaultImporterOptions = require('ipfs-unixfs-importer/src/options')
+const DirSharded = require('./dir-sharded')
 const {
   updateHamtDirectory,
   recreateHamtLevel,
@@ -223,6 +218,11 @@ const addToShardedDirectory = async (context, options) => {
     shard, path
   } = await addFileToShardedDirectory(context, options)
   const result = await last(shard.flush(context.repo.blocks))
+
+  if (!result) {
+    throw new Error('No result from flushing shard')
+  }
+
   const block = await context.repo.blocks.get(result.cid)
   const node = dagPb.decode(block)
 
@@ -269,44 +269,24 @@ const addFileToShardedDirectory = async (context, options) => {
   // start at the root bucket and descend, loading nodes as we go
   const rootBucket = await recreateInitialHamtLevel(options.parent.Links)
   const node = UnixFS.unmarshal(options.parent.Data)
-  const importerOptions = defaultImporterOptions()
-
-  // NOTE vmx 2021-04-01: in ipfs the hash algorithm is a constant in unixfs
-  // it's an implementation. Do the option conversion at the boundary between
-  // ipfs and unixfs.
-  let hasher
-  switch (options.hashAlg) {
-    case 'sha2-256':
-      hasher = sha256
-      break
-    case 'sha2-512':
-      hasher = sha512
-      break
-    default:
-      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
-  }
 
   const shard = new DirSharded({
     root: true,
     dir: true,
-    parent: null,
-    parentKey: null,
+    parent: undefined,
+    parentKey: undefined,
     path: '',
     dirty: true,
     flat: false,
     mode: node.mode
-  }, {
-    hamtHashFn: importerOptions.hamtHashFn,
-    hamtHashCode: importerOptions.hamtHashCode,
-    hamtBucketBits: importerOptions.hamtBucketBits,
-    hasher,
-    ...options
-  })
+  }, options)
   shard._bucket = rootBucket
 
   if (node.mtime) {
     // update mtime if previously set
-    shard.mtime = new Date()
+    shard.mtime = {
+      secs: Math.round(Date.now() / 1000)
+    }
   }
 
   // load subshards until the bucket & position no longer changes
