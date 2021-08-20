@@ -49,7 +49,7 @@
     "err-code": "^3.0.1",
     "interface-blockstore": "^1.0.0",
     "ipfs-core-types": "^0.7.0",
-    "ipfs-unixfs": "^5.0.0",
+    "ipfs-unixfs": "^6.0.2",
     "ipfs-unixfs-importer": "^8.0.2",
     "ipfs-utils": "^8.1.4",
     "ipns": "^0.13.3",
