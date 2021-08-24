@@ -73,7 +73,7 @@ class Daemon {
 /**
  * @type {import('ipfs-core').Libp2pFactoryFn}
  */
-async function getLibp2p ({ libp2pOptions, options, config, peerId }) {
+async function getLibp2p ({ libp2pOptions }) {
   // Attempt to use any of the WebRTC versions available globally
   let electronWebRTC
   let wrtc

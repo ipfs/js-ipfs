@@ -208,7 +208,8 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
   const sourceBlock = await context.repo.blocks.get(source.cid)
   const {
     node,
-    cid
+    cid,
+    size
   } = await addLink(context, {
     parentCid: parent.cid,
     size: sourceBlock.length,
@@ -222,7 +223,7 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
 
   parent.node = node
   parent.cid = cid
-  parent.size = node.size
+  parent.size = size
 
   return parent
 }

@@ -17,8 +17,7 @@ const { recursive } = require('ipfs-unixfs-exporter')
 const last = require('it-last')
 const cp = require('./cp')
 const rm = require('./rm')
-// @ts-ignore - TODO: refactor this so it does not require a deep require
-const persist = require('ipfs-unixfs-importer/src/utils/persist')
+const persist = require('./utils/persist')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
