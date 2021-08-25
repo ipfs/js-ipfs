@@ -1,5 +1,6 @@
 import { Pushable } from 'it-pushable'
 import { EventEmitter } from 'events'
+import { Multiaddr } from 'multiaddr'
 
 export interface Options {
   socket?: WebsocketServer
@@ -16,8 +17,14 @@ export interface WebsocketMessage {
   channel: any
 }
 
+export interface WebsocketServerInfo {
+  uri: string
+  ma: Multiaddr
+}
+
 export interface WebsocketServer extends EventEmitter {
   // events
   on: ((event: 'error', listener: (err: Error) => void) => this) & ((event: 'data', listener: (message: WebsocketMessage) => void) => this)
   stop: () => Promise<void>
+  info: WebsocketServerInfo
 }
