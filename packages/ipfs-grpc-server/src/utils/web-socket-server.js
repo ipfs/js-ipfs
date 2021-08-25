@@ -41,7 +41,7 @@ class Messages extends EventEmitter {
 
     this.info = {
       uri: '',
-      ma: new Multiaddr(`/ip4/127.0.0.1/tcp/0/ws`)
+      ma: new Multiaddr('/ip4/127.0.0.1/tcp/0/ws')
     }
 
     wss.on('connection', (ws, request) => {
