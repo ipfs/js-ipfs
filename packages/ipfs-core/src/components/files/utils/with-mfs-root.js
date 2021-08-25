@@ -25,13 +25,13 @@ const loadMfsRoot = async (context, options) => {
   }
 
   // Open the repo if it's been closed
-  await context.repo.root.open()
+  await context.repo.datastore.open()
 
   // Load the MFS root CID
   let cid
 
   try {
-    const buf = await context.repo.root.get(MFS_ROOT_KEY)
+    const buf = await context.repo.datastore.get(MFS_ROOT_KEY)
 
     cid = CID.decode(buf)
   } catch (err) {
@@ -52,7 +52,7 @@ const loadMfsRoot = async (context, options) => {
       throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
     }
 
-    await context.repo.root.put(MFS_ROOT_KEY, cid.bytes)
+    await context.repo.datastore.put(MFS_ROOT_KEY, cid.bytes)
   }
 
   log(`Loaded MFS root /ipfs/${cid}`)

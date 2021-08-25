@@ -3,7 +3,7 @@
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

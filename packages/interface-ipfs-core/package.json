@@ -66,7 +66,7 @@
     "it-pushable": "^1.4.2",
     "it-tar": "^4.0.0",
     "it-to-buffer": "^2.0.0",
-    "libp2p-crypto": "^0.19.6",
+    "libp2p-crypto": "^0.19.7",
     "libp2p-websockets": "^0.16.1",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.4.1",
@@ -78,7 +78,7 @@
     "peer-id": "^0.15.1",
     "readable-stream": "^3.4.0",
     "sinon": "^11.1.1",
-    "uint8arrays": "^2.1.6"
+    "uint8arrays": "^3.0.0"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",

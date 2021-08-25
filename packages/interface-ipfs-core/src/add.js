@@ -9,7 +9,7 @@ const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const echoUrl = (/** @type {string} */ text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (/** @type {string} */ url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const last = require('it-last')
 const raw = require('multiformats/codecs/raw')
 const dagPb = require('@ipld/dag-pb')

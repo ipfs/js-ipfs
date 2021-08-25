@@ -7,7 +7,7 @@ const all = require('it-all')
 const { importer } = require('ipfs-unixfs-importer')
 const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
-const uint8ArrayEquals = require('uint8arrays/equals')
+const { equals: uint8ArrayEquals } = require('uint8arrays/equals')
 const blockstore = require('./utils/blockstore-adapter')
 
 /**
