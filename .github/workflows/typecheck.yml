@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
         project:
           - packages/ipfs
           - packages/ipfs-cli
@@ -28,6 +27,9 @@ jobs:
           - packages/ipfs-message-port-server
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
       - name: Install dependencies
         run: npm install
       - name: Typecheck ${{ matrix.project }}
