@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.150.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.150.0...interface-ipfs-core@0.150.1) (2021-08-25)
+
+**Note:** Version bump only for package interface-ipfs-core
+
+
+
+
+
 # [0.150.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.149.0...interface-ipfs-core@0.150.0) (2021-08-17)
 
 

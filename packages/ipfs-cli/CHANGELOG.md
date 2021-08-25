@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.8.3...ipfs-cli@0.8.4) (2021-08-25)
+
+
+### Bug Fixes
+
+* grpc server may not be enabled ([#3834](https://github.com/ipfs/js-ipfs/issues/3834)) ([533845e](https://github.com/ipfs/js-ipfs/commit/533845e3d140459ca383b1538e571d08850c0ef8))
+
+
+
+
+
 ## [0.8.3](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.8.1...ipfs-cli@0.8.3) (2021-08-17)
 
 **Note:** Version bump only for package ipfs-cli
