@@ -1,4 +1,4 @@
-import type CID from 'cids'
+import type { CID } from 'multiformats/cid'
 import type { AbortOptions } from '../utils'
 
 export interface API<OptionExtension = {}> {
@@ -24,7 +24,7 @@ export interface API<OptionExtension = {}> {
    * // [ CID('QmHash') ]
    * ```
    */
-  wantlistForPeer: (peerId: CID | string, options?: AbortOptions & OptionExtension) => Promise<CID[]>
+  wantlistForPeer: (peerId: string, options?: AbortOptions & OptionExtension) => Promise<CID[]>
 
   /**
    * Removes one or more CIDs from the wantlist
@@ -60,11 +60,11 @@ export interface API<OptionExtension = {}> {
 export interface Stats {
   provideBufLen: number
   wantlist: CID[]
-  peers: CID[]
-  blocksReceived: BigInt
-  dataReceived: BigInt
-  blocksSent: BigInt
-  dataSent: BigInt
-  dupBlksReceived: BigInt
-  dupDataReceived: BigInt
+  peers: string[]
+  blocksReceived: bigint
+  dataReceived: bigint
+  blocksSent: bigint
+  dataSent: bigint
+  dupBlksReceived: bigint
+  dupDataReceived: bigint
 }

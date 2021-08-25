@@ -4,35 +4,37 @@
 const { expectIsBandwidth } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
-const testTimeout = require('../utils/test-timeout')
 const all = require('it-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.stats.bw', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when getting bandwith stats', () => {
-      return testTimeout(() => ipfs.stats.bw({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should get bandwidth stats ', async () => {
       const res = await last(ipfs.stats.bw())
+
+      if (!res) {
+        throw new Error('No bw stats returned')
+      }
+
       expectIsBandwidth(null, res)
     })
 

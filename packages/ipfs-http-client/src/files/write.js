@@ -1,7 +1,7 @@
 'use strict'
 
 const modeToString = require('../lib/mode-to-string')
-const { parseMtime } = require('ipfs-unixfs')
+const parseMtime = require('../lib/parse-mtime')
 const configure = require('../lib/configure')
 const multipartRequest = require('../lib/multipart-request')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -22,7 +22,6 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
 
-    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('files/write', {
       timeout: options.timeout,
       signal,

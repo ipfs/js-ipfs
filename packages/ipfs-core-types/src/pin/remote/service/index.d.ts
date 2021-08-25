@@ -61,6 +61,7 @@ interface InvalidStat {
   status: 'invalid'
   pinCount?: undefined
 }
+
 export interface PinCount {
   queued: number
   pinning: number

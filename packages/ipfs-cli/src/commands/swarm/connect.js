@@ -24,7 +24,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiaddr')} argv.address
+   * @param {import('multiaddr').Multiaddr} argv.address
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, isDaemon, print }, address, timeout }) {

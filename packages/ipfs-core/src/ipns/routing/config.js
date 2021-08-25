@@ -9,7 +9,7 @@ const OfflineDatastore = require('./offline-datastore')
 /**
  * @param {object} arg
  * @param {import('libp2p')} arg.libp2p
- * @param {import('ipfs-repo')} arg.repo
+ * @param {import('ipfs-repo').IPFSRepo} arg.repo
  * @param {import('peer-id')} arg.peerId
  * @param {object} arg.options
  */

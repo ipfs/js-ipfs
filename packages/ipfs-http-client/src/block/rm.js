@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -23,7 +23,7 @@ module.exports = configure(api => {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: cid.map(cid => new CID(cid).toString()),
+        arg: cid.map(cid => cid.toString()),
         'stream-channels': true,
         ...options
       }),
@@ -44,7 +44,7 @@ module.exports = configure(api => {
 function toCoreInterface (removed) {
   /** @type {RmResult} */
   const out = {
-    cid: new CID(removed.Hash)
+    cid: CID.parse(removed.Hash)
   }
 
   if (removed.Error) {

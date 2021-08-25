@@ -3,18 +3,21 @@
 
 const { expect } = require('aegir/utils/chai')
 const delay = require('delay')
-const multihashing = require('multihashing-async')
+const { sha256 } = require('multiformats/hashes/sha2')
 const { nanoid } = require('nanoid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const waitFor = require('./utils/wait-for')
 const mfsPreload = require('../src/mfs-preload')
 
 const fakeCid = async () => {
-  const mh = await multihashing(uint8ArrayFromString(nanoid()), 'sha2-256')
-  return new CID(mh)
+  const mh = await sha256.digest(uint8ArrayFromString(nanoid()))
+  return CID.createV0(mh)
 }
 
+/**
+ * @param {CID[]} cids
+ */
 const createMockFilesStat = (cids = []) => {
   let n = 0
   return () => {
@@ -23,15 +26,22 @@ const createMockFilesStat = (cids = []) => {
 }
 
 const createMockPreload = () => {
+  /** @type {import('../src/types').Preload & { cids: CID[] }} */
   const preload = cid => preload.cids.push(cid)
+  preload.start = () => {}
+  preload.stop = () => {}
   preload.cids = []
+
   return preload
 }
 
 describe('MFS preload', () => {
   // CIDs returned from our mock files.stat function
+  /** @type {{ initial: CID, same: CID, updated: CID }} */
   let testCids
+  /** @type {ReturnType<createMockPreload>} */
   let mockPreload
+  /** @type {import('ipfs-core-types/src/files').API} */
   let mockFiles
 
   beforeEach(async () => {
@@ -43,6 +53,7 @@ describe('MFS preload', () => {
       updated: await fakeCid()
     }
 
+    // @ts-ignore not whole file api
     mockFiles = { stat: createMockFilesStat([testCids.initial, testCids.same, testCids.same, testCids.updated]) }
   })
 

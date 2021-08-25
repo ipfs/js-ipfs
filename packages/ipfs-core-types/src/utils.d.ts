@@ -1,5 +1,4 @@
-import CID from 'cids'
-import { AwaitIterable } from './utils'
+import { CID } from 'multiformats/cid'
 import { Mtime, MtimeLike } from 'ipfs-unixfs'
 
 export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =
@@ -19,11 +18,11 @@ export interface DirectoryEntry extends BaseEntry {
   content?: undefined
 }
 
-export type ImportSource =
-| AwaitIterable<ToEntry>
-| ReadableStream<ToEntry>
+export type ImportCandidateStream =
+| AwaitIterable<ImportCandidate>
+| ReadableStream<ImportCandidate>
 
-export type ToEntry =
+export type ImportCandidate =
   | ToFile
   | ToDirectory
   | ToContent
@@ -72,9 +71,9 @@ export interface InputFile extends BaseFile {
 }
 
 export interface BrowserImportCandidate {
-  path?: string,
-  content?: Blob,
-  mtime?: Mtime,
+  path?: string
+  content?: Blob
+  mtime?: Mtime
   mode?: number
 }
 

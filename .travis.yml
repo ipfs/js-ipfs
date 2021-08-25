@@ -76,8 +76,6 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then npm config set script-shell c:/PROGRA~1/Git/bin/bash.exe ; fi
   # only run jobs in packages that have changed since master in PR builds
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export RUN_SINCE='--since master' ; fi
-  # modules with pre-built binaries may not have deployed versions for bleeding-edge node so this lets us fall back to building from source
-  - npm install -g @mapbox/node-pre-gyp
 
 script:
   - npm run test:node -- $RUN_SINCE -- -- --timeout 10000 --bail -- --exit # TODO remove --exit https://mochajs.org/#-exit
@@ -91,13 +89,13 @@ jobs:
     - name: external - service-worker-gateway
     - name: external - orbit-db
     - name: external - ipfs-log
-    - name: external - sidetree
 
   include:
     - stage: test
       name: lint
       node_js: 'node'
       script:
+        - npm run build
         - npm run lint -- $RUN_SINCE --concurrency 1
 
     - stage: test
@@ -340,16 +338,159 @@ jobs:
         - npm run test:interface:message-port-client -- $RUN_SINCE -- -- --bail -t browser -- --browser firefox
 
     - stage: test
-      name: examples
-      node_js: 'node'
-      cache:
-        npm: false
-      install:
-        - npm run configure-examples:add-examples-lerna
-        - npm run configure-examples:add-examples-npm
-        - npm install
-        - npm run build
-      script: npm run test -- --scope=example* --concurrency=1
+      name: examples - ipfs browser add readable stream
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-add-readable-stream.git
+
+    - stage: test
+      name: examples - ipfs browser angular
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-angular.git
+
+    - stage: test
+      name: examples - ipfs browser browserify
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
+
+    - stage: test
+      name: examples - ipfs browser react
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
+
+    - stage: test
+      name: examples - ipfs browser exchange files
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
+
+    - stage: test
+      name: examples - ipfs browser ipns publish
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
+
+    - stage: test
+      name: examples - ipfs browser mfs
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
+
+    - stage: test
+      name: examples - ipfs browser nextjs
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
+
+    - stage: test
+      name: examples - ipfs browser parceljs
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-parceljs.git
+
+    - stage: test
+      name: examples - ipfs browser readable stream
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
+
+    - stage: test
+      name: examples - ipfs browser script tag
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-script-tag.git
+
+    - stage: test
+      name: examples - ipfs browser service worker
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
+
+    - stage: test
+      name: examples - ipfs browser sharing across tabs
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
+
+    - stage: test
+      name: examples - ipfs browser video streaming
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-video-streaming.git
+
+    - stage: test
+      name: examples - ipfs browser vue
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-vue.git
+
+    - stage: test
+      name: examples - ipfs browser webpack
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
+
+    - stage: test
+      name: examples - ipfs circuit relaying
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
+
+    - stage: test
+      name: examples - ipfs custom ipfs repo
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
+
+    - stage: test
+      name: examples - ipfs custom ipld formats
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
+
+    - stage: test
+      name: examples - ipfs custom libp2p
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
+
+    - stage: test
+      name: examples - ipfs-http-client browser pubsub
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-http-client-browser-pubsub.git
+
+    - stage: test
+      name: examples - ipfs-http-client bundle webpack
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-http-client-bundle-webpack.git
+
+    - stage: test
+      name: examples - ipfs-http-client name api
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-http-client-name-api.git
+
+    - stage: test
+      name: examples - ipfs-http-client upload file
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-http-client-upload-file.git
+
+    - stage: test
+      name: examples - ipfs 101
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-101.git
+
+    - stage: test
+      name: examples - ipfs-client add files
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
+
+    - stage: test
+      name: examples - ipfs electron js
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
+
+    - stage: test
+      name: examples - ipfs running multiple nodes
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
+
+    - stage: test
+      name: examples - ipfs traverse ipld graphs
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
+
+    - stage: test
+      name: examples - types with typescript
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
+
+    - stage: test
+      name: examples - types with typed js
+      script:
+        - npm run test:external -- -- -- https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
 
     - stage: release-rc
       # only run on changes to master
@@ -434,14 +575,6 @@ jobs:
       node_js: 'node'
       script:
         - npm run test:external -- -- -- https://github.com/orbitdb/ipfs-log.git --deps=ipfs@next
-
-    - stage: test-external
-      # only run on changes to master
-      if: branch = master AND type = push AND fork = false
-      name: external - sidetree
-      node_js: 'node'
-      script:
-        - npm run test:external -- -- -- https://github.com/decentralized-identity/sidetree.git --deps=ipfs@next
 
 notifications:
   email: false

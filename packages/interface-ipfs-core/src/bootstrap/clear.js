@@ -2,15 +2,17 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -19,17 +21,12 @@ module.exports = (common, options) => {
   describe('.bootstrap.clear', function () {
     this.timeout(100 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when removing bootstrap nodes', () => {
-      return testTimeout(() => ipfs.bootstrap.clear({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should return a list containing the peer removed when called with a valid arg (ip4)', async () => {
       await ipfs.bootstrap.clear()

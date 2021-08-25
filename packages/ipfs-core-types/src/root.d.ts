@@ -1,19 +1,18 @@
-import type { AbortOptions, PreloadOptions, IPFSPath, ImportSource, ToEntry } from './utils'
-import type CID, { CIDVersion } from 'cids'
-import type { Mtime } from 'ipfs-unixfs'
-import type Multiaddr from 'multiaddr'
-import type { BaseName } from 'multibase'
+import { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
+import { CID, CIDVersion } from 'multiformats/cid'
+import { Mtime } from 'ipfs-unixfs'
+import { Multiaddr } from 'multiaddr'
 
 export interface API<OptionExtension = {}> {
   /**
    * Import a file or data into IPFS
    */
-  add: (entry: ToEntry, options?: AddOptions & OptionExtension) => Promise<AddResult>
+  add: (entry: ImportCandidate, options?: AddOptions & OptionExtension) => Promise<AddResult>
 
   /**
    * Import multiple files and data into IPFS
    */
-  addAll: (source: ImportSource, options?: AddAllOptions & AbortOptions & OptionExtension) => AsyncIterable<AddResult>
+  addAll: (source: ImportCandidateStream, options?: AddAllOptions & AbortOptions & OptionExtension) => AsyncIterable<AddResult>
 
   /**
    * Returns content of the file addressed by a valid IPFS Path or CID
@@ -24,7 +23,7 @@ export interface API<OptionExtension = {}> {
    * Fetch a file or an entire directory tree from IPFS that is addressed by a
    * valid IPFS Path
    */
-  get: (ipfsPath: IPFSPath, options?: GetOptions & OptionExtension) => AsyncIterable<IPFSEntry>
+  get: (ipfsPath: IPFSPath, options?: GetOptions & OptionExtension) => AsyncIterable<Uint8Array>
 
   /**
    * Lists a directory from IPFS that is addressed by a valid IPFS Path
@@ -40,7 +39,7 @@ export interface API<OptionExtension = {}> {
    * console.log(identity)
    * ```
    */
-  id: (options?: AbortOptions & OptionExtension) => Promise<IDResult>
+  id: (options?: IDOptions & OptionExtension) => Promise<IDResult>
 
   /**
    * Returns the implementation version
@@ -82,7 +81,7 @@ export interface API<OptionExtension = {}> {
    * }
    * ```
    */
-  ping: (peerId: CID | string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
+  ping: (peerId: string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
 
   /**
    * Resolve the value of names to IPFS
@@ -139,42 +138,17 @@ export interface API<OptionExtension = {}> {
   isOnline: () => boolean
 }
 
-export interface File {
-  readonly type: 'file'
+export interface IPFSEntry {
+  readonly type: 'dir' | 'file'
   readonly cid: CID
   readonly name: string
-
-  /**
-   * File path
-   */
   readonly path: string
-  /**
-   * File content
-   */
-  readonly content?: AsyncIterable<Uint8Array>
   mode?: number
   mtime?: Mtime
   size: number
-  depth: number
 }
 
-export interface Directory {
-  type: 'dir'
-  cid: CID
-  name: string
-  /**
-   * Directory path
-   */
-  path: string
-  mode?: number
-  mtime?: Mtime
-  size: number
-  depth: number
-}
-
-export type IPFSEntry = File | Directory
-
-export type AddProgressFn = (bytes: number, path?: string) => void
+export interface AddProgressFn { (bytes: number, path?: string): void }
 
 export interface AddOptions extends AbortOptions {
   /**
@@ -282,11 +256,18 @@ export interface CatOptions extends AbortOptions, PreloadOptions {
   length?: number
 }
 
-export interface GetOptions extends AbortOptions, PreloadOptions {}
+export interface GetOptions extends AbortOptions, PreloadOptions {
+  archive?: boolean
+  compress?: boolean
+  compressionLevel?: number
+}
 
 export interface ListOptions extends AbortOptions, PreloadOptions {
-  recursive?: boolean
-  includeContent?: boolean
+
+}
+
+export interface IDOptions extends AbortOptions {
+  peerId?: string
 }
 
 export interface IDResult {
@@ -330,7 +311,7 @@ export interface PingResult {
 
 export interface ResolveOptions extends AbortOptions {
   recursive?: boolean
-  cidBase?: BaseName
+  cidBase?: string
 }
 
 export interface MountOptions extends AbortOptions {

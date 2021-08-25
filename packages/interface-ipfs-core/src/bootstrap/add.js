@@ -2,39 +2,37 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
-const Multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 const invalidArg = 'this/Is/So/Invalid/'
 const validIp4 = new Multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.bootstrap.add', function () {
     this.timeout(100 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when adding bootstrap nodes', () => {
-      return testTimeout(() => ipfs.bootstrap.add(validIp4, {
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should return an error when called with an invalid arg', () => {
+      // @ts-expect-error invalid input
       return expect(ipfs.bootstrap.add(invalidArg)).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
     })

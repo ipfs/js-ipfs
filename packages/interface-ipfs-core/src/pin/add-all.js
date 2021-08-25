@@ -5,24 +5,26 @@ const { fixtures, clearPins } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const drain = require('it-drain')
-const testTimeout = require('../utils/test-timeout')
-const CID = require('cids')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pin.addAll', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
 
       await drain(
         ipfs.addAll(
@@ -44,12 +46,16 @@ module.exports = (common, options) => {
       )
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     beforeEach(() => {
       return clearPins(ipfs)
     })
 
+    /**
+     *
+     * @param {Iterable<import('ipfs-core-types/src/pin').AddInput> | AsyncIterable<import('ipfs-core-types/src/pin').AddInput>} source
+     */
     async function testAddPinInput (source) {
       const pinset = await all(ipfs.pin.addAll(source))
 
@@ -117,12 +123,6 @@ module.exports = (common, options) => {
           recursive: true
         }
       }())
-    })
-
-    it('should respect timeout option when pinning a block', () => {
-      return testTimeout(() => ipfs.pin.addAll([new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')], {
-        timeout: 1
-      }))
     })
   })
 }

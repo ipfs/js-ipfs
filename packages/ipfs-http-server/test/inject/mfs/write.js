@@ -3,6 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const http = require('../../utils/http')
+const matchIterable = require('../../utils/match-iterable')
 const sinon = require('sinon')
 const FormData = require('form-data')
 const streamToPromise = require('stream-to-promise')
@@ -54,10 +55,6 @@ async function send (text, options = {}) {
     headers: form.getHeaders(),
     payload: await streamToPromise(form)
   }
-}
-
-function matchIterable () {
-  return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
 }
 
 describe('/files/write', () => {

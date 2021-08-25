@@ -81,7 +81,7 @@ module.exports = {
         return {
           env: {
             PINNING_SERVICE_ENDPOINT: pinningService.endpoint,
-            PINNING_SERVIEC_KEY: pinningService.token,
+            PINNING_SERVICE_KEY: pinningService.token,
             ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`,
             IPFSD_SERVER: `http://127.0.0.1:${ipfsdPort}`,
             SIGNALA_SERVER: `/ip4/127.0.0.1/tcp/${signalAPort}/ws/p2p-webrtc-star`,
@@ -98,7 +98,7 @@ module.exports = {
       return {
         env: {
           PINNING_SERVICE_ENDPOINT: pinningService.endpoint,
-          PINNING_SERVIEC_KEY: pinningService.token,
+          PINNING_SERVICE_KEY: pinningService.token,
           ECHO_SERVER: `http://${echoServer.host}:${echoServer.port}`
         },
         echoServer,
@@ -118,7 +118,7 @@ module.exports = {
     }
   },
   build: {
-    bundlesizeMax: '614kB',
+    bundlesizeMax: '477KB',
     config: esbuild
   },
   dependencyCheck: {

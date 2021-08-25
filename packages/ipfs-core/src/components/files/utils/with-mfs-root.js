@@ -1,13 +1,10 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { UnixFS } = require('ipfs-unixfs')
-const {
-  DAGNode
-} = require('ipld-dag-pb')
+const dagPb = require('@ipld/dag-pb')
+const { sha256 } = require('multiformats/hashes/sha2')
 const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
 const errCode = require('err-code')
 
 const {
@@ -28,32 +25,34 @@ const loadMfsRoot = async (context, options) => {
   }
 
   // Open the repo if it's been closed
-  await context.repo.datastore.open()
+  await context.repo.root.open()
 
   // Load the MFS root CID
   let cid
 
   try {
-    const buf = await context.repo.datastore.get(MFS_ROOT_KEY)
+    const buf = await context.repo.root.get(MFS_ROOT_KEY)
 
-    cid = new CID(buf)
+    cid = CID.decode(buf)
   } catch (err) {
     if (err.code !== 'ERR_NOT_FOUND') {
       throw err
     }
 
     log('Creating new MFS root')
-    const node = new DAGNode(new UnixFS({ type: 'directory' }).marshal())
-    cid = await context.ipld.put(node, mc.DAG_PB, {
-      cidVersion: 0,
-      hashAlg: mh.names['sha2-256'] // why can't ipld look this up?
+    const buf = dagPb.encode({
+      Data: new UnixFS({ type: 'directory' }).marshal(),
+      Links: []
     })
+    const hash = await sha256.digest(buf)
+    cid = CID.createV0(hash)
+    await context.repo.blocks.put(cid, buf)
 
     if (options && options.signal && options.signal.aborted) {
       throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
     }
 
-    await context.repo.datastore.put(MFS_ROOT_KEY, cid.bytes)
+    await context.repo.root.put(MFS_ROOT_KEY, cid.bytes)
   }
 
   log(`Loaded MFS root /ipfs/${cid}`)

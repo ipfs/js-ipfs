@@ -1,7 +1,7 @@
 'use strict'
 
 const modeToString = require('./mode-to-string')
-const { parseMtime } = require('ipfs-unixfs')
+const parseMtime = require('../lib/parse-mtime')
 
 /**
  * @param {*} params

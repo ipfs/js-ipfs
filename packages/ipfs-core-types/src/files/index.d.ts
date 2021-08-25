@@ -1,9 +1,6 @@
 import { AbortOptions, IPFSPath } from '../utils'
-import { ToMTime } from './files'
-import CID, { CIDVersion } from 'cids'
-import { CodecName } from 'multicodec'
-import { HashName } from 'multihashes'
-import { Mtime } from 'ipfs-unixfs'
+import { CID, CIDVersion } from 'multiformats/cid'
+import { Mtime, MtimeLike } from 'ipfs-unixfs'
 import type { AddProgressFn } from '../root'
 
 export interface API<OptionExtension = {}> {
@@ -36,13 +33,13 @@ export interface API<OptionExtension = {}> {
    * @example
    * ```js
    * // To copy a file
-* await ipfs.files.cp('/src-file', '/dst-file')
-*
-* // To copy a directory
-* await ipfs.files.cp('/src-dir', '/dst-dir')
-*
-* // To copy multiple files to a directory
-* await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
+   * await ipfs.files.cp('/src-file', '/dst-file')
+   *
+   * // To copy a directory
+   * await ipfs.files.cp('/src-dir', '/dst-dir')
+   *
+   * // To copy multiple files to a directory
+   * await ipfs.files.cp('/src-file1', '/src-file2', '/dst-dir')
    * ```
    */
   cp: (from: IPFSPath | IPFSPath[], to: string, options?: CpOptions & OptionExtension) => Promise<void>
@@ -82,7 +79,7 @@ export interface API<OptionExtension = {}> {
    * await ipfs.files.rm('/my/beautiful/file.txt')
    *
    * // To remove multiple files
-   * await ipfs.files.rm('/my/beautiful/file.txt', '/my/other/file.txt')
+   * await ipfs.files.rm(['/my/beautiful/file.txt', '/my/other/file.txt'])
    *
    * // To remove a directory
    * await ipfs.files.rm('/my/beautiful/directory', { recursive: true })
@@ -105,7 +102,7 @@ export interface API<OptionExtension = {}> {
    * // Hello, World!
    * ```
    */
-  read: (ipfsPath: IPFSPath, options?: ResolveOptions & OptionExtension) => AsyncIterable<Uint8Array>
+  read: (ipfsPath: IPFSPath, options?: ReadOptions & OptionExtension) => AsyncIterable<Uint8Array>
 
   /**
    * Write to an MFS path
@@ -211,7 +208,7 @@ export interface ChmodOptions extends MFSOptions, AbortOptions {
   /**
    * The hash algorithm to use for any updated entries
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The CID version to use for any updated entries
@@ -233,7 +230,7 @@ export interface CpOptions extends MFSOptions, AbortOptions {
   /**
    * The hash algorithm to use for any updated entries
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The CID version to use for any updated entries
@@ -260,12 +257,12 @@ export interface MkdirOptions extends MFSOptions, AbortOptions {
   /**
    * A Date object, an object with { secs, nsecs } properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of process.hrtime()
    */
-  mtime?: ToMTime
+  mtime?: MtimeLike
 
   /**
    * The hash algorithm to use for any updated entries
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The CID version to use for any updated entries
@@ -351,12 +348,12 @@ export interface TouchOptions extends MFSOptions, AbortOptions {
   /**
    * A Date object, an object with { secs, nsecs } properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of process.hrtime()
    */
-  mtime?: ToMTime
+  mtime?: MtimeLike
 
   /**
    * The hash algorithm to use for any updated entries
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The CID version to use for any updated entries
@@ -378,7 +375,7 @@ export interface RmOptions extends MFSOptions, AbortOptions {
   /**
    * The hash algorithm to use for any updated entries
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The CID version to use for any updated entries
@@ -442,12 +439,12 @@ export interface WriteOptions extends MFSOptions, AbortOptions {
   /**
    * A Date object, an object with { secs, nsecs } properties where secs is the number of seconds since (positive) or before (negative) the Unix Epoch began and nsecs is the number of nanoseconds since the last full second, or the output of process.hrtime()
    */
-  mtime?: ToMTime
+  mtime?: MtimeLike
 
   /**
    * The hash algorithm to use for any updated entries
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The CID version to use for any updated entries
@@ -484,7 +481,7 @@ export interface MvOptions extends MFSOptions, AbortOptions {
   /**
    * The hash algorithm to use for any updated entries
    */
-  hashAlg?: HashName
+  hashAlg?: string
 
   /**
    * The CID version to use for any updated entries

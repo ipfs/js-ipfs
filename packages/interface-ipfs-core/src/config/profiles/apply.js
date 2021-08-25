@@ -2,39 +2,36 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const testTimeout = require('../../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.config.profiles.apply', function () {
     this.timeout(30 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when applying a config profile', () => {
-      return testTimeout(() => ipfs.config.profiles.apply('server', {
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should apply a config profile', async () => {
       const diff = await ipfs.config.profiles.apply('lowpower')
-      expect(diff.original.Swarm.ConnMgr.LowWater).to.not.equal(diff.updated.Swarm.ConnMgr.LowWater)
+      expect(diff.original.Swarm?.ConnMgr?.LowWater).to.not.equal(diff.updated.Swarm?.ConnMgr?.LowWater)
 
       const newConfig = await ipfs.config.getAll()
-      expect(newConfig.Swarm.ConnMgr.LowWater).to.equal(diff.updated.Swarm.ConnMgr.LowWater)
+      expect(newConfig.Swarm?.ConnMgr?.LowWater).to.equal(diff.updated.Swarm?.ConnMgr?.LowWater)
     })
 
     it('should strip private key from diff output', async () => {

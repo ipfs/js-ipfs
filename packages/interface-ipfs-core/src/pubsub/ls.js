@@ -4,24 +4,28 @@
 const { getTopic } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pubsub.ls', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
+    /** @type {string[]} */
     let subscribedTopics = []
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
     afterEach(async () => {
@@ -32,13 +36,7 @@ module.exports = (common, options) => {
       await delay(100)
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when listing pubsub subscriptions', () => {
-      return testTimeout(() => ipfs.pubsub.ls({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should return an empty list when no topics are subscribed', async () => {
       const topics = await ipfs.pubsub.ls()

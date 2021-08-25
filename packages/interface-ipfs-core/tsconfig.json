@@ -1,0 +1,15 @@
+{
+  "extends": "aegir/src/config/tsconfig.aegir.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": [
+    "src",
+    "types"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-core-types"
+    }
+  ]
+}

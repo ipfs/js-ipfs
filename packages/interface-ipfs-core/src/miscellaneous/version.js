@@ -2,31 +2,28 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.version', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when getting the node version', () => {
-      return testTimeout(() => ipfs.version({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should get the node version', async () => {
       const result = await ipfs.version()

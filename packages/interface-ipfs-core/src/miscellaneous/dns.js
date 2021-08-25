@@ -2,33 +2,31 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dns', function () {
     this.timeout(60 * 1000)
     this.retries(3)
+
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when resolving a DNS name', () => {
-      return testTimeout(() => ipfs.dns('derp.io', {
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should non-recursively resolve ipfs.io', async function () {
       try {
@@ -38,6 +36,7 @@ module.exports = (common, options) => {
         expect(res).to.match(/\/ipns\/.+$/)
       } catch (err) {
         if (err.message.includes('could not resolve name')) {
+          // @ts-ignore this is mocha
           return this.skip()
         }
 
@@ -53,6 +52,7 @@ module.exports = (common, options) => {
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (err) {
         if (err.message.includes('could not resolve name')) {
+          // @ts-ignore this is mocha
           return this.skip()
         }
 
@@ -68,6 +68,7 @@ module.exports = (common, options) => {
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (err) {
         if (err.message.includes('could not resolve name')) {
+          // @ts-ignore this is mocha
           return this.skip()
         }
 

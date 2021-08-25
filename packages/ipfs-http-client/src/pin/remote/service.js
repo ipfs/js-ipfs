@@ -11,6 +11,7 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
  * @typedef {import('ipfs-core-types/src/pin/remote/service').RemotePinServiceWithStat} RemotePinServiceWithStat
  * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/pin/remote/service').API<HTTPClientExtraOptions>} RemotePiningServiceAPI
+ * @typedef {import('ipfs-core-types/src/pin/remote/service').Stat} Stat
  */
 class Service {
   /**
@@ -120,8 +121,7 @@ Service.prototype.ls = async function ls (options = {}) {
   /** @type {{RemoteServices: Object[]}} */
   const { RemoteServices } = await response.json()
 
-  /** @type {Stat extends true ? RemotePinServiceWithStat[] : RemotePinService []} */
-  return (RemoteServices.map(Service.decodeRemoteService))
+  return RemoteServices.map(Service.decodeRemoteService)
 }
 
 module.exports = Service

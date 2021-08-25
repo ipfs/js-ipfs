@@ -5,6 +5,7 @@ module.exports = () => ({
     Swarm: [
     ],
     Announce: [],
+    NoAnnounce: [],
     API: '',
     Gateway: '',
     RPC: '',

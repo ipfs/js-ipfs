@@ -3,7 +3,8 @@
 
 const tests = require('interface-ipfs-core')
 const factory = require('./utils/factory')
-const isWindows = global.process && global.process.platform && global.process.platform === 'win32'
+const isWindows = globalThis.process && globalThis.process.platform && globalThis.process.platform === 'win32'
+const isFirefox = globalThis.navigator?.userAgent?.toLowerCase().includes('firefox')
 
 /** @typedef {import("ipfsd-ctl").ControllerOptions} ControllerOptions */
 
@@ -70,7 +71,18 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         name: 'should error during add-all stream',
         reason: 'Not supported by http'
       }
-    ]
+    ].concat(isFirefox
+      ? [{
+          name: 'should add a BIG Uint8Array',
+          reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+        }, {
+          name: 'should add a BIG Uint8Array with progress enabled',
+          reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+        }, {
+          name: 'should add big files',
+          reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+        }]
+      : [])
   })
 
   tests.bitswap(commonFactory, {
@@ -82,12 +94,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ]
   })
 
-  tests.block(commonFactory, {
-    skip: [{
-      name: 'should get a block added as CIDv1 with a CIDv0',
-      reason: 'go-ipfs does not support the `version` param'
-    }]
-  })
+  tests.block(commonFactory)
 
   tests.bootstrap(commonFactory)
 
@@ -97,10 +104,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       {
         name: 'replace',
         reason: 'FIXME Waiting for fix on go-ipfs https://github.com/ipfs/js-ipfs-http-client/pull/307#discussion_r69281789 and https://github.com/ipfs/go-ipfs/issues/2927'
-      },
-      {
-        name: 'should respect timeout option when listing config profiles',
-        reason: 'TODO: Not implemented in go-ipfs'
       },
       {
         name: 'should list config profiles',
@@ -115,11 +118,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
 
   tests.dag(commonFactory, {
     skip: [
-      // dag.tree
-      {
-        name: 'tree',
-        reason: 'TODO vmx 2018-02-22: Currently the tree API is not exposed in go-ipfs'
-      },
       // dag.get:
       {
         name: 'should get a dag-pb node local value',
@@ -130,7 +128,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'FIXME vmx 2018-02-22: Currently not supported in go-ipfs, it might be possible once https://github.com/ipfs/go-ipfs/issues/4728 is done'
       },
       {
-        name: 'should get by CID string + path',
+        name: 'should get by CID with path option',
         reason: 'FIXME vmx 2018-02-22: Currently not supported in go-ipfs, it might be possible once https://github.com/ipfs/go-ipfs/issues/4728 is done'
       },
       {
@@ -162,10 +160,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       },
       {
         name: 'should ls from outside of mfs',
-        reason: 'TODO not implemented in go-ipfs yet'
-      },
-      {
-        name: 'should respect timeout option when changing the mode of a file',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
@@ -258,10 +252,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       },
       {
         name: 'should respect metadata when copying from outside of mfs',
-        reason: 'TODO not implemented in go-ipfs yet'
-      },
-      {
-        name: 'should respect timeout option when updating the modification time of files',
         reason: 'TODO not implemented in go-ipfs yet'
       },
       {
@@ -461,6 +451,30 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'TODO go-ipfs drops the connection'
       }
     ]
+      .concat(isFirefox
+        ? [{
+            name: 'overwrites start of a file without truncating (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'limits how many bytes to write to a file (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'pads the start of a new file when an offset is specified (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'expands a file when an offset is specified (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'expands a file when an offset is specified and the offset is longer than the file (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'truncates a file after writing (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }, {
+            name: 'writes a file with raw blocks for newly created leaf nodes (Really large file)',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }]
+        : [])
   })
 
   tests.key(commonFactory, {
@@ -500,14 +514,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ipfsOptions: {
       offline: true
     }
-  }), {
-    skip: [
-      {
-        name: 'should resolve a record from peerid as cidv1 in base32',
-        reason: 'TODO not implemented in go-ipfs yet: https://github.com/ipfs/go-ipfs/issues/5287'
-      }
-    ]
-  })
+  }))
 
   tests.namePubsub(factory({
     type: 'go',
@@ -575,6 +582,12 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
         reason: 'FIXME go-ipfs throws invalid encoding: protobuf'
       }
     ]
+      .concat(isFirefox
+        ? [{
+            name: 'should supply unaltered data',
+            reason: 'https://github.com/microsoft/playwright/issues/4704#issuecomment-826782602'
+          }]
+        : [])
   })
 
   tests.pin(commonFactory, {
@@ -604,16 +617,21 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
       args: ['--enable-pubsub-experiment']
     }
   }), {
-    skip: isWindows
-      ? [{
-          name: 'should send/receive 100 messages',
-          reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
-        },
-        {
-          name: 'should receive multiple messages',
-          reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
-        }]
-      : null
+    skip: [{
+      name: 'should receive messages from a different node on lots of topics',
+      reason: 'HTTP clients cannot hold this many connections open'
+    }].concat(
+      isWindows
+        ? [{
+            name: 'should send/receive 100 messages',
+            reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
+          },
+          {
+            name: 'should receive multiple messages',
+            reason: 'FIXME https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246 and https://github.com/ipfs/go-ipfs/issues/4778'
+          }]
+        : []
+    )
   })
 
   tests.repo(commonFactory)

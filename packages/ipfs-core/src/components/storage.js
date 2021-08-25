@@ -7,13 +7,13 @@ const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const PeerId = require('peer-id')
-const { mergeOptions } = require('../utils')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const configService = require('./config')
-const { NotEnabledError } = require('../errors')
+const { NotEnabledError, NotInitializedError } = require('../errors')
 const createLibP2P = require('./libp2p')
 
 /**
- * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('../types').InitOptions} InitOptions
  * @typedef {import('../types').Print} Print
@@ -42,13 +42,18 @@ class Storage {
 
   /**
    * @param {Print} print
+   * @param {import('ipfs-core-utils/src/multicodecs')} codecs
    * @param {IPFSOptions} options
    */
-  static async start (print, options) {
-    const { repoAutoMigrate, repo: inputRepo } = options
+  static async start (print, codecs, options) {
+    const { repoAutoMigrate, repo: inputRepo, onMigrationProgress } = options
 
     const repo = (typeof inputRepo === 'string' || inputRepo == null)
-      ? createRepo(print, { path: inputRepo, autoMigrate: Boolean(repoAutoMigrate) })
+      ? createRepo(print, codecs, {
+        path: inputRepo,
+        autoMigrate: repoAutoMigrate,
+        onMigrationProgress: onMigrationProgress
+      })
       : inputRepo
 
     const { peerId, keychain, isNew } = await loadRepo(print, repo, options)
@@ -120,28 +125,39 @@ const initRepo = async (print, repo, options) => {
   }
   await repo.init(config)
 
-  // 4. Open initalized repo.
+  // 4. Open initialized repo.
   await repo.open()
 
   log('repo opened')
 
+  /** @type {import('./libp2p').KeychainConfig} */
+  const keychainConfig = {
+    pass: options.pass
+  }
+
+  try {
+    keychainConfig.dek = await repo.config.get('Keychain.DEK')
+  } catch (err) {
+    if (err.code !== 'ERR_NOT_FOUND') {
+      throw err
+    }
+  }
+
   // Create libp2p for Keychain creation
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,
     repo,
     config,
-    keychainConfig: {
-      pass: options.pass
-    }
+    keychainConfig
   })
 
   if (libp2p.keychain && libp2p.keychain.opts) {
     await libp2p.loadKeychain()
 
     await repo.config.set('Keychain', {
-      dek: libp2p.keychain.opts.dek
+      DEK: libp2p.keychain.opts.dek
     })
   }
 
@@ -167,13 +183,13 @@ const decodePeerId = (peerId) => {
  *
  * @param {Print} print
  * @param {Object} options
- * @param {KeyType} [options.algorithm='RSA']
+ * @param {KeyType} [options.algorithm='Ed25519']
  * @param {number} [options.bits=2048]
  * @returns {Promise<PeerId>}
  */
-const initPeerId = (print, { algorithm = 'RSA', bits = 2048 }) => {
+const initPeerId = (print, { algorithm = 'Ed25519', bits = 2048 }) => {
   // Generate peer identity keypair + transform to desired format + add to config.
-  print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)
+  print('generating %s keypair...', algorithm)
   return PeerId.create({ keyType: algorithm, bits })
 }
 
@@ -198,16 +214,18 @@ const configureRepo = async (repo, options) => {
   const profiles = (options.init && options.init.profiles) || []
   const pass = options.pass
   const original = await repo.config.getAll()
-  // @ts-ignore TODO: move config types to repo
   const changed = mergeConfigs(applyProfiles(original, profiles), config)
 
   if (original !== changed) {
     await repo.config.replace(changed)
   }
 
-  // @ts-ignore - Identity may not be present
+  if (!changed.Identity || !changed.Identity.PrivKey) {
+    throw new NotInitializedError('No private key was found in the config, please intialize the repo')
+  }
+
   const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
-  const libp2p = createLibP2P({
+  const libp2p = await createLibP2P({
     options: undefined,
     multiaddrs: undefined,
     peerId,

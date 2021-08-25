@@ -1,7 +1,7 @@
 'use strict'
 
 const last = require('it-last')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 /**
  * @param {Object} config
@@ -14,7 +14,7 @@ module.exports = ({ addAll }) =>
   (path, options = {}) => {
     let iter
 
-    if (CID.isCID(path)) {
+    if (path instanceof CID) {
       iter = addAll([{
         cid: path,
         ...options

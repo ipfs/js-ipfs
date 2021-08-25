@@ -3,33 +3,31 @@
 
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.key.list', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when listing keys', () => {
-      return testTimeout(() => ipfs.key.list({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should list all the keys', async function () {
+      // @ts-ignore this is mocha
       this.timeout(60 * 1000)
 
       const keys = await Promise.all([1, 2, 3].map(() => ipfs.key.gen(nanoid(), { type: 'rsa', size: 2048 })))

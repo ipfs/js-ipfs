@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package ipfs;
+
+service PubSub {
+    rpc subscribe (SubscribeRequest) returns (stream SubscribeResponse) {}
+    rpc unsubscribe (UnSubscribeRequest) returns (UnSubscribeResponse) {}
+}
+
+message SubscribeRequest {
+    string topic = 1;
+}
+
+message SubscribeResponse {
+    string handler = 1;
+    string from = 2;
+    bytes seqno = 3;
+    bytes data = 4;
+    repeated string topicIDs = 5;
+}
+
+message UnSubscribeRequest {
+    string topic = 1;
+    repeated string handlers = 2;
+}
+
+message UnSubscribeResponse {
+
+}

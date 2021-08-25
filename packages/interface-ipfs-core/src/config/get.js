@@ -2,32 +2,30 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.config.get', function () {
     this.timeout(30 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when getting config values', () => {
-      return testTimeout(() => ipfs.config.get('Identity.PeerID', {
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should fail with error', async () => {
+      // @ts-expect-error missing arg
       await expect(ipfs.config.get()).to.eventually.rejectedWith('key argument is required')
     })
 
@@ -42,6 +40,7 @@ module.exports = (common, options) => {
     })
 
     it('should fail on non valid key', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.config.get(1234)).to.eventually.be.rejected()
     })
 
@@ -52,17 +51,12 @@ module.exports = (common, options) => {
 
   describe('.config.getAll', function () {
     this.timeout(30 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when getting config values', () => {
-      return testTimeout(() => ipfs.config.getAll({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should retrieve the whole config', async () => {
       const config = await ipfs.config.getAll()

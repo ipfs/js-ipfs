@@ -18,35 +18,54 @@ import { API as RepoAPI } from './repo'
 import { API as StatsAPI } from './stats'
 import { API as SwarmAPI } from './swarm'
 import { AbortOptions, Await, AwaitIterable } from './utils'
+import type { BlockCodec } from 'multiformats/codecs/interface'
+import type { MultibaseCodec } from 'multiformats/bases/interface'
+import type { MultihashHasher } from 'multiformats/hashes/interface'
 
-interface RefsAPI extends Refs {
-  local: Local
+interface RefsAPI<OptionExtension = {}> extends Refs<OptionExtension> {
+  local: Local<OptionExtension>
 }
 
-export interface IPFS extends RootAPI {
-  bitswap: BitswapAPI
-  block: BlockAPI
-  bootstrap: BootstrapAPI
-  config: ConfigAPI
-  dag: DAGAPI
-  dht: DHTAPI
-  diag: DiagAPI
-  files: FilesAPI
-  key: KeyAPI
-  log: LogAPI
-  name: NameAPI
-  object: ObjectAPI
-  pin: PinAPI
-  pubsub: PubsubAPI
-  refs: RefsAPI
-  repo: RepoAPI
-  stats: StatsAPI
-  swarm: SwarmAPI
+export interface IPFS<OptionExtension = {}> extends RootAPI<OptionExtension> {
+  bitswap: BitswapAPI<OptionExtension>
+  block: BlockAPI<OptionExtension>
+  bootstrap: BootstrapAPI<OptionExtension>
+  config: ConfigAPI<OptionExtension>
+  dag: DAGAPI<OptionExtension>
+  dht: DHTAPI<OptionExtension>
+  diag: DiagAPI<OptionExtension>
+  files: FilesAPI<OptionExtension>
+  key: KeyAPI<OptionExtension>
+  log: LogAPI<OptionExtension>
+  name: NameAPI<OptionExtension>
+  object: ObjectAPI<OptionExtension>
+  pin: PinAPI<OptionExtension>
+  pubsub: PubsubAPI<OptionExtension>
+  refs: RefsAPI<OptionExtension>
+  repo: RepoAPI<OptionExtension>
+  stats: StatsAPI<OptionExtension>
+  swarm: SwarmAPI<OptionExtension>
+  bases: Bases
+  codecs: Codecs
+  hashers: Hashers
+}
+
+interface Bases {
+  getBase: (code: string) => Promise<MultibaseCodec<any>>
+  listBases: () => Array<MultibaseCodec<any>>
+}
+
+interface Codecs {
+  getCodec: (code: number | string) => Promise<BlockCodec<any, any>>
+  listCodecs: () => Array<BlockCodec<any, any>>
+}
+
+interface Hashers {
+  getHasher: (code: number | string) => Promise<MultihashHasher>
+  listHashers: () => MultihashHasher[]
 }
 
 export type {
-  IPFS,
-
   AbortOptions,
   Await,
   AwaitIterable

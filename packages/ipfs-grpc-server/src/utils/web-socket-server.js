@@ -7,10 +7,10 @@ const debug = require('debug')('ipfs:grpc-server:utils:web-socket-server')
 // @ts-ignore - no types
 const coerce = require('coercer')
 const { camelCase } = require('change-case')
-const ma = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 
 /**
- * @param {Buffer} buf - e.g. `Buffer.from('foo-bar: baz\r\n')`
+ * @param {import('ws').Data} buf - e.g. `Buffer.from('foo-bar: baz\r\n')`
  * @returns {Record<string, any>} - e.g. `{ foorBar: 'baz' }`
  **/
 const fromHeaders = (buf) => {
@@ -82,14 +82,14 @@ class Messages extends EventEmitter {
           // which is not how this server runs: https://nodejs.org/dist/latest-v15.x/docs/api/net.html#net_server_address
           this.info = {
             uri: info,
-            ma: ma(info)
+            ma: new Multiaddr(info)
           }
         } else {
           this.info = {
             address: info.address,
             port: info.port,
             uri: `http://${info.address}:${info.port}`,
-            ma: ma(`/ip4/${info.address}/tcp/${info.port}/ws`)
+            ma: new Multiaddr(`/ip4/${info.address}/tcp/${info.port}/ws`)
           }
         }
 
@@ -106,10 +106,10 @@ class Messages extends EventEmitter {
  */
 module.exports = async (ipfs, options = {}) => {
   const config = await ipfs.config.getAll()
-  const grpcAddr = config.Addresses.RPC
+  const grpcAddr = config.Addresses?.RPC
 
   if (!grpcAddr) {
-    throw new Error('No gRPC address configured, please set an Adresses.RPC key in your IPFS config')
+    throw new Error('No gRPC address configured, please set an Addresses.RPC key in your IPFS config')
   }
 
   const [,, host, , port] = grpcAddr.split('/')

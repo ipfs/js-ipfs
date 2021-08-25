@@ -3,28 +3,30 @@
 
 const { fixtures, clearRemotePins, clearServices } = require('../utils')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const testTimeout = require('../../utils/test-timeout')
-const CID = require('cids')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   const ENDPOINT = new URL(process.env.PINNING_SERVICE_ENDPOINT || '')
-  const KEY = process.env.PINNING_SERVIEC_KEY
+  const KEY = `${process.env.PINNING_SERVICE_KEY}`
   const SERVICE = 'pinbot'
 
   describe('.pin.remote.add', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
       await ipfs.pin.remote.service.add(SERVICE, {
         endpoint: ENDPOINT,
         key: KEY
@@ -32,7 +34,7 @@ module.exports = (common, options) => {
     })
     after(async () => {
       await clearServices(ipfs)
-      await common.clean()
+      await factory.clean()
     })
 
     beforeEach(async () => {
@@ -137,13 +139,6 @@ module.exports = (common, options) => {
         status: 'queued',
         name: ''
       })
-    })
-
-    it('should respect timeout option when pinning a block', () => {
-      return testTimeout(() => ipfs.pin.remote.add(new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'), {
-        timeout: 1,
-        service: SERVICE
-      }))
     })
   })
 }

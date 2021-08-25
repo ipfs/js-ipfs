@@ -4,15 +4,18 @@
 const { getDescribe, getIt } = require('../utils/mocha')
 const { waitForWantlistKey } = require('./utils')
 const { isWebWorker } = require('ipfs-utils/src/env')
-const testTimeout = require('../utils/test-timeout')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+const { CID } = require('multiformats/cid')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
@@ -20,31 +23,31 @@ module.exports = (common, options) => {
   describe('.bitswap.wantlistForPeer', function () {
     this.timeout(60 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsA
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsB
     const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
     before(async () => {
-      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB
-      ipfsB.block.get(key).catch(() => { /* is ok, expected on teardown */ })
+      ipfsB.block.get(CID.parse(key)).catch(() => { /* is ok, expected on teardown */ })
 
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      const ipfsBId = await ipfsB.id()
+
+      await ipfsA.swarm.connect(ipfsBId.addresses[0])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
-    it('should respect timeout option when getting bitswap wantlist by peer', () => {
-      return testTimeout(() => ipfsA.bitswap.wantlistForPeer(ipfsB.peerId.id, {
-        timeout: 1
-      }))
-    })
+    it('should get the wantlist by peer ID for a different node', async () => {
+      const ipfsBId = await ipfsB.id()
 
-    it('should get the wantlist by peer ID for a different node', function () {
       return waitForWantlistKey(ipfsA, key, {
-        peerId: ipfsB.peerId.id,
+        peerId: ipfsBId.id,
         timeout: 60 * 1000
       })
     })

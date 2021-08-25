@@ -3,32 +3,29 @@
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.config.set', function () {
     this.timeout(30 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when setting config values', () => {
-      return testTimeout(() => ipfs.config.set('Fruit', 'banana', {
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should set a new key', async () => {
       await ipfs.config.set('Fruit', 'banana')
@@ -81,6 +78,7 @@ module.exports = (common, options) => {
     })
 
     it('should fail on non valid key', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.config.set(uint8ArrayFromString('heeey'), '')).to.eventually.be.rejected()
     })
 

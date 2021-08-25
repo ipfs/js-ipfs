@@ -6,49 +6,52 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { fixture } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const last = require('it-last')
-const testTimeout = require('../utils/test-timeout')
-const CID = require('cids')
+const PeerId = require('peer-id')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.name.publish offline', () => {
     const keyName = nanoid()
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
+    /** @type {string} */
     let nodeId
 
     before(async () => {
-      ipfs = (await common.spawn()).api
-      nodeId = ipfs.peerId.id
+      ipfs = (await factory.spawn()).api
+      const peerInfo = await ipfs.id()
+      nodeId = peerInfo.id
       await ipfs.add(fixture.data, { pin: false })
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when publishing an IPNS name', () => {
-      return testTimeout(() => ipfs.name.publish(fixture.cid, {
-        allowOffline: true,
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should publish an IPNS record with the default params', async function () {
+      // @ts-ignore this is mocha
       this.timeout(50 * 1000)
 
       const value = fixture.cid
       const keys = await ipfs.key.list()
       const self = keys.find(key => key.name === 'self')
 
+      if (!self) {
+        throw new Error('No self key found')
+      }
+
       const res = await ipfs.name.publish(value, { allowOffline: true })
       expect(res).to.exist()
 
-      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(self.id).toV1().toString('base36'))
+      expect(PeerId.parse(res.name).toString()).to.equal(PeerId.parse(self.id).toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
@@ -59,11 +62,16 @@ module.exports = (common, options) => {
     })
 
     it('should publish correctly when the file was not added but resolve is disabled', async function () {
+      // @ts-ignore this is mocha
       this.timeout(50 * 1000)
 
       const value = 'QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
       const keys = await ipfs.key.list()
       const self = keys.find(key => key.name === 'self')
+
+      if (!self) {
+        throw new Error('No self key found')
+      }
 
       const options = {
         resolve: false,
@@ -75,11 +83,12 @@ module.exports = (common, options) => {
 
       const res = await ipfs.name.publish(value, options)
       expect(res).to.exist()
-      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(self.id).toV1().toString('base36'))
+      expect(PeerId.parse(res.name).toString()).to.equal(PeerId.parse(self.id).toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
 
     it('should publish with a key received as param, instead of using the key of the node', async function () {
+      // @ts-ignore this is mocha
       this.timeout(90 * 1000)
 
       const value = fixture.cid
@@ -95,7 +104,7 @@ module.exports = (common, options) => {
       const res = await ipfs.name.publish(value, options)
 
       expect(res).to.exist()
-      expect(new CID(res.name).toV1().toString('base36')).to.equal(new CID(key.id).toV1().toString('base36'))
+      expect(PeerId.parse(res.name).toString()).to.equal(PeerId.parse(key.id).toString())
       expect(res.value).to.equal(`/ipfs/${value}`)
     })
   })

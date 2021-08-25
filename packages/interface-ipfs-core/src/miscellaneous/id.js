@@ -2,40 +2,37 @@
 'use strict'
 
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const Multiaddr = require('multiaddr')
-const CID = require('cids')
-const testTimeout = require('../utils/test-timeout')
+const { Multiaddr } = require('multiaddr')
 const { isWebWorker } = require('ipfs-utils/src/env')
+const retry = require('p-retry')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.id', function () {
+    // @ts-ignore this is mocha
     this.timeout(60 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when getting the node id', () => {
-      return testTimeout(() => ipfs.id({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should get the node ID', async () => {
       const res = await ipfs.id()
       expect(res).to.have.a.property('id').that.is.a('string')
-      expect(CID.isCID(new CID(res.id))).to.equal(true)
       expect(res).to.have.a.property('publicKey')
       expect(res).to.have.a.property('agentVersion').that.is.a('string')
       expect(res).to.have.a.property('protocolVersion').that.is.a('string')
@@ -68,10 +65,42 @@ module.exports = (common, options) => {
     it('should return swarm ports opened after startup', async function () {
       if (isWebWorker) {
         // TODO: webworkers are not currently dialable
+        // @ts-ignore this is mocha
         return this.skip()
       }
 
       await expect(ipfs.id()).to.eventually.have.property('addresses').that.is.not.empty()
+    })
+
+    it('should get the id of another node in the swarm', async function () {
+      if (isWebWorker) {
+        // TODO: https://github.com/libp2p/js-libp2p-websockets/issues/129
+        // @ts-ignore this is mocha
+        return this.skip()
+      }
+
+      const ipfsB = (await factory.spawn()).api
+      const ipfsBId = await ipfsB.id()
+      await ipfs.swarm.connect(ipfsBId.addresses[0])
+
+      // have to wait for identify to complete before protocols etc are available for remote hosts
+      await retry(async () => {
+        const result = await ipfs.id({
+          peerId: ipfsBId.id
+        })
+
+        expect(result).to.deep.equal(ipfsBId)
+      }, { retries: 5 })
+    })
+
+    it('should get our own id when passed as an option', async function () {
+      const res = await ipfs.id()
+
+      const result = await ipfs.id({
+        peerId: res.id
+      })
+
+      expect(result).to.deep.equal(res)
     })
   })
 }

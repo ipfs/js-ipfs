@@ -22,6 +22,7 @@ dist
 build
 bundle.js
 tsconfig-types.aegir.json
+tsconfig-check.aegir.json
 .tsbuildinfo
 
 # Deployment files

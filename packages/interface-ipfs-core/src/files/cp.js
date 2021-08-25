@@ -7,45 +7,51 @@ const { nanoid } = require('nanoid')
 const all = require('it-all')
 const { fixtures } = require('../utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const mh = require('multihashing-async').multihash
-const Block = require('ipld-block')
-const CID = require('cids')
-const randomBytes = require('iso-random-stream/src/random')
+const { identity } = require('multiformats/hashes/identity')
+const { CID } = require('multiformats/cid')
+const { randomBytes } = require('iso-random-stream')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.cp', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('refuses to copy files without a source', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp()).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
     it('refuses to copy files without a source, even with options', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp({})).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
     it('refuses to copy files without a destination', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp('/source')).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
     it('refuses to copy files without a destination, even with options', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.cp('/source', {})).to.eventually.be.rejected.with('Please supply at least one source')
     })
 
@@ -73,8 +79,11 @@ module.exports = (common, options) => {
       const src1 = `/src2-${Math.random()}`
       const parent = `/output-${Math.random()}`
 
-      const cid = new CID(1, 'identity', mh.encode(uint8ArrayFromString('derp'), 'identity'))
-      await ipfs.block.put(new Block(uint8ArrayFromString('derp'), cid), { cid })
+      const hash = await identity.digest(uint8ArrayFromString('derp'))
+      const cid = CID.createV1(identity.code, hash)
+      await ipfs.block.put(uint8ArrayFromString('derp'), {
+        mhtype: 'identity'
+      })
       await ipfs.files.cp(`/ipfs/${cid}`, parent)
 
       await ipfs.files.write(src1, [], {
@@ -82,7 +91,7 @@ module.exports = (common, options) => {
       })
 
       await expect(ipfs.files.cp(src1, `${parent}/child`)).to.eventually.be.rejectedWith(Error)
-        .that.has.property('message').that.matches(/"identity"/)
+        .that.has.property('message').that.matches(/unsupported codec/i)
     })
 
     it('refuses to copy files to an exsting file', async () => {
@@ -274,7 +283,7 @@ module.exports = (common, options) => {
       const seconds = Math.floor(mtime.getTime() / 1000)
       const expectedMtime = {
         secs: seconds,
-        nsecs: (mtime - (seconds * 1000)) * 1000
+        nsecs: (mtime.getTime() - (seconds * 1000)) * 1000
       }
 
       await ipfs.files.write(testSrcPath, uint8ArrayFromString('TEST'), {
@@ -297,7 +306,7 @@ module.exports = (common, options) => {
       const seconds = Math.floor(mtime.getTime() / 1000)
       const expectedMtime = {
         secs: seconds,
-        nsecs: (mtime - (seconds * 1000)) * 1000
+        nsecs: (mtime.getTime() - (seconds * 1000)) * 1000
       }
 
       await ipfs.files.mkdir(testSrcPath, {
@@ -320,7 +329,7 @@ module.exports = (common, options) => {
       const seconds = Math.floor(mtime.getTime() / 1000)
       const expectedMtime = {
         secs: seconds,
-        nsecs: (mtime - (seconds * 1000)) * 1000
+        nsecs: (mtime.getTime() - (seconds * 1000)) * 1000
       }
 
       const {
@@ -337,17 +346,12 @@ module.exports = (common, options) => {
       expect(stats).to.have.property('mode', mode)
     })
 
-    it('should respect timeout option when copying a file', async () => {
-      await testTimeout(() => ipfs.files.cp('/ipfs/QmaWLMK8yg36wMZX4Ybz7PAbKi1z5FzEtg5iEVeXHtNBqa', '/derp', {
-        timeout: 1
-      }))
-    })
-
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

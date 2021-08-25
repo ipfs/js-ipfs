@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
 const createNode = require('./utils/create-node')
 const bootstrapList = require('../src/runtime/config-nodejs.js')().Bootstrap
@@ -11,7 +11,9 @@ const bootstrapList = require('../src/runtime/config-nodejs.js')().Bootstrap
 describe('config', function () {
   this.timeout(10 * 1000)
 
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {
@@ -36,7 +38,7 @@ describe('config', function () {
         return acc
       }
 
-      const ma = multiaddr(curr)
+      const ma = new Multiaddr(curr)
       return ma.protos().some(proto => proto.name === 'wss' || proto.resolvable)
     }, true)
 

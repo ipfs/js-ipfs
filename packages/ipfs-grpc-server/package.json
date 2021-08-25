@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-server",
-  "version": "0.2.4",
+  "version": "0.6.1",
   "description": "A server library for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -22,7 +22,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "test": "aegir test -t node",
     "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
@@ -34,25 +34,26 @@
     "change-case": "^4.1.1",
     "coercer": "^1.1.2",
     "debug": "^4.1.1",
-    "ipfs-core-types": "^0.3.1",
-    "ipfs-grpc-protocol": "^0.2.0",
+    "ipfs-core-types": "^0.7.0",
+    "ipfs-grpc-protocol": "^0.4.0",
     "it-first": "^1.0.4",
     "it-map": "^1.0.4",
-    "it-peekable": "^1.0.1",
+    "it-peekable": "^1.0.2",
     "it-pipe": "^1.1.0",
-    "it-pushable": "^1.4.0",
-    "multiaddr": "^8.0.0",
+    "it-pushable": "^1.4.2",
+    "multiaddr": "^10.0.0",
+    "nanoid": "^3.1.23",
     "protobufjs": "^6.10.2",
     "ws": "^7.3.1"
   },
   "devDependencies": {
     "@types/ws": "^7.4.0",
-    "aegir": "^32.1.0",
-    "ipfs-core": "^0.5.4",
+    "aegir": "^34.0.2",
+    "ipfs-core": "^0.10.3",
     "it-all": "^1.0.4",
     "it-drain": "^1.0.3",
     "rimraf": "^3.0.2",
-    "sinon": "^9.0.3",
-    "uint8arrays": "^2.1.3"
+    "sinon": "^11.1.1",
+    "uint8arrays": "^2.1.6"
   }
 }

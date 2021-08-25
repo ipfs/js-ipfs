@@ -12,7 +12,7 @@ const errCode = require('err-code')
 
 /**
  * @param {MfsContext} context
- * @param {import('cids')} cid
+ * @param {import('multiformats/cid').CID} cid
  * @param {import('ipfs-core-types/src/utils').AbortOptions} options
  */
 const updateMfsRoot = async (context, cid, options) => {
@@ -22,7 +22,7 @@ const updateMfsRoot = async (context, cid, options) => {
 
   log(`New MFS root will be ${cid}`)
 
-  await context.repo.datastore.put(MFS_ROOT_KEY, cid.bytes)
+  await context.repo.root.put(MFS_ROOT_KEY, cid.bytes)
 
   return cid
 }

@@ -1,7 +1,7 @@
 'use strict'
 
 const ipns = require('ipns')
-const { toB58String } = require('multihashing-async').multihash
+const { base58btc } = require('multiformats/bases/base58')
 const PubsubDatastore = require('datastore-pubsub')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -25,6 +25,8 @@ class IpnsPubsubDatastore {
 
     // Bind _handleSubscriptionKey function, which is called by PubsubDatastore.
     this._handleSubscriptionKey = this._handleSubscriptionKey.bind(this)
+
+    // @ts-ignore will be fixed by https://github.com/ipfs/js-datastore-pubsub/pull/74
     this._pubsubDs = new PubsubDatastore(pubsub, localDatastore, peerId, ipns.validator, this._handleSubscriptionKey)
   }
 
@@ -61,8 +63,8 @@ class IpnsPubsubDatastore {
     const ns = key.slice(0, ipns.namespaceLength)
 
     if (uint8ArrayToString(ns) === ipns.namespace) {
-      const stringifiedTopic = toB58String(key)
-      const id = toB58String(key.slice(ipns.namespaceLength))
+      const stringifiedTopic = base58btc.encode(key).substring(1)
+      const id = base58btc.encode(key.slice(ipns.namespaceLength)).substring(1)
 
       this._subscriptions[stringifiedTopic] = id
 

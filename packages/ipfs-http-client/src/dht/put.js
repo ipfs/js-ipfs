@@ -1,13 +1,13 @@
 'use strict'
 
-const CID = require('cids')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const toCamel = require('../lib/object-to-camel')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 const multipartRequest = require('../lib/multipart-request')
 const abortSignal = require('../lib/abort-signal')
 const { AbortController } = require('native-abort-controller')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -23,12 +23,11 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
 
-    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('dht/put', {
       timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: key,
+        arg: uint8ArrayToString(key),
         ...options
       }),
       ...(
@@ -38,11 +37,10 @@ module.exports = configure(api => {
 
     for await (let message of res.ndjson()) {
       message = toCamel(message)
-      message.id = new CID(message.id)
       if (message.responses) {
         message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,
-          addrs: (Addrs || []).map(a => multiaddr(a))
+          addrs: (Addrs || []).map(a => new Multiaddr(a))
         }))
       }
       yield message

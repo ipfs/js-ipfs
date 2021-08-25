@@ -1,6 +1,6 @@
 'use strict'
 
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -24,7 +24,7 @@ module.exports = configure(api => {
     /** @type {{ Strings: string[] }} */
     const { Strings } = await res.json()
 
-    return (Strings || []).map(a => multiaddr(a))
+    return (Strings || []).map(a => new Multiaddr(a))
   }
   return localAddrs
 })

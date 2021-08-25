@@ -7,26 +7,36 @@ const { supportsFileReader } = require('ipfs-utils/src/supports')
 const urlSource = require('ipfs-utils/src/files/url-source')
 const { isNode } = require('ipfs-utils/src/env')
 const { getDescribe, getIt, expect } = require('./utils/mocha')
-const testTimeout = require('./utils/test-timeout')
-const echoUrl = (text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
-const redirectUrl = (url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
+const echoUrl = (/** @type {string} */ text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
+const redirectUrl = (/** @type {string} */ url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const last = require('it-last')
+const raw = require('multiformats/codecs/raw')
+const dagPb = require('@ipld/dag-pb')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.add', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
+    /**
+     * @param {string | number} mode
+     * @param {number} expectedMode
+     */
     async function testMode (mode, expectedMode) {
       const content = String(Math.random() + Date.now())
       const file = await ipfs.add({
@@ -39,6 +49,10 @@ module.exports = (common, options) => {
       expect(stats).to.have.property('mode', expectedMode)
     }
 
+    /**
+     * @param {MtimeLike} mtime
+     * @param {MtimeLike} expectedMtime
+     */
     async function testMtime (mtime, expectedMtime) {
       const content = String(Math.random() + Date.now())
       const file = await ipfs.add({
@@ -51,25 +65,25 @@ module.exports = (common, options) => {
       expect(stats).to.have.deep.property('mtime', expectedMtime)
     }
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when adding a file', () => {
-      return testTimeout(() => ipfs.add('Hello', {
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should add a File', async function () {
-      if (!supportsFileReader) return this.skip('skip in node')
+      if (!supportsFileReader) {
+        // @ts-ignore this is mocha
+        return this.skip('skip in node')
+      }
 
       const fileAdded = await ipfs.add(new self.File(['should add a File'], 'filename.txt', { type: 'text/plain' }))
       expect(fileAdded.cid.toString()).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
     })
 
     it('should add a File as tuple', async function () {
-      if (!supportsFileReader) return this.skip('skip in node')
+      if (!supportsFileReader) {
+        // @ts-ignore this is mocha
+        return this.skip('skip in node')
+      }
 
       const tuple = {
         path: 'filename.txt',
@@ -83,8 +97,8 @@ module.exports = (common, options) => {
     it('should add a Uint8Array', async () => {
       const file = await ipfs.add(fixtures.smallFile.data)
 
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
-      expect(file.path).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
+      expect(file.path).to.equal(fixtures.smallFile.cid.toString())
       // file.size counts the overhead by IPLD nodes and unixfs protobuf
       expect(file.size).greaterThan(fixtures.smallFile.data.length)
     })
@@ -92,8 +106,8 @@ module.exports = (common, options) => {
     it('should add a BIG Uint8Array', async () => {
       const file = await ipfs.add(fixtures.bigFile.data)
 
-      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid)
-      expect(file.path).to.equal(fixtures.bigFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid.toString())
+      expect(file.path).to.equal(fixtures.bigFile.cid.toString())
       // file.size counts the overhead by IPLD nodes and unixfs protobuf
       expect(file.size).greaterThan(fixtures.bigFile.data.length)
     })
@@ -101,6 +115,10 @@ module.exports = (common, options) => {
     it('should add a BIG Uint8Array with progress enabled', async () => {
       let progCalled = false
       let accumProgress = 0
+
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
       function handler (p) {
         progCalled = true
         accumProgress = p
@@ -108,8 +126,8 @@ module.exports = (common, options) => {
 
       const file = await ipfs.add(fixtures.bigFile.data, { progress: handler })
 
-      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid)
-      expect(file.path).to.equal(fixtures.bigFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.bigFile.cid.toString())
+      expect(file.path).to.equal(fixtures.bigFile.cid.toString())
       expect(progCalled).to.be.true()
       expect(accumProgress).to.equal(fixtures.bigFile.data.length)
     })
@@ -117,6 +135,10 @@ module.exports = (common, options) => {
     it('should add an empty file with progress enabled', async () => {
       let progCalled = false
       let accumProgress = 0
+
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
       function handler (p) {
         progCalled = true
         accumProgress = p
@@ -124,14 +146,18 @@ module.exports = (common, options) => {
 
       const file = await ipfs.add(fixtures.emptyFile.data, { progress: handler })
 
-      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid)
-      expect(file.path).to.equal(fixtures.emptyFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid.toString())
+      expect(file.path).to.equal(fixtures.emptyFile.cid.toString())
       expect(progCalled).to.be.true()
       expect(accumProgress).to.equal(fixtures.emptyFile.data.length)
     })
 
     it('should receive file name from progress event', async () => {
       let receivedName
+
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
       function handler (p, name) {
         receivedName = name
       }
@@ -147,8 +173,8 @@ module.exports = (common, options) => {
     it('should add an empty file without progress enabled', async () => {
       const file = await ipfs.add(fixtures.emptyFile.data)
 
-      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid)
-      expect(file.path).to.equal(fixtures.emptyFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.emptyFile.cid.toString())
+      expect(file.path).to.equal(fixtures.emptyFile.cid.toString())
     })
 
     it('should add a Uint8Array as tuple', async () => {
@@ -156,7 +182,7 @@ module.exports = (common, options) => {
 
       const file = await ipfs.add(tuple)
 
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
       expect(file.path).to.equal('testfile.txt')
     })
 
@@ -183,7 +209,10 @@ module.exports = (common, options) => {
     })
 
     it('should add readable stream', async function () {
-      if (!isNode) this.skip()
+      if (!isNode) {
+        // @ts-ignore this is mocha
+        this.skip()
+      }
       const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
 
       const rs = new Readable()
@@ -200,7 +229,18 @@ module.exports = (common, options) => {
     it('should fail when passed invalid input', async () => {
       const nonValid = 138
 
+      // @ts-expect-error nonValid is non valid
       await expect(ipfs.add(nonValid)).to.eventually.be.rejected()
+    })
+
+    it('should fail when passed undefined input', async () => {
+      // @ts-expect-error undefined is non valid
+      await expect(ipfs.add(undefined)).to.eventually.be.rejected()
+    })
+
+    it('should fail when passed null input', async () => {
+      // @ts-expect-error null is non valid
+      await expect(ipfs.add(null)).to.eventually.be.rejected()
     })
 
     it('should wrap content in a directory', async () => {
@@ -211,10 +251,11 @@ module.exports = (common, options) => {
 
       const stats = await ipfs.files.stat(`/ipfs/${wrapper.cid}/testfile.txt`)
 
-      expect(`${stats.cid}`).to.equal(fixtures.smallFile.cid)
+      expect(`${stats.cid}`).to.equal(fixtures.smallFile.cid.toString())
     })
 
     it('should add with only-hash=true', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const content = String(Math.random() + Date.now())
 
@@ -226,18 +267,21 @@ module.exports = (common, options) => {
     })
 
     it('should add with mode as string', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mode = '0777'
       await testMode(mode, parseInt(mode, 8))
     })
 
     it('should add with mode as number', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mode = parseInt('0777', 8)
       await testMode(mode, mode)
     })
 
     it('should add with mtime as Date', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mtime = new Date(5000)
       await testMtime(mtime, {
@@ -247,6 +291,7 @@ module.exports = (common, options) => {
     })
 
     it('should add with mtime as { nsecs, secs }', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mtime = {
         secs: 5,
@@ -256,6 +301,7 @@ module.exports = (common, options) => {
     })
 
     it('should add with mtime as timespec', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       await testMtime({
         Seconds: 5,
@@ -267,6 +313,7 @@ module.exports = (common, options) => {
     })
 
     it('should add with mtime as hrtime', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mtime = process.hrtime()
       await testMtime(mtime, {
@@ -284,8 +331,6 @@ module.exports = (common, options) => {
         ipfs.add(text)
       ])
 
-      expect(result.err).to.not.exist()
-      expect(expectedResult.err).to.not.exist()
       expect(result.cid.toString()).to.equal(expectedResult.cid.toString())
       expect(result.size).to.equal(expectedResult.size)
     })
@@ -299,8 +344,6 @@ module.exports = (common, options) => {
         ipfs.add(text)
       ])
 
-      expect(result.err).to.not.exist()
-      expect(expectedResult.err).to.not.exist()
       expect(result.cid.toString()).to.equal(expectedResult.cid.toString())
       expect(result.size).to.equal(expectedResult.size)
     })
@@ -325,8 +368,6 @@ module.exports = (common, options) => {
         ipfs.add(urlSource(url), addOpts),
         ipfs.add({ path: 'download', content: filename }, addOpts)
       ])
-      expect(result.err).to.not.exist()
-      expect(expectedResult.err).to.not.exist()
       expect(result).to.deep.equal(expectedResult)
     })
 
@@ -337,11 +378,9 @@ module.exports = (common, options) => {
 
       const [result, expectedResult] = await Promise.all([
         ipfs.add(urlSource(url), addOpts),
-        ipfs.add([{ path: 'download', content: filename }], addOpts)
+        ipfs.add({ path: 'download', content: filename }, addOpts)
       ])
 
-      expect(result.err).to.not.exist()
-      expect(expectedResult.err).to.not.exist()
       expect(result).to.deep.equal(expectedResult)
     })
 
@@ -356,7 +395,7 @@ module.exports = (common, options) => {
       })
 
       expect(file.cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
-      expect(file.cid.codec).to.equal('raw')
+      expect(file.cid.code).to.equal(raw.code)
       expect(file.size).to.equal(3)
     })
 
@@ -374,7 +413,7 @@ module.exports = (common, options) => {
       })
 
       expect(file.cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
-      expect(file.cid.codec).to.equal('dag-pb')
+      expect(file.cid.code).to.equal(dagPb.code)
       expect(file.size).to.equal(18)
     })
 
@@ -393,16 +432,23 @@ module.exports = (common, options) => {
     }))
 
     it('should be able to add dir without sharding', async () => {
-      const { path, cid } = await last(ipfs.addAll(testFiles))
+      const result = await last(ipfs.addAll(testFiles))
+
+      if (!result) {
+        throw new Error('No addAll result received')
+      }
+
+      const { path, cid } = result
       expect(path).to.eql('test-folder')
       expect(cid.toString()).to.eql('QmWWM8ZV6GPhqJ46WtKcUaBPNHN5yQaFsKDSQ1RE73w94Q')
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js
@@ -420,7 +466,13 @@ module.exports = (common, options) => {
       })
 
       it('should be able to add dir with sharding', async () => {
-        const { path, cid } = await last(ipfs.addAll(testFiles))
+        const result = await last(ipfs.addAll(testFiles))
+
+        if (!result) {
+          throw new Error('No addAll result received')
+        }
+
+        const { path, cid } = result
         expect(path).to.eql('test-folder')
         expect(cid.toString()).to.eql('Qmb3JNLq2KcvDTSGT23qNQkMrr4Y4fYMktHh6DtC7YatLa')
       })

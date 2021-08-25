@@ -10,7 +10,9 @@ const createNode = require('./utils/create-node')
  * WebSockets Bootstrappers easily <3
  */
 describe('Check that a js-ipfs node can indeed contact the bootstrappers', () => {
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {

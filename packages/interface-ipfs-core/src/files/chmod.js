@@ -5,17 +5,30 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const isShardAtPath = require('../utils/is-shard-at-path')
-const testTimeout = require('../utils/test-timeout')
 
-module.exports = (common, options) => {
+/**
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
+ * @param {Object} options
+ */
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.chmod', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
+    /**
+     * @param {string} initialMode
+     * @param {string} modification
+     * @param {string} expectedFinalMode
+     */
     async function testChmod (initialMode, modification, expectedFinalMode) {
       const path = `/test-${nanoid()}`
 
@@ -33,10 +46,10 @@ module.exports = (common, options) => {
     }
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should update the mode for a file', async () => {
       const path = `/foo-${Math.random()}`
@@ -330,18 +343,6 @@ module.exports = (common, options) => {
 
       // files with prior execute bit should now be user and group executable
       await expect(ipfs.files.stat(bin)).to.eventually.have.property('mode', 0o754)
-    })
-
-    it('should respect timeout option when changing the mode of a file', async () => {
-      const path = `/foo-${Math.random()}`
-
-      await ipfs.files.write(path, uint8ArrayFromString('Hello world'), {
-        create: true
-      })
-
-      await testTimeout(() => ipfs.files.chmod(path, '0777', {
-        timeout: 1
-      }))
     })
   })
 }

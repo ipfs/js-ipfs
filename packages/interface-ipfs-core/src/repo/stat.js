@@ -3,31 +3,28 @@
 
 const { expectIsRepo } = require('../stats/utils')
 const { getDescribe, getIt } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.repo.stat', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when getting repo stats', () => {
-      return testTimeout(() => ipfs.repo.stat({
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should get repo stats', async () => {
       const res = await ipfs.repo.stat()

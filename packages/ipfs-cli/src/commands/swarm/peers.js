@@ -1,7 +1,7 @@
 'use strict'
 
 const mafmt = require('mafmt')
-const multiaddr = require('multiaddr')
+const { Multiaddr } = require('multiaddr')
 const { default: parseDuration } = require('parse-duration')
 
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
     })
 
     result.forEach((item) => {
-      let ma = multiaddr(`${item.addr}`)
+      let ma = new Multiaddr(`${item.addr}`)
 
       if (!mafmt.IPFS.matches(ma)) {
         ma = ma.encapsulate(`/ipfs/${item.peer}`)

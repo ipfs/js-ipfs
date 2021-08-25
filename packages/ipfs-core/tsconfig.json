@@ -5,6 +5,7 @@
   },
   "include": [
     "src",
+    "test",
     "package.json"
   ],
   "references": [
@@ -13,6 +14,9 @@
     },
     {
       "path": "../ipfs-core-utils"
+    },
+    {
+      "path": "../ipfs-http-client"
     }
   ]
 }

@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
@@ -10,7 +10,7 @@ const sinon = require('sinon')
 const { AbortSignal } = require('native-abort-controller')
 
 describe('/name', function () {
-  const cid = new CID('QmbndGRXYRyfU41TUvc52gMrwq87JJg18QsDPcCeaMcM61')
+  const cid = CID.parse('QmbndGRXYRyfU41TUvc52gMrwq87JJg18QsDPcCeaMcM61')
   let ipfs
 
   beforeEach(() => {

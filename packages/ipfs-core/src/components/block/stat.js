@@ -5,11 +5,11 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
 
-module.exports = ({ blockService, preload }) => {
+module.exports = ({ repo, preload }) => {
   /**
    * @type {import('ipfs-core-types/src/block').API["stat"]}
    */
@@ -20,9 +20,9 @@ module.exports = ({ blockService, preload }) => {
       preload(cid)
     }
 
-    const block = await blockService.get(cid)
+    const block = await repo.blocks.get(cid)
 
-    return { cid, size: block.data.length }
+    return { cid, size: block.length }
   }
 
   return withTimeoutOption(stat)

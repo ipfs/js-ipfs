@@ -2,40 +2,36 @@
 'use strict'
 
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dht.provide', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
-      const nodeB = (await common.spawn()).api
-      await ipfs.swarm.connect(nodeB.peerId.addresses[0])
+      ipfs = (await factory.spawn()).api
+      const nodeB = (await factory.spawn()).api
+      const nodeBId = await nodeB.id()
+      await ipfs.swarm.connect(nodeBId.addresses[0])
     })
 
-    after(() => common.clean())
-
-    it('should respect timeout option when providing a value on the DHT', async () => {
-      const res = await ipfs.add(uint8ArrayFromString('test'))
-
-      await testTimeout(() => ipfs.dht.provide(res.cid, {
-        timeout: 1
-      }))
-    })
+    after(() => factory.clean())
 
     it('should provide local CID', async () => {
       const res = await ipfs.add(uint8ArrayFromString('test'))
@@ -44,7 +40,7 @@ module.exports = (common, options) => {
     })
 
     it('should not provide if block not found locally', () => {
-      const cid = new CID('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')
+      const cid = CID.parse('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')
 
       return expect(all(ipfs.dht.provide(cid))).to.eventually.be.rejected
         .and.be.an.instanceOf(Error)
@@ -67,10 +63,12 @@ module.exports = (common, options) => {
     })
 
     it('should error on non CID arg', () => {
+      // @ts-expect-error invalid arg
       return expect(all(ipfs.dht.provide({}))).to.eventually.be.rejected()
     })
 
     it('should error on array containing non CID arg', () => {
+      // @ts-expect-error invalid arg
       return expect(all(ipfs.dht.provide([{}]))).to.eventually.be.rejected()
     })
   })
