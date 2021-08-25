@@ -62,7 +62,7 @@
     "pretty-bytes": "^5.4.1",
     "progress": "^2.0.3",
     "stream-to-it": "^0.2.2",
-    "uint8arrays": "^2.1.6",
+    "uint8arrays": "^3.0.0",
     "yargs": "^16.0.3"
   },
   "devDependencies": {

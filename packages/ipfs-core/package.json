@@ -126,7 +126,7 @@
     "parse-duration": "^1.0.0",
     "peer-id": "^0.15.1",
     "streaming-iterables": "^6.0.0",
-    "uint8arrays": "^2.1.6"
+    "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
     "@types/dlv": "^1.1.2",
