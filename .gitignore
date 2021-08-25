@@ -4,6 +4,7 @@ logs
 npm-debug.log*
 package-lock.json
 yarn.lock
+tsconfig-types.aegir.json
 
 # Coverage directory used by tools like istanbul
 coverage
