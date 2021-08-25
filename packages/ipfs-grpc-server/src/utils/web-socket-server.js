@@ -39,6 +39,11 @@ class Messages extends EventEmitter {
     this._wss = wss
     this.multiaddr = ''
 
+    this.info = {
+      uri: '',
+      ma: new Multiaddr(`/ip4/127.0.0.1/tcp/0/ws`)
+    }
+
     wss.on('connection', (ws, request) => {
       ws.on('error', error => debug(`WebSocket Error: ${error.stack}`))
 
@@ -86,8 +91,6 @@ class Messages extends EventEmitter {
           }
         } else {
           this.info = {
-            address: info.address,
-            port: info.port,
             uri: `http://${info.address}:${info.port}`,
             ma: new Multiaddr(`/ip4/${info.address}/tcp/${info.port}/ws`)
           }
