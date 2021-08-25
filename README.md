@@ -27,7 +27,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 ## Getting started
 
 * Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
-* Look into the [examples](https://github.com/ipfs/js-ipfs/tree/master/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+* Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples/tree/master) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
@@ -98,7 +98,7 @@ console.info(cid)
 * [Concepts](https://docs.ipfs.io/concepts/)
 * [Config](./docs/CONFIG.md)
 * [Core API](./docs/core-api)
-* [Examples](./examples)
+* [Examples](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples)
 * [Development](./docs/DEVELOPMENT.md)
 
 ## Structure
@@ -113,7 +113,7 @@ This project is broken into several modules, their purposes are:
 * [`/packages/ipfs-core-utils`](./packages/ipfs-core-utils) Helpers and utilities common to core and the HTTP RPC API client
 * [`/packages/ipfs-daemon`](./packages/ipfs-daemon) Run js-IPFS as a background daemon
 * [`/packages/ipfs-grpc-client`](./packages/ipfs-grpc-client) A gRPC client for js-IPFS
-* [`/packages/ipfs-grpc-protocol`](./packages/ipfs-grpc-protocol]) Shared module between the gRPC client and server
+* [`/packages/ipfs-grpc-protocol`](./packages/ipfs-grpc-protocol) Shared module between the gRPC client and server
 * [`/packages/ipfs-grpc-server`](./packages/ipfs-grpc-server) A gRPC-over-websockets server for js-IPFS
 * [`/packages/ipfs-http-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
 * [`/packages/ipfs-http-gateway`](./packages/ipfs-http-gateway) JS implementation of the [IPFS HTTP Gateway](https://docs.ipfs.io/concepts/ipfs-gateway/)
@@ -175,7 +175,7 @@ List of the main packages that make up the IPFS ecosystem.
 
 [![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
-The IPFS implementation in JavaScript needs your help!  There are a few things you can do right now to help out:
+The IPFS implementation in JavaScript needs your help! There are a few things you can do right now to help out:
 
 Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md) and [JavaScript Contributing Guidelines](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md).
 

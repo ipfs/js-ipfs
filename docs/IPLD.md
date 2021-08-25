@@ -47,6 +47,7 @@ Additional bases can be configured using the `bases` config property.
 If your application requires support for extra codecs, you can configure them as follows:
 
 1. Configure the [IPLD layer](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/MODULE.md#optionsipld) of your IPFS daemon to support the codec. This step is necessary so the node knows how to prepare data received over HTTP to be passed to IPLD for serialization:
+
     ```javascript
     const ipfs = require('ipfs')
 
@@ -83,7 +84,10 @@ If your application requires support for extra codecs, you can configure them as
         }
       }
     })
+   ```
+
 2. Configure your IPFS HTTP API Client to support the codec. This is necessary so that the client can send the data to the IPFS node over HTTP:
+
     ```javascript
     const ipfsHttpClient = require('ipfs-http-client')
 
@@ -125,8 +129,8 @@ If your application requires support for extra codecs, you can configure them as
 
 ## Next steps
 
-* See [examples/custom-ipld-formats](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-ipld-formats) for runnable code that demonstrates the above with in-process IPFS nodes, IPFS run as a daemon and also the http client
-* Also [examples/traverse-ipld-graphs](https://github.com/ipfs/js-ipfs/tree/master/examples/traverse-ipld-graphs) which uses the [ipld-format-to-blockcodec](https://www.npmjs.com/package/ipld-format-to-blockcodec) module to use older [IPLD format][]s that have not been ported over to the new [BlockCodec][] interface, as well as additional [Multihash Hashers](https://www.npmjs.com/package/multiformats#multihash-hashers).
+* See [examples/custom-ipld-formats](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/custom-ipld-formats) for runnable code that demonstrates the above with in-process IPFS nodes, IPFS run as a daemon and also the http client
+* Also [examples/traverse-ipld-graphs](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/traverse-ipld-graphs) which uses the [ipld-format-to-blockcodec](https://www.npmjs.com/package/ipld-format-to-blockcodec) module to use older [IPLD format][]s that have not been ported over to the new [BlockCodec][] interface, as well as additional [Multihash Hashers](https://www.npmjs.com/package/multiformats#multihash-hashers).
 
 [cid]: https://docs.ipfs.io/concepts/content-addressing/
 [blockcodec]: https://www.npmjs.com/package/multiformats#multicodec-encoders--decoders--codecs

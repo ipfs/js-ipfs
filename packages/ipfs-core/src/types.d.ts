@@ -38,7 +38,7 @@ export interface Options {
   pass?: string
 
   /**
-   * Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying)
+   * Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/circuit-relaying)
    * to learn more)
    */
   relay?: RelayOptions
@@ -113,7 +113,7 @@ export interface Options {
    * more customized libp2p node, such as with custom transports or peer/content
    * routers that need some of the ipfs data on startup, a custom bundle is a
    * great way to achieve this.
-   * - You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
+   * - You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examplescustom-libp2p).
    * - Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md)
    * for the list of options libp2p supports.
    * - Default: [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js)
