@@ -32,6 +32,8 @@ jobs:
           node-version: '16'
       - name: Install dependencies
         run: npm install
+      - name: Build types
+        run: npm run build
       - name: Typecheck ${{ matrix.project }}
         uses: gozala/typescript-error-reporter-action@v1.0.8
         with:

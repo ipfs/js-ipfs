@@ -21,7 +21,7 @@
     "test:interface:http-js": "lerna run test:interface:http-js",
     "test:interface:message-port-client": "lerna run test:interface:message-port-client",
     "coverage": "lerna run coverage",
-    "build": "lerna run prepublishOnly",
+    "build": "lerna run build",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
@@ -53,8 +53,6 @@
     ]
   },
   "devDependencies": {
-    "execa": "^5.0.0",
-    "json": "^10.0.0",
     "lerna": "^3.22.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2"
