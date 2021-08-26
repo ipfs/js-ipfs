@@ -31,6 +31,7 @@ We will ask early testers to participate at two points in the process:
 - [orbit-db](https://github.com/orbitdb/orbit-db) - Peer-to-Peer Databases for the Decentralized Web
 - [ipfs-log](https://github.com/orbitdb/ipfs-log) - Append-only log CRDT on IPFS
 - [Sidetree DID Protocol](https://github.com/decentralized-identity/sidetree) - Decentralized Identifier Layer-2 network protocol
+- [Constellation](https://julienmalard.github.io/constellation/) - Distributed scientific databases for citizen science and more
 
 ## How to sign up?
 
