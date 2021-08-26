@@ -50,7 +50,7 @@
     "it-glob": "0.0.13",
     "it-map": "^1.0.5",
     "it-pipe": "^1.1.0",
-    "it-split": "^0.0.1",
+    "it-split": "^1.0.0",
     "it-tar": "^4.0.0",
     "jsondiffpatch": "^0.4.1",
     "libp2p-crypto": "^0.19.7",
