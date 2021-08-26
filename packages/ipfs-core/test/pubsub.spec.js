@@ -3,12 +3,14 @@
 'use strict'
 
 const { nanoid } = require('nanoid')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
 const createNode = require('./utils/create-node')
 
 describe('pubsub disabled', () => {
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {

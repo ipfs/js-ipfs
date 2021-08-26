@@ -4,25 +4,29 @@
 const { fixtures, clearRemotePins, clearServices } = require('../utils')
 const { getDescribe, getIt, expect } = require('../../utils/mocha')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   const ENDPOINT = new URL(process.env.PINNING_SERVICE_ENDPOINT || '')
-  const KEY = process.env.PINNING_SERVIEC_KEY
+  const KEY = `${process.env.PINNING_SERVICE_KEY}`
   const SERVICE = 'pinbot'
 
   describe('.pin.remote.add', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
       await ipfs.pin.remote.service.add(SERVICE, {
         endpoint: ENDPOINT,
         key: KEY
@@ -30,7 +34,7 @@ module.exports = (common, options) => {
     })
     after(async () => {
       await clearServices(ipfs)
-      await common.clean()
+      await factory.clean()
     })
 
     beforeEach(async () => {

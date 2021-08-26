@@ -14,6 +14,7 @@ const CONVERSION_OPTS = {
 }
 
 module.exports = function loadServices () {
+  // @ts-ignore - recent protobufjs release changed the types
   const root = protobuf.Root.fromJSON(protocol)
 
   /** @type {Record<string, any>} */

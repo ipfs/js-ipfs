@@ -4,7 +4,7 @@ const IPFS = require('ipfs-core')
 const { IPFSService, Server } = require('ipfs-message-port-server')
 
 const main = async connections => {
-  const ipfs = await IPFS.create({ offline: true, start: false })
+  const ipfs = await IPFS.create()
   const service = new IPFSService(ipfs)
   const server = new Server(service)
 

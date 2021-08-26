@@ -19,9 +19,6 @@ describe('dag', function () {
       expect(service)
         .to.have.nested.property('dag.get')
         .be.a('function')
-      expect(service)
-        .to.have.nested.property('dag.tree')
-        .be.a('function')
     })
     it('Server', () => {
       expect(Server).to.be.a('function')

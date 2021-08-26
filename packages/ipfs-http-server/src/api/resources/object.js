@@ -2,17 +2,28 @@
 
 const multipart = require('../../utils/multipart-request-parser')
 const all = require('it-all')
-const dagPB = require('ipld-dag-pb')
-const { DAGLink } = dagPB
+const dagPB = require('@ipld/dag-pb')
 const Joi = require('../../utils/joi')
-const multibase = require('multibase')
 const Boom = require('@hapi/boom')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const { cidToString } = require('ipfs-core-utils/src/cid')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 const debug = require('debug')
 const log = Object.assign(debug('ipfs:http-api:object'), {
   error: debug('ipfs:http-api:object:error')
 })
+const { base64pad } = require('multiformats/bases/base64')
+const { base16 } = require('multiformats/bases/base16')
+const { CID } = require('multiformats/cid')
+
+/**
+ * @type {Record<string, (str: string) => Uint8Array>}
+ */
+const DECODINGS = {
+  ascii: (str) => uint8ArrayFromString(str),
+  utf8: (str) => uint8ArrayFromString(str),
+  base64pad: (str) => base64pad.decode(`M${str}`),
+  base16: (str) => base16.decode(`f${str}`)
+}
 
 /**
  * @param {import('../../types').Request} request
@@ -60,7 +71,7 @@ exports.new = {
       },
       query: Joi.object().keys({
         template: Joi.string().valid('unixfs-dir'),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -94,7 +105,7 @@ exports.new = {
       }
     } = request
 
-    let cid, node
+    let cid, block, node
     try {
       cid = await ipfs.object.new({
         template,
@@ -105,21 +116,22 @@ exports.new = {
         signal,
         timeout
       })
+      block = dagPB.encode(node)
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to create object' })
     }
 
-    const nodeJSON = node.toJSON()
+    const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
-      Data: uint8ArrayToString(node.Data, 'base64pad'),
-      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
-      Size: nodeJSON.size,
-      Links: nodeJSON.links.map((l) => {
+      Data: node.Data ? uint8ArrayToString(node.Data, 'base64pad') : '',
+      Hash: cid.toString(base.encoder),
+      Size: block.length,
+      Links: node.Links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     }
@@ -137,7 +149,7 @@ exports.get = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -182,25 +194,28 @@ exports.get = {
       }
     } = request
 
-    let node
+    let node, block
     try {
       node = await ipfs.object.get(cid, {
         signal,
         timeout
       })
+      block = dagPB.encode(node)
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to get object' })
     }
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     return h.response({
-      Data: uint8ArrayToString(node.Data, dataEncoding),
-      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
-      Size: node.size,
+      Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
+      Hash: cid.toString(base.encoder),
+      Size: block.length,
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: cidToString(l.Hash, { base: cidBase, upgrade: false })
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     })
@@ -223,11 +238,26 @@ exports.put = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.string().valid(...Object.keys(multibase.names)),
-        enc: Joi.string().valid('json', 'protobuf'),
+        cidBase: Joi.string().default('base58btc'),
+        dataEncoding: Joi.string()
+          .valid('ascii', 'base64pad', 'base16', 'utf8')
+          .replace(/text/, 'ascii')
+          .replace(/base64/, 'base64pad')
+          .replace(/hex/, 'base16')
+          .default('base64pad'),
+        enc: Joi.string().valid('json', 'protobuf').default('json'),
+        pin: Joi.boolean().default(false),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('datafieldenc', 'dataEncoding', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('inputenc', 'enc', {
           override: true,
           ignoreUndefined: true
         })
@@ -253,38 +283,59 @@ exports.put = {
         }
       },
       query: {
-        cidBase,
         enc,
-        timeout
+        cidBase,
+        dataEncoding,
+        timeout,
+        pin
       }
     } = request
 
-    let cid, node
+    /** @type {import('@ipld/dag-pb').PBNode} */
+    let input
+
+    if (enc === 'json') {
+      input = {
+        Data: data.Data ? DECODINGS[dataEncoding](data.Data) : undefined,
+        Links: (data.Links || []).map((/** @type {any} */ l) => {
+          return {
+            Name: l.Name || '',
+            Tsize: l.Size || l.Tsize || 0,
+            Hash: CID.parse(l.Hash)
+          }
+        })
+      }
+    } else {
+      input = dagPB.decode(data)
+    }
+
+    let cid, node, block
     try {
-      cid = await ipfs.object.put(data, {
-        enc,
+      cid = await ipfs.object.put(input, {
         signal,
-        timeout
+        timeout,
+        pin
       })
       node = await ipfs.object.get(cid, {
         signal,
         timeout
       })
+      block = dagPB.encode(node)
     } catch (err) {
       throw Boom.badRequest(err, { message: 'Failed to put node' })
     }
 
-    const nodeJSON = node.toJSON()
+    const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
-      Data: nodeJSON.data,
-      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
-      Size: nodeJSON.size,
-      Links: nodeJSON.links.map((l) => {
+      Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
+      Hash: cid.toString(base.encoder),
+      Size: block.length,
+      Links: node.Links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     }
@@ -302,7 +353,7 @@ exports.stat = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -346,9 +397,12 @@ exports.stat = {
       throw Boom.boomify(err, { message: 'Failed to stat object' })
     }
 
-    stats.Hash = cidToString(stats.Hash, { base: cidBase, upgrade: false })
+    const base = await ipfs.bases.getBase(cidBase)
 
-    return h.response(stats)
+    return h.response({
+      ...stats,
+      Hash: stats.Hash.toString(base.encoder)
+    })
   }
 }
 
@@ -361,7 +415,7 @@ exports.data = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -417,7 +471,7 @@ exports.links = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -456,13 +510,15 @@ exports.links = {
       timeout
     })
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     const response = {
-      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
+      Hash: cid.toString(base.encoder),
       Links: (links || []).map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: cidToString(l.Hash, { base: cidBase, upgrade: false })
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     }
@@ -488,7 +544,13 @@ exports.patchAppendData = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
+        dataEncoding: Joi.string()
+          .valid('ascii', 'base64pad', 'base16', 'utf8')
+          .replace(/text/, 'ascii')
+          .replace(/base64/, 'base64pad')
+          .replace(/hex/, 'base16')
+          .default('base64pad'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -527,11 +589,12 @@ exports.patchAppendData = {
       query: {
         cid,
         cidBase,
+        dataEncoding,
         timeout
       }
     } = request
 
-    let newCid, node
+    let newCid, node, block
     try {
       newCid = await ipfs.object.patch.appendData(cid, data, {
         signal,
@@ -541,21 +604,22 @@ exports.patchAppendData = {
         signal,
         timeout
       })
+      block = dagPB.encode(node)
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to append data to object' })
     }
 
-    const nodeJSON = node.toJSON()
+    const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
-      Data: nodeJSON.data,
-      Hash: cidToString(newCid, { base: cidBase, upgrade: false }),
-      Size: nodeJSON.size,
-      Links: nodeJSON.links.map((l) => {
+      Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
+      Hash: newCid.toString(base.encoder),
+      Size: block.length,
+      Links: node.Links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     }
@@ -581,7 +645,7 @@ exports.patchSetData = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -633,15 +697,15 @@ exports.patchSetData = {
       throw Boom.boomify(err, { message: 'Failed to set data on object' })
     }
 
-    const nodeJSON = node.toJSON()
+    const base = await ipfs.bases.getBase(cidBase)
 
     return h.response({
-      Hash: cidToString(newCid, { base: cidBase, upgrade: false }),
-      Links: nodeJSON.links.map((l) => {
+      Hash: newCid.toString(base.encoder),
+      Links: node.Links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     })
@@ -661,7 +725,13 @@ exports.patchAddLink = {
           Joi.string().required(),
           Joi.cid().required()
         ).required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
+        dataEncoding: Joi.string()
+          .valid('ascii', 'base64pad', 'base16', 'utf8')
+          .replace(/text/, 'ascii')
+          .replace(/base64/, 'base64pad')
+          .replace(/hex/, 'base16')
+          .default('base64pad'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -695,17 +765,19 @@ exports.patchAddLink = {
           ref
         ],
         cidBase,
+        dataEncoding,
         timeout
       }
     } = request
 
-    let node, cid
+    let node, cid, block
     try {
       node = await ipfs.object.get(ref, {
         signal,
         timeout
       })
-      cid = await ipfs.object.patch.addLink(root, new DAGLink(name, node.size, ref), {
+      block = dagPB.encode(node)
+      cid = await ipfs.object.patch.addLink(root, { Name: name, Tsize: block.length, Hash: ref }, {
         signal,
         timeout
       })
@@ -713,21 +785,22 @@ exports.patchAddLink = {
         signal,
         timeout
       })
+      block = dagPB.encode(node)
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to add link to object' })
     }
 
-    const nodeJSON = node.toJSON()
+    const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
-      Data: nodeJSON.data,
-      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
-      Size: nodeJSON.size,
-      Links: nodeJSON.links.map((l) => {
+      Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
+      Hash: cid.toString(base.encoder),
+      Size: block.length,
+      Links: node.Links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     }
@@ -748,7 +821,13 @@ exports.patchRmLink = {
           Joi.cid().required(),
           Joi.string().required()
         ).required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
+        dataEncoding: Joi.string()
+          .valid('ascii', 'base64pad', 'base16', 'utf8')
+          .replace(/text/, 'ascii')
+          .replace(/base64/, 'base64pad')
+          .replace(/hex/, 'base16')
+          .default('base64pad'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -781,11 +860,12 @@ exports.patchRmLink = {
           link
         ],
         cidBase,
+        dataEncoding,
         timeout
       }
     } = request
 
-    let cid, node
+    let cid, node, block
     try {
       cid = await ipfs.object.patch.rmLink(root, link, {
         signal,
@@ -795,21 +875,22 @@ exports.patchRmLink = {
         signal,
         timeout
       })
+      block = dagPB.encode(node)
     } catch (err) {
       throw Boom.boomify(err, { message: 'Failed to remove link from object' })
     }
 
-    const nodeJSON = node.toJSON()
+    const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
-      Data: nodeJSON.data,
-      Hash: cidToString(cid, { base: cidBase, upgrade: false }),
-      Size: nodeJSON.size,
-      Links: nodeJSON.links.map((l) => {
+      Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
+      Hash: cid.toString(base.encoder),
+      Size: block.length,
+      Links: node.Links.map((l) => {
         return {
-          Name: l.name,
-          Size: l.size,
-          Hash: cidToString(l.cid, { base: cidBase, upgrade: false })
+          Name: l.Name,
+          Size: l.Tsize,
+          Hash: l.Hash.toString(base.encoder)
         }
       })
     }

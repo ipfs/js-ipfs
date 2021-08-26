@@ -1,9 +1,8 @@
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
-const SubscriptionTracker = require('./subscription-tracker')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -12,33 +11,36 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
  * @typedef {import('ipfs-core-types/src/pubsub').Message} Message
  * @typedef {(err: Error, fatal: boolean, msg?: Message) => void} ErrorHandlerFn
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions & { onError?: ErrorHandlerFn }>} PubsubAPI
+ * @typedef {import('../types').Options} Options
  */
 
-module.exports = configure((api, options) => {
-  const subsTracker = SubscriptionTracker.singleton()
+/**
+ * @param {Options} options
+ * @param {import('./subscription-tracker')} subsTracker
+ */
+module.exports = (options, subsTracker) => {
+  return configure((api) => {
+    /**
+     * @type {PubsubAPI["subscribe"]}
+     */
+    async function subscribe (topic, handler, options = {}) { // eslint-disable-line require-await
+      options.signal = subsTracker.subscribe(topic, handler, options.signal)
 
-  /**
-   * @type {PubsubAPI["subscribe"]}
-   */
-  async function subscribe (topic, handler, options = {}) { // eslint-disable-line require-await
-    options.signal = subsTracker.subscribe(topic, handler, options.signal)
+      /** @type {(value?: any) => void} */
+      let done
+      /** @type {(error: Error) => void} */
+      let fail
 
-    /** @type {(value?: any) => void} */
-    let done
-    /** @type {(error: Error) => void} */
-    let fail
+      const result = new Promise((resolve, reject) => {
+        done = resolve
+        fail = reject
+      })
 
-    const result = new Promise((resolve, reject) => {
-      done = resolve
-      fail = reject
-    })
+      // In Firefox, the initial call to fetch does not resolve until some data
+      // is received. If this doesn't happen within 1 second assume success
+      const ffWorkaround = setTimeout(() => done(), 1000)
 
-    // In Firefox, the initial call to fetch does not resolve until some data
-    // is received. If this doesn't happen within 1 second assume success
-    const ffWorkaround = setTimeout(() => done(), 1000)
-
-    // Do this async to not block Firefox
-    setTimeout(() => {
+      // Do this async to not block Firefox
       api.post('pubsub/sub', {
         timeout: options.timeout,
         signal: options.signal,
@@ -62,7 +64,7 @@ module.exports = configure((api, options) => {
             return
           }
 
-          readMessages(response.ndjson(), {
+          readMessages(response, {
             onMessage: handler,
             onEnd: () => subsTracker.unsubscribe(topic, handler),
             onError: options.onError
@@ -70,25 +72,25 @@ module.exports = configure((api, options) => {
 
           done()
         })
-    }, 0)
 
-    return result
-  }
-  return subscribe
-})
+      return result
+    }
+    return subscribe
+  })(options)
+}
 
 /**
- * @param {*} msgStream
+ * @param {import('ipfs-utils/src/types').ExtendedResponse} response
  * @param {object} options
  * @param {(message: Message) => void} options.onMessage
  * @param {() => void} options.onEnd
  * @param {ErrorHandlerFn} [options.onError]
  */
-async function readMessages (msgStream, { onMessage, onEnd, onError }) {
+async function readMessages (response, { onMessage, onEnd, onError }) {
   onError = onError || log
 
   try {
-    for await (const msg of msgStream) {
+    for await (const msg of response.ndjson()) {
       try {
         if (!msg.from) {
           continue
@@ -106,12 +108,28 @@ async function readMessages (msgStream, { onMessage, onEnd, onError }) {
       }
     }
   } catch (err) {
-    // FIXME: In testing with Chrome, err.type is undefined (should not be!)
-    // Temporarily use the name property instead.
-    if (err.type !== 'aborted' && err.name !== 'AbortError') {
+    if (!isAbortError(err)) {
       onError(err, true) // Fatal
     }
   } finally {
     onEnd()
+  }
+}
+
+/**
+ * @param {Error & {type?:string}} error
+ * @returns {boolean}
+ */
+const isAbortError = error => {
+  switch (error.type) {
+    case 'aborted':
+      return true
+    // It is `abort` in Electron instead of `aborted`
+    case 'abort':
+      return true
+    default:
+      // FIXME: In testing with Chrome, err.type is undefined (should not be!)
+      // Temporarily use the name property instead.
+      return error.name === 'AbortError'
   }
 }

@@ -5,7 +5,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-repo')} config.repo
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 module.exports = ({ repo }) => {
   /**

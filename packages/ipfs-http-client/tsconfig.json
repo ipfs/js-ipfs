@@ -4,7 +4,9 @@
     "outDir": "dist"
   },
   "include": [
-    "src"
+    "src",
+    "test/utils/factory.js",
+    "test/pubsub.spec.js"
   ],
   "references": [
     {

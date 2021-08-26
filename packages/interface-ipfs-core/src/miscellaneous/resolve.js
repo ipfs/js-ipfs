@@ -1,34 +1,41 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const isIpfs = require('is-ipfs')
 const { nanoid } = require('nanoid')
-const multibase = require('multibase')
+const { base64url } = require('multiformats/bases/base64')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 const { isWebWorker } = require('ipfs-utils/src/env')
 const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.resolve', function () {
     this.timeout(60 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfsId
 
     before(async () => {
-      ipfs = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfs = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsId = await ipfs.id()
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should resolve an IPFS hash', async () => {
       const content = uint8ArrayFromString('Hello world')
@@ -39,11 +46,13 @@ module.exports = (common, options) => {
     })
 
     it('should resolve an IPFS hash and return a base64url encoded CID in path', async () => {
-      const { cid } = await ipfs.add(uint8ArrayFromString('base64url encoded'))
+      const { cid } = await ipfs.add(uint8ArrayFromString('base64url encoded'), {
+        cidVersion: 1
+      })
       const path = await ipfs.resolve(`/ipfs/${cid}`, { cidBase: 'base64url' })
       const [,, cidStr] = path.split('/')
 
-      expect(multibase.isEncoded(cidStr)).to.equal('base64url')
+      expect(cidStr).to.equal(cid.toString(base64url))
     })
 
     // Test resolve turns /ipfs/QmRootHash/path/to/file into /ipfs/QmFileHash
@@ -77,25 +86,45 @@ module.exports = (common, options) => {
 
     // Test resolve turns /ipns/domain.com into /ipfs/QmHash
     it('should resolve an IPNS DNS link', async function () {
+      // @ts-ignore this is mocha
       this.retries(3)
       const resolved = await ipfs.resolve('/ipns/ipfs.io')
 
       expect(isIpfs.ipfsPath(resolved)).to.be.true()
     })
 
-    it('should resolve IPNS link recursively', async function () {
+    it('should resolve IPNS link recursively by default', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
-      const node = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      await ipfs.swarm.connect(node.peerId.addresses[0])
+      const node = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      const nodeId = await node.id()
+      await ipfs.swarm.connect(nodeId.addresses[0])
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
-      await ipfs.name.publish(`/ipns/${ipfs.peerId.id}`, { allowOffline: true, key: 'key-name', resolve: false })
+      await ipfs.name.publish(`/ipns/${ipfsId.id}`, { allowOffline: true, key: 'key-name', resolve: false })
 
-      return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: true }))
+      return expect(await ipfs.resolve(`/ipns/${keyId}`))
         .to.eq(`/ipfs/${path}`)
+    })
+
+    it('should resolve IPNS link non-recursively if recursive==false', async function () {
+      // @ts-ignore this is mocha
+      this.timeout(20 * 1000)
+      // webworkers are not dialable because webrtc is not available
+      const node = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      const nodeId = await node.id()
+      await ipfs.swarm.connect(nodeId.addresses[0])
+      const { path } = await ipfs.add(uint8ArrayFromString('should resolve an IPNS key if recursive === false'))
+      const { id: keyId } = await ipfs.key.gen('new-key-name', { type: 'rsa', size: 2048 })
+
+      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(`/ipns/${ipfsId.id}`, { allowOffline: true, key: 'new-key-name', resolve: false })
+
+      return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: false }))
+        .to.eq(`/ipns/${ipfsId.id}`)
     })
   })
 }

@@ -1,15 +1,15 @@
-import CID from 'cids';
+import type { CID } from 'multiformats/cid'
 import type { AbortOptions, PreloadOptions } from '../utils'
-import type { DAGNode, DAGNodeLike, DAGLink } from 'ipld-dag-pb'
 import type { API as PatchAPI } from './patch'
+import type { PBNode, PBLink } from '@ipld/dag-pb'
 
 export interface API<OptionExtension = {}> {
   new: (options?: NewObjectOptions & OptionExtension) => Promise<CID>
-  put: (obj: DAGNode | DAGNodeLike | Uint8Array, options?: PutOptions & OptionExtension) => Promise<CID>
-  get: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGNode>
+  put: (obj: PBNode, options?: PutOptions & OptionExtension) => Promise<CID>
+  get: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<PBNode>
   data: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<Uint8Array>
-  links: (cid, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<DAGLink[]>
-  stat: (cid, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
+  links: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<PBLink[]>
+  stat: (cid: CID, options?: AbortOptions & PreloadOptions & OptionExtension) => Promise<StatResult>
 
   patch: PatchAPI
 }
@@ -18,12 +18,8 @@ export interface NewObjectOptions extends AbortOptions, PreloadOptions {
   template?: 'unixfs-dir'
 }
 
-export interface PutOptions extends AbortOptions, PreloadOptions {
-  enc?: PutEncoding
-}
-
 export interface StatResult {
-  Hash: string
+  Hash: CID
   NumLinks: number
   BlockSize: number
   LinksSize: number
@@ -31,4 +27,6 @@ export interface StatResult {
   CumulativeSize: number
 }
 
-export type PutEncoding = 'json' | 'protobuf'
+export interface PutOptions extends AbortOptions, PreloadOptions {
+  pin?: boolean
+}

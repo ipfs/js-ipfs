@@ -12,7 +12,7 @@ const errCode = require('err-code')
 
 /**
  * @param {MfsContext} context
- * @param {import('cids')} cid
+ * @param {import('multiformats/cid').CID} cid
  * @param {import('ipfs-core-types/src/utils').AbortOptions} options
  */
 const updateMfsRoot = async (context, cid, options) => {

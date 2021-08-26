@@ -2,6 +2,10 @@
 
 const drain = require('it-drain')
 
+/**
+ * @param {*} fn
+ * @returns {Promise<void>}
+ */
 module.exports = (fn) => {
   return new Promise((resolve, reject) => {
     // some operations are either synchronous so cannot time out, or complete during
@@ -15,7 +19,7 @@ module.exports = (fn) => {
         res = drain(res)
       }
 
-      res.then((result) => {
+      res.then((/** @type {*} */ result) => {
         const timeTaken = Date.now() - start
 
         if (timeTaken < 100) {
@@ -26,7 +30,7 @@ module.exports = (fn) => {
         }
 
         reject(new Error(`API call did not time out after ${timeTaken}ms, got ${JSON.stringify(result, null, 2)}`))
-      }, (err) => {
+      }, (/** @type {Error} */ err) => {
         if (err.name === 'TimeoutError') {
           return resolve()
         }

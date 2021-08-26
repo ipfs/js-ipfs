@@ -4,6 +4,13 @@ const fs = require('fs')
 const debug = require('debug')('ipfs:cli:init')
 const { ipfsPathHelp } = require('../utils')
 
+/** @type {Record<string, import('libp2p-crypto').KeyType>} */
+const keyTypes = {
+  ed25519: 'Ed25519',
+  rsa: 'RSA',
+  secp256k1: 'secp256k1'
+}
+
 module.exports = {
   command: 'init [default-config] [options]',
   describe: 'Initialize a local IPFS node\n\n' +
@@ -23,15 +30,16 @@ module.exports = {
       })
       .option('algorithm', {
         type: 'string',
+        choices: Object.keys(keyTypes),
         alias: 'a',
-        default: 'RSA',
-        describe: 'Cryptographic algorithm to use for key generation. Supports [RSA, Ed25519, secp256k1]'
+        default: 'ed25519',
+        describe: 'Cryptographic algorithm to use for key generation'
       })
       .option('bits', {
         type: 'number',
         alias: 'b',
         default: '2048',
-        describe: 'Number of bits to use in the generated RSA private key (defaults to 2048)',
+        describe: 'Number of bits to use if the generated private key is RSA (defaults to 2048)',
         coerce: Number
       })
       .option('empty-repo', {
@@ -58,7 +66,7 @@ module.exports = {
    * @param {object} argv
    * @param {import('../types').Context} argv.ctx
    * @param {string} argv.defaultConfig
-   * @param {'RSA' | 'Ed25519' | 'secp256k1'} argv.algorithm
+   * @param {'rsa' | 'ed25519' | 'secp256k1'} argv.algorithm
    * @param {number} argv.bits
    * @param {boolean} argv.emptyRepo
    * @param {string} argv.privateKey
@@ -83,13 +91,12 @@ module.exports = {
 
     // Required inline to reduce startup time
     const IPFS = require('ipfs-core')
-    const Repo = require('ipfs-repo')
 
     try {
       await IPFS.create({
-        repo: new Repo(repoPath),
+        repo: repoPath,
         init: {
-          algorithm: argv.algorithm,
+          algorithm: keyTypes[argv.algorithm],
           bits: argv.bits,
           privateKey: argv.privateKey,
           emptyRepo: argv.emptyRepo,

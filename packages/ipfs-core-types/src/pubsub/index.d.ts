@@ -13,7 +13,7 @@ export interface API<OptionExtension = {}> {
    * console.log(`subscribed to ${topic}`)
    * ```
    */
-  subscribe: (topic: string, handler: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
+  subscribe: (topic: string, handler: MessageHandlerFn, options?: SubscribeOptions & OptionExtension) => Promise<void>
 
   /**
    * Unsubscribes from a pubsub topic
@@ -38,9 +38,9 @@ export interface API<OptionExtension = {}> {
    * await ipfs.pubsub.unsubscribe(topic);
    * ```
    */
-  unsubscribe: (topic: string, handler: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
+  unsubscribe: (topic: string, handler?: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
 
-   /**
+  /**
    * Publish a data message to a pubsub topic
    *
    * @example
@@ -72,6 +72,8 @@ export interface API<OptionExtension = {}> {
    * ```
    */
   peers: (topic: string, options?: AbortOptions & OptionExtension) => Promise<string[]>
+
+  setMaxListeners?: (max: number) => void
 }
 
 export interface Message {
@@ -81,4 +83,12 @@ export interface Message {
   topicIDs: string[]
 }
 
-export type MessageHandlerFn = (message: Message) => void
+export interface SubscribeOptions extends AbortOptions {
+  /**
+   * A callback to receive an error if one occurs during processing
+   * subscription messages. Only supported by ipfs-http-client.
+   */
+  onError?: (err: Error) => void
+}
+
+export interface MessageHandlerFn { (message: Message): void }

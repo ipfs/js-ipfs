@@ -2,11 +2,11 @@
 
 /* eslint-env mocha */
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeNode, decodeNode } = require('../src/dag')
 const { ipc } = require('./util')
 const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 describe('dag (browser)', function () {
   this.timeout(10 * 1000)
@@ -14,10 +14,10 @@ describe('dag (browser)', function () {
 
   describe('encodeNode / decodeNode', () => {
     it('should decode dagNode over message channel', async () => {
-      const cid1 = new CID(
+      const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
-      const cid2 = new CID('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
+      const cid2 = CID.parse('QmPv52ekjS75L4JmHpXVeuJ5uX2ecSfSZo88NSyxwA3rAQ')
 
       const hi = uint8ArrayFromString('hello world')
       const nodeIn = {
@@ -50,13 +50,13 @@ describe('dag (browser)', function () {
           structure: {
             with: {
               links: [
-                new CID(cid1)
+                CID.parse(cid1)
               ]
             }
           }
         },
         other: {
-          link: new CID(cid2)
+          link: CID.parse(cid2)
         }
       }
       const transfer = []
@@ -71,19 +71,19 @@ describe('dag (browser)', function () {
           structure: {
             with: {
               links: [
-                new CID(cid1)
+                CID.parse(cid1)
               ]
             }
           }
         },
         other: {
-          link: new CID(cid2)
+          link: CID.parse(cid2)
         }
       })
 
       expect(transfer).to.containSubset(
         [{ byteLength: 0 }, { byteLength: 0 }, { byteLength: 0 }],
-        'tarnsferred buffers were cleared'
+        'transferred buffers were cleared'
       )
     })
   })

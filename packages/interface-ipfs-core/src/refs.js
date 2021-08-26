@@ -3,55 +3,59 @@
 
 const { getDescribe, getIt, expect } = require('./utils/mocha')
 const loadFixture = require('aegir/utils/fixtures')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const all = require('it-all')
 const drain = require('it-drain')
 const testTimeout = require('./utils/test-timeout')
-
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
-const DAGLink = dagPB.DAGLink
+const dagPb = require('@ipld/dag-pb')
 
 const { UnixFS } = require('ipfs-unixfs')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.refs', function () {
     this.timeout(60 * 1000)
 
-    let ipfs, pbRootCb, dagRootCid
+    /** @type {import('ipfs-core-types').IPFS} */
+    let ipfs
+    /** @type {CID} */
+    let pbRootCid
+    /** @type {CID} */
+    let dagRootCid
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
     before(async function () {
-      const cid = await loadPbContent(ipfs, getMockObjects())
-      pbRootCb = cid
+      pbRootCid = await loadPbContent(ipfs, getMockObjects())
     })
 
     before(async function () {
-      const cid = await loadDagContent(ipfs, getMockObjects())
-      dagRootCid = cid
+      dagRootCid = await loadDagContent(ipfs, getMockObjects())
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     for (const [name, options] of Object.entries(getRefsTests())) {
       const { path, params, expected, expectError, expectTimeout } = options
       // eslint-disable-next-line no-loop-func
       it(name, async function () {
+        // @ts-ignore this is mocha
         this.timeout(20 * 1000)
 
         // Call out to IPFS
-        const p = (path ? path(pbRootCb) : pbRootCb)
+        const p = (path ? path(pbRootCid) : pbRootCid)
 
         if (expectTimeout) {
           return expect(all(ipfs.refs(p, params))).to.eventually.be.rejected
@@ -65,7 +69,6 @@ module.exports = (common, options) => {
         }
 
         const refs = await all(ipfs.refs(p, params))
-
         // Sort the refs not to lock-in the iteration order
         // Check there was no error and the refs match what was expected
         expect(refs.map(r => r.ref).sort()).to.eql(expected.sort())
@@ -79,6 +82,7 @@ module.exports = (common, options) => {
     })
 
     it('should get refs with cbor links', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
 
       // Call out to IPFS
@@ -123,6 +127,9 @@ function getMockObjects () {
   }
 }
 
+/**
+ * @returns {Record<string, { path?: (cid: CID) => string | string[], params: { edges?: boolean, format?: string, recursive?: boolean, unique?: boolean, maxDepth?: number, timeout?: number }, expected: string[], expectError?: boolean, expectTimeout?: boolean }>}
+ */
 function getRefsTests () {
   return {
     'should print added files': {
@@ -309,45 +316,79 @@ function getRefsTests () {
 
     'should not be able to specify edges and format': {
       params: { format: '<linkname>', edges: true },
+      expected: [],
       expectError: true
     },
 
     'should print nothing for non-existent hashes': {
       path: () => 'QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2',
       params: { timeout: 2000 },
+      expected: [],
       expectTimeout: true
     }
   }
 }
 
+/**
+ * @typedef {object} Store
+ * @property {(data: Uint8Array) => Promise<CID>} putData
+ * @property {(links: { name: string, cid: string }[]) => Promise<CID>} putLinks
+ */
+
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {any} node
+ */
 function loadPbContent (ipfs, node) {
+  /**
+   * @type {Store}
+   */
   const store = {
-    putData: async (data) => {
-      const res = await ipfs.block.put(new DAGNode(data).serialize())
-      return res.cid
+    putData: (data) => {
+      return ipfs.block.put(
+        dagPb.encode({
+          Data: data,
+          Links: []
+        })
+      )
     },
-    putLinks: async (links) => {
-      const res = await ipfs.block.put(new DAGNode('', links.map(({ name, cid }) => {
-        return new DAGLink(name, 8, cid)
-      })).serialize())
-      return res.cid
+    putLinks: (links) => {
+      return ipfs.block.put(dagPb.encode({
+        Links: links.map(({ name, cid }) => {
+          return {
+            Name: name,
+            Tsize: 8,
+            Hash: CID.parse(cid)
+          }
+        })
+      }))
     }
   }
   return loadContent(ipfs, store, node)
 }
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {any} node
+ */
 function loadDagContent (ipfs, node) {
+  /**
+   * @type {Store}
+   */
   const store = {
-    putData: async (data) => {
+    putData: (data) => {
       const inner = new UnixFS({ type: 'file', data: data })
-      const serialized = new DAGNode(inner.marshal()).serialize()
-      const res = await ipfs.block.put(serialized)
-      return res.cid
+      const serialized = dagPb.encode({
+        Data: inner.marshal(),
+        Links: []
+      })
+      return ipfs.block.put(serialized)
     },
     putLinks: (links) => {
+      /** @type {Record<string, CID>} */
       const obj = {}
       for (const { name, cid } of links) {
-        obj[name] = new CID(cid)
+        obj[name] = CID.parse(cid)
       }
       return ipfs.dag.put(obj)
     }
@@ -355,6 +396,12 @@ function loadDagContent (ipfs, node) {
   return loadContent(ipfs, store, node)
 }
 
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {Store} store
+ * @param {any} node
+ * @returns {Promise<CID>}
+ */
 async function loadContent (ipfs, store, node) {
   if (node instanceof Uint8Array) {
     return store.putData(node)
@@ -380,4 +427,6 @@ async function loadContent (ipfs, store, node) {
 
     return store.putLinks(res)
   }
+
+  throw new Error('Please pass either data or object')
 }

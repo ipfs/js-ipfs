@@ -25,7 +25,7 @@ describe('key', () => {
     const name = 'key-name'
     const id = 'key-id'
     const defaultOptions = {
-      type: 'rsa',
+      type: 'ed25519',
       size: 2048,
       timeout: undefined
     }
@@ -43,28 +43,28 @@ describe('key', () => {
     it('gen with args', async () => {
       ipfs.key.gen.withArgs(name, {
         ...defaultOptions,
-        type: 'rsb',
+        type: 'rsa',
         size: 7
       }).resolves({
         id,
         name
       })
 
-      const out = await cli(`key gen ${name} --type rsb --size 7`, { ipfs })
+      const out = await cli(`key gen ${name} --type rsa --size 7`, { ipfs })
       expect(out).to.equal(`generated ${id} ${name}\n`)
     })
 
     it('gen with short args', async () => {
       ipfs.key.gen.withArgs(name, {
         ...defaultOptions,
-        type: 'rsc',
+        type: 'rsa',
         size: 5
       }).resolves({
         id,
         name
       })
 
-      const out = await cli(`key gen ${name} -t rsc -s 5`, { ipfs })
+      const out = await cli(`key gen ${name} -t rsa -s 5`, { ipfs })
       expect(out).to.equal(`generated ${id} ${name}\n`)
     })
 

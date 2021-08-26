@@ -1,9 +1,8 @@
 {
-  "lerna": "3.22.0",
+  "version": "independent",
   "packages": [
     "packages/*"
   ],
-  "version": "independent",
   "command": {
     "bootstrap": {
       "hoist": true

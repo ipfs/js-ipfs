@@ -1,13 +1,13 @@
 {
   "name": "ipfs-core-types",
-  "version": "0.3.1",
+  "version": "0.7.0",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "types": "src/index.d.ts",
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "test": "aegir ts -p check"
   },
   "files": [
@@ -28,13 +28,12 @@
   ],
   "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
-    "cids": "^1.1.6",
-    "ipld": "^0.30.0",
-    "multiaddr": "^9.0.1",
-    "multibase": "^4.0.2"
+    "interface-datastore": "^5.0.0",
+    "multiaddr": "^10.0.0",
+    "multiformats": "^9.4.1"
   },
   "devDependencies": {
-    "aegir": "^33.0.0"
+    "aegir": "^34.0.2"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"

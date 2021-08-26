@@ -1,9 +1,10 @@
 'use strict'
 
-const IPFSBitswap = require('ipfs-bitswap')
+const { createBitswap } = require('ipfs-bitswap')
 const createLibP2P = require('./libp2p')
 const { Multiaddr } = require('multiaddr')
 const errCode = require('err-code')
+const BlockStorage = require('../block-storage')
 
 /**
  * @typedef {Object} Online
@@ -18,10 +19,10 @@ const errCode = require('err-code')
  *
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  * @typedef {import('../types').Options} IPFSOptions
- * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('ipfs-repo').IPFSRepo} Repo
  * @typedef {import('../types').Print} Print
  * @typedef {import('libp2p')} libp2p
- * @typedef {import('ipfs-bitswap')} Bitswap
+ * @typedef {import('ipfs-bitswap').IPFSBitswap} Bitswap
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
@@ -31,11 +32,15 @@ class Network {
    * @param {PeerId} peerId
    * @param {libp2p} libp2p
    * @param {Bitswap} bitswap
+   * @param {Repo} repo
+   * @param {BlockStorage} blockstore
    */
-  constructor (peerId, libp2p, bitswap) {
+  constructor (peerId, libp2p, bitswap, repo, blockstore) {
     this.peerId = peerId
     this.libp2p = libp2p
     this.bitswap = bitswap
+    this.repo = repo
+    this.blockstore = blockstore
   }
 
   /**
@@ -48,15 +53,14 @@ class Network {
       await repo.open()
     }
 
+    /** @type {IPFSConfig} */
     const config = await repo.config.getAll()
 
     const libp2p = await createLibP2P({
       options,
       repo,
       peerId,
-      // @ts-ignore - TODO move config types into ipfs-repo
       multiaddrs: readAddrs(peerId, config),
-      // @ts-ignore - TODO move config types into ipfs-repo
       config,
       keychainConfig: undefined
     })
@@ -71,16 +75,25 @@ class Network {
       print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`)
     }
 
-    const bitswap = new IPFSBitswap(libp2p, repo.blocks, { statsEnabled: true })
+    const bitswap = createBitswap(libp2p, repo.blocks, { statsEnabled: true })
     await bitswap.start()
 
-    return new Network(peerId, libp2p, bitswap)
+    const blockstore = new BlockStorage(repo.blocks, bitswap)
+    repo.blocks = blockstore
+    // @ts-ignore private field
+    repo.pins.blockstore = blockstore
+
+    return new Network(peerId, libp2p, bitswap, repo, blockstore)
   }
 
   /**
    * @param {Network} network
    */
   static async stop (network) {
+    network.repo.blocks = network.blockstore.unwrap()
+    // @ts-ignore private field
+    network.repo.pins.blockstore = network.blockstore.unwrap()
+
     await Promise.all([
       network.bitswap.stop(),
       network.libp2p.stop()
@@ -90,10 +103,8 @@ class Network {
 module.exports = Network
 
 /**
- *
  * @param {PeerId} peerId
  * @param {IPFSConfig} config
- * @returns {Multiaddr[]}
  */
 const readAddrs = (peerId, config) => {
   const peerIdStr = peerId.toB58String()

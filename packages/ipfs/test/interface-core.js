@@ -8,7 +8,9 @@ const factory = require('./utils/factory')
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core tests', function () {
-  const commonFactory = factory()
+  const commonFactory = factory({
+    ipfsClientModule: require('ipfs-client')
+  })
 
   tests.root(commonFactory, {
     skip: isNode
@@ -81,11 +83,7 @@ describe('interface-ipfs-core tests', function () {
 
   tests.ping(commonFactory)
 
-  tests.pubsub(factory({}, {
-    go: {
-      args: ['--enable-pubsub-experiment']
-    }
-  }), {
+  tests.pubsub(commonFactory, {
     skip: [
       ...(isNode
         ? []

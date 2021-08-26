@@ -1,6 +1,19 @@
 'use strict'
 
-module.exports = function traverseLeafNodes (ipfs, cid) {
+/**
+ * @typedef {import('@ipld/dag-pb').PBNode} PBNode
+ * @typedef {import('multiformats/cid').CID} CID
+ */
+
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {CID} cid
+ */
+module.exports = async function * traverseLeafNodes (ipfs, cid) {
+  /**
+   * @param {import('multiformats/cid').CID} cid
+   * @returns {AsyncIterable<{ node: PBNode, cid: CID }>}
+   */
   async function * traverse (cid) {
     const { value: node } = await ipfs.dag.get(cid)
 
@@ -13,8 +26,10 @@ module.exports = function traverseLeafNodes (ipfs, cid) {
       return
     }
 
-    node.Links.forEach(link => traverse(link.Hash))
+    for (const link of node.Links) {
+      yield * traverse(link.Hash)
+    }
   }
 
-  return traverse(cid)
+  yield * traverse(cid)
 }

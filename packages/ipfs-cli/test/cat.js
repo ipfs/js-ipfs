@@ -2,10 +2,10 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const cli = require('./utils/cli')
 const sinon = require('sinon')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 const defaultOptions = {
   offset: undefined,
@@ -23,7 +23,7 @@ describe('cat', () => {
   })
 
   it('should cat a file', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
     const buf = uint8ArrayFromString('hello world')
 
     ipfs.cat.withArgs(cid.toString(), defaultOptions).returns([buf])
@@ -33,7 +33,7 @@ describe('cat', () => {
   })
 
   it('cat part of a file using `count`', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
     const buf = uint8ArrayFromString('hello world')
 
     ipfs.cat.withArgs(cid.toString(), {
@@ -47,7 +47,7 @@ describe('cat', () => {
   })
 
   it('cat part of a file using `length`', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
     const buf = uint8ArrayFromString('hello world')
 
     ipfs.cat.withArgs(cid.toString(), {
@@ -71,7 +71,7 @@ describe('cat', () => {
   })
 
   it('should cat a file with a timeout', async () => {
-    const cid = new CID('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
     const buf = uint8ArrayFromString('hello world')
 
     ipfs.cat.withArgs(cid.toString(), {

@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -14,20 +14,17 @@ module.exports = configure(api => {
    * @type {BitswapAPI["wantlistForPeer"]}
    */
   async function wantlistForPeer (peerId, options = {}) {
-    // @ts-ignore - CID|string seems to confuse typedef
-    peerId = typeof peerId === 'string' ? peerId : new CID(peerId).toString()
-
     const res = await (await api.post('bitswap/wantlist', {
       timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         ...options,
-        peer: peerId
+        peer: peerId.toString()
       }),
       headers: options.headers
     })).json()
 
-    return (res.Keys || []).map((/** @type {{ '/': string }} */ k) => new CID(k['/']))
+    return (res.Keys || []).map((/** @type {{ '/': string }} */ k) => CID.parse(k['/']))
   }
   return wantlistForPeer
 })

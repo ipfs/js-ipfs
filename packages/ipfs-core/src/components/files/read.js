@@ -37,7 +37,7 @@ module.exports = (context) => {
     return {
       [Symbol.asyncIterator]: async function * read () {
         const mfsPath = await toMfsPath(context, path, options)
-        const result = await exporter(mfsPath.mfsPath, context.ipld)
+        const result = await exporter(mfsPath.mfsPath, context.repo.blocks)
 
         if (result.type !== 'file') {
           throw errCode(new Error(`${path} was not a file`), 'ERR_NOT_FILE')

@@ -5,7 +5,7 @@ const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
 
 /**
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-server').DAGService} DagService
  * @typedef {import('./client').MessageTransport} MessageTransport
@@ -22,7 +22,7 @@ class DAGClient extends Client {
    * @param {MessageTransport} transport
    */
   constructor (transport) {
-    super('dag', ['put', 'get', 'resolve', 'tree'], transport)
+    super('dag', ['put', 'get', 'resolve'], transport)
   }
 }
 
@@ -30,11 +30,8 @@ class DAGClient extends Client {
  * @type {DAGAPI["put"]}
  */
 DAGClient.prototype.put = async function put (dagNode, options = {}) {
-  const { cid } = options
-
   const encodedCID = await this.remote.put({
     ...options,
-    encodedCid: cid != null ? encodeCID(cid) : undefined,
     dagNode: encodeNode(dagNode, options.transfer)
   })
 
@@ -63,18 +60,6 @@ DAGClient.prototype.resolve = async function resolve (cid, options = {}) {
   })
 
   return { cid: decodeCID(encodedCID), remainderPath }
-}
-
-/**
- * @type {DAGAPI["tree"]}
- */
-DAGClient.prototype.tree = async function * tree (cid, options = {}) {
-  const paths = await this.remote.tree({
-    ...options,
-    cid: encodeCID(cid, options.transfer)
-  })
-
-  yield * paths
 }
 
 /**

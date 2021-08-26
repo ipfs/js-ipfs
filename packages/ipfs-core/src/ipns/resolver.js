@@ -7,7 +7,7 @@ const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:resolver'), {
   error: debug('ipfs:ipns:resolver:error')
 })
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
@@ -89,7 +89,7 @@ class IpnsResolver {
    * @param {string} name
    */
   async _resolveName (name) {
-    const peerId = PeerId.createFromCID(name)
+    const peerId = PeerId.parse(name)
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
     let record
 

@@ -15,9 +15,7 @@ const LOG_ERROR = 'ipfs:http-api:error'
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('./types').Server} Server
- * @typedef {import('ipld')} IPLD
  * @typedef {import('libp2p')} libp2p
- * @typedef {IPFS & { ipld: IPLD, libp2p: libp2p }} JSIPFS
  */
 
 /**
@@ -38,8 +36,8 @@ function hapiInfoToMultiaddr (info) {
 
 /**
  * @param {string | string[]} serverAddrs
- * @param {(host: string, port: string, ipfs: JSIPFS, cors: Record<string, any>) => Promise<Server>} createServer
- * @param {JSIPFS} ipfs
+ * @param {(host: string, port: string, ipfs: IPFS, cors: Record<string, any>) => Promise<Server>} createServer
+ * @param {IPFS} ipfs
  * @param {Record<string, any>} cors
  */
 async function serverCreator (serverAddrs, createServer, ipfs, cors) {
@@ -59,9 +57,39 @@ async function serverCreator (serverAddrs, createServer, ipfs, cors) {
   return servers
 }
 
+/**
+ * @param {string} [str]
+ * @param {string[]} [allowedOrigins]
+ */
+function isAllowedOrigin (str, allowedOrigins = []) {
+  if (!str) {
+    return false
+  }
+
+  let origin
+
+  try {
+    origin = (new URL(str)).origin
+  } catch {
+    return false
+  }
+
+  for (const allowedOrigin of allowedOrigins) {
+    if (allowedOrigin === '*') {
+      return true
+    }
+
+    if (allowedOrigin === origin) {
+      return true
+    }
+  }
+
+  return false
+}
+
 class HttpApi {
   /**
-   * @param {JSIPFS} ipfs
+   * @param {IPFS} ipfs
    */
   constructor (ipfs) {
     this._ipfs = ipfs
@@ -74,8 +102,6 @@ class HttpApi {
 
   /**
    * Starts the IPFS HTTP server
-   *
-   * @returns {Promise<HttpApi>}
    */
   async start () {
     this._log('starting')
@@ -91,14 +117,17 @@ class HttpApi {
       credentials: Boolean(headers['Access-Control-Allow-Credentials'])
     })
 
+    // for the CLI to know the whereabouts of the API
+    // @ts-ignore - ipfs.repo.setApiAddr is not part of the core api
+    await ipfs.repo.setApiAddr(this._apiServers[0].info.ma)
+
     this._log('started')
-    return this
   }
 
   /**
    * @param {string} host
    * @param {string} port
-   * @param {JSIPFS} ipfs
+   * @param {IPFS} ipfs
    * @param {Record<string, any>} cors
    */
   async _createApiServer (host, port, ipfs, cors) {
@@ -176,11 +205,17 @@ class HttpApi {
 
         const headers = request.headers || {}
         const origin = headers.origin || ''
-        const referrer = headers.referrer || ''
+        const referer = headers.referer || ''
         const userAgent = headers['user-agent'] || ''
 
-        // If these are set, we leave up to CORS and CSRF checks.
-        if (origin || referrer) {
+        // If these are set, check them against the configured list
+        if (origin || referer) {
+          if (!isAllowedOrigin(origin || referer, cors.origin)) {
+            // Hapi will not allow an empty CORS origin list so we have to manually
+            // reject the request if CORS origins have not been configured
+            throw Boom.forbidden()
+          }
+
           return h.continue
         }
 

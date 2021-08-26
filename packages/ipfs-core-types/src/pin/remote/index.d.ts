@@ -1,4 +1,4 @@
-import CID from 'cids'
+import { CID } from 'multiformats/cid'
 import { Multiaddr } from 'multiaddr'
 import { API as Service } from './service'
 import { AbortOptions } from '../../utils'

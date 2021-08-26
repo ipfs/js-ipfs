@@ -1,7 +1,7 @@
 'use strict'
 
-const normaliseInput = require('ipfs-core-utils/src/files/normalise-input')
-const CID = require('cids')
+const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input')
+const { CID } = require('multiformats/cid')
 const bidiToDuplex = require('../utils/bidi-to-duplex')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
@@ -86,7 +86,7 @@ async function sendFile (index, sink, content, path, mode, mtime) {
 }
 
 /**
- * @param {import('ipfs-core-types/src/utils').ImportSource} stream
+ * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} stream
  * @param {import('it-pushable').Pushable<any>} sink
  */
 async function sendFiles (stream, sink) {
@@ -147,7 +147,7 @@ module.exports = function grpcAddAll (grpc, service, opts) {
       // received file/dir import result
       yield {
         path: result.path,
-        cid: new CID(result.cid),
+        cid: CID.parse(result.cid),
         mode: result.mode,
         mtime: {
           secs: result.mtime || 0,

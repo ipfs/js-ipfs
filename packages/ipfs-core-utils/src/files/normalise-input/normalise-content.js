@@ -1,7 +1,7 @@
 'use strict'
 
 const errCode = require('err-code')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const browserStreamToIt = require('browser-readablestream-to-it')
 const blobToIt = require('blob-to-it')
 const itPeekable = require('it-peekable')

@@ -1,6 +1,6 @@
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const multipartRequest = require('../lib/multipart-request')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -21,7 +21,6 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
 
-    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('config/replace', {
       timeout: options.timeout,
       signal,

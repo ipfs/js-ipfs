@@ -1,22 +1,23 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const errCode = require('err-code')
 
 /**
  * @param {string|Uint8Array|CID} cid
- * @returns {CID}
  */
 exports.cleanCid = cid => {
-  if (CID.isCID(cid)) {
+  if (cid instanceof CID) {
     return cid
   }
 
-  // CID constructor knows how to do the cleaning :)
-  try {
-    // @ts-ignore - string|Uint8Array union seems to confuse CID typedefs.
-    return new CID(cid)
-  } catch (err) {
-    throw errCode(err, 'ERR_INVALID_CID')
+  if (typeof cid === 'string') {
+    return CID.parse(cid)
   }
+
+  if (cid instanceof Uint8Array) {
+    return CID.decode(cid)
+  }
+
+  throw errCode(new Error('Invalid CID'), 'ERR_INVALID_CID')
 }

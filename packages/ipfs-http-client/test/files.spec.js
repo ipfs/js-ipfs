@@ -2,9 +2,10 @@
 
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const { expect } = require('aegir/utils/chai')
 const f = require('./utils/factory')()
+const dagPb = require('@ipld/dag-pb')
 
 describe('.add', function () {
   this.timeout(20 * 1000)
@@ -32,7 +33,7 @@ describe('.add', function () {
     expect(result).to.have.property('cid')
 
     const { cid } = result
-    expect(cid).to.have.property('codec', 'dag-pb')
+    expect(cid).to.have.property('code', dagPb.code)
     expect(cid.toString()).to.equal('QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS')
   })
 })

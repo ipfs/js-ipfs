@@ -3,6 +3,150 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.8.3...ipfs-cli@0.8.4) (2021-08-25)
+
+
+### Bug Fixes
+
+* grpc server may not be enabled ([#3834](https://github.com/ipfs/js-ipfs/issues/3834)) ([533845e](https://github.com/ipfs/js-ipfs/commit/533845e3d140459ca383b1538e571d08850c0ef8))
+
+
+
+
+
+## [0.8.3](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.8.1...ipfs-cli@0.8.3) (2021-08-17)
+
+**Note:** Version bump only for package ipfs-cli
+
+
+
+
+
+## [0.8.1](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.8.0...ipfs-cli@0.8.1) (2021-08-17)
+
+
+### Bug Fixes
+
+* pin nanoid version ([#3807](https://github.com/ipfs/js-ipfs/issues/3807)) ([474523a](https://github.com/ipfs/js-ipfs/commit/474523ab8702729f697843d433a7a08baf2d101f))
+
+
+
+
+
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.7.1...ipfs-cli@0.8.0) (2021-08-11)
+
+
+### Features
+
+* ed25519 keys by default ([#3693](https://github.com/ipfs/js-ipfs/issues/3693)) ([33fa734](https://github.com/ipfs/js-ipfs/commit/33fa7341c3baaf0926d887c071cc6fbce5ac49a8))
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.7.0...ipfs-cli@0.7.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-cli
+
+
+
+
+
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.6.2...ipfs-cli@0.7.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* make "ipfs resolve" cli command recursive by default ([#3707](https://github.com/ipfs/js-ipfs/issues/3707)) ([399ce36](https://github.com/ipfs/js-ipfs/commit/399ce367a1dbc531b52fe228ee4212008c9a1091)), closes [#3692](https://github.com/ipfs/js-ipfs/issues/3692)
+
+
+### Features
+
+* implement dag import/export ([#3728](https://github.com/ipfs/js-ipfs/issues/3728)) ([700765b](https://github.com/ipfs/js-ipfs/commit/700765be2634fa5d2d71d8b87cf68c9cd328d2c4)), closes [#2953](https://github.com/ipfs/js-ipfs/issues/2953) [#2745](https://github.com/ipfs/js-ipfs/issues/2745)
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* resolve is now recursive by default
+
+Co-authored-by: Alex Potsides <alex@achingbrain.net>
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+## [0.6.2](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.6.1...ipfs-cli@0.6.2) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-cli
+
+
+
+
+
+## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.6.0...ipfs-cli@0.6.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* stalling subscription on (node) http-client when daemon is stopped ([#3468](https://github.com/ipfs/js-ipfs/issues/3468)) ([0266abf](https://github.com/ipfs/js-ipfs/commit/0266abf0c4b817636172f78c6e91eb4dd5aad451)), closes [#3465](https://github.com/ipfs/js-ipfs/issues/3465)
+
+
+
+
+
+# [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.5.1...ipfs-cli@0.6.0) (2021-05-26)
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
+## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.5.0...ipfs-cli@0.5.1) (2021-05-11)
+
+**Note:** Version bump only for package ipfs-cli
+
+
+
+
+
+# [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.4.4...ipfs-cli@0.5.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* mark ipld options as partial ([#3669](https://github.com/ipfs/js-ipfs/issues/3669)) ([f98af8e](https://github.com/ipfs/js-ipfs/commit/f98af8ed24784929898bb5d33a64dc442c77074d))
+* update ipfs repo ([#3671](https://github.com/ipfs/js-ipfs/issues/3671)) ([9029ee5](https://github.com/ipfs/js-ipfs/commit/9029ee591fa74ea65c9600f2d249897e933416fa))
+* update types after feedback from ceramic ([#3657](https://github.com/ipfs/js-ipfs/issues/3657)) ([0ddbb1b](https://github.com/ipfs/js-ipfs/commit/0ddbb1b1deb4e40dac3e365d7f98a5f174c2ce8f)), closes [#3640](https://github.com/ipfs/js-ipfs/issues/3640)
+
+
+### chore
+
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [0.4.4](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.4.3...ipfs-cli@0.4.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-cli

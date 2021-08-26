@@ -1,22 +1,35 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayConcat = require('uint8arrays/concat')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
 const { nanoid } = require('nanoid')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const delay = require('delay')
 const all = require('it-all')
 
-module.exports = (common, options) => {
+/**
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
+ * @param {Object} options
+ */
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.touch', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
+    /**
+     * @param {import('ipfs-unixfs').MtimeLike} mtime
+     * @param {import('ipfs-unixfs').MtimeLike} expectedMtime
+     */
     async function testMtime (mtime, expectedMtime) {
       const testPath = `/test-${nanoid()}`
 
@@ -35,11 +48,12 @@ module.exports = (common, options) => {
       expect(stat2).to.have.deep.nested.property('mtime', expectedMtime)
     }
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should have default mtime', async function () {
+      // @ts-ignore this is mocha
       this.slow(5 * 1000)
       const testPath = `/test-${nanoid()}`
 
@@ -60,6 +74,7 @@ module.exports = (common, options) => {
     })
 
     it('should update file mtime', async function () {
+      // @ts-ignore this is mocha
       this.slow(5 * 1000)
       const testPath = `/test-${nanoid()}`
       const mtime = new Date()
@@ -77,6 +92,7 @@ module.exports = (common, options) => {
     })
 
     it('should update directory mtime', async function () {
+      // @ts-ignore this is mocha
       this.slow(5 * 1000)
       const testPath = `/test-${nanoid()}`
       const mtime = new Date()
@@ -104,12 +120,22 @@ module.exports = (common, options) => {
         shardSplitThreshold: 0
       })
       const originalMtime = (await ipfs.files.stat(path)).mtime
+
+      if (!originalMtime) {
+        throw new Error('No originalMtime found')
+      }
+
       await delay(1000)
       await ipfs.files.touch(path, {
         flush: true
       })
 
       const updatedMtime = (await ipfs.files.stat(path)).mtime
+
+      if (!updatedMtime) {
+        throw new Error('No updatedMtime found')
+      }
+
       expect(updatedMtime.secs).to.be.greaterThan(originalMtime.secs)
     })
 

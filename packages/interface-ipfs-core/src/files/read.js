@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const uint8ArrayConcat = require('uint8arrays/concat')
+const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
 const drain = require('it-drain')
 const all = require('it-all')
 const { fixtures } = require('../utils')
@@ -9,12 +9,15 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
 const createShardedDirectory = require('../utils/create-sharded-directory')
 const { randomBytes } = require('iso-random-stream')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
   const smallFile = randomBytes(13)
@@ -22,11 +25,12 @@ module.exports = (common, options) => {
   describe('.files.read', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('reads a small file', async () => {
       const filePath = '/small-file.txt'
@@ -109,10 +113,11 @@ module.exports = (common, options) => {
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

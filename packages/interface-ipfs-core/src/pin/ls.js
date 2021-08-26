@@ -5,22 +5,26 @@ const { fixtures } = require('./utils')
 const { getDescribe, getIt, expect } = require('../utils/mocha')
 const all = require('it-all')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pin.ls', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
       // two files wrapped in directories, only root CID pinned recursively
       const dir = fixtures.directory.files.map((file) => ({ path: file.path, content: file.data }))
       await all(ipfs.addAll(dir, { pin: false, cidVersion: 0 }))
@@ -33,7 +37,7 @@ module.exports = (common, options) => {
       await ipfs.pin.add(fixtures.files[1].cid, { recursive: false })
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     // 1st, because ipfs.add pins automatically
     it('should list all recursive pins', async () => {

@@ -1,8 +1,8 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
-const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
+const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
 /**
@@ -32,12 +32,12 @@ module.exports = configure(api => {
       for await (const pin of res.ndjson()) {
         if (pin.Pins) { // non-streaming response
           for (const cid of pin.Pins) {
-            yield new CID(cid)
+            yield CID.parse(cid)
           }
           continue
         }
 
-        yield new CID(pin)
+        yield CID.parse(pin)
       }
     }
   }

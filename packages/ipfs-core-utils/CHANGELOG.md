@@ -3,6 +3,122 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.10.1...ipfs-core-utils@0.10.2) (2021-08-25)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+## [0.10.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.10.0...ipfs-core-utils@0.10.1) (2021-08-17)
+
+
+### Bug Fixes
+
+* throw error on missing input to add/addAll ([#3818](https://github.com/ipfs/js-ipfs/issues/3818)) ([1343708](https://github.com/ipfs/js-ipfs/commit/1343708f70d7298b6677555803d68ff282d89439)), closes [#3788](https://github.com/ipfs/js-ipfs/issues/3788)
+
+
+
+
+
+# [0.10.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.9.1...ipfs-core-utils@0.10.0) (2021-08-11)
+
+
+### Features
+
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.9.0...ipfs-core-utils@0.9.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+# [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.8.3...ipfs-core-utils@0.9.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* support @web-std/file in normalize input ([#3750](https://github.com/ipfs/js-ipfs/issues/3750)) ([6fd7776](https://github.com/ipfs/js-ipfs/commit/6fd777679d0aa80bbb784d16585456e54b5cf294))
+
+
+### Features
+
+* implement dag import/export ([#3728](https://github.com/ipfs/js-ipfs/issues/3728)) ([700765b](https://github.com/ipfs/js-ipfs/commit/700765be2634fa5d2d71d8b87cf68c9cd328d2c4)), closes [#2953](https://github.com/ipfs/js-ipfs/issues/2953) [#2745](https://github.com/ipfs/js-ipfs/issues/2745)
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+## [0.8.3](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.8.2...ipfs-core-utils@0.8.3) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+## [0.8.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.8.1...ipfs-core-utils@0.8.2) (2021-06-05)
+
+
+### Bug Fixes
+
+* stalling subscription on (node) http-client when daemon is stopped ([#3468](https://github.com/ipfs/js-ipfs/issues/3468)) ([0266abf](https://github.com/ipfs/js-ipfs/commit/0266abf0c4b817636172f78c6e91eb4dd5aad451)), closes [#3465](https://github.com/ipfs/js-ipfs/issues/3465)
+
+
+
+
+
+## [0.8.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.8.0...ipfs-core-utils@0.8.1) (2021-05-26)
+
+**Note:** Version bump only for package ipfs-core-utils
+
+
+
+
+
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.7.2...ipfs-core-utils@0.8.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* mark ipld options as partial ([#3669](https://github.com/ipfs/js-ipfs/issues/3669)) ([f98af8e](https://github.com/ipfs/js-ipfs/commit/f98af8ed24784929898bb5d33a64dc442c77074d))
+
+
+### chore
+
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### BREAKING CHANGES
+
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.7.1...ipfs-core-utils@0.7.2) (2021-03-09)
 
 

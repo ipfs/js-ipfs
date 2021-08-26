@@ -7,8 +7,8 @@ const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:publisher'), {
   error: debug('ipfs:ipns:publisher:error')
 })
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayEquals = require('uint8arrays/equals')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+const { equals: uint8ArrayEquals } = require('uint8arrays/equals')
 
 const ipns = require('ipns')
 
@@ -92,7 +92,7 @@ class IpnsPublisher {
    * @param {IPNSEntry} entry
    */
   async _publishEntry (key, entry) {
-    if (!(Key.isKey(key))) {
+    if (!(key instanceof Key)) {
       const errMsg = 'datastore key does not have a valid format'
 
       log.error(errMsg)
@@ -130,7 +130,7 @@ class IpnsPublisher {
    * @param {PublicKey} publicKey
    */
   async _publishPublicKey (key, publicKey) {
-    if ((!Key.isKey(key))) {
+    if (!(key instanceof Key)) {
       const errMsg = 'datastore key does not have a valid format'
       log.error(errMsg)
 
@@ -254,10 +254,10 @@ class IpnsPublisher {
     }
 
     // Determinate the record sequence number
-    let seqNumber = 0
+    let seqNumber = 0n
 
     if (record && record.sequence !== undefined) {
-      seqNumber = !uint8ArrayEquals(record.value, value) ? record.sequence + 1 : record.sequence
+      seqNumber = !uint8ArrayEquals(record.value, value) ? BigInt(record.sequence) + 1n : BigInt(record.sequence)
     }
 
     let entryData

@@ -3,6 +3,129 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.7.1...ipfs-http-server@0.7.2) (2021-08-25)
+
+**Note:** Version bump only for package ipfs-http-server
+
+
+
+
+
+## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.7.0...ipfs-http-server@0.7.1) (2021-08-17)
+
+**Note:** Version bump only for package ipfs-http-server
+
+
+
+
+
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.6.1...ipfs-http-server@0.7.0) (2021-08-11)
+
+
+### Bug Fixes
+
+* return rate in/out as number ([#3798](https://github.com/ipfs/js-ipfs/issues/3798)) ([2f3df7a](https://github.com/ipfs/js-ipfs/commit/2f3df7a70fe94d6bdf20947854dc9d0b88cb759a)), closes [#3782](https://github.com/ipfs/js-ipfs/issues/3782)
+
+
+### Features
+
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* rateIn/rateOut are returned as numbers
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
+## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.6.0...ipfs-http-server@0.6.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* typo in 'multiformats' type defs ([#3778](https://github.com/ipfs/js-ipfs/issues/3778)) ([1bf35f8](https://github.com/ipfs/js-ipfs/commit/1bf35f8a1622dea1e88bfbd701205df4f96998b1))
+
+
+
+
+
+# [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.5.2...ipfs-http-server@0.6.0) (2021-07-27)
+
+
+### Features
+
+* implement dag import/export ([#3728](https://github.com/ipfs/js-ipfs/issues/3728)) ([700765b](https://github.com/ipfs/js-ipfs/commit/700765be2634fa5d2d71d8b87cf68c9cd328d2c4)), closes [#2953](https://github.com/ipfs/js-ipfs/issues/2953) [#2745](https://github.com/ipfs/js-ipfs/issues/2745)
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
+## [0.5.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.5.1...ipfs-http-server@0.5.2) (2021-06-18)
+
+**Note:** Version bump only for package ipfs-http-server
+
+
+
+
+
+## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.5.0...ipfs-http-server@0.5.1) (2021-06-05)
+
+**Note:** Version bump only for package ipfs-http-server
+
+
+
+
+
+# [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.4.0...ipfs-http-server@0.5.0) (2021-05-26)
+
+
+### Features
+
+* allow passing the id of a network peer to ipfs.id ([#3386](https://github.com/ipfs/js-ipfs/issues/3386)) ([00fd709](https://github.com/ipfs/js-ipfs/commit/00fd709a7b71e7cf354ea452ebce460dd7375d34))
+
+
+
+
+
+# [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.3.4...ipfs-http-server@0.4.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* only use public api in http api server ([#3660](https://github.com/ipfs/js-ipfs/issues/3660)) ([61d0981](https://github.com/ipfs/js-ipfs/commit/61d0981c05371c4846dcea3330ac9fb2e810b8fa)), closes [#3639](https://github.com/ipfs/js-ipfs/issues/3639)
+* reject requests when cors origin list is empty ([#3674](https://github.com/ipfs/js-ipfs/issues/3674)) ([0b2d98c](https://github.com/ipfs/js-ipfs/commit/0b2d98c53ba18491d7b99ae9cc0955281146610d))
+
+
+### chore
+
+* upgrade deps with new typedefs ([#3550](https://github.com/ipfs/js-ipfs/issues/3550)) ([a418a52](https://github.com/ipfs/js-ipfs/commit/a418a521574c878d7aabd0ad2fd8d516908a3756))
+
+
+### Features
+
+* support identity hash in block.get + dag.get ([#3616](https://github.com/ipfs/js-ipfs/issues/3616)) ([28ad9ad](https://github.com/ipfs/js-ipfs/commit/28ad9ad6e50abb89a366ecd6b5301e848f0e9962))
+
+
+### BREAKING CHANGES
+
+* all core api methods now have types, some method signatures have changed, named exports are now used by the http, grpc and ipfs client modules
+
+
+
+
+
 ## [0.3.4](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.3.3...ipfs-http-server@0.3.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-http-server

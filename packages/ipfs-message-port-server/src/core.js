@@ -10,14 +10,14 @@ const {
 const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
 
 /**
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('ipfs-core-types/src/root').AddOptions} AddOptions
  * @typedef {import('ipfs-core-types/src/root').AddAllOptions} AddAllOptions
  * @typedef {import('ipfs-core-types/src/root').IPFSEntry} IPFSEntry
  * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
- * @typedef {import('ipfs-core-types/src/utils').ImportSource} ImportSource
- * @typedef {import('ipfs-core-types/src/utils').ToEntry} ToEntry
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/root').AddResult} AddResult
  * @typedef {import('ipfs-message-port-protocol/src/root').EncodedAddInput} EncodedAddInput
  * @typedef {import('ipfs-message-port-protocol/src/root').EncodedAddAllInput} EncodedAddAllInput
@@ -188,7 +188,7 @@ exports.CoreService = class CoreService {
 
 /**
  * @param {EncodedAddAllInput} input
- * @returns {ImportSource}
+ * @returns {ImportCandidateStream}
  */
 const decodeAddAllInput = input =>
   decodeIterable(input, decodeFileInput)
@@ -289,15 +289,14 @@ const encodeLsResult = entries => {
 /**
  * @param {IPFSEntry} entry
  */
-const encodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+const encodeLsEntry = ({ name, path, size, cid, type, mode, mtime }) => ({
   cid: encodeCID(cid),
   type,
   name,
   path,
   mode,
   mtime,
-  size,
-  depth
+  size
 })
 
 /**

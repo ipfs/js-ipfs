@@ -18,7 +18,10 @@ module.exports = configure(api => {
     const res = await api.post('id', {
       timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams(options),
+      searchParams: toUrlSearchParams({
+        arg: options.peerId ? options.peerId.toString() : undefined,
+        ...options
+      }),
       headers: options.headers
     })
     const data = await res.json()

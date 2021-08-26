@@ -17,7 +17,7 @@ module.exports = ({ network }) => {
     const { libp2p } = await network.use()
     options.count = options.count || 10
 
-    const peer = PeerId.createFromCID(peerId)
+    const peer = PeerId.createFromB58String(peerId)
 
     const storedPeer = libp2p.peerStore.get(peer)
     let id = storedPeer && storedPeer.id

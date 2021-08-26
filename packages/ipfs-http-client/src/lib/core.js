@@ -5,7 +5,7 @@ const { isBrowser, isWebWorker, isNode } = require('ipfs-utils/src/env')
 const { default: parseDuration } = require('parse-duration')
 const log = require('debug')('ipfs-http-client:lib:error-handler')
 const HTTP = require('ipfs-utils/src/http')
-const merge = require('merge-options')
+const merge = require('merge-options').bind({ ignoreUndefined: true })
 const toUrlString = require('ipfs-core-utils/src/to-url-string')
 const http = require('http')
 const https = require('https')
@@ -15,8 +15,6 @@ const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
 const DEFAULT_PORT = isBrowser || isWebWorker ? location.port : '5001'
 
 /**
- * @typedef {import('ipfs-utils/dist/types/native-fetch').Response} Response
- * @typedef {import('ipfs-utils/dist/types/native-fetch').Request} Request
  * @typedef {import('ipfs-utils/src/types').HTTPOptions} HTTPOptions
  * @typedef {import('../types').Options} Options
  */

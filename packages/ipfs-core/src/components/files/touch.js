@@ -9,21 +9,19 @@ const toTrail = require('./utils/to-trail')
 const addLink = require('./utils/add-link')
 const updateTree = require('./utils/update-tree')
 const updateMfsRoot = require('./utils/update-mfs-root')
-const { DAGNode } = require('ipld-dag-pb')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
+const dagPb = require('@ipld/dag-pb')
+const { CID } = require('multiformats/cid')
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions
  * @property {boolean} flush
  * @property {number} shardSplitThreshold
  * @property {CIDVersion} cidVersion
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {MtimeLike} [mtime]
  * @property {AbortSignal} [signal]
  * @property {number} [timeout]
@@ -60,7 +58,10 @@ module.exports = (context) => {
       exists
     } = await toMfsPath(context, path, settings)
 
-    let node
+    const hashAlg = options.hashAlg || defaultOptions.hashAlg
+    const hasher = await context.hashers.getHasher(hashAlg)
+
+    let updatedBlock
     let updatedCid
 
     let cidVersion = settings.cidVersion
@@ -71,47 +72,61 @@ module.exports = (context) => {
         // @ts-ignore TODO: restore hrtime support to ipfs-unixfs constructor - it's in the code, just not the signature
         mtime: settings.mtime
       })
-      node = new DAGNode(metadata.marshal())
-      updatedCid = await context.ipld.put(node, mc.DAG_PB, {
-        cidVersion: settings.cidVersion,
-        hashAlg: mh.names['sha2-256'],
-        onlyHash: !settings.flush
-      })
+      updatedBlock = dagPb.encode({ Data: metadata.marshal(), Links: [] })
+
+      const hash = await hasher.digest(updatedBlock)
+
+      updatedCid = CID.create(settings.cidVersion, dagPb.code, hash)
+
+      if (settings.flush) {
+        await context.repo.blocks.put(updatedCid, updatedBlock)
+      }
     } else {
-      if (cid.codec !== 'dag-pb') {
+      if (cid.code !== dagPb.code) {
         throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
       }
 
       cidVersion = cid.version
 
-      node = await context.ipld.get(cid)
+      const block = await context.repo.blocks.get(cid)
+      const node = dagPb.decode(block)
+
+      if (!node.Data) {
+        throw errCode(new Error(`${path} had no data`), 'ERR_INVALID_NODE')
+      }
 
       const metadata = UnixFS.unmarshal(node.Data)
 
       // @ts-ignore TODO: restore setting all date types as mtime - it's in the code, just not the signature
       metadata.mtime = settings.mtime
 
-      node = new DAGNode(metadata.marshal(), node.Links)
-
-      updatedCid = await context.ipld.put(node, mc.DAG_PB, {
-        cidVersion: cid.version,
-        hashAlg: mh.names['sha2-256'],
-        onlyHash: !settings.flush
+      updatedBlock = dagPb.encode({
+        Data: metadata.marshal(),
+        Links: node.Links
       })
+
+      const hash = await hasher.digest(updatedBlock)
+      updatedCid = CID.create(settings.cidVersion, dagPb.code, hash)
+
+      if (settings.flush) {
+        await context.repo.blocks.put(updatedCid, updatedBlock)
+      }
     }
 
     const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
-    const parentNode = await context.ipld.get(parent.cid)
+    const parentCid = parent.cid
+    const parentBlock = await context.repo.blocks.get(parentCid)
+    const parentNode = dagPb.decode(parentBlock)
 
     const result = await addLink(context, {
       parent: parentNode,
       name: name,
       cid: updatedCid,
-      size: node.serialize().length,
+      size: updatedBlock.length,
       flush: settings.flush,
       shardSplitThreshold: settings.shardSplitThreshold,
-      hashAlg: 'sha2-256',
+      hashAlg: settings.hashAlg,
       cidVersion
     })
 
