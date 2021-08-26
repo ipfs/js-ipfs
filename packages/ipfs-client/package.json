@@ -37,7 +37,7 @@
     "merge-options": "^3.0.4"
   },
   "devDependencies": {
-    "aegir": "^34.0.2",
+    "aegir": "^35.0.2",
     "rimraf": "^3.0.2"
   }
 }

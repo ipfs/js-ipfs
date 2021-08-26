@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@web-std/file": "^1.1.2",
-    "aegir": "^34.0.2",
+    "aegir": "^35.0.2",
     "rimraf": "^3.0.2"
   }
 }
