@@ -59,7 +59,7 @@
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
     "@types/hapi__hapi": "^20.0.5",
-    "aegir": "^34.0.2",
+    "aegir": "^35.0.2",
     "file-type": "^16.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1"

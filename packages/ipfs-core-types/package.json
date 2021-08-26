@@ -33,7 +33,7 @@
     "multiformats": "^9.4.1"
   },
   "devDependencies": {
-    "aegir": "^34.0.2"
+    "aegir": "^35.0.2"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"

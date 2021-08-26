@@ -68,7 +68,7 @@
   "devDependencies": {
     "@types/progress": "^2.0.3",
     "@types/yargs": "^16.0.0",
-    "aegir": "^34.0.2",
+    "aegir": "^35.0.2",
     "it-to-buffer": "^2.0.0",
     "nanoid": "^3.1.12",
     "ncp": "^2.0.0",
