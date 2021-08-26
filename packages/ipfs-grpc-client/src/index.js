@@ -49,6 +49,12 @@ function create (opts = { url: '' }) {
       ls: require('./core-api/files/ls')(grpc, service.MFS.ls, options),
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
       write: require('./core-api/files/write')(grpc, service.MFS.write, options)
+    },
+    pubsub: {
+      // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
+      subscribe: require('./core-api/pubsub/subscribe')(grpc, service.PubSub.subscribe, options),
+      // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
+      unsubscribe: require('./core-api/pubsub/unsubscribe')(grpc, service.PubSub.unsubscribe, options)
     }
   }
 

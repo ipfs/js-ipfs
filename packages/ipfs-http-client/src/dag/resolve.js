@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
 
@@ -26,7 +26,7 @@ module.exports = configure(api => {
 
     const data = await res.json()
 
-    return { cid: new CID(data.Cid['/']), remainderPath: data.RemPath }
+    return { cid: CID.parse(data.Cid['/']), remainderPath: data.RemPath }
   }
 
   return resolve

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-client",
-  "version": "0.3.3",
+  "version": "0.6.2",
   "description": "A client library for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -26,7 +26,7 @@
   "scripts": {
     "build": "aegir build",
     "test": "aegir test",
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol -i ipfs-core-types"
@@ -34,25 +34,26 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.14.0",
     "change-case": "^4.1.1",
-    "cids": "^1.1.6",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.5.2",
-    "ipfs-core-utils": "^0.8.3",
-    "ipfs-grpc-protocol": "^0.3.0",
-    "ipfs-unixfs": "^4.0.3",
+    "ipfs-core-types": "^0.7.0",
+    "ipfs-core-utils": "^0.10.2",
+    "ipfs-grpc-protocol": "^0.4.0",
+    "ipfs-unixfs": "^6.0.3",
     "it-first": "^1.0.4",
-    "it-pushable": "^1.4.0",
-    "multiaddr": "^9.0.1",
+    "it-pushable": "^1.4.2",
+    "multiaddr": "^10.0.0",
+    "multiformats": "^9.4.1",
+    "p-defer": "^3.0.0",
     "protobufjs": "^6.10.2",
-    "wherearewe": "1.0.0",
+    "wherearewe": "^1.0.0",
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "aegir": "^33.0.0",
+    "aegir": "^34.0.2",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
-    "sinon": "^10.0.1"
+    "sinon": "^11.1.1"
   },
   "eslintConfig": {
     "extends": "ipfs"

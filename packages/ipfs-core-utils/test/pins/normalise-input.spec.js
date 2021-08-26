@@ -3,17 +3,17 @@
 /* eslint-env mocha */
 
 const { expect } = require('aegir/utils/chai')
-const normalise = require('../../src/pins/normalise-input')
+const { normaliseInput } = require('../../src/pins/normalise-input')
 const all = require('it-all')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 
 const STRING = () => '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt'
-const PLAIN_CID = () => new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
-const OBJECT_CID = () => ({ cid: new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'), recursive: true, metadata: { key: 'hello world' } })
+const PLAIN_CID = () => CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
+const OBJECT_CID = () => ({ cid: CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'), recursive: true, metadata: { key: 'hello world' } })
 const OBJECT_PATH = () => ({ path: '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt', recursive: true, metadata: { key: 'hello world' } })
 
 async function verifyNormalisation (input, withOptions) {
-  const result = await all(normalise(input))
+  const result = await all(normaliseInput(input))
 
   expect(result).to.have.lengthOf(1)
   expect(result[0]).to.have.property('path')

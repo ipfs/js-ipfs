@@ -38,9 +38,9 @@ export interface API<OptionExtension = {}> {
    * await ipfs.pubsub.unsubscribe(topic);
    * ```
    */
-  unsubscribe: (topic: string, handler: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
+  unsubscribe: (topic: string, handler?: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
 
-   /**
+  /**
    * Publish a data message to a pubsub topic
    *
    * @example
@@ -72,6 +72,8 @@ export interface API<OptionExtension = {}> {
    * ```
    */
   peers: (topic: string, options?: AbortOptions & OptionExtension) => Promise<string[]>
+
+  setMaxListeners?: (max: number) => void
 }
 
 export interface Message {
@@ -89,4 +91,4 @@ export interface SubscribeOptions extends AbortOptions {
   onError?: (err: Error) => void
 }
 
-export type MessageHandlerFn = (message: Message) => void
+export interface MessageHandlerFn { (message: Message): void }

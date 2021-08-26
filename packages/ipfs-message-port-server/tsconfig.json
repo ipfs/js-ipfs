@@ -8,10 +8,10 @@
   ],
   "references": [
     {
-      "path": "../ipfs-message-port-protocol"
+      "path": "../ipfs-core-types"
     },
     {
-      "path": "../ipfs-core-types"
+      "path": "../ipfs-message-port-protocol"
     }
   ]
 }

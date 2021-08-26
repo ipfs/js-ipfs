@@ -1,6 +1,6 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const multipartRequest = require('../../lib/multipart-request')
 const configure = require('../../lib/configure')
 const toUrlSearchParams = require('../../lib/to-url-search-params')
@@ -21,12 +21,11 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
 
-    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('object/patch/append-data', {
       timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: `${cid instanceof Uint8Array ? new CID(cid) : cid}`,
+        arg: `${cid}`,
         ...options
       }),
       ...(
@@ -36,7 +35,7 @@ module.exports = configure(api => {
 
     const { Hash } = await res.json()
 
-    return new CID(Hash)
+    return CID.parse(Hash)
   }
   return appendData
 })

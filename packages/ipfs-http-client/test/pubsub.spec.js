@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const { AbortController } = require('native-abort-controller')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const defer = require('p-defer')
 
 const f = require('./utils/factory')()
@@ -20,7 +20,7 @@ describe('.pubsub', function () {
       this.timeout(30 * 1000) // slow CI
 
       ctl = await await f.spawn({
-        args: '--enable-pubsub-experiment'
+        args: ['--enable-pubsub-experiment']
       })
 
       ipfs = ctl.api

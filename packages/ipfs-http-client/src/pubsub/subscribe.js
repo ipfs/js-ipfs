@@ -1,7 +1,7 @@
 'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 const log = require('debug')('ipfs-http-client:pubsub:subscribe')
 const configure = require('../lib/configure')
 const toUrlSearchParams = require('../lib/to-url-search-params')
@@ -41,39 +41,37 @@ module.exports = (options, subsTracker) => {
       const ffWorkaround = setTimeout(() => done(), 1000)
 
       // Do this async to not block Firefox
-      setTimeout(() => {
-        api.post('pubsub/sub', {
-          timeout: options.timeout,
-          signal: options.signal,
-          searchParams: toUrlSearchParams({
-            arg: topic,
-            ...options
-          }),
-          headers: options.headers
+      api.post('pubsub/sub', {
+        timeout: options.timeout,
+        signal: options.signal,
+        searchParams: toUrlSearchParams({
+          arg: topic,
+          ...options
+        }),
+        headers: options.headers
+      })
+        .catch((err) => {
+          // Initial subscribe fail, ensure we clean up
+          subsTracker.unsubscribe(topic, handler)
+
+          fail(err)
         })
-          .catch((err) => {
-            // Initial subscribe fail, ensure we clean up
-            subsTracker.unsubscribe(topic, handler)
+        .then((response) => {
+          clearTimeout(ffWorkaround)
 
-            fail(err)
+          if (!response) {
+            // if there was no response, the subscribe failed
+            return
+          }
+
+          readMessages(response, {
+            onMessage: handler,
+            onEnd: () => subsTracker.unsubscribe(topic, handler),
+            onError: options.onError
           })
-          .then((response) => {
-            clearTimeout(ffWorkaround)
 
-            if (!response) {
-              // if there was no response, the subscribe failed
-              return
-            }
-
-            readMessages(response, {
-              onMessage: handler,
-              onEnd: () => subsTracker.unsubscribe(topic, handler),
-              onError: options.onError
-            })
-
-            done()
-          })
-      }, 0)
+          done()
+        })
 
       return result
     }

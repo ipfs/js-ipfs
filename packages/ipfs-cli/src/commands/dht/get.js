@@ -2,7 +2,7 @@
 
 const { default: parseDuration } = require('parse-duration')
 const { coerceCID } = require('../../utils')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
 module.exports = {
   command: 'get <key>',
@@ -23,7 +23,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
+   * @param {import('multiformats/cid').CID} argv.key
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, timeout }) {

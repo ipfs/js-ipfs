@@ -1,5 +1,5 @@
 import type { AbortOptions } from '../utils'
-import CID from 'cids'
+import { CID } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -26,21 +26,21 @@ export interface GCOptions extends AbortOptions {
 }
 
 export interface GCError {
-  err: Error,
+  err: Error
   cid?: never
 }
 
 export interface GCSuccess {
-  err?: never,
+  err?: never
   cid: CID
 }
 
 export type GCResult = GCSuccess | GCError
 
 export interface StatResult {
-  numObjects: BigInt
+  numObjects: bigint
   repoPath: string
-  repoSize: BigInt
+  repoSize: bigint
   version: string
-  storageMax: BigInt
+  storageMax: bigint
 }

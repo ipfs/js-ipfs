@@ -3,7 +3,7 @@
 /* eslint-env browser */
 
 const Client = require('./client')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
 const {
   decodeIterable,
@@ -122,7 +122,7 @@ CoreClient.prototype.add = async function add (input, options = {}) {
  * @type {RootAPI["cat"]}
  */
 CoreClient.prototype.cat = async function * cat (inputPath, options = {}) {
-  const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
+  const input = inputPath instanceof CID ? encodeCID(inputPath) : inputPath
   const result = await this.remote.cat({ ...options, path: input })
   yield * decodeIterable(result.data, identity)
 }
@@ -133,7 +133,7 @@ CoreClient.prototype.cat = async function * cat (inputPath, options = {}) {
  * @type {RootAPI["ls"]}
  */
 CoreClient.prototype.ls = async function * ls (inputPath, options = {}) {
-  const input = CID.isCID(inputPath) ? encodeCID(inputPath) : inputPath
+  const input = inputPath instanceof CID ? encodeCID(inputPath) : inputPath
   const result = await this.remote.ls({ ...options, path: input })
 
   yield * decodeIterable(result.data, decodeLsEntry)
@@ -159,15 +159,14 @@ const decodeAddedData = ({ path, cid, mode, mtime, size }) => {
  * @param {EncodedIPFSEntry} encodedEntry
  * @returns {import('ipfs-core-types/src/root').IPFSEntry}
  */
-const decodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+const decodeLsEntry = ({ name, path, size, cid, type, mode, mtime }) => ({
   cid: decodeCID(cid),
   type,
   name,
   path,
   mode,
   mtime,
-  size,
-  depth
+  size
 })
 
 /**

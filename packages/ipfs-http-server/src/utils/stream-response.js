@@ -13,7 +13,7 @@ const ERROR_TRAILER = 'X-Stream-Error'
  * @param {import('../types').Request} request
  * @param {import('@hapi/hapi').ResponseToolkit} h
  * @param {() => AsyncIterable<any>} getSource
- * @param {{ onError?: (error: Error) => void }} [options]
+ * @param {{ onError?: (error: Error) => void, onEnd?: () => void }} [options]
  */
 async function streamResponse (request, h, getSource, options = {}) {
   // eslint-disable-next-line no-async-promise-executor
@@ -36,6 +36,10 @@ async function streamResponse (request, h, getSource, options = {}) {
               } else {
                 yield JSON.stringify(chunk) + '\n'
               }
+            }
+
+            if (options.onEnd) {
+              options.onEnd()
             }
 
             if (!started) { // Maybe it was an empty source?

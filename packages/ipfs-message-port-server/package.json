@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-server",
-  "version": "0.7.3",
+  "version": "0.9.1",
   "description": "IPFS server library for exposing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -32,19 +32,19 @@
     "test:webworker": "aegir test -t webworker",
     "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
     "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
-    "lint": "aegir lint",
+    "lint": "aegir ts -p check && aegir lint",
     "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.5.2",
-    "ipfs-message-port-protocol": "^0.7.3",
-    "it-all": "^1.0.4"
+    "ipfs-core-types": "^0.7.0",
+    "ipfs-message-port-protocol": "^0.9.1",
+    "it-all": "^1.0.4",
+    "multiformats": "^9.4.1"
   },
   "devDependencies": {
-    "aegir": "^33.0.0",
-    "cids": "^1.1.6",
+    "aegir": "^34.0.2",
     "rimraf": "^3.0.2"
   },
   "engines": {

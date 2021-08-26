@@ -4,8 +4,8 @@ const debug = require('debug')
 const { default: parseDuration } = require('parse-duration')
 const crypto = require('libp2p-crypto')
 const errcode = require('err-code')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
 const log = Object.assign(debug('ipfs:name:publish'), {
   error: debug('ipfs:name:publish:error')
@@ -20,12 +20,13 @@ const { resolvePath } = require('./utils')
  *
  * @param {Object} config
  * @param {import('../ipns')} config.ipns
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
+ * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
  * @param {import('peer-id')} config.peerId
  * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
  * @param {import('libp2p/src/keychain')} config.keychain
  */
-module.exports = ({ ipns, ipld, peerId, isOnline, keychain }) => {
+module.exports = ({ ipns, repo, codecs, peerId, isOnline, keychain }) => {
   /**
    * @param {string} keyName
    */
@@ -82,7 +83,7 @@ module.exports = ({ ipns, ipld, peerId, isOnline, keychain }) => {
       // verify if the path exists, if not, an error will stop the execution
       lookupKey(key),
       // if resolving, do a get so we make sure we have the blocks
-      resolve ? resolvePath({ ipns, ipld }, value) : Promise.resolve()
+      resolve ? resolvePath({ ipns, repo, codecs }, value) : Promise.resolve()
     ])
 
     const bytes = uint8ArrayFromString(value)

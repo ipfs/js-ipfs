@@ -118,8 +118,8 @@ Alternatively it can be an object which may have the following keys:
 #### Returns
 
 | Type | Description |
-| -------- | -------- |
-| `Object` | An object that conforms to the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)  |
+| ---- | ----------- |
+| `Object` | An object that conforms to the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) |
 
 #### Example
 
@@ -284,11 +284,11 @@ const ipfs = create({ host: '1.1.1.1', port: '80', apiPath: '/ipfs/api/v0' })
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
-See the example in the [examples folder](/examples/http-client-browser-browserify) to get a boilerplate.
+See the example in the [examples folder](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples) to get a boilerplate.
 
 **through webpack**
 
-See the example in the [examples folder](/examples/http-client-bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
+See the example in the [examples folder](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/http-client-bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
 
 **from CDN**
 
@@ -310,9 +310,11 @@ For maximum security you may also decide to:
 Example:
 
 ```html
-<script src="https://www.jsdelivr.com/package/npm/ipfs-http-client"
-integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
-crossorigin="anonymous"></script>
+<script
+  src="https://www.jsdelivr.com/package/npm/ipfs-http-client"
+  integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+  crossorigin="anonymous"
+></script>
 ```
 
 CDN-based IPFS API provides the `IpfsHttpClient` constructor as a method of the global `window` object. Example:

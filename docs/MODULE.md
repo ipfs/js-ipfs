@@ -71,9 +71,9 @@ const node = await IPFS.create({ repo: '/var/ipfs/data' })
 
 ### `options.repoAutoMigrate`
 
-| Type | Default |
-|------|---------|
-| `boolean` | `true` |
+| Type      | Default |
+| --------- | ------- |
+| `boolean` | `true`  |
 
 `js-ipfs` comes bundled with a tool that automatically migrates your IPFS repository when a new version is available.
 
@@ -83,9 +83,9 @@ a case, you should provide a way to trigger migrations manually.**
 
 ### `options.init`
 
-| Type | Default |
-|------|---------|
-| boolean or object | `true` |
+| Type              | Default |
+| ----------------- | ------- |
+| boolean or object | `true`  |
 
 Perform repo initialization steps when creating the IPFS node.
 
@@ -110,24 +110,24 @@ Instead of a boolean, you may provide an object with custom initialization optio
 
 ### `options.start`
 
-| Type | Default |
-|------|---------|
-| `boolean` | `true` |
+| Type      | Default |
+| --------- | ------- |
+| `boolean` | `true`  |
 
- If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestart) yourself.
+If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestart) yourself.
 
 ### `options.pass`
 
-| Type | Default |
-|------|---------|
-| string | `null` |
+| Type   | Default |
+| ------ | ------- |
+| string | `null`  |
 
 A passphrase to encrypt/decrypt your keys.
 
 ### `options.silent`
 
-| Type | Default |
-|------|---------|
+| Type    | Default |
+| ------- | ------- |
 | Boolean | `false` |
 
 Prevents all logging output from the IPFS node.
@@ -138,25 +138,25 @@ Prevents all logging output from the IPFS node.
 |------|---------|
 | object | `{ enabled: true, hop: { enabled: false, active: false } }` |
 
-Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
+Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examplescircuit-relaying) to learn more).
 
 - `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `true`)
 - `hop` (object)
-    - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
-    - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
+  - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
+  - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
 
 ### `options.offline`
 
-| Type | Default |
-|------|---------|
+| Type    | Default |
+| ------- | ------- |
 | Boolean | `false` |
 
 Run ipfs node offline. The node does not connect to the rest of the network but provides a local API.
 
 ### `options.preload`
 
-| Type | Default |
-|------|---------|
+| Type   | Default                               |
+| ------ | ------------------------------------- |
 | object | `{ enabled: true, addresses: [...] }` |
 
 Configure remote preload nodes. The remote will preload content added on this node, and also attempt to preload objects requested by this node.
@@ -166,8 +166,8 @@ Configure remote preload nodes. The remote will preload content added on this no
 
 ### `options.EXPERIMENTAL`
 
-| Type | Default |
-|------|---------|
+| Type   | Default                                  |
+| ------ | ---------------------------------------- |
 | object | `{ ipnsPubsub: false, sharding: false }` |
 
 Enable and configure experimental features.
@@ -179,23 +179,23 @@ Enable and configure experimental features.
 
 | Type | Default |
 |------|---------|
-| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-browser.js) in browsers |
+| object | [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-browser.js) in browsers |
 
-Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](./docs/CONFIG.md).
+Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](./CONFIG.md).
 
 ### `options.ipld`
 
- | Type | Default |
+| Type | Default |
 |------|---------|
-| object |  [`ipld.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/ipld.js) |
+| object | [`ipld.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/ipld.js) |
 
- Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
+Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
 
- > Browser config does **NOT** include by default all the IPLD formats. Only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` are included.
+> Browser config does **NOT** include by default all the IPLD formats. Only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` are included.
 
- To add support for other formats we provide two options, one sync and another async.
+To add support for other formats we provide two options, one sync and another async.
 
- Examples for the sync option:
+Examples for the sync option:
 
 <details><summary>ESM Environments</summary>
 
@@ -209,6 +209,7 @@ const node = await IPFS.create({
   }
 })
 ```
+
 </details>
 <details><summary>Commonjs Environments</summary>
 
@@ -219,6 +220,7 @@ const node = await IPFS.create({
   }
 })
 ```
+
 </details>
 <details><summary>Using script tags</summary>
 
@@ -227,19 +229,20 @@ const node = await IPFS.create({
 <script src="https://unpkg.com/ipld-git/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipld-bitcoin/dist/index.min.js"></script>
 <script>
-async function main () {
-  const node = await self.IPFS.create({
-    ipld: {
-      formats: [self.IpldGit, self.IpldBitcoin]
-    }
-  })
-}
-main()
+  async function main() {
+    const node = await self.IPFS.create({
+      ipld: {
+        formats: [self.IpldGit, self.IpldBitcoin],
+      },
+    });
+  }
+  main();
 </script>
 ```
+
 </details>
 
- Examples for the async option:
+Examples for the async option:
 
 <details><summary>ESM Environments</summary>
 
@@ -256,11 +259,13 @@ const node = await IPFS.create({
   }
 })
 ```
+
 > For more information about dynamic imports please check [webpack docs](https://webpack.js.org/guides/code-splitting/#dynamic-imports) or search your bundler documention.
 
 Using dynamic imports will tell your bundler to create a separate file (normally called *chunk*) that will **only** be requested by the browser if it's really needed. This strategy will reduce your bundle size and load times without removing any functionality.
 
 With Webpack IPLD formats can even be grouped together using magic comments `import(/* webpackChunkName: "ipld-formats" */ 'ipld-git')` to produce a single file with all of them.
+
 </details>
 
 <details><summary>Commonjs Environments</summary>
@@ -278,6 +283,7 @@ const node = await IPFS.create({
   }
 })
 ```
+
 </details>
 
 <details><summary>Using Script tags</summary>
@@ -309,19 +315,19 @@ const node = await self.IPFS.create({
 })
 </script>
 ```
-</details>
 
+</details>
 
 ### `options.libp2p`
 
 | Type | Default |
 |------|---------|
-| object | [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in browsers |
-| function | [`libp2p bundle`](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p) |
+| object   | [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in browsers |
+| function | [`libp2p bundle`](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/custom-libp2p)                                         |
 
 The libp2p option allows you to build your libp2p node by configuration, or via a bundle function. If you are looking to just modify the below options, using the object format is the quickest way to get the default features of libp2p. If you need to create a more customized libp2p node, such as with custom transports or peer/content routers that need some of the ipfs data on startup, a custom bundle is a great way to achieve this.
 
-You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
+You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/custom-libp2p).
 
 Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md) for the list of options libp2p supports.
 

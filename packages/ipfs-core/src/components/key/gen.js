@@ -2,7 +2,7 @@
 
 const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
-const DEFAULT_KEY_TYPE = 'rsa'
+const DEFAULT_KEY_TYPE = 'ed25519'
 const DEFAULT_KEY_SIZE = 2048
 
 /**

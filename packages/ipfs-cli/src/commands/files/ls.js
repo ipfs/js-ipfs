@@ -22,7 +22,8 @@ module.exports = {
       describe: 'Use long listing format.'
     },
     'cid-base': {
-      describe: 'CID base to use.'
+      describe: 'CID base to use.',
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -35,7 +36,7 @@ module.exports = {
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.path
    * @param {boolean} argv.long
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({
@@ -45,6 +46,8 @@ module.exports = {
     cidBase,
     timeout
   }) {
+    const base = await ipfs.bases.getBase(cidBase)
+
     /**
      * @param {import('ipfs-core-types/src/files').MFSEntry} file
      */
@@ -52,7 +55,7 @@ module.exports = {
       const name = stripControlCharacters(file.name)
 
       if (long) {
-        print(`${file.mode ? formatMode(file.mode, file.type === 'directory') : ''}\t${file.mtime ? formatMtime(file.mtime) : ''}\t${name}\t${file.cid.toString(cidBase)}\t${file.size}`)
+        print(`${file.mode ? formatMode(file.mode, file.type === 'directory') : ''}\t${file.mtime ? formatMtime(file.mtime) : ''}\t${name}\t${file.cid.toString(base.encoder)}\t${file.size}`)
       } else {
         print(name)
       }

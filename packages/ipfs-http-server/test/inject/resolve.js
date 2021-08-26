@@ -5,18 +5,18 @@ const { expect } = require('aegir/utils/chai')
 const testHttpMethod = require('../utils/test-http-method')
 const http = require('../utils/http')
 const sinon = require('sinon')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { AbortSignal } = require('native-abort-controller')
 
 const defaultOptions = {
   recursive: true,
-  cidBase: undefined,
+  cidBase: 'base58btc',
   signal: sinon.match.instanceOf(AbortSignal),
   timeout: undefined
 }
 
 describe('/resolve', () => {
-  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  const cid = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
   let ipfs
 
   beforeEach(() => {
@@ -27,16 +27,6 @@ describe('/resolve', () => {
 
   it('only accepts POST', () => {
     return testHttpMethod('/api/v0/resolve')
-  })
-
-  it('should not resolve a path for invalid cid-base option', async () => {
-    const res = await http({
-      method: 'POST',
-      url: `/api/v0/resolve?arg=${cid}&cid-base=invalid`
-    }, { ipfs })
-
-    expect(res).to.have.property('statusCode', 400)
-    expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
   })
 
   it('resolves a name', async () => {
@@ -95,15 +85,6 @@ describe('/resolve', () => {
 
     expect(res).to.have.property('statusCode', 200)
     expect(res).to.have.nested.property('result.Path', result)
-  })
-
-  it('does not accept an incalid cid-base', async () => {
-    const res = await http({
-      method: 'POST',
-      url: `/api/v0/resolve?arg=${cid}&cid-base=invalid`
-    }, { ipfs })
-
-    expect(res).to.have.property('statusCode', 400)
   })
 
   it('accepts a timeout', async () => {

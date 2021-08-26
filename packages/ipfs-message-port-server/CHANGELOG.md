@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.9.0...ipfs-message-port-server@0.9.1) (2021-08-25)
+
+**Note:** Version bump only for package ipfs-message-port-server
+
+
+
+
+
+# [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.8.1...ipfs-message-port-server@0.9.0) (2021-08-11)
+
+
+### Features
+
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
+## [0.8.1](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.8.0...ipfs-message-port-server@0.8.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-message-port-server
+
+
+
+
+
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.7.3...ipfs-message-port-server@0.8.0) (2021-07-27)
+
+
+### Features
+
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
 ## [0.7.3](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.7.2...ipfs-message-port-server@0.7.3) (2021-06-18)
 
 **Note:** Version bump only for package ipfs-message-port-server

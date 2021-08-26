@@ -17,7 +17,7 @@ exports.bw = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.cid(),
+        peer: Joi.string(),
         proto: Joi.string(),
         poll: Joi.boolean().default(false),
         interval: Joi.string().default('1s'),
@@ -61,8 +61,8 @@ exports.bw = {
         yield * map(source, stat => ({
           TotalIn: stat.totalIn.toString(),
           TotalOut: stat.totalOut.toString(),
-          RateIn: stat.rateIn.toString(),
-          RateOut: stat.rateOut.toString()
+          RateIn: stat.rateIn,
+          RateOut: stat.rateOut
         }))
       }
     ))

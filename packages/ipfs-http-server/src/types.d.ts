@@ -2,8 +2,6 @@ import { IPFS } from 'ipfs-core-types'
 import { Request, Server } from '@hapi/hapi'
 import Multiaddr from 'multiaddrs'
 import { Mtime } from 'ipfs-unixfs'
-import IPLD from 'ipld'
-import libp2p from 'libp2p'
 
 declare module '@hapi/hapi' {
   interface ServerApplicationState {

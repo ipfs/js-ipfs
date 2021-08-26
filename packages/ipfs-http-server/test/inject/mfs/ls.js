@@ -4,10 +4,11 @@
 const { expect } = require('aegir/utils/chai')
 const http = require('../../utils/http')
 const sinon = require('sinon')
-const CID = require('cids')
-const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
+const { CID } = require('multiformats/cid')
+const fileCid = CID.parse('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 const testHttpMethod = require('../../utils/test-http-method')
 const { AbortSignal } = require('native-abort-controller')
+const { base58btc } = require('multiformats/bases/base58')
 
 const defaultOptions = {
   timeout: undefined,
@@ -33,6 +34,9 @@ describe('/files/ls', () => {
     ipfs = {
       files: {
         ls: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -42,6 +46,7 @@ describe('/files/ls', () => {
   })
 
   it('should list a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     ipfs.files.ls.withArgs(path, defaultOptions).returns([file])
 
     const response = await http({
@@ -55,7 +60,7 @@ describe('/files/ls', () => {
     expect(response).to.have.nested.property('result.Entries[0].Name', file.name)
     expect(response).to.have.nested.property('result.Entries[0].Type', 0)
     expect(response).to.have.nested.property('result.Entries[0].Size', 0)
-    expect(response).to.have.nested.property('result.Entries[0].Hash', file.cid.toString())
+    expect(response).to.have.nested.property('result.Entries[0].Hash', file.cid.toString(base58btc))
   })
 
   it('should list without a path', async () => {
@@ -71,6 +76,7 @@ describe('/files/ls', () => {
   })
 
   it('should list a path with details', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     ipfs.files.ls.withArgs(path, defaultOptions).returns([file])
 
     const response = await http({
@@ -85,14 +91,20 @@ describe('/files/ls', () => {
     expect(response).to.have.nested.property('result.Entries[0].Name', file.name)
     expect(response).to.have.nested.property('result.Entries[0].Type', 1)
     expect(response).to.have.nested.property('result.Entries[0].Size', file.size)
-    expect(response).to.have.nested.property('result.Entries[0].Hash', file.cid.toString())
+    expect(response).to.have.nested.property('result.Entries[0].Hash', file.cid.toString(base58btc))
     expect(response).to.have.nested.property('result.Entries[0].Mode', file.mode)
     expect(response).to.have.nested.property('result.Entries[0].Mtime', file.mtime.secs)
     expect(response).to.have.nested.property('result.Entries[0].MtimeNsecs', file.mtime.nsecs)
   })
 
   it('should stream a path', async () => {
-    ipfs.files.ls.withArgs(path, defaultOptions).returns([file])
+    ipfs.files.ls.withArgs(path, {
+      ...defaultOptions
+    })
+      .callsFake(async function * () {
+        yield file
+      })
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
     await http({
       method: 'POST',
@@ -125,7 +137,10 @@ describe('/files/ls', () => {
     ipfs.files.ls.withArgs(path, {
       ...defaultOptions,
       timeout: 1000
-    }).returns([file])
+    }).callsFake(async function * () {
+      yield file
+    })
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
     await http({
       method: 'POST',

@@ -1,22 +1,34 @@
 'use strict'
 
 const get = require('dlv')
-const mergeOptions = require('merge-options')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const errCode = require('err-code')
 const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
+// @ts-ignore - no types
+const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
+// @ts-ignore - no types
+const DelegatedContentRouter = require('libp2p-delegated-content-routing')
+const { create: ipfsHttpClient } = require('ipfs-http-client')
+const { Multiaddr } = require('multiaddr')
 const pkgversion = require('../../package.json').version
 
 /**
+ * @typedef {object} DekOptions
+ * @property {string} hash
+ * @property {string} salt
+ * @property {number} iterationCount
+ * @property {number} keyLength
+ *
  * @typedef {Object} KeychainConfig
  * @property {string} [pass]
+ * @property {DekOptions} [dek]
  *
- * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('ipfs-repo').IPFSRepo} Repo
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
  * @typedef {import('libp2p').Libp2pOptions & import('libp2p').CreateOptions} Libp2pOptions
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
- * @typedef {import('multiaddr').Multiaddr} Multiaddr
  */
 
 /**
@@ -89,8 +101,13 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   }
 
   const libp2pOptions = {
+    /**
+     * @type {Partial<Libp2pOptions["modules"]>}
+     */
     modules: {
-      pubsub: getPubsubRouter()
+      pubsub: getPubsubRouter(),
+      contentRouting: [],
+      peerRouting: []
     },
     config: {
       peerDiscovery: {
@@ -164,6 +181,32 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
 
   if (bootstrapList.length > 0) {
     libp2pConfig.modules.peerDiscovery.push(require('libp2p-bootstrap'))
+  }
+
+  // Set up Delegate Routing based on the presence of Delegates in the config
+  const delegateHosts = get(options, 'config.Addresses.Delegates',
+    get(config, 'Addresses.Delegates', [])
+  )
+
+  if (delegateHosts.length > 0) {
+    // Pick a random delegate host
+    const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
+    const delegateAddr = new Multiaddr(delegateString).toOptions()
+    const delegateApiOptions = {
+      host: delegateAddr.host,
+      // port is a string atm, so we need to convert for the check
+      // @ts-ignore - parseInt(input:string) => number
+      protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
+      port: delegateAddr.port
+    }
+
+    const delegateHttpClient = ipfsHttpClient(delegateApiOptions)
+
+    libp2pOptions.modules.contentRouting = libp2pOptions.modules.contentRouting || []
+    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerId, delegateHttpClient))
+
+    libp2pOptions.modules.peerRouting = libp2pOptions.modules.peerRouting || []
+    libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegateHttpClient))
   }
 
   return libp2pConfig

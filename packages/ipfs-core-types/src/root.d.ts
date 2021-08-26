@@ -1,8 +1,7 @@
 import { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
-import CID, { CIDVersion } from 'cids'
+import { CID, CIDVersion } from 'multiformats/cid'
 import { Mtime } from 'ipfs-unixfs'
 import { Multiaddr } from 'multiaddr'
-import { BaseName } from 'multibase'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -24,7 +23,7 @@ export interface API<OptionExtension = {}> {
    * Fetch a file or an entire directory tree from IPFS that is addressed by a
    * valid IPFS Path
    */
-  get: (ipfsPath: IPFSPath, options?: GetOptions & OptionExtension) => AsyncIterable<IPFSEntry>
+  get: (ipfsPath: IPFSPath, options?: GetOptions & OptionExtension) => AsyncIterable<Uint8Array>
 
   /**
    * Lists a directory from IPFS that is addressed by a valid IPFS Path
@@ -139,42 +138,17 @@ export interface API<OptionExtension = {}> {
   isOnline: () => boolean
 }
 
-export interface File {
-  readonly type: 'file'
+export interface IPFSEntry {
+  readonly type: 'dir' | 'file'
   readonly cid: CID
   readonly name: string
-
-  /**
-   * File path
-   */
   readonly path: string
-  /**
-   * File content
-   */
-  readonly content?: AsyncIterable<Uint8Array>
   mode?: number
   mtime?: Mtime
   size: number
-  depth: number
 }
 
-export interface Directory {
-  type: 'dir'
-  cid: CID
-  name: string
-  /**
-   * Directory path
-   */
-  path: string
-  mode?: number
-  mtime?: Mtime
-  size: number
-  depth: number
-}
-
-export type IPFSEntry = File | Directory
-
-export type AddProgressFn = (bytes: number, path?: string) => void
+export interface AddProgressFn { (bytes: number, path?: string): void }
 
 export interface AddOptions extends AbortOptions {
   /**
@@ -282,11 +256,14 @@ export interface CatOptions extends AbortOptions, PreloadOptions {
   length?: number
 }
 
-export interface GetOptions extends AbortOptions, PreloadOptions {}
+export interface GetOptions extends AbortOptions, PreloadOptions {
+  archive?: boolean
+  compress?: boolean
+  compressionLevel?: number
+}
 
 export interface ListOptions extends AbortOptions, PreloadOptions {
-  recursive?: boolean
-  includeContent?: boolean
+
 }
 
 export interface IDOptions extends AbortOptions {
@@ -334,7 +311,7 @@ export interface PingResult {
 
 export interface ResolveOptions extends AbortOptions {
   recursive?: boolean
-  cidBase?: BaseName
+  cidBase?: string
 }
 
 export interface MountOptions extends AbortOptions {

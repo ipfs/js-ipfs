@@ -5,8 +5,9 @@ const { expect } = require('aegir/utils/chai')
 const cli = require('../utils/cli')
 const sinon = require('sinon')
 const { isNode } = require('ipfs-utils/src/env')
-const CID = require('cids')
-const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
+const { CID } = require('multiformats/cid')
+const { base58btc } = require('multiformats/bases/base58')
+const fileCid = CID.parse('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
 const defaultOptions = {
   timeout: undefined
@@ -26,6 +27,9 @@ describe('ls', () => {
     ipfs = {
       files: {
         ls: sinon.stub().returns([])
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
     print = (msg = '', newline = true) => {
@@ -34,6 +38,8 @@ describe('ls', () => {
   })
 
   it('should list a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     const path = '/foo'
 
     await cli(`files ls ${path}`, { ipfs, print })
@@ -46,6 +52,8 @@ describe('ls', () => {
   })
 
   it('should list without a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli('files ls', { ipfs, print })
 
     expect(ipfs.files.ls.callCount).to.equal(1)
@@ -56,6 +64,8 @@ describe('ls', () => {
   })
 
   it('should list a path with details', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     const files = [{
       cid: fileCid,
       name: 'file-name',
@@ -72,12 +82,14 @@ describe('ls', () => {
     await cli('files ls --long /foo', { ipfs, print })
 
     expect(ipfs.files.ls.callCount).to.equal(1)
-    expect(output).to.include(files[0].cid.toString())
+    expect(output).to.include(files[0].cid.toString(base58btc))
     expect(output).to.include(files[0].name)
     expect(output).to.include(files[0].size)
   })
 
   it('should list a path with details (short option)', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     const files = [{
       cid: fileCid,
       name: 'file-name',
@@ -94,12 +106,14 @@ describe('ls', () => {
     await cli('files ls -l /foo', { ipfs, print })
 
     expect(ipfs.files.ls.callCount).to.equal(1)
-    expect(output).to.include(files[0].cid.toString())
+    expect(output).to.include(files[0].cid.toString(base58btc))
     expect(output).to.include(files[0].name)
     expect(output).to.include(files[0].size)
   })
 
   it('should list a path with a timeout', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     const path = '/foo'
 
     await cli(`files ls ${path} --timeout=1s`, { ipfs, print })
@@ -114,6 +128,8 @@ describe('ls', () => {
   })
 
   it('should strip control characters from path names', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     const files = [{
       cid: fileCid,
       name: 'file\n\t\b-name',
@@ -130,7 +146,7 @@ describe('ls', () => {
     await cli('files ls --long /foo', { ipfs, print })
 
     expect(ipfs.files.ls.callCount).to.equal(1)
-    expect(output).to.include(files[0].cid.toString())
+    expect(output).to.include(files[0].cid.toString(base58btc))
     expect(output).to.include('file-name')
     expect(output).to.include(files[0].size)
   })

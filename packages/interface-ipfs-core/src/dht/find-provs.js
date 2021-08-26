@@ -7,33 +7,54 @@ const drain = require('it-drain')
 const { fakeCid } = require('./utils')
 const testTimeout = require('../utils/test-timeout')
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+module.exports = (factory, options) => {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dht.findProvs', function () {
     this.timeout(20000)
+
+    /** @type {import('ipfs-core-types').IPFS} */
     let nodeA
+    /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
+    /** @type {import('ipfs-core-types').IPFS} */
     let nodeC
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let nodeAId
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let nodeBId
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let nodeCId
 
     before(async () => {
-      nodeA = (await common.spawn()).api
-      nodeB = (await common.spawn()).api
-      nodeC = (await common.spawn()).api
+      nodeA = (await factory.spawn()).api
+      nodeB = (await factory.spawn()).api
+      nodeC = (await factory.spawn()).api
+
+      nodeAId = await nodeA.id()
+      nodeBId = await nodeB.id()
+      nodeCId = await nodeC.id()
+
       await Promise.all([
-        nodeB.swarm.connect(nodeA.peerId.addresses[0]),
-        nodeC.swarm.connect(nodeB.peerId.addresses[0])
+        nodeB.swarm.connect(nodeAId.addresses[0]),
+        nodeC.swarm.connect(nodeBId.addresses[0])
       ])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
+    /**
+     * @type {import('multiformats/cid').CID}
+     */
     let providedCid
     before('add providers for the same cid', async function () {
       this.timeout(10 * 1000)
@@ -58,14 +79,15 @@ module.exports = (common, options) => {
     })
 
     it('should be able to find providers', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
 
       const provs = await all(nodeA.dht.findProvs(providedCid, { numProviders: 2 }))
       const providerIds = provs.map((p) => p.id.toString())
 
       expect(providerIds).to.have.members([
-        nodeB.peerId.id,
-        nodeC.peerId.id
+        nodeBId.id,
+        nodeCId.id
       ])
     })
 

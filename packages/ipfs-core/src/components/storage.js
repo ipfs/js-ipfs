@@ -4,16 +4,16 @@ const log = require('debug')('ipfs:components:peer:storage')
 const createRepo = require('../runtime/repo-nodejs')
 const getDefaultConfig = require('../runtime/config-nodejs')
 const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 const PeerId = require('peer-id')
-const { mergeOptions } = require('../utils')
+const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
 const configService = require('./config')
 const { NotEnabledError, NotInitializedError } = require('../errors')
 const createLibP2P = require('./libp2p')
 
 /**
- * @typedef {import('ipfs-repo')} IPFSRepo
+ * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('../types').InitOptions} InitOptions
  * @typedef {import('../types').Print} Print
@@ -42,13 +42,14 @@ class Storage {
 
   /**
    * @param {Print} print
+   * @param {import('ipfs-core-utils/src/multicodecs')} codecs
    * @param {IPFSOptions} options
    */
-  static async start (print, options) {
+  static async start (print, codecs, options) {
     const { repoAutoMigrate, repo: inputRepo, onMigrationProgress } = options
 
     const repo = (typeof inputRepo === 'string' || inputRepo == null)
-      ? createRepo(print, {
+      ? createRepo(print, codecs, {
         path: inputRepo,
         autoMigrate: repoAutoMigrate,
         onMigrationProgress: onMigrationProgress
@@ -129,6 +130,19 @@ const initRepo = async (print, repo, options) => {
 
   log('repo opened')
 
+  /** @type {import('./libp2p').KeychainConfig} */
+  const keychainConfig = {
+    pass: options.pass
+  }
+
+  try {
+    keychainConfig.dek = await repo.config.get('Keychain.DEK')
+  } catch (err) {
+    if (err.code !== 'ERR_NOT_FOUND') {
+      throw err
+    }
+  }
+
   // Create libp2p for Keychain creation
   const libp2p = await createLibP2P({
     options: undefined,
@@ -136,16 +150,14 @@ const initRepo = async (print, repo, options) => {
     peerId,
     repo,
     config,
-    keychainConfig: {
-      pass: options.pass
-    }
+    keychainConfig
   })
 
   if (libp2p.keychain && libp2p.keychain.opts) {
     await libp2p.loadKeychain()
 
     await repo.config.set('Keychain', {
-      dek: libp2p.keychain.opts.dek
+      DEK: libp2p.keychain.opts.dek
     })
   }
 
@@ -171,13 +183,13 @@ const decodePeerId = (peerId) => {
  *
  * @param {Print} print
  * @param {Object} options
- * @param {KeyType} [options.algorithm='RSA']
+ * @param {KeyType} [options.algorithm='Ed25519']
  * @param {number} [options.bits=2048]
  * @returns {Promise<PeerId>}
  */
-const initPeerId = (print, { algorithm = 'RSA', bits = 2048 }) => {
+const initPeerId = (print, { algorithm = 'Ed25519', bits = 2048 }) => {
   // Generate peer identity keypair + transform to desired format + add to config.
-  print('generating %s-bit (rsa only) %s keypair...', bits, algorithm)
+  print('generating %s keypair...', algorithm)
   return PeerId.create({ keyType: algorithm, bits })
 }
 

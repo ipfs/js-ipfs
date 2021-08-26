@@ -8,10 +8,9 @@ const Progress = require('progress')
 // @ts-ignore no types
 const byteman = require('byteman')
 const IPFS = require('ipfs-core')
-const CID = require('cids')
+const { CID } = require('multiformats/cid')
 const { Multiaddr } = require('multiaddr')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 const getRepoPath = () => {
   return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')
@@ -229,10 +228,10 @@ const coerceCID = (value) => {
   }
 
   if (value.startsWith('/ipfs/')) {
-    return new CID(value.split('/')[2])
+    return CID.parse(value.split('/')[2])
   }
 
-  return new CID(value)
+  return CID.parse(value)
 }
 
 /**
@@ -335,12 +334,12 @@ const escapeControlCharacters = (str) => {
  * CID properties
  *
  * @param {any} obj - all keys/values in this object will be have control characters stripped
- * @param {import('cids').BaseNameOrCode} cidBase - any encountered CIDs will be stringified using this base
+ * @param {import('multiformats/bases/interface').MultibaseCodec<any>} cidBase - any encountered CIDs will be stringified using this base
  * @returns {any}
  */
-const makeEntriesPrintable = (obj, cidBase = 'base58btc') => {
-  if (CID.isCID(obj)) {
-    return { '/': cidToString(obj, { base: cidBase }) }
+const makeEntriesPrintable = (obj, cidBase) => {
+  if (obj instanceof CID) {
+    return { '/': obj.toString(cidBase.encoder) }
   }
 
   if (typeof obj === 'string') {
