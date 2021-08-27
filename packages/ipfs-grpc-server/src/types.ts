@@ -1,6 +1,6 @@
-import { Pushable } from 'it-pushable'
-import { EventEmitter } from 'events'
-import { Multiaddr } from 'multiaddr'
+import type { Pushable } from 'it-pushable'
+import type { EventEmitter } from 'events'
+import type { Multiaddr } from 'multiaddr'
 
 export interface Options {
   socket?: WebsocketServer

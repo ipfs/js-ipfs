@@ -1,7 +1,7 @@
-import { IPFS } from 'ipfs-core-types'
-import { Request, Server } from '@hapi/hapi'
-import Multiaddr from 'multiaddrs'
-import { Mtime } from 'ipfs-unixfs'
+import type { IPFS } from 'ipfs-core-types'
+import type { Request, Server } from '@hapi/hapi'
+import type { Multiaddr } from 'multiaddr'
+import type { Mtime } from 'ipfs-unixfs'
 
 declare module '@hapi/hapi' {
   interface ServerApplicationState {
@@ -15,7 +15,7 @@ declare module '@hapi/hapi' {
   }
 }
 
-export { Request, Server }
+export type { Request, Server }
 
 interface MultipartUpload {
   name: string

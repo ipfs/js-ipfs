@@ -13,6 +13,7 @@
     "ipfs-utils/src/files/glob-source": false
   },
   "scripts": {
+    "clean": "rimraf ./dist",
     "build": "aegir build",
     "lint": "aegir lint",
     "test": "echo 'No tests here'",
@@ -79,6 +80,9 @@
     "readable-stream": "^3.4.0",
     "sinon": "^11.1.1",
     "uint8arrays": "^3.0.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",

@@ -1,7 +1,7 @@
-import { CID } from 'multiformats/cid'
-import { Multiaddr } from 'multiaddr'
-import { API as Service } from './service'
-import { AbortOptions } from '../../utils'
+import type { CID } from 'multiformats/cid'
+import type { Multiaddr } from 'multiaddr'
+import type { API as Service } from './service'
+import type { AbortOptions } from '../../utils'
 
 export interface API<OptionExtension = {}> {
   /**

@@ -1,11 +1,13 @@
 import type { KeyType } from 'libp2p-crypto'
 import type PeerId from 'peer-id'
 import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
-import type Libp2p, { Libp2pOptions } from 'libp2p'
+import type Libp2p from 'libp2p'
+import type { Libp2pOptions } from 'libp2p'
 
 import type { IPFSRepo } from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
-import type Network, { Options as NetworkOptions } from './components/network'
+import type Network from './components/network'
+import type { Options as NetworkOptions } from './components/network'
 
 import type { Datastore } from 'interface-datastore'
 

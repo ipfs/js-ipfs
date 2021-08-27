@@ -1,6 +1,6 @@
-import { AbortOptions, IPFSPath } from '../utils'
-import { CID, CIDVersion } from 'multiformats/cid'
-import { Mtime, MtimeLike } from 'ipfs-unixfs'
+import type { AbortOptions, IPFSPath } from '../utils'
+import type { CID, CIDVersion } from 'multiformats/cid'
+import type { Mtime, MtimeLike } from 'ipfs-unixfs'
 import type { AddProgressFn } from '../root'
 
 export interface API<OptionExtension = {}> {

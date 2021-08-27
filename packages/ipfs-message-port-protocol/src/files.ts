@@ -1,5 +1,5 @@
-import { Mtime } from 'ipfs-unixfs'
-import { EncodedCID } from './cid'
+import type { Mtime } from 'ipfs-unixfs'
+import type { EncodedCID } from './cid'
 
 export interface EncodedStat {
   cid: EncodedCID

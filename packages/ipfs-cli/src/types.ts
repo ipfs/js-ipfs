@@ -1,4 +1,5 @@
-import { IPFS } from 'ipfs-core-types'
+import type { IPFS } from 'ipfs-core-types'
+import type { Multiaddr } from 'multiaddr'
 
 declare module '@hapi/hapi' {
   interface ServerInfo {

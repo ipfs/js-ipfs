@@ -1,6 +1,6 @@
 import type { AbortOptions } from '../utils'
-import { API as BitswapAPI } from '../bitswap'
-import { API as RepoAPI } from '../repo'
+import type { API as BitswapAPI } from '../bitswap'
+import type { API as RepoAPI } from '../repo'
 
 export interface API<OptionExtension = {}> {
   bitswap: BitswapAPI<OptionExtension>['stat']
