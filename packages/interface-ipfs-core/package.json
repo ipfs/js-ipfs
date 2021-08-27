@@ -17,7 +17,7 @@
     "build": "aegir build",
     "lint": "aegir lint",
     "test": "echo 'No tests here'",
-    "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf"
   },
   "files": [
     "src/",
