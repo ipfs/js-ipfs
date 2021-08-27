@@ -26,7 +26,6 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('get', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(opts),
       headers: options.headers

@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function * gc (options = {}) {
     const res = await api.post('repo/gc', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers,

@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function list (options = {}) {
     const res = await api.post('bootstrap/list', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

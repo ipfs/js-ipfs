@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function unwant (cid, options = {}) {
     const res = await api.post('bitswap/unwant', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: cid.toString(),

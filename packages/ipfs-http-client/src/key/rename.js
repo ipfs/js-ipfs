@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function rename (oldName, newName, options = {}) {
     const res = await api.post('key/rename', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: [

@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function data (cid, options = {}) {
     const res = await api.post('object/data', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: `${cid instanceof Uint8Array ? CID.decode(cid) : cid}`,

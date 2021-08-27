@@ -20,7 +20,6 @@ module.exports = configure(api => {
     const cidArr = Array.isArray(cids) ? cids : [cids]
 
     const res = await api.post('dht/provide', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: cidArr.map(cid => cid.toString()),

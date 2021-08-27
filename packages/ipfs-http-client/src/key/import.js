@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function importKey (name, pem, password, options = {}) {
     const res = await api.post('key/import', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: name,

@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function touch (path, options = {}) {
     const res = await api.post('files/touch', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,

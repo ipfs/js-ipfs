@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function disconnect (addr, options = {}) {
     const res = await api.post('swarm/disconnect', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: addr,

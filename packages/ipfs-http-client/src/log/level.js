@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function level (subsystem, level, options = {}) {
     const res = await api.post('log/level', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: [

@@ -24,7 +24,6 @@ module.exports = configure(api => {
     let res
     try {
       const response = await api.post('block/put', {
-        timeout: options.timeout,
         signal: signal,
         searchParams: toUrlSearchParams(options),
         ...(

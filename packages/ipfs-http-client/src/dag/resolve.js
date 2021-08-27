@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   const resolve = async (ipfsPath, options = {}) => {
     const res = await api.post('dag/resolve', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: `${ipfsPath}${options.path ? `/${options.path}`.replace(/\/[/]+/g, '/') : ''}`,

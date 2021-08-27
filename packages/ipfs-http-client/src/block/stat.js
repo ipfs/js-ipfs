@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function stat (cid, options = {}) {
     const res = await api.post('block/stat', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: cid.toString(),

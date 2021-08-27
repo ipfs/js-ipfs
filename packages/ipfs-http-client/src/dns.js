@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   const dns = async (domain, options = {}) => {
     const res = await api.post('dns', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: domain,

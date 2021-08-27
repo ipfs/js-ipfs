@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function * ping (peerId, options = {}) {
     const res = await api.post('ping', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: `${peerId}`,

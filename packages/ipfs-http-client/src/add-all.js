@@ -43,7 +43,6 @@ module.exports = configure((api) => {
         ...options,
         progress: Boolean(progressFn)
       }),
-      timeout: options.timeout,
       onUploadProgress,
       signal,
       headers,

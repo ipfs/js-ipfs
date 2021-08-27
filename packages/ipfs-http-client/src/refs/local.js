@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function * refsLocal (options = {}) {
     const res = await api.post('refs/local', {
-      timeout: options.timeout,
       signal: options.signal,
       transform: toCamel,
       searchParams: toUrlSearchParams(options),

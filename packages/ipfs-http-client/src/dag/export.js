@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function * dagExport (root, options = {}) {
     const res = await api.post('dag/export', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: root.toString()

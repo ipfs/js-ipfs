@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function mkdir (path, options = {}) {
     const res = await api.post('files/mkdir', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,

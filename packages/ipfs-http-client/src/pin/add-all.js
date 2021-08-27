@@ -17,7 +17,6 @@ module.exports = configure(api => {
   async function * addAll (source, options = {}) {
     for await (const { path, recursive, metadata } of normaliseInput(source)) {
       const res = await api.post('pin/add', {
-        timeout: options.timeout,
         signal: options.signal,
         searchParams: toUrlSearchParams({
           ...options,

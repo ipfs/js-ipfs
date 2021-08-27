@@ -22,7 +22,6 @@ module.exports = configure(api => {
     const { headers, body } = await multipartRequest(source, controller, options.headers)
 
     const res = await api.post('dag/import', {
-      timeout: options.timeout,
       signal,
       headers,
       body,

@@ -16,7 +16,6 @@ module.exports = configure(api => {
    */
   async function findPeer (peerId, options = {}) {
     const res = await api.post('dht/findpeer', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: peerId,

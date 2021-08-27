@@ -42,7 +42,6 @@ module.exports = (options, subsTracker) => {
 
       // Do this async to not block Firefox
       api.post('pubsub/sub', {
-        timeout: options.timeout,
         signal: options.signal,
         searchParams: toUrlSearchParams({
           arg: topic,

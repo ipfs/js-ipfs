@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function * tail (options = {}) {
     const res = await api.post('log/tail', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

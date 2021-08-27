@@ -19,7 +19,6 @@ module.exports = configure((api, opts) => {
     const argsArr = Array.isArray(args) ? args : [args]
 
     const res = await api.post('refs', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: argsArr.map(arg => `${arg instanceof Uint8Array ? CID.decode(arg) : arg}`),

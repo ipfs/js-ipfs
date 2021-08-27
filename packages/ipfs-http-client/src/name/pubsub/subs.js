@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function subs (options = {}) {
     const res = await api.post('name/pubsub/subs', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

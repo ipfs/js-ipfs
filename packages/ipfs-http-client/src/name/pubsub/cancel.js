@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function cancel (name, options = {}) {
     const res = await api.post('name/pubsub/cancel', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: name,

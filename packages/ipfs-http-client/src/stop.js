@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function stop (options = {}) {
     const res = await api.post('shutdown', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

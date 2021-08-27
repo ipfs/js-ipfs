@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function newObject (options = {}) {
     const res = await api.post('object/new', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: options.template,

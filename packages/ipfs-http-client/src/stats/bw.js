@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function * bw (options = {}) {
     const res = await api.post('stats/bw', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers,

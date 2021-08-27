@@ -22,7 +22,6 @@ module.exports = configure(api => {
     const signal = abortSignal(controller.signal, options.signal)
 
     const res = await api.post('config/replace', {
-      timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams(options),
       ...(

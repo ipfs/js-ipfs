@@ -17,7 +17,6 @@ module.exports = configure(api => {
    */
   async function get (key, options = {}) {
     const res = await api.post('dht/get', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: key instanceof Uint8Array ? uint8ArrayToString(key) : key,

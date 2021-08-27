@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function publish (path, options = {}) {
     const res = await api.post('name/publish', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: `${path}`,
