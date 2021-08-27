@@ -3,16 +3,30 @@
   "version": "0.7.0",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "types": "src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
+    "clean": "rimraf ./dist",
     "lint": "aegir ts -p check && aegir lint",
     "test": "aegir ts -p check"
   },
   "files": [
-    "src"
+    "src",
+    "dist",
+    "!dist/*.tsbuildinfo"
   ],
+  "typesVersions": {
+    "*": {
+      "src/*": [
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/": [
+        "dist/src/index"
+      ]
+    }
+  },
   "eslintConfig": {
     "extends": "ipfs"
   },
@@ -33,7 +47,8 @@
     "multiformats": "^9.4.1"
   },
   "devDependencies": {
-    "aegir": "^35.0.2"
+    "aegir": "^35.0.2",
+    "rimraf": "^3.0.2"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"

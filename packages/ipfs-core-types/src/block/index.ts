@@ -1,5 +1,5 @@
-import { AbortOptions, PreloadOptions } from '../utils'
-import { CID, CIDVersion } from 'multiformats/cid'
+import type { AbortOptions, PreloadOptions } from '../utils'
+import type { CID, CIDVersion } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
   /**

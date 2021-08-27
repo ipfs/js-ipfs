@@ -1,7 +1,7 @@
-import { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
-import { CID, CIDVersion } from 'multiformats/cid'
-import { Mtime } from 'ipfs-unixfs'
-import { Multiaddr } from 'multiaddr'
+import type { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
+import type { CID, CIDVersion } from 'multiformats/cid'
+import type { Mtime } from 'ipfs-unixfs'
+import type { Multiaddr } from 'multiaddr'
 
 export interface API<OptionExtension = {}> {
   /**

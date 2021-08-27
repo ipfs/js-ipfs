@@ -1,6 +1,8 @@
 import type { Mtime } from 'ipfs-unixfs'
 import type { RemoteIterable } from './core'
-import type { FileType } from './data'
+import type { EncodedCID } from './cid'
+
+export type FileType = 'dir' | 'file'
 
 export type EncodedFileContent = ArrayBufferView | ArrayBuffer | Blob | string | RemoteIterable<ArrayBufferView> | RemoteIterable<ArrayBuffer>
 
