@@ -323,8 +323,7 @@ function getRefsTests () {
     'should print nothing for non-existent hashes': {
       path: () => 'QmYmW4HiZhotsoSqnv2o1oSssvkRM8b9RweBoH7ao5nki2',
       params: { timeout: 2000 },
-      expected: [],
-      expectTimeout: true
+      expected: ['']
     }
   }
 }

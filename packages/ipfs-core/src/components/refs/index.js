@@ -3,9 +3,11 @@
 const dagPb = require('@ipld/dag-pb')
 const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 const toCIDAndPath = require('ipfs-core-utils/src/to-cid-and-path')
 const { CID } = require('multiformats/cid')
+// @ts-expect-error no types
+const TimeoutController = require('timeout-abort-controller')
+const { anySignal } = require('any-signal')
 
 const Format = {
   default: '<dst>',
@@ -21,6 +23,8 @@ const Format = {
  * @property {Node} parent
  * @property {Node} node
  * @property {boolean} isDuplicate
+ *
+ * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
 /**
@@ -49,17 +53,30 @@ module.exports = function ({ repo, codecs, resolve, preload }) {
       options.maxDepth = options.recursive ? Infinity : 1
     }
 
+    if (options.timeout) {
+      const controller = new TimeoutController(options.timeout)
+
+      options.signal = anySignal([options.signal, controller.signal])
+    }
+
     /** @type {(string|CID)[]} */
     const rawPaths = Array.isArray(ipfsPath) ? ipfsPath : [ipfsPath]
 
     const paths = rawPaths.map(p => getFullPath(preload, p, options))
 
     for (const path of paths) {
-      yield * refsStream(resolve, repo, codecs, path, options)
+      try {
+        yield * refsStream(resolve, repo, codecs, path, options)
+      } catch (err) {
+        yield {
+          ref: '',
+          err: err.message
+        }
+      }
     }
   }
 
-  return withTimeoutOption(refs)
+  return refs
 }
 
 module.exports.Format = Format
@@ -93,7 +110,7 @@ function getFullPath (preload, ipfsPath, options) {
  */
 async function * refsStream (resolve, repo, codecs, path, options) {
   // Resolve to the target CID of the path
-  const resPath = await resolve(path)
+  const resPath = await resolve(path, options)
   const {
     cid
   } = toCIDAndPath(resPath)
@@ -102,7 +119,7 @@ async function * refsStream (resolve, repo, codecs, path, options) {
   const unique = options.unique || false
 
   // Traverse the DAG, converting it into a stream
-  for await (const obj of objectStream(repo, codecs, cid, maxDepth, unique)) {
+  for await (const obj of objectStream(repo, codecs, cid, maxDepth, unique, options)) {
     // Root object will not have a parent
     if (!obj.parent) {
       continue
@@ -144,8 +161,9 @@ function formatLink (srcCid, dstCid, linkName = '', format = Format.default) {
  * @param {CID} rootCid
  * @param {number} maxDepth
  * @param {boolean} uniqueOnly
+ * @param {AbortOptions} options
  */
-async function * objectStream (repo, codecs, rootCid, maxDepth, uniqueOnly) { // eslint-disable-line require-await
+async function * objectStream (repo, codecs, rootCid, maxDepth, uniqueOnly, options) { // eslint-disable-line require-await
   const seen = new Set()
 
   /**
@@ -164,7 +182,7 @@ async function * objectStream (repo, codecs, rootCid, maxDepth, uniqueOnly) { //
     // Get this object's links
     try {
       // Look at each link, parent and the new depth
-      for await (const link of getLinks(repo, codecs, parent.cid)) {
+      for await (const link of getLinks(repo, codecs, parent.cid, options)) {
         yield {
           parent: parent,
           node: link,
@@ -195,14 +213,16 @@ async function * objectStream (repo, codecs, rootCid, maxDepth, uniqueOnly) { //
  * @param {import('ipfs-repo').IPFSRepo} repo
  * @param {import('ipfs-core-utils/src/multicodecs')} codecs
  * @param {CID} cid
- * @param {Array<string|number>} base
+ * @param {AbortOptions} options
  * @returns {AsyncGenerator<{ name: string, cid: CID }, void, undefined>}
  */
-async function * getLinks (repo, codecs, cid, base = []) {
-  const block = await repo.blocks.get(cid)
+async function * getLinks (repo, codecs, cid, options) {
+  const block = await repo.blocks.get(cid, options)
   const codec = await codecs.getCodec(cid.code)
   const value = codec.decode(block)
   const isDagPb = cid.code === dagPb.code
+  /** @type {Array<string|number>} */
+  const base = []
 
   for (const [name, cid] of links(value, base)) {
     // special case for dag-pb - use the name of the link
