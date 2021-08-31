@@ -59,7 +59,8 @@ module.exports = (factory, options) => {
 
           expect(imported).to.be.an.instanceOf(kt.expectedType)
         } catch (err) {
-          if (err.code === 'ERR_NOT_IMPLEMENTED') {
+          // @ts-expect-error code is not a property of error
+          if (err instanceof Error && err.code === 'ERR_NOT_IMPLEMENTED') {
             // key export is not exposed over the HTTP API
             // @ts-ignore this is mocha
             this.skip('Cannot verify key type')

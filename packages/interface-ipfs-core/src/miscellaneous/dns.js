@@ -35,7 +35,7 @@ module.exports = (factory, options) => {
         // matches pattern /ipns/<ipnsaddress>
         expect(res).to.match(/\/ipns\/.+$/)
       } catch (err) {
-        if (err.message.includes('could not resolve name')) {
+        if (err instanceof Error && err.message.includes('could not resolve name')) {
           // @ts-ignore this is mocha
           return this.skip()
         }
@@ -51,7 +51,7 @@ module.exports = (factory, options) => {
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (err) {
-        if (err.message.includes('could not resolve name')) {
+        if (err instanceof Error && err.message.includes('could not resolve name')) {
           // @ts-ignore this is mocha
           return this.skip()
         }
@@ -67,7 +67,7 @@ module.exports = (factory, options) => {
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (err) {
-        if (err.message.includes('could not resolve name')) {
+        if (err instanceof Error && err.message.includes('could not resolve name')) {
           // @ts-ignore this is mocha
           return this.skip()
         }

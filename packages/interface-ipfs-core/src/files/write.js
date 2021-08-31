@@ -257,7 +257,7 @@ module.exports = (factory, options) => {
         })
         throw new Error('Writing a file to a non-existent folder without the --parents flag should have failed')
       } catch (err) {
-        expect(err.message).to.contain('does not exist')
+        expect(err).to.have.property('message').that.contains('does not exist')
       }
     })
 
@@ -268,7 +268,7 @@ module.exports = (factory, options) => {
         await ipfs.files.write(filePath, smallFile)
         throw new Error('Writing a file to a non-existent file without the --create flag should have failed')
       } catch (err) {
-        expect(err.message).to.contain('file does not exist')
+        expect(err).to.have.property('message').that.contains('file does not exist')
       }
     })
 
@@ -286,7 +286,7 @@ module.exports = (factory, options) => {
 
         throw new Error('Writing a path with a file in it should have failed')
       } catch (err) {
-        expect(err.message).to.contain('Not a directory')
+        expect(err).to.have.property('message').that.contains('Not a directory')
       }
     })
 

@@ -109,7 +109,7 @@ module.exports = (factory, options) => {
         await ipfs.files.cp(source, destination)
         throw new Error('No error was thrown when trying to overwrite a file')
       } catch (err) {
-        expect(err.message).to.contain('directory already has entry by that name')
+        expect(err).to.have.property('message').that.contains('directory already has entry by that name')
       }
     })
 
@@ -124,7 +124,7 @@ module.exports = (factory, options) => {
         await ipfs.files.cp(source, source)
         throw new Error('No error was thrown for a non-existent file')
       } catch (err) {
-        expect(err.message).to.contain('directory already has entry by that name')
+        expect(err).to.have.property('message').that.contains('directory already has entry by that name')
       }
     })
 

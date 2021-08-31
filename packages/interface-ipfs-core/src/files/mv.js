@@ -77,7 +77,7 @@ module.exports = (factory, options) => {
         await ipfs.files.stat(source)
         throw new Error('Directory was copied but not removed')
       } catch (err) {
-        expect(err.message).to.contain('does not exist')
+        expect(err).to.have.property('message').that.contains('does not exist')
       }
     })
 
@@ -104,7 +104,7 @@ module.exports = (factory, options) => {
         await ipfs.files.stat(source)
         throw new Error('Directory was copied but not removed')
       } catch (err) {
-        expect(err.message).to.contain('does not exist')
+        expect(err).to.have.property('message').that.contains('does not exist')
       }
     })
 
@@ -145,8 +145,8 @@ module.exports = (factory, options) => {
         try {
           await ipfs.files.stat(shardedDirPath)
           throw new Error('Dir was not removed')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err).to.have.property('message').that.contains('does not exist')
         }
       })
 
@@ -165,8 +165,8 @@ module.exports = (factory, options) => {
         try {
           await ipfs.files.stat(dirPath)
           throw new Error('Dir was not removed')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err).to.have.property('message').that.contains('does not exist')
         }
       })
 
@@ -185,8 +185,8 @@ module.exports = (factory, options) => {
         try {
           await ipfs.files.stat(otherShardedDirPath)
           throw new Error('Sharded dir was not removed')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err).to.have.property('message').that.contains('does not exist')
         }
       })
 
@@ -211,8 +211,8 @@ module.exports = (factory, options) => {
         try {
           await ipfs.files.stat(filePath)
           throw new Error('File was not removed')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err).to.have.property('message').that.contains('does not exist')
         }
       })
 
@@ -238,8 +238,8 @@ module.exports = (factory, options) => {
         try {
           await ipfs.files.stat(filePath)
           throw new Error('File was not removed')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err).to.have.property('message').that.contains('does not exist')
         }
       })
 
@@ -265,8 +265,8 @@ module.exports = (factory, options) => {
         try {
           await ipfs.files.stat(filePath)
           throw new Error('File was not removed')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err).to.have.property('message').that.contains('does not exist')
         }
       })
 
@@ -292,8 +292,8 @@ module.exports = (factory, options) => {
         try {
           await ipfs.files.stat(filePath)
           throw new Error('File was not removed')
-        } catch (error) {
-          expect(error.message).to.contain('does not exist')
+        } catch (err) {
+          expect(err).to.have.property('message').that.contains('does not exist')
         }
       })
     })

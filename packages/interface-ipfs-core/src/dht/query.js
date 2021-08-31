@@ -53,7 +53,7 @@ module.exports = (factory, options) => {
         const peers = await all(nodeA.dht.query(nodeBId.id, { timeout: timeout - 1000 }))
         expect(peers.map(p => p.id.toString())).to.include(nodeBId.id)
       } catch (err) {
-        if (err.name === 'TimeoutError') {
+        if (err instanceof Error && err.name === 'TimeoutError') {
           // This test is meh. DHT works best with >= 20 nodes. Therefore a
           // failure might happen, but we don't want to report it as such.
           // Hence skip the test before the timeout is reached
