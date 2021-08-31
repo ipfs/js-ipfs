@@ -127,8 +127,7 @@ const encodeIterable = (iterable, encode, transfer) => {
         } catch (error) {
           port.postMessage({
             type: 'throw',
-            // @ts-ignore ts thinks error is type 'unknown'?
-            error: encodeError(error)
+            error: encodeError(error instanceof Error ? error : new Error(`${error}`))
           })
           port.close()
         }
