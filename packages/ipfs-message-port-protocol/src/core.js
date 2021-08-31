@@ -124,7 +124,7 @@ const encodeIterable = (iterable, encode, transfer) => {
               itemTransfer
             )
           }
-        } catch (error) {
+        } catch (/** @type {Error} */ error) {
           port.postMessage({
             type: 'throw',
             error: encodeError(error)
