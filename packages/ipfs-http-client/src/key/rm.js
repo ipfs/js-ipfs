@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function rm (name, options = {}) {
     const res = await api.post('key/rm', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: name,

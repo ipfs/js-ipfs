@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function peers (topic, options = {}) {
     const res = await api.post('pubsub/peers', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: topic,

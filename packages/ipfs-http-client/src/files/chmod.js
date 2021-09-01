@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function chmod (path, mode, options = {}) {
     const res = await api.post('files/chmod', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,

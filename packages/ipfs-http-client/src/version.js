@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function version (options = {}) {
     const res = await api.post('version', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

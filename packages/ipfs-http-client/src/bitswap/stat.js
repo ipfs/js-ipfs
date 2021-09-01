@@ -16,7 +16,6 @@ module.exports = configure(api => {
   async function stat (options = {}) {
     const res = await api.post('bitswap/stat', {
       searchParams: toUrlSearchParams(options),
-      timeout: options.timeout,
       signal: options.signal,
       headers: options.headers
     })

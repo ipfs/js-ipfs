@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function stat (options = {}) {
     const res = await api.post('repo/stat', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

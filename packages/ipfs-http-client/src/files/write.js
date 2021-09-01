@@ -23,7 +23,6 @@ module.exports = configure(api => {
     const signal = abortSignal(controller.signal, options.signal)
 
     const res = await api.post('files/write', {
-      timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
         arg: path,

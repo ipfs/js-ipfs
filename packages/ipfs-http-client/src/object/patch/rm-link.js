@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function rmLink (cid, dLink, options = {}) {
     const res = await api.post('object/patch/rm-link', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: [

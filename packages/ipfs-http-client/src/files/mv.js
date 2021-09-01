@@ -18,7 +18,6 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('files/mv', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: sources.concat(destination),

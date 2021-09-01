@@ -16,7 +16,6 @@ module.exports = configure(api => {
    */
   async function id (options = {}) {
     const res = await api.post('id', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: options.peerId ? options.peerId.toString() : undefined,

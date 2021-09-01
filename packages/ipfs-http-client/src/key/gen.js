@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function gen (name, options = { type: 'rsa', size: 2048 }) {
     const res = await api.post('key/gen', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: name,

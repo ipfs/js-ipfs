@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   const getAll = async (options = {}) => {
     const res = await api.post('config/show', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         ...options

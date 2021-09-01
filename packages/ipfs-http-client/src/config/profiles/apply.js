@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function apply (profile, options = {}) {
     const res = await api.post('config/profile/apply', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: profile,

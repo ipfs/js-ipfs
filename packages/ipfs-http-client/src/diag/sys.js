@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function sys (options = {}) {
     const res = await api.post('diag/sys', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

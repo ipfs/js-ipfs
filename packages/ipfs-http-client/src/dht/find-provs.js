@@ -16,7 +16,6 @@ module.exports = configure(api => {
    */
   async function * findProvs (cid, options = {}) {
     const res = await api.post('dht/findprovs', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: cid.toString(),

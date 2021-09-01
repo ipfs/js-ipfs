@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function rm (path, options = {}) {
     const res = await api.post('files/rm', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,

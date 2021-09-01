@@ -95,7 +95,6 @@ Service.prototype.add = async function add (name, options) {
  */
 Service.prototype.rm = async function rm (name, options = {}) {
   await this.client.post('pin/remote/service/rm', {
-    timeout: options.timeout,
     signal: options.signal,
     headers: options.headers,
     searchParams: toUrlSearchParams({

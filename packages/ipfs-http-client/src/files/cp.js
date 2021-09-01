@@ -18,7 +18,6 @@ module.exports = configure(api => {
     const sourceArr = Array.isArray(sources) ? sources : [sources]
 
     const res = await api.post('files/cp', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: sourceArr.concat(destination).map(src => src instanceof CID ? `/ipfs/${src}` : src),

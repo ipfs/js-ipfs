@@ -41,7 +41,6 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('pin/ls', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         ...options,

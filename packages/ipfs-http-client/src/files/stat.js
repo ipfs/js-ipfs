@@ -23,7 +23,6 @@ module.exports = configure(api => {
     options = options || {}
 
     const res = await api.post('files/stat', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,

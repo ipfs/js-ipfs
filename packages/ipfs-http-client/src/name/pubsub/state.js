@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function state (options = {}) {
     const res = await api.post('name/pubsub/state', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

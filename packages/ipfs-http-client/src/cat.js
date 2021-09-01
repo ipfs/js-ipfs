@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function * cat (path, options = {}) {
     const res = await api.post('cat', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path.toString(),

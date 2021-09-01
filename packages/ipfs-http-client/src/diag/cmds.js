@@ -14,7 +14,6 @@ module.exports = configure(api => {
    */
   async function cmds (options = {}) {
     const res = await api.post('diag/cmds', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers

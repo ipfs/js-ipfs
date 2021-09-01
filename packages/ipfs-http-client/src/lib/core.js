@@ -99,14 +99,21 @@ const errorHandler = async (response) => {
   /** @type {Error} */
   let error = new HTTP.HTTPError(response)
 
-  // This is what go-ipfs returns where there's a timeout
-  if (msg && msg.includes('context deadline exceeded')) {
-    error = new HTTP.TimeoutError('Request timed out')
+  if (msg) {
+    // This is what rs-ipfs returns where there's a timeout
+    if (msg.includes('deadline has elapsed')) {
+      error = new HTTP.TimeoutError()
+    }
+
+    // This is what go-ipfs returns where there's a timeout
+    if (msg && msg.includes('context deadline exceeded')) {
+      error = new HTTP.TimeoutError()
+    }
   }
 
   // This also gets returned
   if (msg && msg.includes('request timed out')) {
-    error = new HTTP.TimeoutError('Request timed out')
+    error = new HTTP.TimeoutError()
   }
 
   // If we managed to extract a message from the response, use it
@@ -143,7 +150,7 @@ class Client extends HTTP {
     const opts = normalizeOptions(options)
 
     super({
-      timeout: parseTimeout(opts.timeout || 0) || 60000 * 20,
+      timeout: parseTimeout(opts.timeout || 0) || undefined,
       headers: opts.headers,
       base: `${opts.url}`,
       handleError: errorHandler,

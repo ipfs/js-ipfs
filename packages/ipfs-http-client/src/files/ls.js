@@ -19,7 +19,6 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('files/ls', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path instanceof CID ? `/ipfs/${path}` : path,

@@ -24,7 +24,6 @@ module.exports = configure(api => {
     const signal = abortSignal(controller.signal, options.signal)
 
     const res = await api.post('dht/put', {
-      timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
         arg: uint8ArrayToString(key),

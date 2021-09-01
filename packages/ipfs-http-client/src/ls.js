@@ -60,7 +60,6 @@ module.exports = configure((api, opts) => {
     }
 
     const res = await api.post('ls', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: pathStr,

@@ -15,7 +15,6 @@ module.exports = configure(api => {
    */
   async function addrs (options = {}) {
     const res = await api.post('swarm/addrs', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers
