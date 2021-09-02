@@ -53,7 +53,7 @@
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
     "ipfs-utils": "^8.1.4",
-    "ipns": "^0.13.3",
+    "ipns": "^0.14.0",
     "is-ipfs": "^6.0.1",
     "iso-random-stream": "^2.0.0",
     "it-all": "^1.0.4",
