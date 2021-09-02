@@ -34,8 +34,7 @@ const normalizePath = (pathStr) => {
   const str = pathStr.toString()
 
   try {
-    CID.parse(str)
-    pathStr = `/ipfs/${str}`
+    return `/ipfs/${CID.parse(str)}`
   } catch {}
 
   if (isIpfs.path(str)) {
