@@ -49,7 +49,7 @@ const normalizePath = (pathStr) => {
 // TODO: don't forget ipfs-core-utils/src/to-cid-and-path
 /**
  * @param {Uint8Array|CID|string} path
-  */
+ */
 const normalizeCidPath = (path) => {
   if (path instanceof Uint8Array) {
     return CID.decode(path).toString()

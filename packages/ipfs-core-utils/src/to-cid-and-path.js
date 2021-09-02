@@ -27,6 +27,8 @@ const toCidAndPath = (string) => {
     }
   }
 
+  string = string.toString()
+
   if (string.startsWith(IPFS_PREFIX)) {
     string = string.substring(IPFS_PREFIX.length)
   }
