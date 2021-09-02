@@ -20,7 +20,7 @@ module.exports = configure(api => {
     const res = await api.post('files/cp', {
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: sourceArr.concat(destination).map(src => src instanceof CID ? `/ipfs/${src}` : src),
+        arg: sourceArr.concat(destination).map(src => CID.asCID(src) ? `/ipfs/${src}` : src),
         ...options
       }),
       headers: options.headers

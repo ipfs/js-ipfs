@@ -18,9 +18,11 @@ const toCidAndPath = (string) => {
     }
   }
 
-  if (string instanceof CID) {
+  let cid = CID.asCID(string)
+
+  if (cid) {
     return {
-      cid: string,
+      cid,
       path: undefined
     }
   }
@@ -30,7 +32,6 @@ const toCidAndPath = (string) => {
   }
 
   const parts = string.split('/')
-  let cid
   let path
 
   try {

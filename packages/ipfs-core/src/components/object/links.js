@@ -32,11 +32,13 @@ function findLinks (node, links = []) {
       }
     }
 
-    if (val instanceof CID) {
+    const cid = CID.asCID(val)
+
+    if (cid) {
       links.push({
         Name: '',
         Tsize: 0,
-        Hash: val
+        Hash: cid
       })
       continue
     }

@@ -99,10 +99,10 @@ const toMfsPath = async (context, path, options) => {
 
   let ipfsPath = ''
 
-  if (path instanceof CID) {
+  if (CID.asCID(CID)) {
     ipfsPath = `/ipfs/${path}`
   } else {
-    ipfsPath = path
+    ipfsPath = path.toString()
   }
 
   ipfsPath = ipfsPath.trim()

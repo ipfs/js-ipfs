@@ -21,7 +21,7 @@ module.exports = configure(api => {
     const res = await api.post('files/ls', {
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: path instanceof CID ? `/ipfs/${path}` : path,
+        arg: CID.asCID(path) ? `/ipfs/${path}` : path,
         // default long to true, diverges from go-ipfs where its false by default
         long: true,
         ...options,

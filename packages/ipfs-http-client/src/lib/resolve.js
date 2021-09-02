@@ -57,8 +57,10 @@ const resolve = async function * (cid, path, codecs, getBlock, options) {
       throw errCode(new Error(`no link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
     }
 
-    if (value instanceof CID) {
-      lastCid = value
+    const cid = CID.asCID(value)
+
+    if (cid) {
+      lastCid = cid
       value = await load(value)
     }
   }

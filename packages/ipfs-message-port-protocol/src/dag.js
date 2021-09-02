@@ -68,9 +68,11 @@ exports.encodeNode = encodeNode
  */
 const collectNode = (value, cids, transfer) => {
   if (value != null && typeof value === 'object') {
-    if (value instanceof CID) {
-      cids.push(value)
-      encodeCID(value, transfer)
+    const cid = CID.asCID(value)
+
+    if (cid) {
+      cids.push(cid)
+      encodeCID(cid, transfer)
     } else if (value instanceof ArrayBuffer) {
       if (transfer) {
         transfer.push(value)
