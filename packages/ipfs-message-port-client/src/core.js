@@ -122,7 +122,8 @@ CoreClient.prototype.add = async function add (input, options = {}) {
  * @type {RootAPI["cat"]}
  */
 CoreClient.prototype.cat = async function * cat (inputPath, options = {}) {
-  const input = inputPath instanceof CID ? encodeCID(inputPath) : inputPath
+  const cid = CID.asCID(inputPath)
+  const input = cid ? encodeCID(cid) : inputPath
   const result = await this.remote.cat({ ...options, path: input })
   yield * decodeIterable(result.data, identity)
 }
@@ -133,7 +134,8 @@ CoreClient.prototype.cat = async function * cat (inputPath, options = {}) {
  * @type {RootAPI["ls"]}
  */
 CoreClient.prototype.ls = async function * ls (inputPath, options = {}) {
-  const input = inputPath instanceof CID ? encodeCID(inputPath) : inputPath
+  const cid = CID.asCID(inputPath)
+  const input = cid ? encodeCID(cid) : inputPath
   const result = await this.remote.ls({ ...options, path: input })
 
   yield * decodeIterable(result.data, decodeLsEntry)

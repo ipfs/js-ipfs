@@ -14,9 +14,11 @@ module.exports = ({ addAll }) =>
   (path, options = {}) => {
     let iter
 
-    if (path instanceof CID) {
+    const cid = CID.asCID(path)
+
+    if (cid) {
       iter = addAll([{
-        cid: path,
+        cid,
         ...options
       }], options)
     } else {

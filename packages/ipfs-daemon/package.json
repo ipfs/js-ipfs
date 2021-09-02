@@ -43,7 +43,7 @@
     "libp2p-webrtc-star": "^0.23.0"
   },
   "devDependencies": {
-    "aegir": "^35.0.2",
+    "aegir": "^35.0.3",
     "node-fetch": "npm:@achingbrain/node-fetch@^2.6.4",
     "ws": "^7.3.1"
   },

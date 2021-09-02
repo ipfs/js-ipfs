@@ -15,13 +15,6 @@ module.exports = configure(api => {
    * @type {FilesAPI["stat"]}
    */
   async function stat (path, options = {}) {
-    if (path && !(path instanceof CID) && typeof path !== 'string') {
-      options = path || {}
-      path = '/'
-    }
-
-    options = options || {}
-
     const res = await api.post('files/stat', {
       signal: options.signal,
       searchParams: toUrlSearchParams({

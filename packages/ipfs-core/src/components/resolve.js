@@ -48,7 +48,7 @@ module.exports = ({ repo, codecs, bases, name }) => {
     let remainderPath = path
 
     for await (const result of results) {
-      if (result.value instanceof CID) {
+      if (CID.asCID(result.value)) {
         value = result.value
         remainderPath = result.remainderPath
       }

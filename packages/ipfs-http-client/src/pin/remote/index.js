@@ -119,7 +119,7 @@ const encodeService = (service) => {
  * @returns {string}
  */
 const encodeCID = (cid) => {
-  if (cid instanceof CID) {
+  if (CID.asCID(cid)) {
     return cid.toString()
   } else {
     throw new TypeError(`CID instance expected instead of ${typeof cid}`)

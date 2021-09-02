@@ -25,17 +25,20 @@ const ERR_BAD_PATH = 'ERR_BAD_PATH'
  * @throws on an invalid @param pathStr
  */
 const normalizePath = (pathStr) => {
-  if (pathStr instanceof CID) {
+  const cid = CID.asCID(pathStr)
+
+  if (cid) {
     return `/ipfs/${pathStr}`
   }
 
+  const str = pathStr.toString()
+
   try {
-    CID.parse(pathStr)
-    pathStr = `/ipfs/${pathStr}`
+    return `/ipfs/${CID.parse(str)}`
   } catch {}
 
-  if (isIpfs.path(pathStr)) {
-    return pathStr
+  if (isIpfs.path(str)) {
+    return str
   } else {
     throw errCode(new Error(`invalid path: ${pathStr}`), ERR_BAD_PATH)
   }
@@ -45,21 +48,22 @@ const normalizePath = (pathStr) => {
 // TODO: don't forget ipfs-core-utils/src/to-cid-and-path
 /**
  * @param {Uint8Array|CID|string} path
- * @returns {string}
  */
 const normalizeCidPath = (path) => {
   if (path instanceof Uint8Array) {
     return CID.decode(path).toString()
   }
-  if (path instanceof CID) {
-    return path.toString()
-  }
+
+  path = path.toString()
+
   if (path.indexOf('/ipfs/') === 0) {
     path = path.substring('/ipfs/'.length)
   }
+
   if (path.charAt(path.length - 1) === '/') {
     path = path.substring(0, path.length - 1)
   }
+
   return path
 }
 
@@ -95,7 +99,7 @@ const resolvePath = async function (repo, codecs, ipfsPath, options = {}) {
       for await (const { value, remainderPath } of resolve(cid, options.path, codecs, repo, {
         signal: options.signal
       })) {
-        if (!(value instanceof CID)) {
+        if (!CID.asCID(value)) {
           break
         }
 
@@ -235,7 +239,7 @@ const resolve = async function * (cid, path, codecs, repo, options) {
       throw errCode(new Error(`no link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
     }
 
-    if (value instanceof CID) {
+    if (CID.asCID(value)) {
       lastCid = value
       value = await load(value)
     }

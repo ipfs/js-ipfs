@@ -18,19 +18,22 @@ const toCidAndPath = (string) => {
     }
   }
 
-  if (string instanceof CID) {
+  let cid = CID.asCID(string)
+
+  if (cid) {
     return {
-      cid: string,
+      cid,
       path: undefined
     }
   }
+
+  string = string.toString()
 
   if (string.startsWith(IPFS_PREFIX)) {
     string = string.substring(IPFS_PREFIX.length)
   }
 
   const parts = string.split('/')
-  let cid
   let path
 
   try {

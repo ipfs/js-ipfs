@@ -338,8 +338,10 @@ const escapeControlCharacters = (str) => {
  * @returns {any}
  */
 const makeEntriesPrintable = (obj, cidBase) => {
-  if (obj instanceof CID) {
-    return { '/': obj.toString(cidBase.encoder) }
+  const cid = CID.asCID(obj)
+
+  if (cid) {
+    return { '/': cid.toString(cidBase.encoder) }
   }
 
   if (typeof obj === 'string') {
