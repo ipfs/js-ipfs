@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.3...ipfs-client@0.6.4) (2021-09-02)
+
+
+### Bug Fixes
+
+* remove use of instanceof for CID class ([#3847](https://github.com/ipfs/js-ipfs/issues/3847)) ([ebbb12d](https://github.com/ipfs/js-ipfs/commit/ebbb12db523c53ce8e4ddae5266cd9acb3504431))
+
+
+
+
+
 ## [0.6.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.2...ipfs-client@0.6.3) (2021-08-25)
 
 **Note:** Version bump only for package ipfs-client

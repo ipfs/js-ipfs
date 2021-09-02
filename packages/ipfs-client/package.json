@@ -1,6 +1,6 @@
 {
   "name": "ipfs-client",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "A client library to talk to local IPFS daemons",
   "keywords": [
     "ipfs"
@@ -32,8 +32,8 @@
     "dep-check": "aegir dep-check -i aegir -i rimraf"
   },
   "dependencies": {
-    "ipfs-grpc-client": "^0.6.2",
-    "ipfs-http-client": "^52.0.2",
+    "ipfs-grpc-client": "^0.6.3",
+    "ipfs-http-client": "^52.0.3",
     "merge-options": "^3.0.4"
   },
   "devDependencies": {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.9.1...ipfs-message-port-server@0.9.2) (2021-09-02)
+
+
+### Bug Fixes
+
+* remove use of instanceof for CID class ([#3847](https://github.com/ipfs/js-ipfs/issues/3847)) ([ebbb12d](https://github.com/ipfs/js-ipfs/commit/ebbb12db523c53ce8e4ddae5266cd9acb3504431))
+
+
+
+
+
 ## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.9.0...ipfs-message-port-server@0.9.1) (2021-08-25)
 
 **Note:** Version bump only for package ipfs-message-port-server

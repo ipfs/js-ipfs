@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.58.2",
+  "version": "0.58.3",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -39,8 +39,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.8.4",
-    "ipfs-core": "^0.10.4",
+    "ipfs-cli": "^0.8.5",
+    "ipfs-core": "^0.10.5",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
@@ -52,10 +52,10 @@
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.9.1",
-    "interface-ipfs-core": "^0.150.1",
-    "ipfs-client": "^0.6.3",
-    "ipfs-core-types": "^0.7.0",
-    "ipfs-http-client": "^52.0.2",
+    "interface-ipfs-core": "^0.150.2",
+    "ipfs-client": "^0.6.4",
+    "ipfs-core-types": "^0.7.1",
+    "ipfs-http-client": "^52.0.3",
     "ipfs-interop": "^6.0.1",
     "ipfs-utils": "^8.1.4",
     "ipfsd-ctl": "^10.0.3",
