@@ -108,7 +108,7 @@
     "libp2p-delegated-peer-routing": "^0.10.0",
     "libp2p-floodsub": "^0.27.0",
     "libp2p-gossipsub": "^0.11.1",
-    "libp2p-kad-dht": "^0.23.1",
+    "libp2p-kad-dht": "^0.24.0",
     "libp2p-mdns": "^0.17.0",
     "libp2p-mplex": "^0.10.2",
     "libp2p-record": "^0.10.3",
