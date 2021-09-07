@@ -7,10 +7,8 @@ const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
 const last = require('it-last')
 const { CID } = require('multiformats/cid')
 const { base32 } = require('multiformats/bases/base32')
-// @ts-ignore no types
-const { resolver } = require('ipfs-http-response')
-// @ts-ignore no types
-const detectContentType = require('ipfs-http-response/src/utils/content-type')
+const resolver = require('../utils/resolver')
+const { detectContentType } = require('../utils/content-type')
 const isIPFS = require('is-ipfs')
 // @ts-ignore no types
 const toStream = require('it-to-stream')

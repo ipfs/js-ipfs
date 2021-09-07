@@ -53,8 +53,52 @@ function joinURLParts (...urls) {
   return urls.join('/')
 }
 
+/**
+ * Converts path or url to an array starting at CID
+ *
+ * @param {string} path
+ */
+ function cidArray (path) {
+  if (path[path.length - 1] === '/') {
+    path = path.substring(0, path.length - 1)
+  }
+  // skip /ipxs/ prefix
+  if (path.match(/^\/ip[fn]s\//)) {
+    path = path.substring(6)
+  }
+  // skip ipxs:// protocol
+  if (path.match(/^ip[fn]s:\/\//)) {
+    path = path.substring(7)
+  }
+  return path.split('/')
+}
+
+/**
+ * @param {string} url
+ */
+function removeLeadingSlash (url) {
+  if (url[0] === '/') {
+    url = url.substring(1)
+  }
+
+  return url
+}
+
+/**
+ * @param {string} url
+ */
+function removeSlashFromBothEnds (url) {
+  url = removeLeadingSlash(url)
+  url = removeTrailingSlash(url)
+
+  return url
+}
+
 module.exports = {
-  splitPath: splitPath,
-  removeTrailingSlash: removeTrailingSlash,
-  joinURLParts: joinURLParts
+  splitPath,
+  removeLeadingSlash,
+  removeTrailingSlash,
+  joinURLParts,
+  removeSlashFromBothEnds,
+  cidArray
 }
