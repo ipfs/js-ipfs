@@ -64,6 +64,7 @@
     "uri-to-multiaddr": "^6.0.0"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.0",
     "@types/hapi__hapi": "^20.0.5",
     "@types/hapi-pino": "^8.0.1",
     "aegir": "^35.0.3",
