@@ -62,3 +62,4 @@ typings/
 # while testing npm5
 package-lock.json
 yarn.lock
+types

@@ -1,24 +1,22 @@
 /* eslint-env mocha */
-'use strict'
-
-const { expect } = require('aegir/utils/chai')
-
-const loadFixture = require('aegir/utils/fixtures')
-const { createFactory } = require('ipfsd-ctl')
-const getStream = require('get-stream')
-const all = require('it-all')
-const uint8ArrayToString = require('uint8arrays/to-string')
-
-const { getResponse } = require('../src')
-const makeWebResponseEnv = require('./utils/web-response-env')
+import { expect } from 'aegir/utils/chai.js'
+import loadFixture from 'aegir/utils/fixtures.js'
+import { createFactory } from 'ipfsd-ctl'
+import getStream from 'get-stream'
+import all from 'it-all'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { getResponse } from '../src/index.js'
+import makeWebResponseEnv from './utils/web-response-env.js'
+import ipfsModule from 'ipfs-core'
 
 const factory = createFactory({
   test: true,
   type: 'proc',
-  ipfsModule: require('ipfs-core')
+  ipfsModule
 })
 
 describe('resolve file (CIDv0)', function () {
+  /** @type {*} */
   let ipfs = null
 
   const file = {
@@ -46,6 +44,7 @@ describe('resolve file (CIDv0)', function () {
     expect(res).to.exist()
     expect(res.status).to.equal(200)
 
+    // @ts-expect-error types are wrong
     const contents = await getStream(res.body)
     const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/testfile.txt'))
 
@@ -54,6 +53,7 @@ describe('resolve file (CIDv0)', function () {
 })
 
 describe('resolve file (CIDv1)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
@@ -82,6 +82,7 @@ describe('resolve file (CIDv1)', function () {
     expect(res).to.exist()
     expect(res.status).to.equal(200)
 
+    // @ts-expect-error types are wrong
     const contents = await getStream(res.body)
     const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/testfile.txt'))
 
@@ -90,11 +91,13 @@ describe('resolve file (CIDv1)', function () {
 })
 
 describe('resolve directory (CIDv0)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const directory = {
     cid: 'QmU1aW5x8tXfbRpJ71zoEVwxrRDHybC2iTVacCMabCUniZ',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-folder/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt')
@@ -108,6 +111,9 @@ describe('resolve directory (CIDv0)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-folder/${name}`,
       content: directory.files[name]
@@ -131,15 +137,16 @@ describe('resolve directory (CIDv0)', function () {
   after(() => factory.clean())
 
   it('should return the list of files of a directory', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${directory.cid}`, directory.cid)
+    const res = await getResponse(ipfs, `/ipfs/${directory.cid}`)
 
     expect(res.status).to.equal(200)
     expect(res.body).to.match(/<html>/)
   })
 
   it('should return the pp.txt file', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/pp.txt`, directory.cid)
+    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/pp.txt`)
 
+    // @ts-expect-error types are wrong
     const contents = await getStream(res.body)
     const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/pp.txt'))
 
@@ -147,8 +154,9 @@ describe('resolve directory (CIDv0)', function () {
   })
 
   it('should return the holmes.txt file', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/holmes.txt`, directory.cid)
+    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/holmes.txt`)
 
+    // @ts-expect-error types are wrong
     const contents = await getStream(res.body)
     const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/holmes.txt'))
 
@@ -157,11 +165,13 @@ describe('resolve directory (CIDv0)', function () {
 })
 
 describe('resolve directory (CIDv1)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const directory = {
     cid: 'bafybeifhimn7nu6dgmdvj6o63zegwro3yznnpfqib6kkjnagc54h46ox5q',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-folder/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt')
@@ -175,6 +185,9 @@ describe('resolve directory (CIDv1)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-folder/${name}`,
       content: directory.files[name]
@@ -196,15 +209,16 @@ describe('resolve directory (CIDv1)', function () {
   after(() => factory.clean())
 
   it('should return the list of files of a directory', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${directory.cid}`, directory.cid)
+    const res = await getResponse(ipfs, `/ipfs/${directory.cid}`)
 
     expect(res.status).to.equal(200)
     expect(res.body).to.match(/<html>/)
   })
 
   it('should return the pp.txt file', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/pp.txt`, directory.cid)
+    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/pp.txt`)
 
+    // @ts-expect-error types are wrong
     const contents = await getStream(res.body)
     const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/pp.txt'))
 
@@ -212,8 +226,9 @@ describe('resolve directory (CIDv1)', function () {
   })
 
   it('should return the holmes.txt file', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/holmes.txt`, directory.cid)
+    const res = await getResponse(ipfs, `/ipfs/${directory.cid}/holmes.txt`)
 
+    // @ts-expect-error types are wrong
     const contents = await getStream(res.body)
     const expectedContents = uint8ArrayToString(loadFixture('test/fixtures/test-folder/holmes.txt'))
 
@@ -222,11 +237,13 @@ describe('resolve directory (CIDv1)', function () {
 })
 
 describe('resolve web page (CIDv0)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const webpage = {
     cid: 'QmR3fdaM5B3LZog6TqpuHvoHYWQpRoaYwFTZ5YmdzGX5U5',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-site/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-site/holmes.txt'),
@@ -241,6 +258,9 @@ describe('resolve web page (CIDv0)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-site/${name}`,
       content: webpage.files[name]
@@ -262,7 +282,7 @@ describe('resolve web page (CIDv0)', function () {
   after(() => factory.clean())
 
   it('should return the entry point of a web page when a trying to fetch a directory containing a web page', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}`)
 
     expect(res.status).to.equal(302)
     expect(res.headers.get('Location')).to.equal(`/ipfs/${webpage.cid}/index.html`)
@@ -270,11 +290,13 @@ describe('resolve web page (CIDv0)', function () {
 })
 
 describe('resolve web page (CIDv1)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const webpage = {
     cid: 'bafybeibpkvlqjkwl73yam6ffsbrlgbwiffnehajc6qvnrhai5bve6jnawi',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-site/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-site/holmes.txt'),
@@ -289,6 +311,9 @@ describe('resolve web page (CIDv1)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-site/${name}`,
       content: webpage.files[name]
@@ -310,7 +335,7 @@ describe('resolve web page (CIDv1)', function () {
   after(() => factory.clean())
 
   it('should return the entry point of a web page when a trying to fetch a directory containing a web page', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}`)
 
     expect(res.status).to.equal(302)
     expect(res.headers.get('Location')).to.equal(`/ipfs/${webpage.cid}/index.html`)
@@ -319,11 +344,13 @@ describe('resolve web page (CIDv1)', function () {
 
 // TODO: move mime-types to separate test file
 describe('mime-types', () => {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const webpage = {
     cid: 'QmWU1PAWCyd3MBAnALacXXbGU44RpgwdnGPrShSZoQj1H6',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'cat.jpg': loadFixture('test/fixtures/test-mime-types/cat.jpg'),
       'hexagons-xml.svg': loadFixture('test/fixtures/test-mime-types/hexagons-xml.svg'),
@@ -340,6 +367,10 @@ describe('mime-types', () => {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     * @returns
+     */
     const content = (name) => ({
       path: `test-mime-types/${name}`,
       content: webpage.files[name]
@@ -363,31 +394,31 @@ describe('mime-types', () => {
   after(() => factory.clean())
 
   it('should return the correct mime-type for pp.txt', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/pp.txt`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/pp.txt`)
 
     expect(res.headers.get('Content-Type')).to.equal('text/plain; charset=utf-8')
   })
 
   it('should return the correct mime-type for cat.jpg', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/cat.jpg`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/cat.jpg`)
 
     expect(res.headers.get('Content-Type')).to.equal('image/jpeg')
   })
 
   it('should return the correct mime-type for index.html', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/index.html`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/index.html`)
 
     expect(res.headers.get('Content-Type')).to.equal('text/html; charset=utf-8')
   })
 
   it('should return the correct mime-type for hexagons.svg', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/hexagons.svg`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/hexagons.svg`)
 
     expect(res.headers.get('Content-Type')).to.equal('image/svg+xml')
   })
 
   it('should return the correct mime-type for hexagons.svg', async () => {
-    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/hexagons.svg`, webpage.cid)
+    const res = await getResponse(ipfs, `/ipfs/${webpage.cid}/hexagons.svg`)
 
     expect(res.headers.get('Content-Type')).to.equal('image/svg+xml')
   })

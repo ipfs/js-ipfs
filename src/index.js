@@ -1,15 +1,16 @@
 /* global Response, Blob */
 
-'use strict'
+// @ts-ignore no types
+import toStream from 'it-to-stream'
+import concat from 'it-concat'
+// @ts-ignore no types
+import toBuffer from 'it-buffer'
+import debug from 'debug'
+import * as ipfsResolver from './resolver.js'
+import * as pathUtils from './utils/path.js'
+import { detectContentType } from './utils/content-type.js'
 
-const toStream = require('it-to-stream')
-const concat = require('it-concat')
-const toBuffer = require('it-buffer')
-const log = require('debug')('ipfs:http:response')
-
-const resolver = require('./resolver')
-const pathUtils = require('./utils/path')
-const detectContentType = require('./utils/content-type')
+const log = debug('ipfs:http:response')
 
 // TODO: pass path and add Etag and X-Ipfs-Path + tests
 const getHeader = (status = 200, statusText = 'OK', headers = {}) => ({
@@ -18,13 +19,19 @@ const getHeader = (status = 200, statusText = 'OK', headers = {}) => ({
   headers
 })
 
-// handle hash resolve error (simple hash, test for directory now)
+/**
+ * handle hash resolve error (simple hash, test for directory now)
+ *
+ * @param {*} node
+ * @param {string} path
+ * @param {*} error
+ */
 const handleResolveError = async (node, path, error) => {
   const errorString = error.toString()
 
   if (errorString.includes('dag node is a directory')) {
     try {
-      const content = await resolver.directory(node, path, error.cid)
+      const content = await ipfsResolver.directory(node, path, error.cid)
       // dir render
       if (typeof content === 'string') {
         return new Response(content, getHeader(200, 'OK', { 'Content-Type': 'text/html' }))
@@ -32,7 +39,7 @@ const handleResolveError = async (node, path, error) => {
 
       // redirect to dir entry point (index)
       return Response.redirect(pathUtils.joinURLParts(path, content[0].Name))
-    } catch (error) {
+    } catch (/** @type {any} */ error) {
       log(error)
       return new Response(errorString, getHeader(500, error.toString()))
     }
@@ -49,14 +56,20 @@ const handleResolveError = async (node, path, error) => {
   return new Response(errorString, getHeader(500, errorString))
 }
 
-const getResponse = async (ipfsNode, ipfsPath) => {
+/**
+ *
+ * @param {*} ipfsNode
+ * @param {*} ipfsPath
+ * @returns
+ */
+export async function getResponse (ipfsNode, ipfsPath) {
   // remove trailing slash for files if needed
   if (ipfsPath.endsWith('/')) {
     return Response.redirect(pathUtils.removeTrailingSlash(ipfsPath))
   }
 
   try {
-    const resolvedData = await resolver.cid(ipfsNode, ipfsPath)
+    const resolvedData = await ipfsResolver.cid(ipfsNode, ipfsPath)
     const { source, contentType } = await detectContentType(ipfsPath, ipfsNode.cat(resolvedData.cid))
 
     if (typeof Blob === 'undefined') {
@@ -74,7 +87,7 @@ const getResponse = async (ipfsNode, ipfsPath) => {
       return contentType
         ? new Response(blob, getHeader(200, 'OK', { 'Content-Type': contentType }))
         : new Response(blob, getHeader())
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       return new Response(err.toString(), getHeader(500, 'Error fetching the file'))
     }
   } catch (error) {
@@ -83,7 +96,10 @@ const getResponse = async (ipfsNode, ipfsPath) => {
   }
 }
 
-module.exports = {
-  getResponse,
-  resolver
+export const resolver = {
+  ...ipfsResolver
+}
+
+export const utils = {
+  detectContentType
 }

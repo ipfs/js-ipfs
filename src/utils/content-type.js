@@ -1,12 +1,17 @@
-'use strict'
-
-const { fromBuffer: fileType } = require('file-type')
-const mime = require('mime-types')
-const Reader = require('it-reader')
+import fileType from 'file-type'
+// @ts-ignore no types
+import mime from 'mime-types'
+// @ts-ignore no types
+import Reader from 'it-reader'
 
 const minimumBytes = 4100
 
-const detectContentType = async (path, source) => {
+/**
+ * @param {string} path
+ * @param {AsyncIterable<Uint8Array>} source
+ * @returns {Promise<{ source: AsyncIterable<Uint8Array>, contentType?: string }>}
+ */
+export const detectContentType = async (path, source) => {
   let fileSignature
 
   // try to guess the filetype based on the first bytes
@@ -18,13 +23,13 @@ const detectContentType = async (path, source) => {
 
       if (done) return { source: reader }
 
-      fileSignature = await fileType(value.slice())
+      fileSignature = await fileType.fromBuffer(value.slice())
 
       source = (async function * () { // eslint-disable-line require-await
         yield value
         yield * reader
       })()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code !== 'ERR_UNDER_READ') throw err
 
       // not enough bytes for sniffing, just yield the data
@@ -39,5 +44,3 @@ const detectContentType = async (path, source) => {
 
   return { source, contentType: mime.contentType(mimeType) }
 }
-
-module.exports = detectContentType

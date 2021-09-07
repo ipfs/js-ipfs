@@ -1,10 +1,5 @@
-'use strict'
-
-const pTryEach = require('p-try-each')
-const debug = require('debug')
-const log = debug('jsipfs:http:response:resolver')
-log.error = debug('jsipfs:http:response:resolver:error')
-const dirView = require('./dir-view')
+import pTryEach from 'p-try-each'
+import { render } from './dir-view/index.js'
 
 const INDEX_HTML_FILES = [
   'index.html',
@@ -12,6 +7,10 @@ const INDEX_HTML_FILES = [
   'index.shtml'
 ]
 
+/**
+ * @param {*} ipfs
+ * @param {*} path
+ */
 const findIndexFile = (ipfs, path) => {
   return pTryEach(INDEX_HTML_FILES.map(file => {
     return async () => {
@@ -25,51 +24,45 @@ const findIndexFile = (ipfs, path) => {
   }))
 }
 
-const directory = async (ipfs, path, cid) => {
+/**
+ * @param {*} ipfs
+ * @param {string} path
+ * @param {*} cid
+ */
+export const directory = async (ipfs, path, cid) => {
   // Test if it is a Website
   try {
     const res = await findIndexFile(ipfs, path)
 
     return [{ Name: res.name }]
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.message.includes('does not exist')) {
       // not a website, just show a directory listing
       const result = await ipfs.dag.get(cid)
 
-      return dirView.render(path, result.value.Links)
+      return render(path, result.value.Links)
     }
 
     throw err
   }
 }
 
-const cid = async (ipfs, path) => {
+/**
+ * @param {*} ipfs
+ * @param {string} path
+ */
+export const cid = async (ipfs, path) => {
   const stats = await ipfs.files.stat(path)
 
   if (stats.type.includes('directory')) {
-    const err = new Error('This dag node is a directory')
-    err.cid = stats.cid
-    err.fileName = stats.name
-    err.dagDirType = stats.type
+    const err = Object.assign(new Error('This dag node is a directory'), {
+      cid: stats.cid,
+      fileName: stats.fileName,
+      dagDirType: stats.type
+    })
 
     throw err
   }
 
   return { cid: stats.cid }
-}
-
-const multihash = async (ipfs, path) => {
-  // deprecated, use 'cid' instead
-  // (left for backward-compatibility)
-  const result = await cid(ipfs, path)
-
-  return {
-    multihash: result.cid.toString()
-  }
-}
-
-module.exports = {
-  directory,
-  cid,
-  multihash
 }

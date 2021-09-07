@@ -1,6 +1,8 @@
-'use strict'
-
 class Response {
+  /**
+   * @param {*} body
+   * @param {*} init
+   */
   constructor (body, init) {
     this.body = body || ''
     this.status = (init && typeof init.status === 'number') ? init.status : 200
@@ -15,12 +17,13 @@ class Response {
 
 class WebResponseGlobalScope {
   constructor () {
-    this.Response = Response
-    this.Response.redirect = (url) => new Response(null, {
-      status: 302,
-      headers: { Location: url }
+    this.Response = Object.assign(Response, {
+      redirect: (/** @type {string} */ url) => new Response(null, {
+        status: 302,
+        headers: { Location: url }
+      })
     })
   }
 }
 
-module.exports = () => new WebResponseGlobalScope()
+export default () => new WebResponseGlobalScope()

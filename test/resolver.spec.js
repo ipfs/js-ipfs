@@ -1,21 +1,19 @@
 /* eslint-env mocha */
-'use strict'
-
-const { expect } = require('aegir/utils/chai')
-
-const loadFixture = require('aegir/utils/fixtures')
-const { createFactory } = require('ipfsd-ctl')
-const all = require('it-all')
-
-const ipfsResolver = require('../src/resolver')
+import { expect } from 'aegir/utils/chai.js'
+import loadFixture from 'aegir/utils/fixtures.js'
+import { createFactory } from 'ipfsd-ctl'
+import all from 'it-all'
+import * as ipfsResolver from '../src/resolver.js'
+import ipfsModule from 'ipfs-core'
 
 const factory = createFactory({
   test: true,
   type: 'proc',
-  ipfsModule: require('ipfs-core')
+  ipfsModule
 })
 
 describe('resolve file (CIDv0)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
@@ -36,13 +34,6 @@ describe('resolve file (CIDv0)', function () {
 
   after(() => factory.clean())
 
-  it('should resolve a multihash', async () => {
-    const res = await ipfsResolver.multihash(ipfs, `/ipfs/${file.cid}`)
-
-    expect(res).to.exist()
-    expect(res).to.have.property('multihash', file.cid)
-  })
-
   it('should resolve a cid', async () => {
     const res = await ipfsResolver.cid(ipfs, `/ipfs/${file.cid}`)
 
@@ -53,6 +44,7 @@ describe('resolve file (CIDv0)', function () {
 })
 
 describe('resolve file (CIDv1)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
@@ -74,13 +66,6 @@ describe('resolve file (CIDv1)', function () {
 
   after(() => factory.clean())
 
-  it('should resolve a multihash', async () => {
-    const res = await ipfsResolver.multihash(ipfs, `/ipfs/${file.cid}`)
-
-    expect(res).to.exist()
-    expect(res).to.have.property('multihash', file.cid)
-  })
-
   it('should resolve a cid', async () => {
     const res = await ipfsResolver.cid(ipfs, `/ipfs/${file.cid}`)
 
@@ -91,11 +76,13 @@ describe('resolve file (CIDv1)', function () {
 })
 
 describe('resolve directory (CIDv0)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const directory = {
     cid: 'QmU1aW5x8tXfbRpJ71zoEVwxrRDHybC2iTVacCMabCUniZ',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-folder/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt')
@@ -108,6 +95,9 @@ describe('resolve directory (CIDv0)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-folder/${name}`,
       content: directory.files[name]
@@ -132,7 +122,7 @@ describe('resolve directory (CIDv0)', function () {
       const res = await ipfsResolver.cid(ipfs, `/ipfs/${directory.cid}`)
 
       expect(res).to.not.exist()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       expect(err.toString()).to.equal('Error: This dag node is a directory')
     }
   })
@@ -147,11 +137,13 @@ describe('resolve directory (CIDv0)', function () {
 })
 
 describe('resolve directory (CIDv1)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const directory = {
     cid: 'bafybeifhimn7nu6dgmdvj6o63zegwro3yznnpfqib6kkjnagc54h46ox5q',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-folder/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt')
@@ -164,6 +156,9 @@ describe('resolve directory (CIDv1)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-folder/${name}`,
       content: directory.files[name]
@@ -190,7 +185,7 @@ describe('resolve directory (CIDv1)', function () {
       const res = await ipfsResolver.cid(ipfs, `/ipfs/${directory.cid}`)
 
       expect(res).to.not.exist()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       expect(err.toString()).to.equal('Error: This dag node is a directory')
     }
   })
@@ -206,11 +201,13 @@ describe('resolve directory (CIDv1)', function () {
 })
 
 describe('resolve web page (CIDv0)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const webpage = {
     cid: 'QmR3fdaM5B3LZog6TqpuHvoHYWQpRoaYwFTZ5YmdzGX5U5',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-site/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-site/holmes.txt'),
@@ -224,6 +221,9 @@ describe('resolve web page (CIDv0)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-site/${name}`,
       content: webpage.files[name]
@@ -249,7 +249,7 @@ describe('resolve web page (CIDv0)', function () {
       const res = await ipfsResolver.cid(ipfs, `/ipfs/${webpage.cid}`)
 
       expect(res).to.not.exist()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       expect(err.toString()).to.equal('Error: This dag node is a directory')
     }
   })
@@ -265,11 +265,13 @@ describe('resolve web page (CIDv0)', function () {
 })
 
 describe('resolve web page (CIDv1)', function () {
+  /** @type {any} */
   let ipfs = null
   let ipfsd = null
 
   const webpage = {
     cid: 'bafybeibpkvlqjkwl73yam6ffsbrlgbwiffnehajc6qvnrhai5bve6jnawi',
+    /** @type {Record<string, Uint8Array>} */
     files: {
       'pp.txt': loadFixture('test/fixtures/test-site/pp.txt'),
       'holmes.txt': loadFixture('test/fixtures/test-site/holmes.txt'),
@@ -283,6 +285,9 @@ describe('resolve web page (CIDv1)', function () {
     ipfsd = await factory.spawn()
     ipfs = ipfsd.api
 
+    /**
+     * @param {string} name
+     */
     const content = (name) => ({
       path: `test-site/${name}`,
       content: webpage.files[name]
@@ -308,7 +313,7 @@ describe('resolve web page (CIDv1)', function () {
       const res = await ipfsResolver.cid(ipfs, `/ipfs/${webpage.cid}`)
 
       expect(res).to.not.exist()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       expect(err.toString()).to.equal('Error: This dag node is a directory')
     }
   })
