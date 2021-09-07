@@ -23,6 +23,7 @@
     "build": "aegir build",
     "release": "aegir release --target node",
     "release-minor": "aegir release --type minor --target node",
+    "release-major": "aegir release --type major --target node",
     "pretest": "aegir build --esm-tests",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node"
