@@ -1,3 +1,12 @@
+# [1.0.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.7.0...v1.0.0) (2021-09-07)
+
+
+### Bug Fixes
+
+* update module ([#104](https://github.com/ipfs/js-ipfs-http-response/issues/104)) ([319e2b4](https://github.com/ipfs/js-ipfs-http-response/commit/319e2b416bb6283e0f0e67c7dc9f609851e16909))
+
+
+
 # [0.7.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.4...v0.7.0) (2021-07-12)
 
 
