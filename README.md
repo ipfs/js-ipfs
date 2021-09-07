@@ -24,12 +24,10 @@
 This project creates a HTTP response for an IPFS Path. This response can be a file, a HTML with directory listing or the entry point of a web page.
 
 ```js
-const { getResponse } = require('ipfs-http-response')
+import { getResponse } from 'ipfs-http-response'
 
-(async () => {
-  const result = await getResponse(ipfsNode, ipfsPath)
-  console.log(result)
-})()
+const result = await getResponse(ipfsNode, ipfsPath)
+console.log(result)
 ```
 
 ### Using protocol-agnostic resolver
@@ -37,24 +35,20 @@ const { getResponse } = require('ipfs-http-response')
 This module also exports the used ipfs `resolver`, which should be used when the response needs to be customized or non-HTTP transport is used:
 
 ```js
-const { resolver } = require('ipfs-http-response')
+import { resolver } from 'ipfs-http-response'
 
-(async () => {
-  const result = await resolver.cid(ipfsNode, ipfsPath)
-  console.log(result)
-})()
+const result = await resolver.cid(ipfsNode, ipfsPath)
+console.log(result)
 ```
 
 If `ipfsPath` points at a directory, `resolver.cid` will throw Error `This dag node is a directory` with a `cid` attribute that can be passed to `resolver.directory`:
 
 
 ```js
-const { resolver } = require('ipfs-http-response')
+import { resolver } from 'ipfs-http-response'
 
-(async () => {
-  const result = await resolver.directory(ipfsNode, ipfsPath, cid)
-  console.log(result)
-})()
+const result = await resolver.directory(ipfsNode, ipfsPath, cid)
+console.log(result)
 ```
 
 `result` will be either a `string` with HTML directory listing or an array with CIDs of `index` pages present in inspected directory.
