@@ -47,7 +47,7 @@
     "p-defer": "^3.0.0",
     "protobufjs": "^6.10.2",
     "wherearewe": "^1.0.0",
-    "ws": "^7.3.1"
+    "ws": "^8.2.1"
   },
   "devDependencies": {
     "aegir": "^35.0.3",

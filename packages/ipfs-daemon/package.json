@@ -45,7 +45,7 @@
   "devDependencies": {
     "aegir": "^35.0.3",
     "node-fetch": "npm:@achingbrain/node-fetch@^2.6.4",
-    "ws": "^7.3.1"
+    "ws": "^8.2.1"
   },
   "optionalDependencies": {
     "electron-webrtc": "^0.3.0",
