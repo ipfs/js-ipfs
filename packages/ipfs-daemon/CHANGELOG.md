@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.6](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.5...ipfs-daemon@0.9.6) (2021-09-08)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
 ## [0.9.5](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.4...ipfs-daemon@0.9.5) (2021-09-02)
 
 
