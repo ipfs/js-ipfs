@@ -47,7 +47,7 @@
     "debug": "^4.1.1",
     "hapi-pino": "^8.3.0",
     "ipfs-core-types": "^0.7.1",
-    "ipfs-http-response": "^1.0.0",
+    "ipfs-http-response": "^1.0.1",
     "is-ipfs": "^6.0.1",
     "it-last": "^1.0.4",
     "it-to-stream": "^1.0.0",
