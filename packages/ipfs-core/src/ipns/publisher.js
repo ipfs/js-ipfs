@@ -1,10 +1,11 @@
 import PeerId from 'peer-id'
-import { Key, Errors } from 'interface-datastore'
+import { Key } from 'interface-datastore/key'
+import { notFoundError } from 'datastore-core/errors'
 import errcode from 'err-code'
 import debug from 'debug'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { equals as uint8ArrayEquals } from 'uint8arrays/equals'
-import ipns from 'ipns'
+import * as ipns from 'ipns'
 
 const log = Object.assign(debug('ipfs:ipns:publisher'), {
   error: debug('ipfs:ipns:publisher:error')
@@ -16,7 +17,7 @@ const log = Object.assign(debug('ipfs:ipns:publisher'), {
  * @typedef {import('ipns').IPNSEntry} IPNSEntry
  */
 
-const ERR_NOT_FOUND = Errors.notFoundError().code
+const ERR_NOT_FOUND = notFoundError().code
 const defaultRecordLifetime = 60 * 60 * 1000
 
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.

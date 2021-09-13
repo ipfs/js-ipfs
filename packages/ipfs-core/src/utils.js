@@ -2,7 +2,7 @@
 
 import isIpfs from 'is-ipfs'
 import { CID } from 'multiformats/cid'
-import { Key } from 'interface-datastore'
+import { Key } from 'interface-datastore/key'
 import errCode from 'err-code'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'

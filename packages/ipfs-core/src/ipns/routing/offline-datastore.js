@@ -1,5 +1,5 @@
 
-import { Key } from 'interface-datastore'
+import { Key } from 'interface-datastore/key'
 import { Record } from 'libp2p-record'
 import errcode from 'err-code'
 import debug from 'debug'

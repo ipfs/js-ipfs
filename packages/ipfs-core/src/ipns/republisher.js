@@ -1,4 +1,4 @@
-import ipns from 'ipns'
+import * as ipns from 'ipns'
 import crypto from 'libp2p-crypto'
 import PeerId from 'peer-id'
 import errcode from 'err-code'

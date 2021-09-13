@@ -2,12 +2,9 @@
 import { nanoid } from 'nanoid'
 import { codecs } from './codecs.js'
 import { createBackend } from './create-backend.js'
-import { Key } from 'interface-datastore'
-import IpfsRepo from 'ipfs-repo'
-
-// @ts-expect-error locks is missing from types?
-const { createRepo, locks } = IpfsRepo
-const memory = locks.memory
+import { Key } from 'interface-datastore/key'
+import { createRepo } from 'ipfs-repo'
+import { MemoryLock } from 'ipfs-repo/locks/memory'
 
 /**
  * @param {object} options
@@ -43,7 +40,7 @@ export async function createTempRepo (options = {}) {
   }
 
   return createRepo(path, (codeOrName) => codecs.getCodec(codeOrName), backend, {
-    repoLock: memory,
+    repoLock: MemoryLock,
     autoMigrate: options.autoMigrate,
     onMigrationProgress: options.onMigrationProgress
   })

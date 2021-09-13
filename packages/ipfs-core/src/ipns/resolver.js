@@ -1,10 +1,9 @@
-
-import ipns from 'ipns'
+import * as ipns from 'ipns'
 import PeerId from 'peer-id'
 import errcode from 'err-code'
 import debug from 'debug'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-import { Errors } from 'interface-datastore'
+import * as Errors from 'datastore-core/errors'
 
 const log = Object.assign(debug('ipfs:ipns:resolver'), {
   error: debug('ipfs:ipns:resolver:error')

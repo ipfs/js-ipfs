@@ -42,6 +42,7 @@
       "import": "./src/index.js"
     },
     "./path": {
+      "browser": "./src/path.browser.js",
       "import": "./src/path.js"
     }
   },
@@ -102,6 +103,7 @@
   },
   "browser": {
     "./src/cli.js": false,
+    "./src/path.js": "./src/path.browser.js",
     "go-ipfs": false
   },
   "engines": {

@@ -1,5 +1,5 @@
 
-import { TieredDatastore } from 'datastore-core'
+import { TieredDatastore } from 'datastore-core/tiered'
 import get from 'dlv'
 import { IpnsPubsubDatastore } from './pubsub-datastore.js'
 import { OfflineDatastore } from './offline-datastore.js'

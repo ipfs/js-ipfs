@@ -1,5 +1,4 @@
-
-import { BlockstoreAdapter } from 'interface-blockstore'
+import { BaseBlockstore } from 'blockstore-core'
 import merge from 'it-merge'
 import pushable from 'it-pushable'
 import filter from 'it-filter'
@@ -21,7 +20,7 @@ import filter from 'it-filter'
  *
  * @implements {Blockstore}
  */
-export class BlockStorage extends BlockstoreAdapter {
+export class BlockStorage extends BaseBlockstore {
   /**
    * Create a new BlockStorage
    *

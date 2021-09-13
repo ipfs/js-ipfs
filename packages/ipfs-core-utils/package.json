@@ -109,6 +109,7 @@
     "any-signal": "^2.1.2",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
+    "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.7.3",
     "ipfs-unixfs": "^6.0.3",

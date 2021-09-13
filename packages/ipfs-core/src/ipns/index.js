@@ -1,4 +1,3 @@
-
 import { createFromPrivKey } from 'peer-id'
 import errcode from 'err-code'
 import debug from 'debug'

@@ -1,5 +1,4 @@
-
-import ipns from 'ipns'
+import * as ipns from 'ipns'
 
 export const validator = {
   /**
