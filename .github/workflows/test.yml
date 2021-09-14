@@ -15,8 +15,8 @@ jobs:
     - run: npm install
     - run: npm run build
     - run: npm run lint
-    - run: npm run depcheck -- -- -- -p
-    - run: npm run depcheck -- -- -- -- --unused
+    - run: npm run dep-check -- -- -- -p
+    - run: npm run dep-check -- -- -- -- --unused
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
