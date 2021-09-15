@@ -9,7 +9,6 @@
     "test:node": "lerna run test:node",
     "test:browser": "lerna run test:browser",
     "test:webworker": "lerna run test:webworker",
-    "test:electron": "lerna run test:electron",
     "test:electron-main": "lerna run test:electron-main",
     "test:electron-renderer": "lerna run test:electron-renderer",
     "test:external": "lerna run test:external",

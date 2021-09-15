@@ -28,7 +28,7 @@
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
-    "test:electron": "aegir test -t electron-main",
+    "test:electron-main": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",

@@ -7,6 +7,7 @@ on:
 jobs:
 
   check:
+    name: Check
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +23,7 @@ jobs:
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
-    name: test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
+    name: Test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -34,12 +35,12 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm install
       - run: npm run build
-      - run: npm run test -- -- -- --cov -t node
+      - run: npm run test:node -- --since $GITHUB_BASE_REF
 
   test-browser:
     needs: check
     runs-on: ubuntu-latest
-    name: test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+    name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     strategy:
       matrix:
         browser:
@@ -55,17 +56,12 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: npm run test -- -- -- -t ${{ matrix.type }} -- --browser ${{ matrix.browser }}
+      - run: npm run test:browser -- --since $GITHUB_BASE_REF -- -- -- --browser ${{ matrix.browser }}
 
-  test-electron:
+  test-electron-main:
     needs: check
     runs-on: ubuntu-latest
-    name: test ${{ matrix.project }} ${{ matrix.type }}
-    strategy:
-      matrix:
-        type:
-          - electron-main
-          - electron-renderer
+    name: Test ${{ matrix.project }} ${{ matrix.type }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -75,12 +71,27 @@ jobs:
       - run: npm run build
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test -- -- -- -t ${{ matrix.type }} --bail
+          run: npm run test:electron-main -- --since $GITHUB_BASE_REF -- -- --bail
+
+  test-electron-renderer:
+    needs: check
+    runs-on: ubuntu-latest
+    name: Test ${{ matrix.project }} ${{ matrix.type }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm run build
+      - uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test:electron-renderer -- --since $GITHUB_BASE_REF -- -- --bail
 
   test-interop:
     needs: check
     runs-on: ubuntu-latest
-    name: test interop ${{ matrix.project }} ${{ matrix.type }}
+    name: Interop ${{ matrix.project }} ${{ matrix.type }}
     strategy:
       matrix:
         node: [16]
@@ -89,7 +100,6 @@ jobs:
           - browser
           - electron-main
           - electron-renderer
-      fail-fast: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -97,12 +107,12 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: npm run test:interop -- -- -- -t ${{ matrix.type }}
+      - run: npm run test:interop -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
 
   test-interface:
     needs: check
     runs-on: ubuntu-latest
-    name: ${{ matrix.suite }} ${{ matrix.type }}
+    name: Interface ${{ matrix.suite }} ${{ matrix.type }}
     strategy:
       matrix:
         type:
@@ -115,8 +125,6 @@ jobs:
           - test:interface:client
           - test:interface:http-go
           - test:interface:http-js
-          - test:interface:message-port-client
-      fail-fast: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -124,4 +132,17 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: npm run ${{ matrix.suite }} -- -- -- -t ${{ matrix.type }}
+      - run: npm run ${{ matrix.suite }} -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
+
+  test-interface-message-port-client:
+    needs: check
+    runs-on: ubuntu-latest
+    name: Interface test:interface:message-port-client browser
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm run build
+      - run: npm run test:interface:message-port-client -- --since $GITHUB_BASE_REF
