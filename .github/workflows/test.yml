@@ -1,4 +1,4 @@
-name: ci
+name: Test
 on:
   pull_request:
     branches:
@@ -34,7 +34,7 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm install
       - run: npm run build
-      - run: npm run test -- --since master -- -- --cov -t node
+      - run: npm run test -- -- -- --cov -t node
 
   test-browser:
     needs: check
@@ -55,7 +55,7 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: npm run test -- --since master -- -- -t ${{ matrix.type }} -- --browser ${{ matrix.browser }}
+      - run: npm run test -- -- -- -t ${{ matrix.type }} -- --browser ${{ matrix.browser }}
 
   test-electron:
     needs: check
@@ -75,7 +75,7 @@ jobs:
       - run: npm run build
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test -- --since master -- -- -t ${{ matrix.type }} --bail
+          run: npm run test -- -- -- -t ${{ matrix.type }} --bail
 
   test-interop:
     needs: check
@@ -97,7 +97,7 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: npm run test:interop -- --since master -- -- -t ${{ matrix.type }}
+      - run: npm run test:interop -- -- -- -t ${{ matrix.type }}
 
   test-interface:
     needs: check
@@ -124,4 +124,4 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: npm run ${{ matrix.suite }} -- --since master -- -- -t ${{ matrix.type }}
+      - run: npm run ${{ matrix.suite }} -- -- -- -t ${{ matrix.type }}

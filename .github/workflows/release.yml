@@ -1,11 +1,11 @@
-name: deploy
+name: Release RC
 on:
   push:
     branches:
       - master
 
 jobs:
-  publish-rc:
+  release-rc:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.author.name, 'Github Actions')"
     env:
