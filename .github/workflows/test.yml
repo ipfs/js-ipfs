@@ -198,8 +198,8 @@ jobs:
         type:
           - node
           - browser
-          - electron-main
-          - electron-renderer
+          #- electron-main
+          #- electron-renderer
     steps:
       - uses: actions/checkout@v2
         with:
