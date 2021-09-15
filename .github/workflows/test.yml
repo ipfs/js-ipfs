@@ -17,7 +17,7 @@ jobs:
       with:
         node-version: 16
     - name: Run Checks
-      run: |
+    - run: |
         git branch -a
         npm install
         npm run build
@@ -26,6 +26,7 @@ jobs:
         npm run dep-check -- -- -- -- --unused
 
   test-node:
+    name: Test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
     needs: check
     runs-on: ${{ matrix.os }}
     strategy:
@@ -39,13 +40,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-      - name: Test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
-        run: |
+      - run: |
           npm install
           npm run build
           npm run test:node -- --since $GITHUB_BASE_REF
 
   test-browser:
+    name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     needs: check
     runs-on: ubuntu-latest
     strategy:
@@ -63,16 +64,15 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
-        run: |
+      - run: |
           npm install
           npm run build
           npm run test:browser -- --since $GITHUB_BASE_REF -- -- -- --browser ${{ matrix.browser }}
 
   test-electron-main:
+    name: Test ${{ matrix.project }} ${{ matrix.type }}
     needs: check
     runs-on: ubuntu-latest
-    name: Test ${{ matrix.project }} ${{ matrix.type }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -88,6 +88,7 @@ jobs:
             npm run test:electron-main -- --since $GITHUB_BASE_REF -- -- --bail
 
   test-electron-renderer:
+    name: Test ${{ matrix.project }} ${{ matrix.type }}
     needs: check
     runs-on: ubuntu-latest
     steps:
@@ -97,7 +98,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: Test ${{ matrix.project }} ${{ matrix.type }}
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: |
@@ -106,6 +106,7 @@ jobs:
             npm run test:electron-renderer -- --since $GITHUB_BASE_REF -- -- --bail
 
   test-interop:
+    name: Interop ${{ matrix.project }} ${{ matrix.type }}
     needs: check
     runs-on: ubuntu-latest
     strategy:
@@ -122,13 +123,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: Interop ${{ matrix.project }} ${{ matrix.type }}
-        run: |
+      - run: |
           npm install
           npm run build
           npm run test:interop -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
 
   test-interface:
+    name: Interface ${{ matrix.suite }} ${{ matrix.type }}
     needs: check
     runs-on: ubuntu-latest
     strategy:
@@ -150,13 +151,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: Interface ${{ matrix.suite }} ${{ matrix.type }}
-        run: |
+      - run: |
           npm install
           npm run build
           npm run ${{ matrix.suite }} -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
 
   test-interface-message-port-client:
+    name: Interface test:interface:message-port-client browser
     needs: check
     runs-on: ubuntu-latest
     steps:
@@ -166,8 +167,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: Interface test:interface:message-port-client browser
-        run: |
+      - run: |
           npm install
           npm run build
           npm run test:interface:message-port-client -- --since $GITHUB_BASE_REF
