@@ -128,7 +128,7 @@ jobs:
       - run: npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
 
   test-electron-main:
-    name: Test ${{ matrix.project }} ${{ matrix.type }}
+    name: Test electron-main
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -159,7 +159,7 @@ jobs:
           run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
 
   test-electron-renderer:
-    name: Test ${{ matrix.project }} ${{ matrix.type }}
+    name: Test electron-renderer
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -223,7 +223,7 @@ jobs:
         run: |
           npm install
           npm run build
-      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
 
   test-interface:
     name: Interface ${{ matrix.suite }} ${{ matrix.type }}
