@@ -53,7 +53,6 @@ jobs:
         env:
           CACHE_NAME: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
             ~/.npm
             ./node_modules
@@ -65,7 +64,7 @@ jobs:
         run: |
           npm install
           npm run build
-      - run: npm run test:node -- --since $GITHUB_BASE_REF --concurrency 1
+      - run: npm run test:node -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1
 
   # test-browser:
   #   name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
@@ -90,12 +89,16 @@ jobs:
   #       env:
   #         CACHE_NAME: cache-node-modules
   #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}-${{ env.GITHUB_RUN_NUMBER }}
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run test:browser -- --since $GITHUB_BASE_REF --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
+  #         npm run test:browser -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
 
   # test-electron-main:
   #   name: Test ${{ matrix.project }} ${{ matrix.type }}
@@ -112,14 +115,18 @@ jobs:
   #       env:
   #         CACHE_NAME: cache-node-modules
   #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}-${{ env.GITHUB_RUN_NUMBER }}
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
   #     - uses: GabrielBB/xvfb-action@v1
   #       with:
   #         run: |
   #           npm install
   #           npm run build
-  #           npm run test:electron-main -- --since $GITHUB_BASE_REF --concurrency 1 -- -- --bail
+  #           npm run test:electron-main -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- --bail
 
   # test-electron-renderer:
   #   name: Test ${{ matrix.project }} ${{ matrix.type }}
@@ -136,14 +143,18 @@ jobs:
   #       env:
   #         CACHE_NAME: cache-node-modules
   #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}-${{ env.GITHUB_RUN_NUMBER }}
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
   #     - uses: GabrielBB/xvfb-action@v1
   #       with:
   #         run: |
   #           npm install
   #           npm run build
-  #           npm run test:electron-renderer -- --since $GITHUB_BASE_REF --concurrency 1 -- -- --bail
+  #           npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- --bail
 
   # test-interop:
   #   name: Interop ${{ matrix.project }} ${{ matrix.type }}
@@ -167,12 +178,16 @@ jobs:
   #       env:
   #         CACHE_NAME: cache-node-modules
   #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}-${{ env.GITHUB_RUN_NUMBER }}
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run test:interop -- --since $GITHUB_BASE_REF --concurrency 1 -- -- -t ${{ matrix.type }}
+  #         npm run test:interop -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- -t ${{ matrix.type }}
 
   # test-interface:
   #   name: Interface ${{ matrix.suite }} ${{ matrix.type }}
@@ -201,12 +216,16 @@ jobs:
   #       env:
   #         CACHE_NAME: cache-node-modules
   #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}-${{ env.GITHUB_RUN_NUMBER }}
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run ${{ matrix.suite }} -- --since $GITHUB_BASE_REF --concurrency 1 -- -- -t ${{ matrix.type }}
+  #         npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- -t ${{ matrix.type }}
 
   # test-interface-message-port-client:
   #   name: Interface test:interface:message-port-client browser
@@ -223,9 +242,13 @@ jobs:
   #       env:
   #         CACHE_NAME: cache-node-modules
   #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}-${{ env.GITHUB_RUN_NUMBER }}
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run test:interface:message-port-client -- --since $GITHUB_BASE_REF --concurrency 1
+  #         npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1
