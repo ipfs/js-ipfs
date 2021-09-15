@@ -23,10 +23,10 @@ jobs:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
             '~/.npm'
-            'node_modules',
-            'packages/*/node_modules'
-            'packages/*/dist'
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+            './node_modules',
+            './packages/*/node_modules'
+            './packages/*/dist'
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
       - run: |
           npm install
           npm run build
@@ -57,10 +57,10 @@ jobs:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
             '~/.npm'
-            'node_modules',
-            'packages/*/node_modules'
-            'packages/*/dist'
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+            './node_modules',
+            './packages/*/node_modules'
+            './packages/*/dist'
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -92,7 +92,7 @@ jobs:
   #         CACHE_NAME: cache-node-modules
   #       with:
   #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
   #     - run: |
   #         npm install
   #         npm run build
@@ -114,7 +114,7 @@ jobs:
   #         CACHE_NAME: cache-node-modules
   #       with:
   #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
   #     - uses: GabrielBB/xvfb-action@v1
   #       with:
   #         run: |
@@ -138,7 +138,7 @@ jobs:
   #         CACHE_NAME: cache-node-modules
   #       with:
   #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
   #     - uses: GabrielBB/xvfb-action@v1
   #       with:
   #         run: |
@@ -169,7 +169,7 @@ jobs:
   #         CACHE_NAME: cache-node-modules
   #       with:
   #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
   #     - run: |
   #         npm install
   #         npm run build
@@ -203,7 +203,7 @@ jobs:
   #         CACHE_NAME: cache-node-modules
   #       with:
   #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
   #     - run: |
   #         npm install
   #         npm run build
@@ -225,7 +225,7 @@ jobs:
   #         CACHE_NAME: cache-node-modules
   #       with:
   #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
   #     - run: |
   #         npm install
   #         npm run build
