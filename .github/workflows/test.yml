@@ -58,7 +58,7 @@ jobs:
           npm run dep-check -- -- -- -- --unused
 
   test-node:
-    name: Test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
+    name: Unit tests ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -91,7 +91,7 @@ jobs:
       - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   test-browser:
-    name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+    name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
@@ -128,7 +128,7 @@ jobs:
       - run: npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
 
   test-electron-main:
-    name: Test electron-main
+    name: Unit tests electron-main
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -159,7 +159,7 @@ jobs:
           run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
 
   test-electron-renderer:
-    name: Test electron-renderer
+    name: Unit tests electron-renderer
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -190,7 +190,7 @@ jobs:
           run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
 
   test-interop:
-    name: Interop ${{ matrix.project }} ${{ matrix.type }}
+    name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
@@ -226,7 +226,7 @@ jobs:
       - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
 
   test-interface:
-    name: Interface ${{ matrix.suite }} ${{ matrix.type }}
+    name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
@@ -234,8 +234,8 @@ jobs:
         type:
           - node
           - browser
-          - electron-main
-          - electron-renderer
+          #- electron-main
+          #- electron-renderer
         suite:
           - test:interface:core
           - test:interface:client
@@ -267,7 +267,7 @@ jobs:
       - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
 
   test-interface-message-port-client:
-    name: Interface test:interface:message-port-client browser
+    name: Interface tests test:interface:message-port-client browser
     needs: build
     runs-on: ubuntu-latest
     steps:
