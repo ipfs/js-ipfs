@@ -16,17 +16,18 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 16
-    - run: git branch -a
-    - run: npm install
-    - run: npm run build
-    - run: npm run lint
-    - run: npm run dep-check -- -- -- -p
-    - run: npm run dep-check -- -- -- -- --unused
+    - name: Run Checks
+      run: |
+        git branch -a
+        npm install
+        npm run build
+        npm run lint
+        npm run dep-check -- -- -- -p
+        npm run dep-check -- -- -- -- --unused
 
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
-    name: Test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -38,14 +39,15 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-      - run: npm install
-      - run: npm run build
-      - run: npm run test:node -- --since $GITHUB_BASE_REF
+      - name: Test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
+        run: |
+          npm install
+          npm run build
+          npm run test:node -- --since $GITHUB_BASE_REF
 
   test-browser:
     needs: check
     runs-on: ubuntu-latest
-    name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     strategy:
       matrix:
         browser:
@@ -61,9 +63,11 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm install
-      - run: npm run build
-      - run: npm run test:browser -- --since $GITHUB_BASE_REF -- -- -- --browser ${{ matrix.browser }}
+      - name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+        run: |
+          npm install
+          npm run build
+          npm run test:browser -- --since $GITHUB_BASE_REF -- -- -- --browser ${{ matrix.browser }}
 
   test-electron-main:
     needs: check
@@ -76,16 +80,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm install
-      - run: npm run build
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test:electron-main -- --since $GITHUB_BASE_REF -- -- --bail
+          run: |
+            npm install
+            npm run build
+            npm run test:electron-main -- --since $GITHUB_BASE_REF -- -- --bail
 
   test-electron-renderer:
     needs: check
     runs-on: ubuntu-latest
-    name: Test ${{ matrix.project }} ${{ matrix.type }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -93,16 +97,17 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm install
-      - run: npm run build
+      - name: Test ${{ matrix.project }} ${{ matrix.type }}
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test:electron-renderer -- --since $GITHUB_BASE_REF -- -- --bail
+          run: |
+            npm install
+            npm run build
+            npm run test:electron-renderer -- --since $GITHUB_BASE_REF -- -- --bail
 
   test-interop:
     needs: check
     runs-on: ubuntu-latest
-    name: Interop ${{ matrix.project }} ${{ matrix.type }}
     strategy:
       matrix:
         type:
@@ -117,14 +122,15 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm install
-      - run: npm run build
-      - run: npm run test:interop -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
+      - name: Interop ${{ matrix.project }} ${{ matrix.type }}
+        run: |
+          npm install
+          npm run build
+          npm run test:interop -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
 
   test-interface:
     needs: check
     runs-on: ubuntu-latest
-    name: Interface ${{ matrix.suite }} ${{ matrix.type }}
     strategy:
       matrix:
         type:
@@ -144,14 +150,15 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm install
-      - run: npm run build
-      - run: npm run ${{ matrix.suite }} -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
+      - name: Interface ${{ matrix.suite }} ${{ matrix.type }}
+        run: |
+          npm install
+          npm run build
+          npm run ${{ matrix.suite }} -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
 
   test-interface-message-port-client:
     needs: check
     runs-on: ubuntu-latest
-    name: Interface test:interface:message-port-client browser
     steps:
       - uses: actions/checkout@v2
         with:
@@ -159,6 +166,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm install
-      - run: npm run build
-      - run: npm run test:interface:message-port-client -- --since $GITHUB_BASE_REF
+      - name: Interface test:interface:message-port-client browser
+        run: |
+          npm install
+          npm run build
+          npm run test:interface:message-port-client -- --since $GITHUB_BASE_REF
