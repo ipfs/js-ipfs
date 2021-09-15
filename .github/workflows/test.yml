@@ -31,6 +31,8 @@ jobs:
         node: [14, 16]
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -52,6 +54,8 @@ jobs:
           - webworker
     steps:
       - uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -65,6 +69,8 @@ jobs:
     name: Test ${{ matrix.project }} ${{ matrix.type }}
     steps:
       - uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -80,6 +86,8 @@ jobs:
     name: Test ${{ matrix.project }} ${{ matrix.type }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -102,6 +110,8 @@ jobs:
           - electron-renderer
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -127,6 +137,8 @@ jobs:
           - test:interface:http-js
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -140,6 +152,8 @@ jobs:
     name: Interface test:interface:message-port-client browser
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16
