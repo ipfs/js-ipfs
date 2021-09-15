@@ -20,12 +20,11 @@ jobs:
         env:
           CACHE_NAME: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
-            '~/.npm'
-            './node_modules',
-            './packages/*/node_modules'
-            './packages/*/dist'
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
           key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
       - run: |
           npm install
@@ -56,10 +55,10 @@ jobs:
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
-            '~/.npm'
-            './node_modules',
-            './packages/*/node_modules'
-            './packages/*/dist'
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
           key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
