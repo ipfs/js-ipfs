@@ -16,9 +16,18 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: Run Checks
+      - uses: actions/cache@v2
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            '~/.npm'
+            'node_modules',
+            'packages/*/node_modules'
+            'packages/*/dist'
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
       - run: |
-          git branch -a
           npm install
           npm run build
           npm run lint
@@ -32,7 +41,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        node: [14, 16]
+        node: [16]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -40,134 +49,184 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-      - run: |
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            '~/.npm'
+            'node_modules',
+            'packages/*/node_modules'
+            'packages/*/dist'
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
           npm install
           npm run build
-          npm run test:node -- --since $GITHUB_BASE_REF
+      - run: npm run test:node -- --since $GITHUB_BASE_REF --concurrency 1
 
-  test-browser:
-    name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
-    needs: check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser:
-          - chromium
-          - firefox
-        type:
-          - browser
-          - webworker
-    steps:
-      - uses: actions/checkout@v2
-        with:
-            fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - run: |
-          npm install
-          npm run build
-          npm run test:browser -- --since $GITHUB_BASE_REF -- -- -- --browser ${{ matrix.browser }}
+  # test-browser:
+  #   name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+  #   needs: check
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       browser:
+  #         - chromium
+  #         - firefox
+  #       type:
+  #         - browser
+  #         - webworker
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #           fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #     - run: |
+  #         npm install
+  #         npm run build
+  #         npm run test:browser -- --since $GITHUB_BASE_REF --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
 
-  test-electron-main:
-    name: Test ${{ matrix.project }} ${{ matrix.type }}
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-            fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            npm install
-            npm run build
-            npm run test:electron-main -- --since $GITHUB_BASE_REF -- -- --bail
+  # test-electron-main:
+  #   name: Test ${{ matrix.project }} ${{ matrix.type }}
+  #   needs: check
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #           fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #     - uses: GabrielBB/xvfb-action@v1
+  #       with:
+  #         run: |
+  #           npm install
+  #           npm run build
+  #           npm run test:electron-main -- --since $GITHUB_BASE_REF --concurrency 1 -- -- --bail
 
-  test-electron-renderer:
-    name: Test ${{ matrix.project }} ${{ matrix.type }}
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            npm install
-            npm run build
-            npm run test:electron-renderer -- --since $GITHUB_BASE_REF -- -- --bail
+  # test-electron-renderer:
+  #   name: Test ${{ matrix.project }} ${{ matrix.type }}
+  #   needs: check
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #     - uses: GabrielBB/xvfb-action@v1
+  #       with:
+  #         run: |
+  #           npm install
+  #           npm run build
+  #           npm run test:electron-renderer -- --since $GITHUB_BASE_REF --concurrency 1 -- -- --bail
 
-  test-interop:
-    name: Interop ${{ matrix.project }} ${{ matrix.type }}
-    needs: check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type:
-          - node
-          - browser
-          - electron-main
-          - electron-renderer
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - run: |
-          npm install
-          npm run build
-          npm run test:interop -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
+  # test-interop:
+  #   name: Interop ${{ matrix.project }} ${{ matrix.type }}
+  #   needs: check
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       type:
+  #         - node
+  #         - browser
+  #         - electron-main
+  #         - electron-renderer
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #     - run: |
+  #         npm install
+  #         npm run build
+  #         npm run test:interop -- --since $GITHUB_BASE_REF --concurrency 1 -- -- -t ${{ matrix.type }}
 
-  test-interface:
-    name: Interface ${{ matrix.suite }} ${{ matrix.type }}
-    needs: check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type:
-          - node
-          - browser
-          - electron-main
-          - electron-renderer
-        suite:
-          - test:interface:core
-          - test:interface:client
-          - test:interface:http-go
-          - test:interface:http-js
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - run: |
-          npm install
-          npm run build
-          npm run ${{ matrix.suite }} -- --since $GITHUB_BASE_REF -- -- -t ${{ matrix.type }}
+  # test-interface:
+  #   name: Interface ${{ matrix.suite }} ${{ matrix.type }}
+  #   needs: check
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       type:
+  #         - node
+  #         - browser
+  #         - electron-main
+  #         - electron-renderer
+  #       suite:
+  #         - test:interface:core
+  #         - test:interface:client
+  #         - test:interface:http-go
+  #         - test:interface:http-js
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #     - run: |
+  #         npm install
+  #         npm run build
+  #         npm run ${{ matrix.suite }} -- --since $GITHUB_BASE_REF --concurrency 1 -- -- -t ${{ matrix.type }}
 
-  test-interface-message-port-client:
-    name: Interface test:interface:message-port-client browser
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - run: |
-          npm install
-          npm run build
-          npm run test:interface:message-port-client -- --since $GITHUB_BASE_REF
+  # test-interface-message-port-client:
+  #   name: Interface test:interface:message-port-client browser
+  #   needs: check
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_RUN_ID }}
+  #     - run: |
+  #         npm install
+  #         npm run build
+  #         npm run test:interface:message-port-client -- --since $GITHUB_BASE_REF --concurrency 1
