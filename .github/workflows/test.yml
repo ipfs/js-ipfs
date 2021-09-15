@@ -301,11 +301,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        type:
-          - node
-          - browser
-          #- electron-main
-          #- electron-renderer
         example:
           - name: ipfs browser add readable stream
             repo: https://github.com/ipfs-examples/js-ipfs-browser-add-readable-stream.git
@@ -313,40 +308,55 @@ jobs:
           - name: ipfs browser angular
             repo: https://github.com/ipfs-examples/js-ipfs-browser-angular.git
             deps: ipfs@$PWD/packages/ipfs
-          # - name: ipfs browser browserify
-          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
-          # - name: ipfs browser react
-          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
-          # - name: ipfs browser exchange files
-          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
+          - name: ipfs browser browserify
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs browser react
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs browser exchange files
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
+            deps: ipfs@$PWD/packages/ipfs
+
           # - name: ipfs browser ipns publish
+          #   deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
           # - name: ipfs browser mfs
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs browser nextjs
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs browser parceljs
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-parceljs.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs browser readable stream
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
-          # - name: ipfs browser script tag
-          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-script-tag.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs browser service worker
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
+          #   deps: ipfs@$PWD/packages/ipfs,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
           # - name: ipfs browser sharing across tabs
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
+          #   deps: ipfs@$PWD/packages/ipfs,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
           # - name: ipfs browser video streaming
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-video-streaming.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs browser vue
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs browser webpack
           #   repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs circuit relaying
           #   repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs custom ipfs repo
           #   repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
+          #   deps: ipfs@$PWD/packages/ipfs
           # - name: ipfs custom ipld formats
           #   repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
+          #   deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-daemon@$PWD/packages/ipfs-daemon,ipfs-http-client@$PWD/packages/ipfs-http-client
           # - name: ipfs custom libp2p
           #   repo: https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
           # - name: ipfs-http-client browser pubsub
