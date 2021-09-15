@@ -19,8 +19,6 @@ jobs:
       - uses: actions/cache@v2
         env:
           CACHE_NAME: cache-node-modules
-          RUN_ID: ${{ env.GITHUB_RUN_ID }}
-          RUN_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
@@ -28,7 +26,7 @@ jobs:
             './node_modules',
             './packages/*/node_modules'
             './packages/*/dist'
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.RUN_ID }}-${{ env.RUN_NUMBER }}
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_SHA }}
       - run: |
           npm install
           npm run build
@@ -55,8 +53,6 @@ jobs:
         id: cache
         env:
           CACHE_NAME: cache-node-modules
-          RUN_ID: ${{ env.GITHUB_RUN_ID }}
-          RUN_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
@@ -64,7 +60,7 @@ jobs:
             './node_modules',
             './packages/*/node_modules'
             './packages/*/dist'
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.RUN_ID }}-${{ env.RUN_NUMBER }}
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ env.GITHUB_SHA }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
