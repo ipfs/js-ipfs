@@ -28,113 +28,351 @@ jobs:
           npm install
           npm run build
 
-  check:
-    name: Check
+  # check:
+  #   name: Check
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - run: |
+  #         npm run lint
+  #         npm run dep-check -- -- -- -p
+  #         npm run dep-check -- -- -- -- --unused
+
+  # test-node:
+  #   name: Unit tests ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
+  #   needs: build
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-latest, ubuntu-latest, macos-latest]
+  #       node: [16]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: ${{ github.event.pull_request.commits }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: ${{ matrix.node }}
+  #     - uses: actions/cache@v2
+  #       id: cache
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+
+  # test-browser:
+  #   name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       browser:
+  #         - chromium
+  #         - firefox
+  #       type:
+  #         - browser
+  #         - webworker
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: ${{ github.event.pull_request.commits }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       id: cache
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - run: npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
+
+  # test-electron-main:
+  #   name: Unit tests electron-main
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: ${{ github.event.pull_request.commits }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       id: cache
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - uses: GabrielBB/xvfb-action@v1
+  #       with:
+  #         run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+
+  # test-electron-renderer:
+  #   name: Unit tests electron-renderer
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: ${{ github.event.pull_request.commits }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       id: cache
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - uses: GabrielBB/xvfb-action@v1
+  #       with:
+  #         run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+
+  # test-interop:
+  #   name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       type:
+  #         - node
+  #         - browser
+  #         #- electron-main
+  #         #- electron-renderer
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: ${{ github.event.pull_request.commits }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       id: cache
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
+
+  # test-interface:
+  #   name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       type:
+  #         - node
+  #         - browser
+  #         #- electron-main
+  #         #- electron-renderer
+  #       suite:
+  #         - test:interface:core
+  #         - test:interface:client
+  #         - test:interface:http-go
+  #         - test:interface:http-js
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: ${{ github.event.pull_request.commits }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       id: cache
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+
+  # test-interface-message-port-client:
+  #   name: Interface tests test:interface:message-port-client browser
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: ${{ github.event.pull_request.commits }}
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - uses: actions/cache@v2
+  #       id: cache
+  #       env:
+  #         CACHE_NAME: cache-node-modules
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./packages/*/node_modules
+  #           ./packages/*/dist
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #     - name: Install Dependencies
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       run: |
+  #         npm install
+  #         npm run build
+  #     - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+
+  test-examples:
+    name: Test example ${{ matrix.example.name }}
     needs: build
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: actions/cache@v2
-        env:
-          CACHE_NAME: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-      - run: |
-          npm run lint
-          npm run dep-check -- -- -- -p
-          npm run dep-check -- -- -- -- --unused
-
-  test-node:
-    name: Unit tests ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
-    needs: build
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        node: [16]
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-      - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-
-  test-browser:
-    name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser:
-          - chromium
-          - firefox
         type:
+          - node
           - browser
-          - webworker
+          #- electron-main
+          #- electron-renderer
+        example:
+          - name: ipfs browser add readable stream
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-add-readable-stream.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs browser angular
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-angular.git
+            deps: ipfs@$PWD/packages/ipfs
+          # - name: ipfs browser browserify
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
+          # - name: ipfs browser react
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
+          # - name: ipfs browser exchange files
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
+          # - name: ipfs browser ipns publish
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
+          # - name: ipfs browser mfs
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
+          # - name: ipfs browser nextjs
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
+          # - name: ipfs browser parceljs
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-parceljs.git
+          # - name: ipfs browser readable stream
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
+          # - name: ipfs browser script tag
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-script-tag.git
+          # - name: ipfs browser service worker
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
+          # - name: ipfs browser sharing across tabs
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
+          # - name: ipfs browser video streaming
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-video-streaming.git
+          # - name: ipfs browser vue
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
+          # - name: ipfs browser webpack
+          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
+          # - name: ipfs circuit relaying
+          #   repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
+          # - name: ipfs custom ipfs repo
+          #   repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
+          # - name: ipfs custom ipld formats
+          #   repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
+          # - name: ipfs custom libp2p
+          #   repo: https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
+          # - name: ipfs-http-client browser pubsub
+          #   repo: https://github.com/ipfs-examples/js-ipfs-http-client-browser-pubsub.git
+          # - name: ipfs-http-client bundle webpack
+          #   repo: https://github.com/ipfs-examples/js-ipfs-http-client-bundle-webpack.git
+          # - name: ipfs-http-client name api
+          #   repo: https://github.com/ipfs-examples/js-ipfs-http-client-name-api.git
+          # - name: ipfs-http-client upload file
+          #   repo: https://github.com/ipfs-examples/js-ipfs-http-client-upload-file.git
+          # - name: ipfs 101
+          #   repo: https://github.com/ipfs-examples/js-ipfs-101.git
+          # - name: ipfs-client add files
+          #   repo: https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
+          # - name: ipfs electron js
+          #   repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
+          # - name: ipfs running multiple nodes
+          #   repo: https://github.com/ipfs-examples/js-ipfs-running-multiple-nodes.git
+          # - name: ipfs traverse ipld graphs
+          #   repo: https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
+          # - name: types with typescript
+          #   repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
+          # - name: types with typed js
+          #   repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-      - run: npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
-
-  test-electron-main:
-    name: Unit tests electron-main
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -156,141 +394,4 @@ jobs:
           npm run build
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
-
-  test-electron-renderer:
-    name: Unit tests electron-renderer
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-      - uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
-
-  test-interop:
-    name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type:
-          - node
-          - browser
-          #- electron-main
-          #- electron-renderer
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
-
-  test-interface:
-    name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type:
-          - node
-          - browser
-          #- electron-main
-          #- electron-renderer
-        suite:
-          - test:interface:core
-          - test:interface:client
-          - test:interface:http-go
-          - test:interface:http-js
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
-
-  test-interface-message-port-client:
-    name: Interface tests test:interface:message-port-client browser
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-      - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+          run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
