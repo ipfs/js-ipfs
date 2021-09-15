@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-            fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -43,8 +41,6 @@ jobs:
         node: [16]
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -64,7 +60,7 @@ jobs:
         run: |
           npm install
           npm run build
-      - run: npm run test:node -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1
+      - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   # test-browser:
   #   name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
@@ -98,7 +94,7 @@ jobs:
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run test:browser -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
+  #         npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
 
   # test-electron-main:
   #   name: Test ${{ matrix.project }} ${{ matrix.type }}
@@ -126,7 +122,7 @@ jobs:
   #         run: |
   #           npm install
   #           npm run build
-  #           npm run test:electron-main -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- --bail
+  #           npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
 
   # test-electron-renderer:
   #   name: Test ${{ matrix.project }} ${{ matrix.type }}
@@ -154,7 +150,7 @@ jobs:
   #         run: |
   #           npm install
   #           npm run build
-  #           npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- --bail
+  #           npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
 
   # test-interop:
   #   name: Interop ${{ matrix.project }} ${{ matrix.type }}
@@ -187,7 +183,7 @@ jobs:
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run test:interop -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- -t ${{ matrix.type }}
+  #         npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
 
   # test-interface:
   #   name: Interface ${{ matrix.suite }} ${{ matrix.type }}
@@ -225,7 +221,7 @@ jobs:
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1 -- -- -t ${{ matrix.type }}
+  #         npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
 
   # test-interface-message-port-client:
   #   name: Interface test:interface:message-port-client browser
@@ -251,4 +247,4 @@ jobs:
   #     - run: |
   #         npm install
   #         npm run build
-  #         npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.ref }} --concurrency 1
+  #         npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
