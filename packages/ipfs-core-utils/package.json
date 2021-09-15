@@ -30,10 +30,10 @@
   },
   "scripts": {
     "test": "aegir test",
+    "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
     "test:electron": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
-    "test:node": "aegir test -t node",
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",

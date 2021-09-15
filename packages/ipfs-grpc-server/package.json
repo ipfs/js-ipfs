@@ -24,7 +24,7 @@
   "scripts": {
     "lint": "aegir ts -p check && aegir lint",
     "test": "aegir test -t node",
-    "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
+    "test:node": "aegir test -t node",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-grpc-protocol -i aegir -i ipfs-core -i rimraf -i ipfs-core-types",
     "build": "aegir build --no-bundle"

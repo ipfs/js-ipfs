@@ -5,6 +5,7 @@ on:
       - master
 
 jobs:
+
   check:
     runs-on: ubuntu-latest
     steps:
@@ -17,6 +18,7 @@ jobs:
     - run: npm run lint
     - run: npm run dep-check -- -- -- -p
     - run: npm run dep-check -- -- -- -- --unused
+
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
@@ -25,24 +27,6 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         node: [16]
-        project:
-          - interface-ipfs-core
-          - ipfs
-          - ipfs-cli
-          - ipfs-core
-          - ipfs-core-types
-          - ipfs-core-utils
-          - ipfs-daemon
-          - ipfs-grpc-client
-          - ipfs-grpc-protocol
-          - ipfs-grpc-server
-          - ipfs-http-client
-          - ipfs-http-gateway
-          - ipfs-http-server
-          - ipfs-message-port-client
-          - ipfs-message-port-protocol
-          - ipfs-message-port-server
-      fail-fast: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -50,37 +34,20 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm install
       - run: npm run build
-      - run: npm run test -- --scope=${{ matrix.project }} -- -- --cov -t node
+      - run: npm run test -- --since master -- -- --cov -t node
+
   test-browser:
     needs: check
     runs-on: ubuntu-latest
     name: test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     strategy:
       matrix:
-        project:
-          - interface-ipfs-core
-          - ipfs
-          - ipfs-cli
-          - ipfs-core
-          - ipfs-core-types
-          - ipfs-core-utils
-          - ipfs-daemon
-          - ipfs-grpc-client
-          - ipfs-grpc-protocol
-          - ipfs-grpc-server
-          - ipfs-http-client
-          - ipfs-http-gateway
-          - ipfs-http-server
-          - ipfs-message-port-client
-          - ipfs-message-port-protocol
-          - ipfs-message-port-server
         browser:
           - chromium
           - firefox
         type:
           - browser
           - webworker
-      fail-fast: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -88,31 +55,38 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: npm run test -- --scope=${{ matrix.project }} -- -- -t ${{ matrix.type }} -- --browser ${{ matrix.browser }}
+      - run: npm run test -- --since master -- -- -t ${{ matrix.type }} -- --browser ${{ matrix.browser }}
+
   test-electron:
     needs: check
     runs-on: ubuntu-latest
     name: test ${{ matrix.project }} ${{ matrix.type }}
     strategy:
       matrix:
-        project:
-          - interface-ipfs-core
-          - ipfs
-          - ipfs-cli
-          - ipfs-core
-          - ipfs-core-types
-          - ipfs-core-utils
-          - ipfs-daemon
-          - ipfs-grpc-client
-          - ipfs-grpc-protocol
-          - ipfs-grpc-server
-          - ipfs-http-client
-          - ipfs-http-gateway
-          - ipfs-http-server
-          - ipfs-message-port-client
-          - ipfs-message-port-protocol
-          - ipfs-message-port-server
         type:
+          - electron-main
+          - electron-renderer
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm run build
+      - uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test -- --since master -- -- -t ${{ matrix.type }} --bail
+
+  test-interop:
+    needs: check
+    runs-on: ubuntu-latest
+    name: test interop ${{ matrix.project }} ${{ matrix.type }}
+    strategy:
+      matrix:
+        node: [16]
+        type:
+          - node
+          - browser
           - electron-main
           - electron-renderer
       fail-fast: true
@@ -123,6 +97,31 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - uses: GabrielBB/xvfb-action@v1
+      - run: npm run test:interop -- --since master -- -- -t ${{ matrix.type }}
+
+  test-interface:
+    needs: check
+    runs-on: ubuntu-latest
+    name: ${{ matrix.suite }} ${{ matrix.type }}
+    strategy:
+      matrix:
+        type:
+          - node
+          - browser
+          - electron-main
+          - electron-renderer
+        suite:
+          - test:interface:core
+          - test:interface:client
+          - test:interface:http-go
+          - test:interface:http-js
+          - test:interface:message-port-client
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          run: npm run test -- --scope=${{ matrix.project }} -- -- -t ${{ matrix.type }} --bail
+          node-version: 16
+      - run: npm install
+      - run: npm run build
+      - run: npm run ${{ matrix.suite }} -- --since master -- -- -t ${{ matrix.type }}

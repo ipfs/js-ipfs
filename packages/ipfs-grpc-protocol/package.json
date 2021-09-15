@@ -19,7 +19,6 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "test": "echo 'No tests here'",
     "clean": "rimraf ./dist",
     "prepare": "npm run build",
     "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json"

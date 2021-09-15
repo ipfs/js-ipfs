@@ -30,10 +30,7 @@
     "test": "aegir test",
     "test:browser": "aegir test -t browser",
     "test:webworker": "aegir test -t webworker",
-    "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
-    "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir ts -p check && aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },

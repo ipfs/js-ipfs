@@ -26,8 +26,11 @@
   "scripts": {
     "build": "aegir build",
     "test": "aegir test",
+    "test:node": "aegir test -t node",
+    "test:browser": "aegir test -t browser",
+    "test:electron": "aegir test -t electron-main",
+    "test:electron-renderer": "aegir test -t electron-renderer",
     "lint": "aegir ts -p check && aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol -i ipfs-core-types"
   },

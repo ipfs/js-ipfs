@@ -26,14 +26,12 @@
   "scripts": {
     "build": "aegir build",
     "lint": "aegir ts -p check && aegir lint",
-    "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
     "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD IPFS_JS_HTTP_MODULE=$PWD/../ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
-    "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
