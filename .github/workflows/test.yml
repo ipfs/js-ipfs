@@ -23,7 +23,7 @@ jobs:
             ./node_modules
             ./packages/*/node_modules
             ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -48,7 +48,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -84,7 +84,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -121,7 +121,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -150,7 +150,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -181,7 +181,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -219,7 +219,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -260,7 +260,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -289,7 +289,7 @@ jobs:
   #           ./node_modules
   #           ./packages/*/node_modules
   #           ./packages/*/dist
-  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+  #         key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
   #     - name: Install Dependencies
   #       if: steps.cache.outputs.cache-hit != 'true'
   #       run: |
@@ -346,9 +346,9 @@ jobs:
           - name: ipfs browser vue
             repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
             deps: ipfs@$PWD/packages/ipfs
-          - name: ipfs browser webpack
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
-            deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser webpack
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
+          #  deps: ipfs@$PWD/packages/ipfs
           - name: ipfs circuit relaying
             repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
             deps: ipfs@$PWD/packages/ipfs
@@ -409,7 +409,7 @@ jobs:
             ./node_modules
             ./packages/*/node_modules
             ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
