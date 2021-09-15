@@ -24,9 +24,11 @@ jobs:
             ./packages/*/node_modules
             ./packages/*/dist
           key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.run_id }}-${{ github.run_number }}
-      - run: |
-          npm install
-          npm run build
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+           npm install
+           npm run build
 
   # check:
   #   name: Check
