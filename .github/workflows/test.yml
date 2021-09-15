@@ -10,20 +10,20 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-          fetch-depth: 0
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 16
-    - name: Run Checks
-    - run: |
-        git branch -a
-        npm install
-        npm run build
-        npm run lint
-        npm run dep-check -- -- -- -p
-        npm run dep-check -- -- -- -- --unused
+      - uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Run Checks
+      - run: |
+          git branch -a
+          npm install
+          npm run build
+          npm run lint
+          npm run dep-check -- -- -- -p
+          npm run dep-check -- -- -- -- --unused
 
   test-node:
     name: Test ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
