@@ -461,4 +461,4 @@ jobs:
           npm run build
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
+          run: npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }}
