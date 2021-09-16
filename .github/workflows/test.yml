@@ -423,7 +423,6 @@ jobs:
     name: Test external ${{ matrix.external.name }}
     needs: build
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
       matrix:
         external:
@@ -463,5 +462,6 @@ jobs:
           npm install
           npm run build
       - uses: GabrielBB/xvfb-action@v1
+        continue-on-error: true
         with:
           run: npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
