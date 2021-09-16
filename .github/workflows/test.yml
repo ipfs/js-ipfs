@@ -423,6 +423,7 @@ jobs:
     name: Test external ${{ matrix.external.name }}
     needs: build
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       matrix:
         external:
