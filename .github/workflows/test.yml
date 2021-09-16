@@ -434,13 +434,11 @@ jobs:
             repo: https://github.com/ipfs-shipyard/ipfs-companion.git
             deps: ipfs@$PWD/packages/ipfs
           - name: orbit-db-io
-            #repo: https://github.com/orbitdb/orbit-db.git
-            repo: https://github.com/achingbrain/orbit-db-io.git
+            repo: https://github.com/orbitdb/orbit-db-io.git
             deps: ipfs@$PWD/packages/ipfs
-            branch: fix/add-missing-deps
           - name: ipfs-log
             repo: https://github.com/orbitdb/ipfs-log.git
-            deps: ipfs@$PWD/packages/ipfs,orbit-db-io@achingbrain/orbit-db-io#fix/add-missing-deps
+            deps: ipfs@$PWD/packages/ipfs,orbit-db-io@next
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
