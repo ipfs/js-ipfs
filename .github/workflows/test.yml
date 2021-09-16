@@ -418,3 +418,47 @@ jobs:
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
+
+  test-externals:
+    name: Test external ${{ matrix.external.name }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        external:
+          - name: ipfs webui
+            repo: https://github.com/ipfs-shipyard/ipfs-webui.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs companion
+            repo: https://github.com/ipfs-shipyard/ipfs-companion.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: orbit-db
+            repo: https://github.com/orbitdb/orbit-db.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs-log
+            repo: https://github.com/orbitdb/ipfs-log.git
+            deps: ipfs@$PWD/packages/ipfs
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
