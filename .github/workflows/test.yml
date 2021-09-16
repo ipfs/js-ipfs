@@ -319,9 +319,9 @@ jobs:
           #- name: ipfs browser exchange files
           #  repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
           #  deps: ipfs@$PWD/packages/ipfs
-          - name: ipfs browser ipns publish
-            deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
+          #- name: ipfs browser ipns publish
+          #  deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
           - name: ipfs browser mfs
             repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
             deps: ipfs@$PWD/packages/ipfs
