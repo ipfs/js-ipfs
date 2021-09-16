@@ -433,12 +433,14 @@ jobs:
           - name: ipfs companion
             repo: https://github.com/ipfs-shipyard/ipfs-companion.git
             deps: ipfs@$PWD/packages/ipfs
-          - name: orbit-db
-            repo: https://github.com/orbitdb/orbit-db.git
+          - name: orbit-db-io
+            #repo: https://github.com/orbitdb/orbit-db.git
+            repo: https://github.com/achingbrain/orbit-db-io.git
             deps: ipfs@$PWD/packages/ipfs
+            branch: fix/add-missing-deps
           - name: ipfs-log
             repo: https://github.com/orbitdb/ipfs-log.git
-            deps: ipfs@$PWD/packages/ipfs
+            deps: ipfs@$PWD/packages/ipfs,orbit-db-io@achingbrain/orbit-db-io#fix/add-missing-deps
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -462,4 +464,4 @@ jobs:
           npm run build
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }}
+          run: npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
