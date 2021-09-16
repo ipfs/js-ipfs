@@ -416,6 +416,7 @@ jobs:
           npm install
           npm run build
       - uses: GabrielBB/xvfb-action@v1
+        name: Run npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
         with:
           run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
 
@@ -462,6 +463,7 @@ jobs:
           npm install
           npm run build
       - uses: GabrielBB/xvfb-action@v1
+        name: Run npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
         continue-on-error: true
         with:
           run: npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
