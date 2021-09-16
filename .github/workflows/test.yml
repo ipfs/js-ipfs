@@ -316,9 +316,9 @@ jobs:
           - name: ipfs browser react
             repo: https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
             deps: ipfs@$PWD/packages/ipfs
-          - name: ipfs browser exchange files
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
-            deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser exchange files
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
+          #  deps: ipfs@$PWD/packages/ipfs
           - name: ipfs browser ipns publish
             deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
             repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
@@ -334,9 +334,9 @@ jobs:
           - name: ipfs browser readable stream
             repo: https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
             deps: ipfs@$PWD/packages/ipfs
-          - name: ipfs browser service worker
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
-            deps: ipfs@$PWD/packages/ipfs,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
+          #- name: ipfs browser service worker
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
+          #  deps: ipfs@$PWD/packages/ipfs,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
           - name: ipfs browser sharing across tabs
             repo: https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
             deps: ipfs@$PWD/packages/ipfs,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
