@@ -309,7 +309,7 @@ jobs:
             deps: ipfs@$PWD/packages/ipfs
           - name: ipfs browser angular
             repo: https://github.com/ipfs-examples/js-ipfs-browser-angular.git
-            deps: ipfs@$PWD/packages/ipfs
+            deps: ipfs@$PWD/packages/ipfs,ipfs-core-types@$PWD/packages/ipfs-core-types
           - name: ipfs browser browserify
             repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
             deps: ipfs@$PWD/packages/ipfs
