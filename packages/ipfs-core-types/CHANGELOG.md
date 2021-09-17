@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.7.2...ipfs-core-types@0.7.3) (2021-09-17)
+
+
+### Bug Fixes
+
+* use Key.asKey instead of instanceOf ([#3877](https://github.com/ipfs/js-ipfs/issues/3877)) ([e3acf9b](https://github.com/ipfs/js-ipfs/commit/e3acf9b67765c166c53f923a9e00430cdf46935b)), closes [#3852](https://github.com/ipfs/js-ipfs/issues/3852)
+
+
+
+
+
 ## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-types@0.7.1...ipfs-core-types@0.7.2) (2021-09-17)
 
 **Note:** Version bump only for package ipfs-core-types
