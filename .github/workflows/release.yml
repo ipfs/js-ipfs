@@ -32,7 +32,7 @@ jobs:
         run: |
           npm install
           npm run build
-          npm run release:rc -- --yes
+          npm run release:rc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
