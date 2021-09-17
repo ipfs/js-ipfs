@@ -63,7 +63,7 @@
     "abort-controller": "^3.0.0",
     "any-signal": "^2.1.2",
     "array-shuffle": "^2.0.0",
-    "blockstore-datastore-adapter": "^1.0.0",
+    "blockstore-datastore-adapter": "^1.0.2",
     "datastore-core": "^5.0.1",
     "datastore-fs": "^5.0.2",
     "datastore-level": "^6.0.2",
