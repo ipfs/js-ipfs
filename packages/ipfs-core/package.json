@@ -136,7 +136,7 @@
     "aegir": "^35.0.3",
     "delay": "^5.0.0",
     "go-ipfs": "0.9.1",
-    "interface-blockstore-tests": "^1.0.0",
+    "interface-blockstore-tests": "^2.0.1",
     "interface-ipfs-core": "^0.150.4",
     "ipfsd-ctl": "^10.0.3",
     "iso-url": "^1.0.0",
