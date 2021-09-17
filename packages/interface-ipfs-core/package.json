@@ -15,8 +15,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "aegir build",
-    "lint": "aegir lint",
-    "test": "echo 'No tests here'",
+    "lint": "aegir ts -p check && aegir lint",
     "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf"
   },
   "files": [

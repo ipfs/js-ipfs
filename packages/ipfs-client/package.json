@@ -25,9 +25,7 @@
   },
   "scripts": {
     "build": "aegir build",
-    "test": "echo please run test:interface:client in the ipfs package instead",
     "lint": "aegir ts -p check && aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf"
   },

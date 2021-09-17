@@ -8,8 +8,7 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
     "clean": "rimraf ./dist",
-    "lint": "aegir ts -p check && aegir lint",
-    "test": "aegir ts -p check"
+    "lint": "aegir ts -p check && aegir lint"
   },
   "files": [
     "src",

@@ -1,0 +1,467 @@
+name: Test
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+           npm install
+           npm run build
+
+  check:
+    name: Check
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - run: |
+          npm run lint
+          npm run dep-check -- -- -- -p
+          npm run dep-check -- -- -- -- --unused
+
+  test-node:
+    name: Unit tests ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        node: [16]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+
+  test-browser:
+    name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser:
+          - chromium
+          - firefox
+        type:
+          - browser
+          - webworker
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - run: npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
+
+  test-electron-main:
+    name: Unit tests electron-main
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+
+  test-electron-renderer:
+    name: Unit tests electron-renderer
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+
+  test-interop:
+    name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type:
+          - node
+          - browser
+          #- electron-main
+          #- electron-renderer
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
+
+  test-interface:
+    name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type:
+          - node
+          - browser
+          #- electron-main
+          #- electron-renderer
+        suite:
+          - test:interface:core
+          - test:interface:client
+          - test:interface:http-go
+          - test:interface:http-js
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+
+  test-interface-message-port-client:
+    name: Interface tests test:interface:message-port-client browser
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+
+  test-examples:
+    name: Test example ${{ matrix.example.name }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example:
+          - name: ipfs browser add readable stream
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-add-readable-stream.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs browser angular
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-angular.git
+            deps: ipfs@$PWD/packages/ipfs,ipfs-core-types@$PWD/packages/ipfs-core-types
+          - name: ipfs browser browserify
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs browser react
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
+            deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser exchange files
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
+          #  deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser ipns publish
+          #  deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
+          - name: ipfs browser mfs
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
+            deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser nextjs
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
+          #  deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs browser parceljs
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-parceljs.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs browser readable stream
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
+            deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser service worker
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
+          #  deps: ipfs@$PWD/packages/ipfs,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
+          - name: ipfs browser sharing across tabs
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
+            deps: ipfs@$PWD/packages/ipfs,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
+          - name: ipfs browser video streaming
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-video-streaming.git
+            deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser vue
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
+          #  deps: ipfs@$PWD/packages/ipfs
+          #- name: ipfs browser webpack
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
+          #  deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs circuit relaying
+            repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs custom ipfs repo
+            repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs custom ipld formats
+            repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
+            deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-daemon@$PWD/packages/ipfs-daemon,ipfs-http-client@$PWD/packages/ipfs-http-client
+          - name: ipfs custom libp2p
+            repo: https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs-http-client browser pubsub
+            repo: https://github.com/ipfs-examples/js-ipfs-http-client-browser-pubsub.git
+            deps: ipfs-http-client@$PWD/packages/ipfs-http-client
+          - name: ipfs-http-client bundle webpack
+            repo: https://github.com/ipfs-examples/js-ipfs-http-client-bundle-webpack.git
+            deps: ipfs-http-client@$PWD/packages/ipfs-http-client
+          - name: ipfs-http-client name api
+            repo: https://github.com/ipfs-examples/js-ipfs-http-client-name-api.git
+            deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
+          - name: ipfs-http-client upload file
+            repo: https://github.com/ipfs-examples/js-ipfs-http-client-upload-file.git
+            deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
+          - name: ipfs 101
+            repo: https://github.com/ipfs-examples/js-ipfs-101.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs-client add files
+            repo: https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
+            deps: ipfs@$PWD/packages/ipfs,ipfs-client@$PWD/packages/ipfs-client
+          - name: ipfs electron js
+            repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs running multiple nodes
+            repo: https://github.com/ipfs-examples/js-ipfs-running-multiple-nodes.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs traverse ipld graphs
+            repo: https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: types with typescript
+            repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: types with typed js
+            repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
+            deps: ipfs@$PWD/packages/ipfs
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - uses: GabrielBB/xvfb-action@v1
+        name: Run npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
+        with:
+          run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
+
+  test-externals:
+    name: Test external ${{ matrix.external.name }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        external:
+          - name: ipfs webui
+            repo: https://github.com/ipfs-shipyard/ipfs-webui.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs companion
+            repo: https://github.com/ipfs-shipyard/ipfs-companion.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: orbit-db-io
+            repo: https://github.com/orbitdb/orbit-db-io.git
+            deps: ipfs@$PWD/packages/ipfs
+          - name: ipfs-log
+            repo: https://github.com/orbitdb/ipfs-log.git
+            deps: ipfs@$PWD/packages/ipfs,orbit-db-io@next
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - uses: actions/cache@v2
+        id: cache
+        env:
+          CACHE_NAME: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./packages/*/node_modules
+            ./packages/*/dist
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+          npm run build
+      - uses: GabrielBB/xvfb-action@v1
+        name: Run npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
+        continue-on-error: true
+        with:
+          run: npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
