@@ -151,7 +151,7 @@ class IpnsPublisher {
     // Add public key to routing (buffer key)
     try {
       const res = await this._routing.put(k.uint8Array(), publicKey.bytes)
-      log(`public key for ${uint8ArrayToString(key.uint8Array(), 'base64')} was stored in the routing`)
+      log(`public key for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
 
       return res
     } catch (err) {
