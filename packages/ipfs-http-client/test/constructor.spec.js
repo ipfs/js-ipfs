@@ -1,6 +1,5 @@
 /* eslint-env mocha, browser */
 
-
 import { Multiaddr } from 'multiaddr'
 import { expect } from 'aegir/utils/chai.js'
 const f = require('./utils/factory')()

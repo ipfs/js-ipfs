@@ -1,5 +1,4 @@
 
-
 import errCode from 'err-code'
 import { parallelMap, filter } from 'streaming-iterables'
 import { pipe } from 'it-pipe'

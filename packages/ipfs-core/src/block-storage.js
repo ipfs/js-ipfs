@@ -1,5 +1,4 @@
 
-
 import { BlockstoreAdapter } from 'interface-blockstore'
 import merge from 'it-merge'
 import pushable from 'it-pushable'

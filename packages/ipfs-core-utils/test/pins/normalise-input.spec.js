@@ -1,5 +1,3 @@
-
-
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
@@ -12,6 +10,10 @@ const PLAIN_CID = () => CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3N
 const OBJECT_CID = () => ({ cid: CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'), recursive: true, metadata: { key: 'hello world' } })
 const OBJECT_PATH = () => ({ path: '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt', recursive: true, metadata: { key: 'hello world' } })
 
+/**
+ * @param {import('../../src/pins/normalise-input').Source} input
+ * @param {boolean} [withOptions]
+ */
 async function verifyNormalisation (input, withOptions) {
   const result = await all(normaliseInput(input))
 
@@ -24,10 +26,20 @@ async function verifyNormalisation (input, withOptions) {
   }
 }
 
+/**
+ * @template T
+ * @param {T} thing
+ * @returns {T[]}
+ */
 function iterableOf (thing) {
   return [thing]
 }
 
+/**
+ * @template T
+ * @param {T} thing
+ * @returns {AsyncIterable<T>}
+ */
 function asyncIterableOf (thing) {
   return (async function * () { // eslint-disable-line require-await
     yield thing
@@ -35,6 +47,11 @@ function asyncIterableOf (thing) {
 }
 
 describe('pin normalise-input', function () {
+  /**
+   * @param {() => any} content
+   * @param {string} name
+   * @param {boolean} [withOptions]
+   */
   function testInputType (content, name, withOptions) {
     it(name, async function () {
       await verifyNormalisation(content(), withOptions)

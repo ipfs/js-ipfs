@@ -1,5 +1,4 @@
 
-
 import { configure } from './lib/configure.js'
 
 export const createGetEndpointConfig = configure(api => {

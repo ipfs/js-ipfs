@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import fs from 'fs'
 const cli = require('./utils/cli')

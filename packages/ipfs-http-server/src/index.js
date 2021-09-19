@@ -1,10 +1,9 @@
 
-
 import Hapi from '@hapi/hapi'
 import Pino from 'hapi-pino'
 import debug from 'debug'
 import { Multiaddr } from 'multiaddr'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toMultiaddr from 'uri-to-multiaddr'
 import Boom from '@hapi/boom'
 import { AbortController } from 'native-abort-controller'

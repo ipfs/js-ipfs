@@ -1,5 +1,4 @@
 
-
 import fs from 'fs'
 import concat from 'it-concat'
 import parseDuration from 'parse-duration'

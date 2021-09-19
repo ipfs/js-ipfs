@@ -1,5 +1,3 @@
-
-
 import errCode from 'err-code'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import browserStreamToIt from 'browser-readablestream-to-it'

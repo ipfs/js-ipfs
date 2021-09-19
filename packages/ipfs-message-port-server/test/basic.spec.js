@@ -1,6 +1,6 @@
 
-
 /* eslint-env mocha */
+
 import { Server } from '../src/server.js'
 import { IPFSService } from '../src/index.js'
 import { expect } from 'aegir/utils/chai.js'

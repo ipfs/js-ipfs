@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import fs from 'fs'
 
 describe('cli', () => {

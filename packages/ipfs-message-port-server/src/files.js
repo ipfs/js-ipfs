@@ -1,5 +1,4 @@
 
-
 /* eslint-env browser */
 
 import { encodeCID } from 'ipfs-message-port-protocol/cid'

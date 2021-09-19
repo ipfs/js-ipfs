@@ -1,5 +1,4 @@
 
-
 import { walkPath } from 'ipfs-unixfs-exporter'
 import debug from 'debug'
 

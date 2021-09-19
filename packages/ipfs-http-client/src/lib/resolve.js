@@ -1,5 +1,4 @@
 
-
 import { CID } from 'multiformats/cid'
 import errCode from 'err-code'
 

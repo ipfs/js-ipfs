@@ -1,11 +1,10 @@
 
-
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import debug from 'debug'
 import Progress from 'progress'
-// @ts-ignore no types
+// @ts-expect-error no types
 import byteman from 'byteman'
 import * as IPFS from 'ipfs-core'
 import { CID } from 'multiformats/cid'

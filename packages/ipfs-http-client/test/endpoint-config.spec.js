@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
 
-
 import { expect } from 'aegir/utils/chai.js'
 const ipfsClient = require('../src').create
 

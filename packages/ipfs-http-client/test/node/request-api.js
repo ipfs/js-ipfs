@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 const ipfsClient = require('../../src').create

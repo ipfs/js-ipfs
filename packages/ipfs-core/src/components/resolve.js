@@ -1,5 +1,4 @@
 
-
 import isIpfs from 'is-ipfs'
 import { CID } from 'multiformats/cid'
 import PeerId from 'peer-id'

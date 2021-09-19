@@ -1,5 +1,4 @@
 
-
 export class TimeoutError extends Error {
   constructor (message = 'request timed out') {
     super(message)

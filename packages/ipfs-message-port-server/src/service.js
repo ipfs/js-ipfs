@@ -1,5 +1,4 @@
 
-
 /* eslint-env browser */
 
 import { DAGService } from './dag.js'
@@ -8,7 +7,7 @@ import { FilesService } from './files.js'
 import { BlockService } from './block.js'
 
 /**
- * @typedef {import('ipfs-core-types'.IPFS} IPFS
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
  */
 
 export class IPFSService {

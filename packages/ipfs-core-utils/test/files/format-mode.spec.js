@@ -1,5 +1,3 @@
-
-
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'

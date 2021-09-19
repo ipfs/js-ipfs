@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 
-
-const { expectIsRepo } = require('./utils')
+import { expectIsRepo } from './utils.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**

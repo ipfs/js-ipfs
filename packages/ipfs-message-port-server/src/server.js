@@ -1,5 +1,4 @@
 
-
 /* eslint-env browser */
 
 import { encodeError } from 'ipfs-message-port-protocol/error'

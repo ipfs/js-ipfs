@@ -1,7 +1,6 @@
 /* eslint max-nested-callbacks: ["error", 5] */
 /* eslint-env mocha */
 
-
 import os from 'os'
 import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')

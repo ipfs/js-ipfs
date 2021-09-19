@@ -1,5 +1,4 @@
 
-
 import debug from 'debug'
 import parseDuration from 'parse-duration'
 import crypto from 'libp2p-crypto'
@@ -10,7 +9,6 @@ import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 const log = Object.assign(debug('ipfs:name:publish'), {
   error: debug('ipfs:name:publish:error')
 })
-
 import { OFFLINE_ERROR, normalizePath } from '../../utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { resolvePath } from './utils.js'

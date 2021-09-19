@@ -1,5 +1,3 @@
-
-
 import { CID } from 'multiformats/cid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import loadFixture from 'aegir/utils/fixtures.js'

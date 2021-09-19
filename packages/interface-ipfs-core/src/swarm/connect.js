@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'

@@ -1,5 +1,4 @@
 
-
 import { CarBlockIterator } from '@ipld/car/iterator'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import itPeekable from 'it-peekable'

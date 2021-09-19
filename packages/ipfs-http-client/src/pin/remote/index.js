@@ -1,5 +1,4 @@
 
-
 import { CID } from 'multiformats/cid'
 import { Client } from '../../lib/core.js'
 import { Service } from './service.js'

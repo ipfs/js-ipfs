@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import sinon from 'sinon'
 import delay from 'delay'

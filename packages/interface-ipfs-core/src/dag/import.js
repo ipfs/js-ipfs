@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import all from 'it-all'
 import drain from 'it-drain'
 import { CID } from 'multiformats/cid'

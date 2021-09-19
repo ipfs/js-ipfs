@@ -27,7 +27,6 @@ const onUnhandledRejection = (err) => {
 
 process.once('uncaughtException', onUncaughtException)
 process.once('unhandledRejection', onUnhandledRejection)
-
 import semver from 'semver'
 import pkg from '../package.json'
 

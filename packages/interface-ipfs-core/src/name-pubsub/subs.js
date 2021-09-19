@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import all from 'it-all'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'

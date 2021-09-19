@@ -1,5 +1,3 @@
-
-
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
@@ -8,20 +6,16 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import all from 'it-all'
 import { File } from '@web-std/file'
 import { isBrowser, isWebWorker, isElectronRenderer } from 'ipfs-utils/src/env.js'
+import { normaliseInput } from '../../src/files/normalise-input'
 
 const { Blob, ReadableStream } = globalThis
-
-let { normaliseInput } = require('../../src/files/normalise-input')
-
-if (isBrowser || isWebWorker || isElectronRenderer) {
-  normaliseInput = require('../../src/files/normalise-input/index.browser').normaliseInput
-}
 
 const STRING = () => 'hello world'
 const NEWSTRING = () => new String('hello world') // eslint-disable-line no-new-wrappers
 const BUFFER = () => uint8ArrayFromString(STRING())
 const ARRAY = () => Array.from(BUFFER())
 const TYPEDARRAY = () => Uint8Array.from(ARRAY())
+/** @type {() => Blob} */
 let BLOB
 
 if (Blob) {
@@ -30,6 +24,9 @@ if (Blob) {
   ])
 }
 
+/**
+ * @param {import('ipfs-unixfs-importer').ImportCandidate[]} input
+ */
 async function verifyNormalisation (input) {
   expect(input.length).to.equal(1)
   expect(input[0].path).to.equal('')
@@ -38,30 +35,51 @@ async function verifyNormalisation (input) {
 
   if (isBrowser || isWebWorker || isElectronRenderer) {
     expect(content).to.be.an.instanceOf(Blob)
-    content = blobToIt(content)
+
+    if (content instanceof Blob) {
+      content = blobToIt(content)
+    }
   }
 
-  expect(content[Symbol.asyncIterator] || content[Symbol.iterator]).to.be.ok('Content should have been an iterable or an async iterable')
+  if (!content || content instanceof Uint8Array) {
+    throw new Error('Content expected')
+  }
 
   await expect(all(content)).to.eventually.deep.equal([BUFFER()])
 }
 
+/**
+ * @param {*} input
+ */
 async function testContent (input) {
   const result = await all(normaliseInput(input))
 
   await verifyNormalisation(result)
 }
 
+/**
+ * @template T
+ * @param {T} thing
+ * @returns {T[]}
+ */
 function iterableOf (thing) {
   return [thing]
 }
 
+/**
+ * @template T
+ * @param {T} thing
+ * @returns {AsyncIterable<T>}
+ */
 function asyncIterableOf (thing) {
   return (async function * () { // eslint-disable-line require-await
     yield thing
   }())
 }
 
+/**
+ * @param {*} thing
+ */
 function browserReadableStreamOf (thing) {
   return new ReadableStream({
     start (controller) {
@@ -72,6 +90,11 @@ function browserReadableStreamOf (thing) {
 }
 
 describe('normalise-input', function () {
+  /**
+   * @param {() => any} content
+   * @param {string} name
+   * @param {boolean} isBytes
+   */
   function testInputType (content, name, isBytes) {
     it(name, async function () {
       await testContent(content())

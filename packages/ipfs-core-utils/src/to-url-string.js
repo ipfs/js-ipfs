@@ -1,7 +1,5 @@
-
-
 import { Multiaddr } from 'multiaddr'
-// @ts-ignore no types
+// @ts-expect-error no types
 import multiAddrToUri from 'multiaddr-to-uri'
 
 /**

@@ -1,8 +1,7 @@
 
-
 import os from 'os'
 import fs from 'fs'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toUri from 'multiaddr-to-uri'
 import { ipfsPathHelp } from '../utils.js'
 import { isTest } from 'ipfs-utils/src/env.js'

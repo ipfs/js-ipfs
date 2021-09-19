@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import http from '../../utils/http.js'
 import sinon from 'sinon'

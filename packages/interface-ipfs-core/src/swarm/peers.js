@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { Multiaddr } from 'multiaddr'
 import PeerId from 'peer-id'
 import delay from 'delay'

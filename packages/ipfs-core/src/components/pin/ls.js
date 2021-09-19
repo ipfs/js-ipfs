@@ -1,6 +1,5 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 
-
 import { PinTypes } from 'ipfs-repo'
 import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
 import { resolvePath } from '../../utils.js'

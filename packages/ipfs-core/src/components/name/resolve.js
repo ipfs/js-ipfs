@@ -1,20 +1,17 @@
 
-
 import debug from 'debug'
 import errcode from 'err-code'
 import mergeOpts from 'merge-options'
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-
 import { CID } from 'multiformats/cid'
 import PeerId from 'peer-id'
-// @ts-ignore no types
+// @ts-expect-error no types
 import isDomain from 'is-domain-name'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const log = Object.assign(debug('ipfs:name:resolve'), {
   error: debug('ipfs:name:resolve:error')
 })
-
 import { OFFLINE_ERROR } from '../../utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 

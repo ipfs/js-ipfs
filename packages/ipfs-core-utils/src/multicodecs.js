@@ -1,5 +1,3 @@
-
-
 /**
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
  * @typedef {import('./types').LoadCodecFn} LoadCodecFn

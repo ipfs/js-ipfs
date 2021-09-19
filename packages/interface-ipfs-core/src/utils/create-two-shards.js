@@ -1,5 +1,3 @@
-
-
 import { expect } from 'aegir/utils/chai.js'
 import isShardAtPath from './is-shard-at-path.js'
 import last from 'it-last'
@@ -8,7 +6,7 @@ import last from 'it-last'
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {number} fileCount
  */
-export default async function createTwoShards (ipfs, fileCount) {
+export async function createTwoShards (ipfs, fileCount) {
   const dirPath = `/sharded-dir-${Math.random()}`
   const files = new Array(fileCount).fill(0).map((_, index) => ({
     path: `${dirPath}/file-${index}`,

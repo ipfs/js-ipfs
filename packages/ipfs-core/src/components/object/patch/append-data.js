@@ -1,5 +1,4 @@
 
-
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import { createGet } from '../get.js'

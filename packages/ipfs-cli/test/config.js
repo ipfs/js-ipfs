@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 5] */
 
-
 import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
 import sinon from 'sinon'

@@ -1,6 +1,5 @@
 /* eslint-disable no-unreachable */
 
-
 import isIpfs from 'is-ipfs'
 import { CID } from 'multiformats/cid'
 import {Key} from 'interface-datastore'

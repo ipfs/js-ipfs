@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'

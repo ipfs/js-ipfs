@@ -1,5 +1,3 @@
-
-
 const S_ISUID = parseInt('4000', 8) //   set UID bit
 const S_ISGID = parseInt('2000', 8) //   set-group-ID bit (see below)
 const S_ISVTX = parseInt('1000', 8) //   sticky bit (see below)

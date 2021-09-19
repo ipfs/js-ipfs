@@ -1,5 +1,4 @@
 
-
 import isIPFS from 'is-ipfs'
 import toCidAndPath from 'ipfs-core-utils/to-cid-and-path'
 import drain from 'it-drain'

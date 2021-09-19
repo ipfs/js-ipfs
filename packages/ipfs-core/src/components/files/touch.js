@@ -1,5 +1,4 @@
 
-
 import mergeOpts from 'merge-options'
 import { toMfsPath } from './utils/to-mfs-path.js'
 import debug from 'debug'

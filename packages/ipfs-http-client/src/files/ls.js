@@ -1,5 +1,4 @@
 
-
 import { CID } from 'multiformats/cid'
 const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
 import { configure } from '../lib/configure.js'

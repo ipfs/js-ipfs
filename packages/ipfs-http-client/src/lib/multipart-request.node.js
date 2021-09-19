@@ -1,10 +1,9 @@
 
-
 import { normaliseInput } from 'ipfs-core-utils/src/files/normalise-input.js'
 import { nanoid } from 'nanoid'
 import modeToString from './mode-to-string.js'
 import mergeOpts from 'merge-options'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toStream from 'it-to-stream'
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })

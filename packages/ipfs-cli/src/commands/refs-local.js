@@ -1,5 +1,4 @@
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import parseDuration from 'parse-duration'
 import { base32 } from 'multiformats/bases/base32'

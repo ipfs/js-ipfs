@@ -1,7 +1,6 @@
 
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { Multiaddr } from 'multiaddr'
 import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'

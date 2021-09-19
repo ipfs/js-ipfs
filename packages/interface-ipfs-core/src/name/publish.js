@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { nanoid } from 'nanoid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { fixture } from './utils'

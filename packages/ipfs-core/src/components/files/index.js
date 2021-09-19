@@ -1,5 +1,4 @@
 
-
 import { createLock } from './utils/create-lock.js'
 import isIpfs from 'is-ipfs'
 import { createStat } from './stat.js'

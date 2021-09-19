@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { CID } from 'multiformats/cid'
 const cli = require('./utils/cli')

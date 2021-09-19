@@ -1,5 +1,4 @@
 
-
 import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
 import { decodeNode, encodeNode } from 'ipfs-message-port-protocol/dag'
 

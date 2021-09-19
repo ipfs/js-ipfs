@@ -1,5 +1,4 @@
 
-
 import { gateway } from 'ipfs-http-gateway/resources'
 
 const webuiCid = 'bafybeif4zkmu7qdhkpf3pnhwxipylqleof7rl6ojbe7mq3fzogz6m4xk3i' // v2.11.4

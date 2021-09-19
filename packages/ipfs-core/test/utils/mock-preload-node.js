@@ -1,6 +1,5 @@
 /* eslint-env browser */
 
-
 import http from 'http'
 import { URL } from 'iso-url'
 

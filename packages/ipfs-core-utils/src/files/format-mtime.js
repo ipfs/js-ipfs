@@ -1,7 +1,5 @@
-
-
 /**
- * @param {import('ipfs-unixfs').Mtime} mtime
+ * @param {import('ipfs-unixfs').Mtime | null} [mtime]
  * @returns {string}
  */
 export function formatMtime (mtime) {

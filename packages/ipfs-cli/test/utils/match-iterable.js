@@ -1,5 +1,4 @@
 
-
 import sinon from 'sinon'
 
 function matchIterable () {

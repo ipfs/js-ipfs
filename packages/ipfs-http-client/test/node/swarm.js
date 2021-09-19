@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 const nock = require('nock')
 const ipfsClient = require('../../src').create

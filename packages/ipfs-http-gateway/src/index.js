@@ -1,9 +1,8 @@
 
-
 import Hapi from '@hapi/hapi'
 import Pino from 'hapi-pino'
 import debug from 'debug'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toMultiaddr from 'uri-to-multiaddr'
 import routes from './routes/index.js'
 

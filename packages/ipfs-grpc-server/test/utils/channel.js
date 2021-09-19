@@ -1,5 +1,4 @@
 
-
 import pushable from 'it-pushable'
 
 class MessageChannel {

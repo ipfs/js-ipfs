@@ -1,5 +1,4 @@
 
-
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import {toCidAndPath} from 'ipfs-core-utils/to-cid-and-path'
 import { resolvePath } from '../../utils.js'

@@ -1,5 +1,4 @@
 
-
 import debug from 'debug'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import Boom from '@hapi/boom'
@@ -9,7 +8,7 @@ import { CID } from 'multiformats/cid'
 import { base32 } from 'multiformats/bases/base32'
 import { resolver, utils } from 'ipfs-http-response'
 import isIPFS from 'is-ipfs'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toStream from 'it-to-stream'
 import * as PathUtils from '../utils/path'
 

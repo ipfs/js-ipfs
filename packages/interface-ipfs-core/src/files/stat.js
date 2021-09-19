@@ -1,12 +1,11 @@
 /* eslint-env mocha */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { nanoid } from 'nanoid'
 import { fixtures } from '../utils'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'
-import createShardedDirectory from '../utils/create-sharded-directory'
+import { createShardedDirectory } from '../utils/create-sharded-directory'
 import { CID } from 'multiformats/cid'
 import { identity } from 'multiformats/hashes/identity'
 import { randomBytes } from 'iso-random-stream'

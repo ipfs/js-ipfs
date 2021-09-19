@@ -1,6 +1,6 @@
 
 
-// @ts-ignore no types
+// @ts-expect-error no types
 const toIterable = require('stream-to-it/source')
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'

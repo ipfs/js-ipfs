@@ -1,5 +1,4 @@
 
-
 import { version as pkgversion } from '../../package.json'
 import { Multiaddr } from 'multiaddr'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

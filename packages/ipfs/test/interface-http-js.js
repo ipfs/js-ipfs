@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import * as tests from 'interface-ipfs-core'
 import { isNode, isBrowser, isWebWorker } from 'ipfs-utils/src/env'
 import factory from './utils/factory.js'

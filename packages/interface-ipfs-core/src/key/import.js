@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { nanoid } from 'nanoid'
 import { keys } from 'libp2p-crypto'
 import { expect } from 'aegir/utils/chai.js'

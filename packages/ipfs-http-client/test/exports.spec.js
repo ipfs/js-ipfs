@@ -1,6 +1,5 @@
 /* eslint-env mocha, browser */
 
-
 import { CID } from 'multiformats/cid'
 import { Multiaddr } from 'multiaddr'
 import { expect } from 'aegir/utils/chai.js'

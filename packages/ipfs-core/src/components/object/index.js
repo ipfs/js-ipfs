@@ -1,5 +1,4 @@
 
-
 import {createData} from './data.js'
 import {createGet} from './get.js'
 import {createLinks} from './links.js'

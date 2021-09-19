@@ -1,5 +1,4 @@
 
-
 import { exporter } from 'ipfs-unixfs-exporter'
 import { toMfsPath } from './utils/to-mfs-path.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

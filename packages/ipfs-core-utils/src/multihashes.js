@@ -1,5 +1,3 @@
-
-
 /**
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
  * @typedef {import('./types').LoadHasherFn} LoadHasherFn

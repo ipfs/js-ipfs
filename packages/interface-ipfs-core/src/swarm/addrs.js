@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import PeerId from 'peer-id'
 import { Multiaddr } from 'multiaddr'
 import { expect } from 'aegir/utils/chai.js'

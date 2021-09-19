@@ -1,5 +1,3 @@
-
-
 import errCode from 'err-code'
 import browserStreamToIt from 'browser-readablestream-to-it'
 import itPeekable from 'it-peekable'

@@ -1,5 +1,4 @@
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { multipartRequest } from '../lib/multipart-request.js'
 import { configure } from '../lib/configure.js'

@@ -1,5 +1,4 @@
 
-
 import { encode, prepare } from '@ipld/dag-pb'
 import { UnixFS } from 'ipfs-unixfs'
 import { persist } from './persist.js'

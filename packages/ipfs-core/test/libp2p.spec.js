@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { MemoryDatastore } from 'interface-datastore'
 import PeerId from 'peer-id'

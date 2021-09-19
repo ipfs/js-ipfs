@@ -1,7 +1,6 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { isNode } from 'ipfs-utils/src/env.js'
 import { CID } from 'multiformats/cid'

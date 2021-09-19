@@ -1,4 +1,3 @@
-
 import drain from 'it-drain'
 
 /**

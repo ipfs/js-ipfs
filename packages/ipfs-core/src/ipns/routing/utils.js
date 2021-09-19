@@ -1,5 +1,4 @@
 
-
 import ipns from 'ipns'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 

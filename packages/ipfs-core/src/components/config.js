@@ -1,5 +1,4 @@
 
-
 import set from 'just-safe-set'
 import getDefaultConfig from '../runtime/config-nodejs.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

@@ -1,8 +1,6 @@
 
-
 import errCode from 'err-code'
-import debug from 'debug'
-
+import
 import { exporter } from 'ipfs-unixfs-exporter'
 import {createNode} from './utils/create-node.js'
 import { toPathComponents } from './utils/to-path-components.js'

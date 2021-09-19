@@ -1,5 +1,4 @@
 
-
 import mafmt from 'mafmt'
 import { Multiaddr } from 'multiaddr'
 import parseDuration from 'parse-duration'

@@ -1,5 +1,4 @@
 
-
 import HTTP from 'ipfs-utils/src/http.js'
 import debug from 'debug'
 import drain from 'it-drain'

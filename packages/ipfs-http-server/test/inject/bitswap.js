@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { CID } from 'multiformats/cid'
 import sinon from 'sinon'

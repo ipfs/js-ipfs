@@ -1,5 +1,4 @@
 
-
 import parseDuration from 'parse-duration'
 import toCidAndPath from 'ipfs-core-utils/to-cid-and-path'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'

@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 const clean = require('./utils/clean')
 const ipfsCmd = require('./utils/ipfs-exec')

@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'

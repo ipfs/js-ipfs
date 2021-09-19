@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 const createProgressBar = require('../src/utils').createProgressBar
 

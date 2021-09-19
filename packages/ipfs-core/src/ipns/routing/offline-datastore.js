@@ -1,9 +1,7 @@
 
-
 import { Key } from 'interface-datastore'
 import { Record } from 'libp2p-record'
 import { encodeBase32 } from './utils.js'
-
 import errcode from 'err-code'
 import debug from 'debug'
 const log = Object.assign(debug('ipfs:ipns:offline-datastore'), {

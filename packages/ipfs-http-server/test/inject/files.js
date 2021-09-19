@@ -1,7 +1,6 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-
 import { randomBytes } from 'iso-random-stream'
 import { expect } from 'aegir/utils/chai.js'
 import FormData from 'form-data'

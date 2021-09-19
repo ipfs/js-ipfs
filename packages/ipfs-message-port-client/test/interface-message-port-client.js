@@ -1,6 +1,5 @@
 /* eslint-env mocha, browser */
 
-
 import * as tests from 'interface-ipfs-core'
 import { activate } from './util/client.js'
 

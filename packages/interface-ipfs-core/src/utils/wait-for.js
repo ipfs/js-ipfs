@@ -1,5 +1,3 @@
-
-
 import delay from 'delay'
 import errCode from 'err-code'
 

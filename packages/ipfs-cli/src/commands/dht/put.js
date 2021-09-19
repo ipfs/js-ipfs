@@ -1,5 +1,4 @@
 
-
 import parseDuration from 'parse-duration'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 

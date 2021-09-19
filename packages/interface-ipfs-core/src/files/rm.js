@@ -1,10 +1,9 @@
 /* eslint-env mocha */
 
-
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'
-import createShardedDirectory from '../utils/create-sharded-directory'
+import { createShardedDirectory } from '../utils/create-sharded-directory'
 import createTwoShards from '../utils/create-two-shards'
 import { randomBytes } from 'iso-random-stream'
 import isShardAtPath from '../utils/is-shard-at-path.js'

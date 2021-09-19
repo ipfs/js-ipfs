@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 const ipfsClient = require('../../src').create
 import delay from 'delay'

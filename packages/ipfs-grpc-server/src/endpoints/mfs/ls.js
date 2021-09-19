@@ -1,5 +1,4 @@
 
-
 import { encodeMtime } from '../../utils/encode-mtime.js'
 
 /**

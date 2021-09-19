@@ -1,7 +1,6 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import {resolvePath} from '../src/utils.js'
 import { createTempRepo } from './utils/create-repo.js'

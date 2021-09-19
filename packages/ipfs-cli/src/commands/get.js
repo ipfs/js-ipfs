@@ -1,8 +1,7 @@
 
-
 import fs from 'fs'
 import path from 'path'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toIterable from 'stream-to-it'
 import { pipe } from 'it-pipe'
 import parseDuration from 'parse-duration'

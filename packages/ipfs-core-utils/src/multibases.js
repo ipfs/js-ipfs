@@ -1,5 +1,3 @@
-
-
 /**
  * @typedef {import('multiformats/bases/interface').MultibaseCodec<any>} MultibaseCodec
  * @typedef {import('./types').LoadBaseFn} LoadBaseFn

@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import qs from 'qs'
 import { testHttpMethod } from '../utils/test-http-method.js'

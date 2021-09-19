@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-// @ts-ignore no types
+// @ts-expect-error no types
 import toUri from 'multiaddr-to-uri'
 import errCode from 'err-code'
 import HTTP from 'ipfs-utils/src/http.js'

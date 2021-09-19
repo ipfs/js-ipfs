@@ -1,4 +1,5 @@
 /* eslint-env browser */
+
 import { encodeError, decodeError } from './error.js'
 
 /**

@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { isNode } from 'ipfs-utils/src/env.js'
 import { expect } from 'aegir/utils/chai.js'
 const ipfsClient = require('../../src').create

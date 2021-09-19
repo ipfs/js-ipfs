@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { CID } from 'multiformats/cid'
 import { expect } from 'aegir/utils/chai.js'

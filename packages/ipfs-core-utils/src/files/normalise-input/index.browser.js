@@ -1,7 +1,5 @@
-
-
-import {normaliseContent} from './normalise-content.browser.js'
-import {normalise} from './normalise-input.js'
+import { normaliseContent } from './normalise-content.browser.js'
+import { normalise } from './normalise-input.js'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream

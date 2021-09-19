@@ -1,6 +1,6 @@
 
-
 /* eslint-env mocha */
+
 import { encodeCID } from 'ipfs-message-port-protocol/cid'
 import { CID } from 'multiformats/cid'
 import { Server } from '../src/server.js'

@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import delay from 'delay'
 import { sha256 } from 'multiformats/hashes/sha2'

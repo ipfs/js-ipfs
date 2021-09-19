@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import createNode from './utils/create-node.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'

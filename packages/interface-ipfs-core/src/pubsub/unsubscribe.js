@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { isBrowser, isWebWorker, isElectronRenderer } from 'ipfs-utils/src/env.js'
 import { getTopic } from './utils.js'
 import { getDescribe, getIt } from '../utils/mocha.js'

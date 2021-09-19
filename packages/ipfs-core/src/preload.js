@@ -1,6 +1,6 @@
 
 
-// @ts-ignore no types
+// @ts-expect-error no types
 import toUri from 'multiaddr-to-uri'
 import debug from 'debug'
 const shuffle = require('array-shuffle')

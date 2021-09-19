@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import fs from 'fs'
 import { expect } from 'aegir/utils/chai.js'
 import path from 'path'

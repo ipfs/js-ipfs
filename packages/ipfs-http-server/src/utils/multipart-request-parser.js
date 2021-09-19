@@ -1,6 +1,6 @@
 
 
-// @ts-ignore no types
+// @ts-expect-error no types
 const Content = require('@hapi/content')
 const multipart = require('it-multipart')
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'

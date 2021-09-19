@@ -1,5 +1,4 @@
 
-
 import { CID } from 'multiformats/cid'
 import { encodeCID, decodeCID } from './cid.js'
 

@@ -1,5 +1,4 @@
 
-
 import { HttpGateway } from '../../src/index.js'
 
 export async function http (request, { ipfs } = {}) {

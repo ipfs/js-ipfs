@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 const throwsAsync = require('./utils/throws-async')
 const { errorHandler, HTTPError } = require('../src/lib/core')

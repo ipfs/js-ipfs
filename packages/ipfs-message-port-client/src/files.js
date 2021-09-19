@@ -1,6 +1,7 @@
 
 
 /* eslint-env browser */
+
 import { Client } from './client.js'
 import { decodeCID } from 'ipfs-message-port-protocol/cid'
 import { CID } from 'multiformats/cid'

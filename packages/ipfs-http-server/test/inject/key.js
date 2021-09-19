@@ -1,7 +1,6 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-
 import { expect } from 'aegir/utils/chai.js'
 import { testHttpMethod } from '../utils/test-http-method.js'
 import http from '../utils/http.js'

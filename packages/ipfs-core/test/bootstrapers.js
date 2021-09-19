@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import createConfig from '../src/runtime/config-browser.js'
 import { waitFor } from './utils/wait-for.js'
 import createNode from './utils/create-node.js'

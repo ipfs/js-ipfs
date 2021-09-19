@@ -1,5 +1,4 @@
 
-
 import {clientStreamToPromise} from '../../utils/client-stream-to-promise.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import {normaliseContent} from 'ipfs-core-utils/files/normalise-input/normalise-content'

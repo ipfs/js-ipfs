@@ -1,5 +1,4 @@
 
-
 import { createRmAll } from './rm-all.js'
 import last from 'it-last'
 import { configure } from '../lib/configure.js'

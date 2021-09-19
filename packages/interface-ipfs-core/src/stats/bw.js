@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 
-
-const { expectIsBandwidth } = require('./utils')
+import { expectIsBandwidth } from './utils.js'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'
 import last from 'it-last'

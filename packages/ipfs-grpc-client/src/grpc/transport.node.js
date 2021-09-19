@@ -1,7 +1,6 @@
 // copied from https://github.com/improbable-eng/grpc-web/blob/master/client/grpc-web/src/transports/websocket/websocket.ts
 // but uses the ws implementation of WebSockets
 // see: https://github.com/improbable-eng/grpc-web/issues/796
-
 import WebSocket from 'ws'
 import debug from 'debug'
 

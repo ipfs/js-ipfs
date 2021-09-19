@@ -1,5 +1,4 @@
 
-
 import { configure } from '../lib/configure.js'
 const resolve = require('../lib/resolve')
 import first from 'it-first'

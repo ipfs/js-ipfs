@@ -1,9 +1,7 @@
 
-
 import mergeOpts from 'merge-options'
 import { toMfsPath } from './utils/to-mfs-path.js'
 import debug from 'debug'
-
 import errCode from 'err-code'
 import { UnixFS } from 'ipfs-unixfs'
 import { toTrail } from './utils/to-trail.js'

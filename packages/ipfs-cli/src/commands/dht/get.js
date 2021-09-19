@@ -1,5 +1,4 @@
 
-
 import parseDuration from 'parse-duration'
 import { coerceCID } from '../../utils.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'

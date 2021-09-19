@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'
 import { CID } from 'multiformats/cid'
-import createShardedDirectory from '../utils/create-sharded-directory'
+import { createShardedDirectory } from '../utils/create-sharded-directory'
 import all from 'it-all'
 import { randomBytes } from 'iso-random-stream'
 import * as raw from 'multiformats/codecs/raw'

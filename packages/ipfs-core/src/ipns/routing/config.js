@@ -1,5 +1,4 @@
 
-
 import { TieredDatastore } from 'datastore-core'
 import get from 'dlv'
 import {IpnsPubsubDatastore} from './pubsub-datastore.js'

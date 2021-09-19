@@ -1,4 +1,3 @@
-
 import { createSuite } from './utils/suite.js'
 import { testAdd } from './add.js'
 import { testAddAll } from './add-all.js'

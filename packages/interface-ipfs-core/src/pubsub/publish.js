@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { nanoid } from 'nanoid'
 import { getTopic } from './utils.js'

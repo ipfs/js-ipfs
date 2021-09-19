@@ -1,6 +1,5 @@
 /* eslint-env mocha, browser */
 
-
 import { fixtures } from './utils/index.js'
 import { Readable } from 'readable-stream'
 import { supportsFileReader } from 'ipfs-utils/src/supports.js'

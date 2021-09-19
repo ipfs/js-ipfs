@@ -1,6 +1,6 @@
 
 
-// @ts-ignore no types
+// @ts-expect-error no types
 import { createFactory } from 'ipfsd-ctl'
 import mergeOpts from 'merge-options'
 const merge = mergeOpts.bind({ ignoreUndefined: true })

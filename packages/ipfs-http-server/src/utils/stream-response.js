@@ -1,9 +1,8 @@
 
-
 import { PassThrough } from 'stream'
 import { pipe } from 'it-pipe'
 import debug from 'debug'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toIterable from 'stream-to-it'
 
 const log = debug('ipfs:http-api:utils:stream-response')

@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 import crypto from 'libp2p-crypto'
 import isIPFS from 'is-ipfs'
 import { CID } from 'multiformats/cid'

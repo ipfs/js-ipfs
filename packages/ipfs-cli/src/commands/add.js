@@ -1,10 +1,9 @@
 /* eslint-disable complexity */
 
-
 import { promisify } from 'util'
-// @ts-ignore no types
+// @ts-expect-error no types
 import getFolderSizeCb from 'get-folder-size'
-// @ts-ignore no types
+// @ts-expect-error no types
 import byteman from 'byteman'
 import {
   createProgressBar,

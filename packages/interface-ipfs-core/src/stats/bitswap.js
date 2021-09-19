@@ -1,8 +1,7 @@
 /* eslint-env mocha */
 
-
 import { getDescribe, getIt } from '../utils/mocha.js'
-const { expectIsBitswap } = require('./utils')
+import { expectIsBitswap } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

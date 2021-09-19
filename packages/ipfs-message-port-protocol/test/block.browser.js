@@ -1,5 +1,4 @@
 
-
 /* eslint-env mocha */
 
 import { encodeBlock } from '../src/block.js'

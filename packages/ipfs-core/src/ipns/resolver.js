@@ -1,5 +1,4 @@
 
-
 import ipns from 'ipns'
 import PeerId from 'peer-id'
 import errcode from 'err-code'

@@ -1,5 +1,6 @@
 
 /* eslint-env browser */
+
 import { Multiaddr } from 'multiaddr'
 import { isBrowser, isWebWorker, isNode } from 'ipfs-utils/src/env.js'
 import parseDuration from 'parse-duration'

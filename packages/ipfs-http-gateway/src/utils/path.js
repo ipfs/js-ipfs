@@ -1,5 +1,4 @@
 
-
 /**
  * @param {string} path
  */
@@ -52,4 +51,3 @@ export function joinURLParts (...urls) {
 
   return urls.join('/')
 }
-
