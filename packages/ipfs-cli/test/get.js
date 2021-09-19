@@ -3,16 +3,16 @@
 import fs from 'fs'
 import { expect } from 'aegir/utils/chai.js'
 import path from 'path'
-const clean = require('./utils/clean')
 import { CID } from 'multiformats/cid'
 import cli from './utils/cli.js'
 import sinon from 'sinon'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { pack } from 'it-tar'
 import { pipe } from 'it-pipe'
-const { gzip, inflate } = require('pako')
 import map from 'it-map'
 import toBuffer from 'it-to-buffer'
+const clean = require('./utils/clean')
+const { gzip, inflate } = require('pako')
 
 const defaultOptions = {
   timeout: undefined,

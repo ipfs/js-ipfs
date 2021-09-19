@@ -4,11 +4,11 @@ import { expect } from 'aegir/utils/chai.js'
 import path from 'path'
 import fs from 'fs'
 import PeerId from 'peer-id'
+import { nanoid } from 'nanoid'
+import os from 'os'
 const { supportedKeys } = require('libp2p-crypto/src/keys')
 const clean = require('./utils/clean')
-import { nanoid } from 'nanoid'
 const ipfsExec = require('./utils/ipfs-exec')
-import os from 'os'
 const tempWrite = require('temp-write')
 
 describe.skip('init', function () {

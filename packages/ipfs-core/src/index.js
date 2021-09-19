@@ -5,7 +5,7 @@ import { CID as CIDImport } from 'multiformats/cid'
 import { Multiaddr } from 'multiaddr'
 import PeerIdImport from 'peer-id'
 import globSourceImport from 'ipfs-utils/src/files/glob-source.js'
-import urlSourceImport from 'ipfs-utils/src/files/glob-source.js'
+import urlSourceImport from 'ipfs-utils/src/files/url-source.js'
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS

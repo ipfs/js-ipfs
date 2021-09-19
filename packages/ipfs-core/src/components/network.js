@@ -1,9 +1,9 @@
 
 import { createBitswap } from 'ipfs-bitswap'
-import {createLibp2p} from './libp2p.js'
+import { createLibp2p } from './libp2p.js'
 import { Multiaddr } from 'multiaddr'
 import errCode from 'err-code'
-import {BlockStorage} from '../block-storage.js'
+import { BlockStorage } from '../block-storage.js'
 
 /**
  * @typedef {Object} Online

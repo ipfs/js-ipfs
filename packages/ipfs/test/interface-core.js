@@ -2,13 +2,14 @@
 
 import * as tests from 'interface-ipfs-core'
 import { isNode } from 'ipfs-utils/src/env.js'
-import factory from './utils/factory.js'
+import { factory } from './utils/factory.js'
+import * as ipfsClientModule from 'ipfs-client'
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core tests', function () {
   const commonFactory = factory({
-    ipfsClientModule: require('ipfs-client')
+    ipfsClientModule
   })
 
   tests.root(commonFactory, {

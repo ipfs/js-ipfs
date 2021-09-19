@@ -7,7 +7,7 @@ import errCode from 'err-code'
  * @typedef {import('ipfs-core-types/src/key').API<HTTPClientExtraOptions>} KeyAPI
  */
 
- export const createExport = configure(api => {
+export const createExport = configure(api => {
   /**
    * @type {KeyAPI["export"]}
    */

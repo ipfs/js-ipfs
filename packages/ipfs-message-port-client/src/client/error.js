@@ -1,5 +1,4 @@
 
-
 export class TimeoutError extends Error {
   get name () {
     return this.constructor.name

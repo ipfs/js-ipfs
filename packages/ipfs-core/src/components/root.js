@@ -1,9 +1,9 @@
 
-import {createAdd} from './add.js'
-import {createAddAll} from './add-all/index.js'
-import {createCat} from './cat.js'
-import {createGet} from './get.js'
-import {createLs} from './ls.js'
+import { createAdd } from './add.js'
+import { createAddAll } from './add-all/index.js'
+import { createCat } from './cat.js'
+import { createGet } from './get.js'
+import { createLs } from './ls.js'
 
 /**
  * @typedef {AddAllContext & CatContext & GetContext & ListContext } Context

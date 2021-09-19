@@ -7,7 +7,7 @@ import { toUrlSearchParams } from './lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
- export const createDns = configure(api => {
+export const createDns = configure(api => {
   /**
    * @type {RootAPI["dns"]}
    */

@@ -8,7 +8,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/object').API<HTTPClientExtraOptions>} ObjectAPI
  */
 
- export const createData = configure(api => {
+export const createData = configure(api => {
   /**
    * @type {ObjectAPI["data"]}
    */

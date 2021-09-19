@@ -1,6 +1,6 @@
 
-import {createApply} from './apply.js'
-import {createList} from './list.js'
+import { createApply } from './apply.js'
+import { createList } from './list.js'
 
 export class ProfilesAPI {
   /**

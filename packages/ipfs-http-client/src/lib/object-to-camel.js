@@ -1,5 +1,4 @@
 
-
 /**
  * Convert object properties to camel case.
  * NOT recursive!

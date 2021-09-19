@@ -13,7 +13,7 @@ import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
  */
 
- export const createPut = configure(api => {
+export const createPut = configure(api => {
   /**
    * @type {DHTAPI["put"]}
    */

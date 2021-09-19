@@ -9,7 +9,7 @@ import { createStat } from './files/stat.js'
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
- export const createLs = configure((api, opts) => {
+export const createLs = configure((api, opts) => {
   /**
    * @type {RootAPI["ls"]}
    */

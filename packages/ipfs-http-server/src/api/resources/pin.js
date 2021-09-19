@@ -2,10 +2,10 @@
 import Joi from '../../utils/joi.js'
 import Boom from '@hapi/boom'
 import map from 'it-map'
-const reduce = require('it-reduce')
 import { pipe } from 'it-pipe'
 import { streamResponse } from '../../utils/stream-response.js'
 import all from 'it-all'
+const reduce = require('it-reduce')
 
 /**
  * @typedef {import('multiformats/cid').CID} CID

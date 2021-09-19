@@ -2,9 +2,9 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import all from 'it-all'
+import sinon from 'sinon'
 const bidiToDuplex = require('../src/utils/bidi-to-duplex')
 const toHeaders = require('../src/utils/to-headers')
-import sinon from 'sinon'
 
 describe('utils', () => {
   describe('bidi-to-duplex', () => {

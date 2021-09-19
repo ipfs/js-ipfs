@@ -1,5 +1,5 @@
 
-import {modeToString} from './mode-to-string.js'
+import { modeToString } from './mode-to-string.js'
 import { parseMtime } from '../lib/parse-mtime.js'
 
 /**

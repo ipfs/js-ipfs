@@ -1,11 +1,11 @@
 
-import {createData} from './data.js'
-import {createGet} from './get.js'
-import {createLinks} from './links.js'
-import {createNew} from './new.js'
-import {createPut} from './put.js'
-import {createStat} from './stat.js'
-import {ObjectPatchAPI} from './patch/index.js'
+import { createData } from './data.js'
+import { createGet } from './get.js'
+import { createLinks } from './links.js'
+import { createNew } from './new.js'
+import { createPut } from './put.js'
+import { createStat } from './stat.js'
+import { ObjectPatchAPI } from './patch/index.js'
 
 /**
  * @typedef {import('../../types').Preload} Preload

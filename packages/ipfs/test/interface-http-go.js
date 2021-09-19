@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import * as tests from 'interface-ipfs-core'
-import factory from './utils/factory.js'
+import { factory } from './utils/factory.js'
 const isWindows = globalThis.process && globalThis.process.platform && globalThis.process.platform === 'win32'
 const isFirefox = globalThis.navigator?.userAgent?.toLowerCase().includes('firefox')
 

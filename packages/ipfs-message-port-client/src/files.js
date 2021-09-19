@@ -1,5 +1,4 @@
 
-
 /* eslint-env browser */
 
 import { Client } from './client.js'

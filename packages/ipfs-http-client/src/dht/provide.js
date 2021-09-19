@@ -10,7 +10,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('multiformats/cid').CID} CID
  */
 
- export const createProvide = configure(api => {
+export const createProvide = configure(api => {
   /**
    * @type {DHTAPI["provide"]}
    */

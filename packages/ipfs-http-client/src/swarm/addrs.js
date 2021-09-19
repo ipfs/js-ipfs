@@ -8,7 +8,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/swarm').API<HTTPClientExtraOptions>} SwarmAPI
  */
 
- export const createAddrs = configure(api => {
+export const createAddrs = configure(api => {
   /**
    * @type {SwarmAPI["addrs"]}
    */

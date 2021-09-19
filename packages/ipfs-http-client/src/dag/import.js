@@ -11,7 +11,7 @@ import { CID } from 'multiformats/cid'
  * @typedef {import('ipfs-core-types/src/dag').API<HTTPClientExtraOptions>} DAGAPI
  */
 
- export const createImport = configure(api => {
+export const createImport = configure(api => {
   /**
    * @type {DAGAPI["import"]}
    */

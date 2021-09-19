@@ -1,5 +1,4 @@
 
-
 export function allNdjson (res) {
   return res.result
     .split('\n')

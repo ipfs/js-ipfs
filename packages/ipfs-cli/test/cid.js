@@ -141,7 +141,7 @@ describe('cid', () => {
 
     it('should format codec name', async () => {
       ipfs.bases.listBases.returns([base32, base58btc])
-      ipfs.codecs.listCodecs.returns([dagPb])
+      ipfs.codecs.listCodecs.returns([dagPB])
       ipfs.hashers.listHashers.returns([sha256])
 
       const out = await cli('cid format -f "%c" QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn', { ipfs })
@@ -277,7 +277,7 @@ describe('cid', () => {
 
     it('should format cid prefix', async () => {
       ipfs.bases.listBases.returns([base32, base58btc])
-      ipfs.codecs.listCodecs.returns([dagPb])
+      ipfs.codecs.listCodecs.returns([dagPB])
       ipfs.hashers.listHashers.returns([sha256])
 
       const out = await cli('cid format -f "%P" QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn', { ipfs })

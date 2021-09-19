@@ -1,7 +1,7 @@
 
 import { IPNS } from '../ipns/index.js'
-import {createRouting} from '../ipns/routing/config.js'
-import {OfflineDatastore} from '../ipns/routing/offline-datastore.js'
+import { createRouting } from '../ipns/routing/config.js'
+import { OfflineDatastore } from '../ipns/routing/offline-datastore.js'
 import { NotInitializedError, AlreadyInitializedError } from '../errors.js'
 import debug from 'debug'
 const log = debug('ipfs:components:ipns')

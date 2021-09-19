@@ -9,7 +9,7 @@ import { FinalPeer } from './response-types.js'
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
  */
 
- export const createFindPeer = configure(api => {
+export const createFindPeer = configure(api => {
   /**
    * @type {DHTAPI["findPeer"]}
    */

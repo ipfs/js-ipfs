@@ -1,8 +1,8 @@
 
-import {createAddLink} from './add-link.js'
-import {createAppendData} from './append-data.js'
-import {createRmLink} from './rm-link.js'
-import {createSetData} from './set-data.js'
+import { createAddLink } from './add-link.js'
+import { createAppendData } from './append-data.js'
+import { createRmLink } from './rm-link.js'
+import { createSetData } from './set-data.js'
 
 /**
  * @typedef {import('../../../types').Preload} Preload

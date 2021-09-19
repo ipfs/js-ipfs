@@ -1,10 +1,9 @@
 /* eslint-env mocha */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { expect } from 'aegir/utils/chai.js'
-const f = require('./utils/factory')()
 import * as dagPB from '@ipld/dag-pb'
+const f = require('./utils/factory')()
 
 describe('.add', function () {
   this.timeout(20 * 1000)

@@ -6,7 +6,6 @@ import { DisconnectError, TimeoutError, AbortError } from './error.js'
  * @typedef {import('./query').Query<I, O>} Query
  */
 
-
 /**
  * RPC Transport over `MessagePort` that can execute queries. It takes care of
  * executing queries by issuing a message with unique ID and fullfilling a

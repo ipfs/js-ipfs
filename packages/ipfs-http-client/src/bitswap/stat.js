@@ -1,7 +1,7 @@
 
 import { CID } from 'multiformats/cid'
-import {configure} from '../lib/configure.js'
-import {toUrlSearchParams} from '../lib/to-url-search-params.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions

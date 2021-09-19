@@ -6,8 +6,8 @@ import { pipe } from 'it-pipe'
 import all from 'it-all'
 import { streamResponse } from '../../utils/stream-response.js'
 import merge from 'it-merge'
-const { PassThrough } = require('stream')
 import map from 'it-map'
+const { PassThrough } = require('stream')
 
 export const catResource = {
   options: {

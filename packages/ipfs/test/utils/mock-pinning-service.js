@@ -1,5 +1,6 @@
 
 import http from 'http'
+// @ts-expect-error no types
 import { setup } from 'mock-ipfs-pinning-service'
 import getPort from 'aegir/utils/get-port.js'
 
@@ -18,7 +19,9 @@ export class PinningService {
     const server = http.createServer(service)
     const host = '127.0.0.1'
     port = await getPort(port)
-    await new Promise(resolve => server.listen(port, host, resolve))
+    await new Promise(resolve => server.listen(port, host, () => {
+      resolve(null)
+    }))
 
     return new PinningService({ server, host, port, token })
   }
@@ -29,7 +32,7 @@ export class PinningService {
    */
   static stop (service) {
     return new Promise((resolve, reject) => {
-      service.server.close((error) => {
+      service.server.close((/** @type {any} */ error) => {
         if (error) {
           reject(error)
         } else {
@@ -39,6 +42,13 @@ export class PinningService {
     })
   }
 
+  /**
+   * @param {object} config
+   * @param {any} config.server
+   * @param {string} config.host
+   * @param {number} config.port
+   * @param {any} config.token
+   */
   constructor ({ server, host, port, token }) {
     this.server = server
     this.host = host

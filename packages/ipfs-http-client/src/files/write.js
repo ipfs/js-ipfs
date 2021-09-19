@@ -1,7 +1,6 @@
 
-
-import {modeToString} from '../lib/mode-to-string.js'
-import {parseMtime} from '../lib/parse-mtime.js'
+import { modeToString } from '../lib/mode-to-string.js'
+import { parseMtime } from '../lib/parse-mtime.js'
 import { configure } from '../lib/configure.js'
 import { multipartRequest } from '../lib/multipart-request.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
@@ -13,7 +12,7 @@ import { AbortController } from 'native-abort-controller'
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
- export const createWrite = configure(api => {
+export const createWrite = configure(api => {
   /**
    * @type {FilesAPI["write"]}
    */

@@ -1,6 +1,6 @@
 
 import { CID } from 'multiformats/cid'
-import {objectToCamelWithMetadata} from '../lib/object-to-camel-with-metadata.js'
+import { objectToCamelWithMetadata } from '../lib/object-to-camel-with-metadata.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
@@ -9,7 +9,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
- export const createStat = configure(api => {
+export const createStat = configure(api => {
   /**
    * @type {FilesAPI["stat"]}
    */

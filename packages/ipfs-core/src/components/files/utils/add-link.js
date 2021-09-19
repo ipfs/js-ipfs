@@ -3,7 +3,7 @@ import * as dagPB from '@ipld/dag-pb'
 import { CID } from 'multiformats/cid'
 import debug from 'debug'
 import { UnixFS } from 'ipfs-unixfs'
-import {DirSharded} from './dir-sharded.js'
+import { DirSharded } from './dir-sharded.js'
 import {
   updateHamtDirectory,
   recreateHamtLevel,

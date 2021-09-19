@@ -54,7 +54,7 @@ export default [
   {
     method: 'POST',
     path: '/api/v0/files/stat',
-    ...statResource,
+    ...statResource
   },
   {
     method: 'POST',

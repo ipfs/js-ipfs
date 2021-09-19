@@ -9,7 +9,7 @@ import { createId } from './id.js'
 /**
  * @param {import('./types').Options} options
  */
- export const createIsOnline = options => {
+export const createIsOnline = options => {
   const id = createId(options)
 
   /**

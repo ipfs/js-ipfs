@@ -2,10 +2,10 @@
 /* eslint-env browser */
 
 import { MessageTransport } from './client/transport.js'
-import {BlockClient} from './block.js'
-import {DAGClient} from './dag.js'
-import {CoreClient} from './core.js'
-import {FilesClient} from './files.js'
+import { BlockClient } from './block.js'
+import { DAGClient } from './dag.js'
+import { CoreClient } from './core.js'
+import { FilesClient } from './files.js'
 export class IPFSClient extends CoreClient {
   /**
    * @param {MessageTransport} transport

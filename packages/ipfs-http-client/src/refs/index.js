@@ -10,7 +10,7 @@ import { createLocal } from './local.js'
  * @typedef {import('ipfs-core-types/src/refs').API<HTTPClientExtraOptions>} RefsAPI
  */
 
- export const createRefs = configure((api, opts) => {
+export const createRefs = configure((api, opts) => {
   /**
    * @type {RefsAPI["refs"]}
    */
@@ -35,4 +35,3 @@ import { createLocal } from './local.js'
     local: createLocal(opts)
   })
 })
-

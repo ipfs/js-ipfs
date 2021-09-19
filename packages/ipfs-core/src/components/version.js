@@ -20,4 +20,3 @@ export function createVersion ({ repo }) {
 
   return withTimeoutOption(version)
 }
-

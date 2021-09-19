@@ -1,5 +1,4 @@
 
-
 /**
  * @typedef {object} Subscription
  * @property {import('ipfs-core-types/src/pubsub').MessageHandlerFn} onMessage

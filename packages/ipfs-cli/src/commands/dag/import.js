@@ -2,7 +2,7 @@
 import fs from 'fs'
 import parseDuration from 'parse-duration'
 
- export default {
+export default {
   command: 'import [path...]',
 
   describe: 'Import the contents of one or more CARs from files or stdin',

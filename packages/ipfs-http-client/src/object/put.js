@@ -11,7 +11,7 @@ import { createPut as createDagPut } from '../dag/put.js'
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {import('../types').Options} options
  */
- export const createPut = (codecs, options) => {
+export const createPut = (codecs, options) => {
   const fn = configure((api) => {
     const dagPut = createDagPut(codecs, options)
 

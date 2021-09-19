@@ -9,7 +9,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
  */
 
- export const createQuery = configure(api => {
+export const createQuery = configure(api => {
   /**
    * @type {DHTAPI["query"]}
    */

@@ -1,8 +1,8 @@
-import {createAdd} from './add.js'
-import {createAddAll} from './add-all.js'
-import {createLs} from './ls.js'
-import {createRm} from './rm.js'
-import {createRmAll} from './rm-all.js'
+import { createAdd } from './add.js'
+import { createAddAll } from './add-all.js'
+import { createLs } from './ls.js'
+import { createRm } from './rm.js'
+import { createRmAll } from './rm-all.js'
 
 export class PinAPI {
   /**

@@ -1,5 +1,4 @@
 
-
 module.exports = async fnOrPromise => {
   try {
     await (fnOrPromise.then ? fnOrPromise : fnOrPromise())

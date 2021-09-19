@@ -2,14 +2,14 @@
 import grpc from '@grpc/grpc-js'
 import first from 'it-first'
 import debug from 'debug'
-import {webSocketServer} from './utils/web-socket-server.js'
-import {loadServices} from './utils/load-services.js'
-import {grpcAdd} from './endpoints/add.js'
-import {grpcId} from './endpoints/id.js'
-import {grpcMfsLs} from './endpoints/mfs/ls.js'
-import {grpcMfsWrite} from './endpoints/mfs/write.js'
-import {grpcPubsubSubscribe} from './endpoints/pubsub/subscribe.js'
-import {grpcPubsubUnsubscribe} from './endpoints/pubsub/unsubscribe.js'
+import { webSocketServer } from './utils/web-socket-server.js'
+import { loadServices } from './utils/load-services.js'
+import { grpcAdd } from './endpoints/add.js'
+import { grpcId } from './endpoints/id.js'
+import { grpcMfsLs } from './endpoints/mfs/ls.js'
+import { grpcMfsWrite } from './endpoints/mfs/write.js'
+import { grpcPubsubSubscribe } from './endpoints/pubsub/subscribe.js'
+import { grpcPubsubUnsubscribe } from './endpoints/pubsub/unsubscribe.js'
 
 const log = debug('ipfs:grpc-server')
 

@@ -1,5 +1,4 @@
 
-
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
@@ -10,7 +9,7 @@
  * @param {Options} options
  * @param {import('./subscription-tracker').SubscriptionTracker} subsTracker
  */
- export const createUnsubscribe = (options, subsTracker) => {
+export const createUnsubscribe = (options, subsTracker) => {
   /**
    * @type {PubsubAPI["unsubscribe"]}
    */

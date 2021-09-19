@@ -1,11 +1,10 @@
 
-
 // @ts-expect-error no types
 import toUri from 'multiaddr-to-uri'
 import debug from 'debug'
 import shuffle from 'array-shuffle'
 import { AbortController } from 'native-abort-controller'
-import {preload} from './runtime/preload-nodejs.js'
+import { preload } from './runtime/preload-nodejs.js'
 /** @type {typeof import('hashlru').default} */
 // @ts-ignore - hashlru has incorrect typedefs
 import hashlru from 'hashlru'

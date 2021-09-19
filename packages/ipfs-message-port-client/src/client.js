@@ -1,5 +1,4 @@
 
-
 /* eslint-env browser */
 
 import { Service } from './client/service.js'
@@ -27,7 +26,6 @@ import { Service } from './client/service.js'
 /**
  * @typedef {import('./client/transport').MessageTransport} MessageTransport
  */
-
 
 /**
  * Client represents the client to remote `T` service. It is a base clase that

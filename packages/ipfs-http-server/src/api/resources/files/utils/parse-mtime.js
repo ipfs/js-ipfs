@@ -1,5 +1,4 @@
 
-
 /**
  * @param {number | undefined} secs
  * @param {number | undefined} nsecs

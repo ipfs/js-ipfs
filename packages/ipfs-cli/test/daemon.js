@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-const clean = require('./utils/clean')
-const ipfsCmd = require('./utils/ipfs-exec')
-const { isWindows } = require('./utils/platforms')
 import os from 'os'
 import path from 'path'
 import { nanoid } from 'nanoid'
 import fs from 'fs'
+const clean = require('./utils/clean')
+const ipfsCmd = require('./utils/ipfs-exec')
+const { isWindows } = require('./utils/platforms')
 const tempWrite = require('temp-write')
 const pkg = require('../package.json')
 

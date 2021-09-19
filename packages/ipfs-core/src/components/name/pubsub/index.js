@@ -1,7 +1,7 @@
 
-import {createCancel} from './cancel.js'
-import {createState} from './state.js'
-import {createSubs} from './subs.js'
+import { createCancel } from './cancel.js'
+import { createState } from './state.js'
+import { createSubs } from './subs.js'
 
 export class PubSubAPI {
   /**

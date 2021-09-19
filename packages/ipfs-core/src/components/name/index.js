@@ -1,7 +1,7 @@
 
-import {createPublish} from './publish.js'
-import {createResolve} from './resolve.js'
-import {PubSubAPI} from './pubsub/index.js'
+import { createPublish } from './publish.js'
+import { createResolve } from './resolve.js'
+import { PubSubAPI } from './pubsub/index.js'
 
 export class NameAPI {
   /**

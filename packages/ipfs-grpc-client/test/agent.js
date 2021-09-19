@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-
 const { create } = require('../src')
 const WebSocket = require('ws')
 

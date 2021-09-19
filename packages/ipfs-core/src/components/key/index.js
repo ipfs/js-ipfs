@@ -1,11 +1,11 @@
 
-import {createExport} from './export.js'
-import {createGen} from './gen.js'
-import {createImport} from './import.js'
-import {createInfo} from './info.js'
-import {createList} from './list.js'
-import {createRename} from './rename.js'
-import {createRm} from './rm.js'
+import { createExport } from './export.js'
+import { createGen } from './gen.js'
+import { createImport } from './import.js'
+import { createInfo } from './info.js'
+import { createList } from './list.js'
+import { createRename } from './rename.js'
+import { createRm } from './rm.js'
 
 /**
  * @typedef {import('libp2p/src/keychain')} Keychain

@@ -1,5 +1,5 @@
 
-import {objectToCamel} from './object-to-camel.js'
+import { objectToCamel } from './object-to-camel.js'
 
 /**
  * @param {Record<string, any>} entry

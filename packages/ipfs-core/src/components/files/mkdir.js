@@ -2,7 +2,7 @@
 import errCode from 'err-code'
 import debug from 'debug'
 import { exporter } from 'ipfs-unixfs-exporter'
-import {createNode} from './utils/create-node.js'
+import { createNode } from './utils/create-node.js'
 import { toPathComponents } from './utils/to-path-components.js'
 import { updateMfsRoot } from './utils/update-mfs-root.js'
 import { updateTree } from './utils/update-tree.js'

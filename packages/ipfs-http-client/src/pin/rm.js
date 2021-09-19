@@ -11,7 +11,7 @@ import { configure } from '../lib/configure.js'
 /**
  * @param {import('../types').Options} config
  */
- export const createRm = (config) => {
+export const createRm = (config) => {
   const all = createRmAll(config)
 
   return configure(() => {

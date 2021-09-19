@@ -29,7 +29,7 @@ export class RemoteAPI {
 /**
  * @type {RemotePiningAPI["add"]}
  */
- RemoteAPI.prototype.add = async function add (cid, { timeout, signal, headers, ...query }) {
+RemoteAPI.prototype.add = async function add (cid, { timeout, signal, headers, ...query }) {
   const response = await this.client.post('pin/remote/add', {
     timeout,
     signal,
@@ -43,7 +43,7 @@ export class RemoteAPI {
 /**
  * @type {RemotePiningAPI["ls"]}
  */
- RemoteAPI.prototype.ls = async function * ls ({ timeout, signal, headers, ...query }) {
+RemoteAPI.prototype.ls = async function * ls ({ timeout, signal, headers, ...query }) {
   const response = await this.client.post('pin/remote/ls', {
     timeout,
     signal,
@@ -59,7 +59,7 @@ export class RemoteAPI {
 /**
  * @type {RemotePiningAPI["rm"]}
  */
- RemoteAPI.prototype.rm = async function rm ({ timeout, signal, headers, ...query }) {
+RemoteAPI.prototype.rm = async function rm ({ timeout, signal, headers, ...query }) {
   await this.client.post('pin/remote/rm', {
     timeout,
     signal,
@@ -74,7 +74,7 @@ export class RemoteAPI {
 /**
  * @type {RemotePiningAPI["rmAll"]}
  */
- RemoteAPI.prototype.rmAll = async function ({ timeout, signal, headers, ...query }) {
+RemoteAPI.prototype.rmAll = async function ({ timeout, signal, headers, ...query }) {
   await this.client.post('pin/remote/rm', {
     timeout,
     signal,

@@ -15,7 +15,7 @@ import { AbortController } from 'native-abort-controller'
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {import('../types').Options} options
  */
- export const createPut = (codecs, options) => {
+export const createPut = (codecs, options) => {
   const fn = configure((api) => {
     /**
      * @type {DAGAPI["put"]}

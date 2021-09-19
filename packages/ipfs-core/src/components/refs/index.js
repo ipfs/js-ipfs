@@ -1,7 +1,7 @@
 
 import * as dagPB from '@ipld/dag-pb'
 import { Errors } from 'interface-datastore'
-import {toCidAndPath} from 'ipfs-core-utils/to-cid-and-path'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import { CID } from 'multiformats/cid'
 // @ts-expect-error no types
 import TimeoutController from 'timeout-abort-controller'

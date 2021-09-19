@@ -1,5 +1,4 @@
 
-
 export default {
   command: 'bootstrap <command>',
 

@@ -7,7 +7,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
- export const createMv = configure(api => {
+export const createMv = configure(api => {
   /**
    * @type {FilesAPI["mv"]}
    */

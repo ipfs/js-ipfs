@@ -1,6 +1,6 @@
 
 import debug from 'debug'
-import {addLink} from './add-link.js'
+import { addLink } from './add-link.js'
 import {
   decode
 } from '@ipld/dag-pb'

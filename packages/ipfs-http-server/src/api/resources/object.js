@@ -7,12 +7,12 @@ import Boom from '@hapi/boom'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import debug from 'debug'
+import { CID } from 'multiformats/cid'
 const log = Object.assign(debug('ipfs:http-api:object'), {
   error: debug('ipfs:http-api:object:error')
 })
 const { base64pad } = require('multiformats/bases/base64')
 const { base16 } = require('multiformats/bases/base16')
-import { CID } from 'multiformats/cid'
 
 /**
  * @type {Record<string, (str: string) => Uint8Array>}

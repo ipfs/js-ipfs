@@ -6,7 +6,7 @@ import { sha256 } from 'multiformats/hashes/sha2'
 import { nanoid } from 'nanoid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { CID } from 'multiformats/cid'
-import {waitFor} from './utils/wait-for.js'
+import { waitFor } from './utils/wait-for.js'
 import { createMfsPreloader } from '../src/mfs-preload.js'
 
 const fakeCid = async () => {

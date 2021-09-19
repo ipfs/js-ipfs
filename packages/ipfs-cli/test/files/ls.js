@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-const cli = require('../utils/cli')
 import sinon from 'sinon'
 import { isNode } from 'ipfs-utils/src/env.js'
 import { CID } from 'multiformats/cid'
 import { base58btc } from 'multiformats/bases/base58'
+const cli = require('../utils/cli')
 const fileCid = CID.parse('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
 const defaultOptions = {

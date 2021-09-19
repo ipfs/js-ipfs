@@ -1,5 +1,4 @@
 
-
 /**
  * @param {Object} config
  * @param {import('../types').NetworkService} config.network

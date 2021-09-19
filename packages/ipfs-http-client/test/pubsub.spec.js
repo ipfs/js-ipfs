@@ -4,7 +4,7 @@ import { expect } from 'aegir/utils/chai.js'
 import { AbortController } from 'native-abort-controller'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import defer from 'p-defer'
-import {factory} from './utils/factory.js'
+import { factory } from './utils/factory.js'
 
 const f = factory()
 

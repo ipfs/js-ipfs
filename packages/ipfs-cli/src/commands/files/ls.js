@@ -3,8 +3,8 @@ import {
   asBoolean,
   stripControlCharacters
 } from '../../utils.js'
-import {formatMode} from 'ipfs-core-utils/files/format-mode'
-import {formatMtime} from 'ipfs-core-utils/files/format-mtime'
+import { formatMode } from 'ipfs-core-utils/files/format-mode'
+import { formatMtime } from 'ipfs-core-utils/files/format-mtime'
 import parseDuration from 'parse-duration'
 
 export default {

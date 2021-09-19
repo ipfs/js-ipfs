@@ -1,8 +1,8 @@
 
-import {createGet} from './get.js'
-import {createPut} from './put.js'
-import {createRm} from './rm.js'
-import {createStat} from './stat.js'
+import { createGet } from './get.js'
+import { createPut } from './put.js'
+import { createRm } from './rm.js'
+import { createStat } from './stat.js'
 
 /**
  * @typedef {import('../../types').Preload} Preload

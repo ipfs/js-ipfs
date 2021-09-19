@@ -1,6 +1,6 @@
 import { normaliseInput } from 'ipfs-core-utils/files/normalise-input'
 import { CID } from 'multiformats/cid'
-import {bidiToDuplex} from '../utils/bidi-to-duplex.js'
+import { bidiToDuplex } from '../utils/bidi-to-duplex.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**

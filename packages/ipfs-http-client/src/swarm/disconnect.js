@@ -7,7 +7,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/swarm').API<HTTPClientExtraOptions>} SwarmAPI
  */
 
- export const createDisconnect = configure(api => {
+export const createDisconnect = configure(api => {
   /**
    * @type {SwarmAPI["disconnect"]}
    */

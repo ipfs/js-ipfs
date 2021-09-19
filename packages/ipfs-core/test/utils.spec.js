@@ -2,11 +2,11 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import {resolvePath} from '../src/utils.js'
+import { resolvePath } from '../src/utils.js'
 import { createTempRepo } from './utils/create-repo.js'
 import { importer } from 'ipfs-unixfs-importer'
 import all from 'it-all'
-import {codecs} from './utils/codecs.js'
+import { codecs } from './utils/codecs.js'
 
 describe('utils', () => {
   /** @type {import('multiformats/cid').CID} */

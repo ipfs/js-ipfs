@@ -174,7 +174,7 @@ export const asBoolean = (value) => {
 /**
  * @param {any} value
  */
- export const asOctal = (value) => {
+export const asOctal = (value) => {
   return parseInt(value, 8)
 }
 
@@ -182,7 +182,7 @@ export const asBoolean = (value) => {
  * @param {number} [secs]
  * @param {number} [nsecs]
  */
- export const asMtimeFromSeconds = (secs, nsecs) => {
+export const asMtimeFromSeconds = (secs, nsecs) => {
   if (secs == null) {
     return undefined
   }
@@ -196,7 +196,7 @@ export const asBoolean = (value) => {
 /**
  * @param {*} value
  */
- export const coerceMtime = (value) => {
+export const coerceMtime = (value) => {
   value = parseInt(value)
 
   if (isNaN(value)) {
@@ -209,7 +209,7 @@ export const asBoolean = (value) => {
 /**
  * @param {*} value
  */
- export const coerceMtimeNsecs = (value) => {
+export const coerceMtimeNsecs = (value) => {
   value = parseInt(value)
 
   if (isNaN(value)) {
@@ -226,7 +226,7 @@ export const asBoolean = (value) => {
 /**
  * @param {*} value
  */
- export const coerceCID = (value) => {
+export const coerceCID = (value) => {
   if (!value) {
     return undefined
   }
@@ -241,7 +241,7 @@ export const asBoolean = (value) => {
 /**
  * @param {string[]} values
  */
- export const coerceCIDs = (values) => {
+export const coerceCIDs = (values) => {
   if (values == null) {
     return []
   }
@@ -252,7 +252,7 @@ export const asBoolean = (value) => {
 /**
  * @param {string} value
  */
- export const coerceMultiaddr = (value) => {
+export const coerceMultiaddr = (value) => {
   if (value == null) {
     return undefined
   }
@@ -263,7 +263,7 @@ export const asBoolean = (value) => {
 /**
  * @param {string[]} values
  */
- export const coerceMultiaddrs = (values) => {
+export const coerceMultiaddrs = (values) => {
   if (values == null) {
     return undefined
   }
@@ -274,7 +274,7 @@ export const asBoolean = (value) => {
 /**
  * @param {string} value
  */
- export const coerceUint8Array = (value) => {
+export const coerceUint8Array = (value) => {
   if (value == null) {
     return undefined
   }
@@ -289,7 +289,7 @@ const DEL = 127
  *
  * @param {string} [str] - a string to strip control characters from
  */
- export const stripControlCharacters = (str) => {
+export const stripControlCharacters = (str) => {
   return (str || '')
     .split('')
     .filter((c) => {
@@ -305,7 +305,7 @@ const DEL = 127
  *
  * @param {string} str - a string to escape control characters in
  */
- export const escapeControlCharacters = (str) => {
+export const escapeControlCharacters = (str) => {
   /** @type {Record<string, string>} */
   const escapes = {
     '00': '\\0',
@@ -341,7 +341,7 @@ const DEL = 127
  * @param {import('multiformats/bases/interface').MultibaseCodec<any>} cidBase - any encountered CIDs will be stringified using this base
  * @returns {any}
  */
- export const makeEntriesPrintable = (obj, cidBase) => {
+export const makeEntriesPrintable = (obj, cidBase) => {
   const cid = CID.asCID(obj)
 
   if (cid) {

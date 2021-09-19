@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
 
-
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { expect } from 'aegir/utils/chai.js'
 import * as dagPB from '@ipld/dag-pb'

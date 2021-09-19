@@ -2,12 +2,13 @@
 
 import * as tests from 'interface-ipfs-core'
 import { isNode } from 'ipfs-utils/src/env.js'
-import factory from './utils/factory.js'
+import { factory } from './utils/factory.js'
+import * as ipfsClientModule from 'ipfs-client'
 
 describe('interface-ipfs-core ipfs-client tests', () => {
   const commonFactory = factory({
     type: 'js',
-    ipfsClientModule: require('ipfs-client')
+    ipfsClientModule
   })
 
   tests.files(commonFactory, {
@@ -148,6 +149,6 @@ describe('interface-ipfs-core ipfs-client tests', () => {
 
   tests.pubsub(factory({
     type: 'js',
-    ipfsClientModule: require('ipfs-client')
+    ipfsClientModule
   }))
 })

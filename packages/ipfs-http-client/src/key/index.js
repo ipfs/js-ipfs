@@ -5,6 +5,7 @@ import { createInfo } from './info.js'
 import { createList } from './list.js'
 import { createRename } from './rename.js'
 import { createRm } from './rm.js'
+
 export class KeyAPI {
   /**
    * @param {import('../types').Options} config

@@ -1,6 +1,6 @@
 
 import first from 'it-first'
-import {bidiToDuplex} from './bidi-to-duplex.js'
+import { bidiToDuplex } from './bidi-to-duplex.js'
 
 /**
  * @typedef {import('http').Agent} HttpAgent

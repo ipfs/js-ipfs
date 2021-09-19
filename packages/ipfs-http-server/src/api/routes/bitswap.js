@@ -3,7 +3,7 @@ import {
   wantlistResource,
   statResource,
   unwantResource
- } from '../resources/bitswap.js'
+} from '../resources/bitswap.js'
 
 export default [
   {

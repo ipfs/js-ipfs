@@ -7,7 +7,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/log').API<HTTPClientExtraOptions>} LogAPI
  */
 
- export const createLs = configure(api => {
+export const createLs = configure(api => {
   /**
    * @type {LogAPI["ls"]}
    */

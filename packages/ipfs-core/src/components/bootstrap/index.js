@@ -1,9 +1,9 @@
 
-import {createAdd} from './add.js'
-import {createClear} from './clear.js'
-import {createList} from './list.js'
-import {createReset} from './reset.js'
-import {createRm} from './rm.js'
+import { createAdd } from './add.js'
+import { createClear } from './clear.js'
+import { createList } from './list.js'
+import { createReset } from './reset.js'
+import { createRm } from './rm.js'
 export class BootstrapAPI {
   /**
    * @param {Object} config

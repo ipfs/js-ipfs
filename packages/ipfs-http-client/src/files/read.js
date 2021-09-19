@@ -1,16 +1,14 @@
-
-
-// @ts-expect-error no types
-const toIterable = require('stream-to-it/source')
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+// @ts-expect-error no types
+import toIterable from 'stream-to-it/source'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
- export const createRead = configure(api => {
+export const createRead = configure(api => {
   /**
    * @type {FilesAPI["read"]}
    */

@@ -8,7 +8,7 @@ import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/name/pubsub').API<HTTPClientExtraOptions>} NamePubsubAPI
  */
 
- export const createCancel = configure(api => {
+export const createCancel = configure(api => {
   /**
    * @type {NamePubsubAPI["cancel"]}
    */

@@ -1,7 +1,7 @@
 
 import debug from 'debug'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import {loadMfsRoot} from '../files/utils/with-mfs-root.js'
+import { loadMfsRoot } from '../files/utils/with-mfs-root.js'
 
 const log = debug('ipfs:repo:gc')
 

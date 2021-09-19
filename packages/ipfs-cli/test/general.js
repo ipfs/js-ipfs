@@ -5,15 +5,15 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'
-const { repoVersion } = require('ipfs-repo')
 import { promisify } from 'util'
+import cli from './utils/cli.js'
+import sinon from 'sinon'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+const { repoVersion } = require('ipfs-repo')
 const ncp = promisify(require('ncp').ncp)
 const ipfsExec = require('./utils/ipfs-exec')
 const clean = require('./utils/clean')
 const { isWindows } = require('./utils/platforms')
-import cli from './utils/cli.js'
-import sinon from 'sinon'
-import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 describe.skip('general cli options', () => {
   let ipfs

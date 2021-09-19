@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import sinon from 'sinon'
-import {server} from './utils/server.js'
+import { server } from './utils/server.js'
 import { expect } from 'aegir/utils/chai.js'
 import all from 'it-all'
 import drain from 'it-drain'

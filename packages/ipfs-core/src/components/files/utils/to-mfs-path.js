@@ -1,6 +1,6 @@
 
 import { loadMfsRoot } from './with-mfs-root.js'
-import {toPathComponents} from './to-path-components.js'
+import { toPathComponents } from './to-path-components.js'
 import { exporter } from 'ipfs-unixfs-exporter'
 import errCode from 'err-code'
 import { CID } from 'multiformats/cid'

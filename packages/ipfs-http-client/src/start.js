@@ -7,7 +7,7 @@ import errCode from 'err-code'
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
- export const createStart = configure(api => {
+export const createStart = configure(api => {
   /**
    * @type {RootAPI["start"]}
    */

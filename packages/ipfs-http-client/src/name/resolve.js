@@ -7,7 +7,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/name').API<HTTPClientExtraOptions>} NameAPI
  */
 
- export const createResolve = configure(api => {
+export const createResolve = configure(api => {
   /**
    * @type {NameAPI["resolve"]}
    */

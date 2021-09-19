@@ -2,13 +2,18 @@
 import { createFactory } from 'ipfsd-ctl'
 import mergeOpts from 'merge-options'
 import { isNode, isBrowser } from 'ipfs-utils/src/env.js'
+import * as ipfsHttpModule from 'ipfs-http-client'
+import * as ipfsModule from 'ipfs-core'
+// @ts-expect-error no types
+import goIpfs from 'go-ipfs'
+
 const merge = mergeOpts.bind({ ignoreUndefined: true })
 
 const commonOptions = {
   test: true,
   type: 'proc',
-  ipfsHttpModule: require('ipfs-http-client'),
-  ipfsModule: require('ipfs-core'),
+  ipfsHttpModule,
+  ipfsModule,
   ipfsOptions: {
     pass: 'ipfs-is-awesome-software',
     libp2p: {
@@ -49,15 +54,13 @@ const commonOverrides = {
       : {})
   },
   go: {
-    ipfsBin: isNode ? require('go-ipfs').path() : undefined
+    ipfsBin: isNode ? goIpfs.path() : undefined
   }
 }
 
-const factory = (options = {}, overrides = {}) => {
+export const factory = (options = {}, overrides = {}) => {
   return createFactory(
     merge(commonOptions, options),
     merge(commonOverrides, overrides)
   )
 }
-
-module.exports = factory

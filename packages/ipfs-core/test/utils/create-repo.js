@@ -1,8 +1,8 @@
 
 import { nanoid } from 'nanoid'
 // @ts-expect-error locks is missing from types?
-import { createRepo, locks} from 'ipfs-repo'
-import {codecs} from './codecs.js'
+import { createRepo, locks } from 'ipfs-repo'
+import { codecs } from './codecs.js'
 import { createBackend } from './create-backend.js'
 import { Key } from 'interface-datastore'
 // @ts-ignore

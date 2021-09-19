@@ -2,10 +2,10 @@
 import { createFromPrivKey } from 'peer-id'
 import errcode from 'err-code'
 import debug from 'debug'
-import {IpnsPublisher} from './publisher.js'
-import {IpnsRepublisher} from './republisher.js'
-import {IpnsResolver} from './resolver.js'
-import {TLRU} from '../utils/tlru.js'
+import { IpnsPublisher } from './publisher.js'
+import { IpnsRepublisher } from './republisher.js'
+import { IpnsResolver } from './resolver.js'
+import { TLRU } from '../utils/tlru.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const log = Object.assign(debug('ipfs:ipns'), {

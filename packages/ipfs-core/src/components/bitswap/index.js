@@ -1,8 +1,8 @@
 
-import {createWantlist} from './wantlist.js'
-import {createWantlistForPeer} from './wantlist-for-peer.js'
-import {createUnwant} from './unwant.js'
-import {createStat} from './stat.js'
+import { createWantlist } from './wantlist.js'
+import { createWantlistForPeer } from './wantlist-for-peer.js'
+import { createUnwant } from './unwant.js'
+import { createStat } from './stat.js'
 
 /**
  * @typedef {import('../../types').NetworkService} NetworkService

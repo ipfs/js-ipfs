@@ -8,6 +8,17 @@
  * @param {any} err
  * @param {string} [origin]
  */
+import semver from 'semver'
+import * as pkg from './package.js'
+import debug from 'debug'
+
+import { print, getIpfs, getRepoPath } from 'ipfs-cli/utils'
+import { cli } from 'ipfs-cli'
+
+/**
+ * @param {any} err
+ * @param {string} origin
+ */
 const onUncaughtException = (err, origin) => {
   if (!origin || origin === 'uncaughtException') {
     console.error(err)
@@ -28,10 +39,6 @@ const onUnhandledRejection = (err) => {
 process.once('uncaughtException', onUncaughtException)
 process.once('unhandledRejection', onUnhandledRejection)
 
-import semver from 'semver'
-import * as pkg from './package.js'
-import debug from 'debug'
-
 const log = debug('ipfs:cli')
 
 process.title = pkg.name
@@ -49,9 +56,6 @@ if (!pkg.version.includes('-rc')) {
   const oneWeek = 1000 * 60 * 60 * 24 * 7
   updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 }
-
-import { print, getIpfs, getRepoPath } from 'ipfs-cli/utils'
-import { cli } from 'ipfs-cli'
 
 /**
  * @param {string[]} argv

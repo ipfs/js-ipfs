@@ -7,7 +7,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/diag').API<HTTPClientExtraOptions>} DiagAPI
  */
 
- export const createCmds = configure(api => {
+export const createCmds = configure(api => {
   /**
    * @type {DiagAPI["cmds"]}
    */

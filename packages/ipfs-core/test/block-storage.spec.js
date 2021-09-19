@@ -2,7 +2,7 @@
 
 import { MemoryBlockstore } from 'interface-blockstore'
 import suite from 'interface-blockstore-tests'
-import {BlockStorage} from '../src/block-storage.js'
+import { BlockStorage } from '../src/block-storage.js'
 
 /**
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo

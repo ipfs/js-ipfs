@@ -7,7 +7,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
  */
 
- export const createPeers = configure(api => {
+export const createPeers = configure(api => {
   /**
    * @type {PubsubAPI["peers"]}
    */

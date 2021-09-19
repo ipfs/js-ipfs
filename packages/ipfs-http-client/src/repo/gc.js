@@ -8,7 +8,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/repo').API<HTTPClientExtraOptions>} RepoAPI
  */
 
- export const createGc = configure(api => {
+export const createGc = configure(api => {
   /**
    * @type {RepoAPI["gc"]}
    */

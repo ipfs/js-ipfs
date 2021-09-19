@@ -5,13 +5,13 @@ import crypto from 'libp2p-crypto'
 import errcode from 'err-code'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { OFFLINE_ERROR, normalizePath } from '../../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { resolvePath } from './utils.js'
 
 const log = Object.assign(debug('ipfs:name:publish'), {
   error: debug('ipfs:name:publish:error')
 })
-import { OFFLINE_ERROR, normalizePath } from '../../utils.js'
-import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import { resolvePath } from './utils.js'
 
 /**
  * IPNS - Inter-Planetary Naming System

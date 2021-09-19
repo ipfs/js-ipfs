@@ -1,12 +1,11 @@
 
-
-// @ts-expect-error no types
-const Content = require('@hapi/content')
-const multipart = require('it-multipart')
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-const qs = require('querystring')
 import drain from 'it-drain'
+// @ts-expect-error no types
+import Content from '@hapi/content'
+import multipart from 'it-multipart'
+import qs from 'querystring'
 
 const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'

@@ -1,5 +1,4 @@
 
-
 // @ts-ignore
 import protocol from 'ipfs-grpc-protocol'
 import protobuf from 'protobufjs/light'

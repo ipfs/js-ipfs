@@ -1,5 +1,4 @@
 
-
 /**
  * @typedef {import('ipfs-core-types/src/pubsub').MessageHandlerFn} Subscription
  */

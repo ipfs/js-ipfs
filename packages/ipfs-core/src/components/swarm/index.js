@@ -1,9 +1,9 @@
 
-import {createAddrs} from './addrs.js'
-import {createConnect} from './connect.js'
-import {createDisconnect} from './disconnect.js'
-import {createLocalAddrs} from './local-addrs.js'
-import {createPeers} from './peers.js'
+import { createAddrs } from './addrs.js'
+import { createConnect } from './connect.js'
+import { createDisconnect } from './disconnect.js'
+import { createLocalAddrs } from './local-addrs.js'
+import { createPeers } from './peers.js'
 
 export class SwarmAPI {
   /**

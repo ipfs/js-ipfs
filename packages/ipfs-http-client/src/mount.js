@@ -8,7 +8,7 @@ import { toUrlSearchParams } from './lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
- export const createMount = configure(api => {
+export const createMount = configure(api => {
   /**
    * @type {RootAPI["mount"]}
    */

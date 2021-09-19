@@ -9,7 +9,7 @@ import { Provider } from './response-types.js'
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
  */
 
- export const createFindProvs = configure(api => {
+export const createFindProvs = configure(api => {
   /**
    * @type {DHTAPI["findProvs"]}
    */

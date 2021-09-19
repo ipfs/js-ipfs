@@ -2,9 +2,9 @@
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import debug from 'debug'
-const log = debug('ipfs-http-client:pubsub:subscribe')
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+const log = debug('ipfs-http-client:pubsub:subscribe')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -18,7 +18,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @param {Options} options
  * @param {import('./subscription-tracker').SubscriptionTracker} subsTracker
  */
- export const createSubscribe = (options, subsTracker) => {
+export const createSubscribe = (options, subsTracker) => {
   return configure((api) => {
     /**
      * @type {PubsubAPI["subscribe"]}

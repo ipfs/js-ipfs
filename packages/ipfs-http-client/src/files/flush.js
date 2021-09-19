@@ -8,7 +8,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
- export const createFlush = configure(api => {
+export const createFlush = configure(api => {
   /**
    * @type {FilesAPI["flush"]}
    */

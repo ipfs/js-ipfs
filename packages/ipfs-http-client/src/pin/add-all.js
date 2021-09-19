@@ -9,7 +9,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/pin').API<HTTPClientExtraOptions>} PinAPI
  */
 
- export const createAddAll = configure(api => {
+export const createAddAll = configure(api => {
   /**
    * @type {PinAPI["addAll"]}
    */

@@ -1,6 +1,6 @@
 
 import { configure } from '../lib/configure.js'
-import {resolve} from '../lib/resolve.js'
+import { resolve } from '../lib/resolve.js'
 import first from 'it-first'
 import last from 'it-last'
 import errCode from 'err-code'

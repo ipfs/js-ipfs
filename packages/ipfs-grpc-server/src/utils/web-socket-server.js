@@ -1,7 +1,7 @@
 
 import { Server as WebSocketServer } from 'ws'
 import { EventEmitter } from 'events'
-import {WebSocketMessageChannel} from './web-socket-message-channel.js'
+import { WebSocketMessageChannel } from './web-socket-message-channel.js'
 import debug from 'debug'
 // @ts-expect-error - no types
 import coerce from 'coercer'

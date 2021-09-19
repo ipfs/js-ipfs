@@ -1,7 +1,7 @@
 
-import {createGc} from './gc.js'
-import {createStat} from './stat.js'
-import {createVersion} from './version.js'
+import { createGc } from './gc.js'
+import { createStat } from './stat.js'
+import { createVersion } from './version.js'
 
 /**
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher

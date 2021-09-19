@@ -1,5 +1,4 @@
 
-
 /*
  * Stop the daemon.
  *

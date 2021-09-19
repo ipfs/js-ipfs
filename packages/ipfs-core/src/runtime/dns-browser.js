@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import {TLRU} from '../utils/tlru.js'
+import { TLRU } from '../utils/tlru.js'
 import PQueue from 'p-queue'
 import HTTP from 'ipfs-utils/src/http.js'
 

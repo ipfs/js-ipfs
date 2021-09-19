@@ -11,7 +11,7 @@ import {
   coerceMtimeNsecs,
   stripControlCharacters
 } from '../utils.js'
-import globSource from  'ipfs-utils/src/files/glob-source.js'
+import globSource from 'ipfs-utils/src/files/glob-source.js'
 import parseDuration from 'parse-duration'
 
 const getFolderSize = promisify(getFolderSizeCb)

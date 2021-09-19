@@ -8,7 +8,7 @@ import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/object/patch').API<HTTPClientExtraOptions>} ObjectPatchAPI
  */
 
- export const createAddLink = configure(api => {
+export const createAddLink = configure(api => {
   /**
    * @type {ObjectPatchAPI["addLink"]}
    */

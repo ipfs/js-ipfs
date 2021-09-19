@@ -8,7 +8,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
  * @typedef {import('ipfs-core-types/src/dag').API<HTTPClientExtraOptions>} DAGAPI
  */
 
- export const createResolve = configure(api => {
+export const createResolve = configure(api => {
   /**
    * @type {DAGAPI["resolve"]}
    */

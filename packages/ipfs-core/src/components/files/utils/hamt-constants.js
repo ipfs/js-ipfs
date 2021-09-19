@@ -4,9 +4,9 @@ import { murmur3128 } from '@multiformats/murmur3'
 export const hamtHashCode = murmur3128.code
 export const hamtBucketBits = 8
 
-  /**
-   * @param {Uint8Array} buf
-   */
+/**
+ * @param {Uint8Array} buf
+ */
 export async function hamtHashFn (buf) {
   return (await murmur3128.encode(buf))
     // Murmur3 outputs 128 bit but, accidentally, IPFS Go's

@@ -9,7 +9,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
  * @typedef {import('ipfs-core-types/src/object').API<HTTPClientExtraOptions>} ObjectAPI
  */
 
- export const createGet = configure(api => {
+export const createGet = configure(api => {
   /**
    * @type {ObjectAPI["get"]}
    */

@@ -10,7 +10,7 @@ import { AbortController } from 'native-abort-controller'
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
  */
 
- export const createPublish = configure(api => {
+export const createPublish = configure(api => {
   /**
    * @type {PubsubAPI["publish"]}
    */

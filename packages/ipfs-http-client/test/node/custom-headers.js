@@ -2,8 +2,8 @@
 
 import { isNode } from 'ipfs-utils/src/env.js'
 import { expect } from 'aegir/utils/chai.js'
-const ipfsClient = require('../../src').create
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+const ipfsClient = require('../../src').create
 
 function startServer (fn) {
   let headersResolve
