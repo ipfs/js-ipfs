@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.58.4",
+  "version": "0.58.6",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -42,21 +42,19 @@
     "build:update-version": "node scripts/update-version.js",
     "build:aegir": "aegir build",
     "lint": "aegir ts -p check && aegir lint",
-    "test": "echo 'Only interface tests live here'",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
     "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD IPFS_JS_HTTP_MODULE=$PWD/../ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
-    "coverage": "nyc --reporter=text --reporter=lcov npm run test:interface:core -- -t node",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.8.6",
-    "ipfs-core": "^0.10.6",
+    "ipfs-cli": "^0.8.8",
+    "ipfs-core": "^0.10.8",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
@@ -68,10 +66,10 @@
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.9.1",
-    "interface-ipfs-core": "^0.150.2",
-    "ipfs-client": "^0.6.4",
-    "ipfs-core-types": "^0.7.1",
-    "ipfs-http-client": "^52.0.3",
+    "interface-ipfs-core": "^0.150.4",
+    "ipfs-client": "^0.6.6",
+    "ipfs-core-types": "^0.7.3",
+    "ipfs-http-client": "^52.0.5",
     "ipfs-interop": "^6.0.1",
     "ipfs-utils": "^8.1.4",
     "ipfsd-ctl": "^10.0.3",

@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.150.2",
+  "version": "0.150.4",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
@@ -50,8 +50,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "aegir build",
-    "lint": "aegir lint",
-    "test": "echo 'No tests here'",
+    "lint": "aegir ts -p check && aegir lint",
     "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf"
   },
   "repository": {
@@ -73,7 +72,7 @@
     "delay": "^5.0.0",
     "err-code": "^3.0.1",
     "interface-blockstore": "^1.0.0",
-    "ipfs-core-types": "^0.7.1",
+    "ipfs-core-types": "^0.7.3",
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
     "ipfs-utils": "^8.1.4",

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-client",
-  "version": "0.6.3",
+  "version": "0.6.5",
   "description": "A client library for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -40,8 +40,11 @@
   "scripts": {
     "build": "aegir build",
     "test": "aegir test",
+    "test:node": "aegir test -t node",
+    "test:browser": "aegir test -t browser",
+    "test:electron-main": "aegir test -t electron-main",
+    "test:electron-renderer": "aegir test -t electron-renderer",
     "lint": "aegir ts -p check && aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol -i ipfs-core-types"
   },
@@ -50,9 +53,9 @@
     "change-case": "^4.1.1",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.7.1",
-    "ipfs-core-utils": "^0.10.3",
-    "ipfs-grpc-protocol": "^0.4.0",
+    "ipfs-core-types": "^0.7.3",
+    "ipfs-core-utils": "^0.10.5",
+    "ipfs-grpc-protocol": "^0.4.1",
     "ipfs-unixfs": "^6.0.3",
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.2",

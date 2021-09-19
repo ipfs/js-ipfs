@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "52.0.3",
+  "version": "52.0.5",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -50,10 +50,7 @@
     "test:webworker": "aegir test -t webworker",
     "test:electron-main": "aegir test -t electron-main",
     "test:electron-renderer": "aegir test -t electron-renderer",
-    "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
-    "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
     "lint": "aegir ts -p check && aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller"
   },
@@ -65,8 +62,8 @@
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "form-data": "^4.0.0",
-    "ipfs-core-types": "^0.7.1",
-    "ipfs-core-utils": "^0.10.3",
+    "ipfs-core-types": "^0.7.3",
+    "ipfs-core-utils": "^0.10.5",
     "ipfs-utils": "^8.1.4",
     "it-first": "^1.0.6",
     "it-last": "^1.0.4",

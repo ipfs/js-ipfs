@@ -1,6 +1,6 @@
 {
   "name": "ipfs-client",
-  "version": "0.6.4",
+  "version": "0.6.6",
   "description": "A client library to talk to local IPFS daemons",
   "keywords": [
     "ipfs"
@@ -36,15 +36,13 @@
   },
   "scripts": {
     "build": "aegir build",
-    "test": "echo please run test:interface:client in the ipfs package instead",
     "lint": "aegir ts -p check && aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf"
   },
   "dependencies": {
-    "ipfs-grpc-client": "^0.6.3",
-    "ipfs-http-client": "^52.0.3",
+    "ipfs-grpc-client": "^0.6.5",
+    "ipfs-http-client": "^52.0.5",
     "merge-options": "^3.0.4"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-protocol",
-  "version": "0.9.2",
+  "version": "0.9.4",
   "description": "IPFS client/server protocol over message port",
   "keywords": [
     "ipfs"
@@ -68,15 +68,12 @@
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
     "test:webworker": "aegir test -t webworker",
-    "test:chrome": "aegir test -t browser -t webworker",
-    "test:firefox": "aegir test -t browser -t webworker -- --browsers firefox",
     "lint": "aegir ts -p check && aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.7.1",
+    "ipfs-core-types": "^0.7.3",
     "multiformats": "^9.4.1"
   },
   "devDependencies": {

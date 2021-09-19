@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-gateway",
-  "version": "0.6.3",
+  "version": "0.6.5",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -51,9 +51,8 @@
   },
   "scripts": {
     "lint": "aegir ts -p check && aegir lint",
-    "test": "npm run test:node",
+    "test": "aegir test -t node",
     "test:node": "aegir test -t node",
-    "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
     "build": "aegir build --no-bundle"
@@ -64,7 +63,7 @@
     "@hapi/hapi": "^20.0.0",
     "debug": "^4.1.1",
     "hapi-pino": "^8.3.0",
-    "ipfs-core-types": "^0.7.1",
+    "ipfs-core-types": "^0.7.3",
     "ipfs-http-response": "^1.0.1",
     "is-ipfs": "^6.0.1",
     "it-last": "^1.0.4",

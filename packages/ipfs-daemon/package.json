@@ -1,6 +1,6 @@
 {
   "name": "ipfs-daemon",
-  "version": "0.9.6",
+  "version": "0.9.8",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -36,9 +36,8 @@
   },
   "scripts": {
     "lint": "aegir ts -p check && aegir lint",
-    "test": "npm run test:node",
+    "test": "aegir test -t node",
     "test:node": "aegir test -t node -- --exit",
-    "coverage": "nyc --reporter=text --reporter=lcov npm run test:node",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @mapbox/node-pre-gyp",
     "build": "aegir build --no-bundle"
@@ -46,11 +45,11 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.5",
     "debug": "^4.1.1",
-    "ipfs-core": "^0.10.6",
-    "ipfs-core-types": "^0.7.1",
-    "ipfs-grpc-server": "^0.6.4",
-    "ipfs-http-gateway": "^0.6.3",
-    "ipfs-http-server": "^0.7.4",
+    "ipfs-core": "^0.10.8",
+    "ipfs-core-types": "^0.7.3",
+    "ipfs-grpc-server": "^0.6.6",
+    "ipfs-http-gateway": "^0.6.5",
+    "ipfs-http-server": "^0.7.6",
     "ipfs-utils": "^8.1.4",
     "just-safe-set": "^2.2.1",
     "libp2p": "^0.32.0",

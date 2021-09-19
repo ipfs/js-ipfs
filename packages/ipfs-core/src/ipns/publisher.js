@@ -90,7 +90,9 @@ export class IpnsPublisher {
    * @param {IPNSEntry} entry
    */
   async _publishEntry (key, entry) {
-    if (!(key instanceof Key)) {
+    const k = Key.asKey(key)
+
+    if (!k) {
       const errMsg = 'datastore key does not have a valid format'
 
       log.error(errMsg)
@@ -110,12 +112,12 @@ export class IpnsPublisher {
 
     // Add record to routing (buffer key)
     try {
-      const res = await this._routing.put(key.uint8Array(), entryData)
-      log(`ipns record for ${uint8ArrayToString(key.uint8Array(), 'base64')} was stored in the routing`)
+      const res = await this._routing.put(k.uint8Array(), entryData)
+      log(`ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
 
       return res
-    } catch (/** @type {any} */ err) {
-      const errMsg = `ipns record for ${uint8ArrayToString(key.uint8Array(), 'base64')} could not be stored in the routing`
+    } catch (/** @type {any} */err) {
+      const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} could not be stored in the routing`
       log.error(errMsg)
       log.error(err)
 
@@ -128,7 +130,9 @@ export class IpnsPublisher {
    * @param {PublicKey} publicKey
    */
   async _publishPublicKey (key, publicKey) {
-    if (!(key instanceof Key)) {
+    const k = Key.asKey(key)
+
+    if (!k) {
       const errMsg = 'datastore key does not have a valid format'
       log.error(errMsg)
 
@@ -144,12 +148,12 @@ export class IpnsPublisher {
 
     // Add public key to routing (buffer key)
     try {
-      const res = await this._routing.put(key.uint8Array(), publicKey.bytes)
-      log(`public key for ${uint8ArrayToString(key.uint8Array(), 'base64')} was stored in the routing`)
+      const res = await this._routing.put(k.uint8Array(), publicKey.bytes)
+      log(`public key for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
 
       return res
-    } catch (/** @type {any} */ err) {
-      const errMsg = `public key for ${uint8ArrayToString(key.uint8Array(), 'base64')} could not be stored in the routing`
+    } catch (/** @type {any} */err) {
+      const errMsg = `public key for ${uint8ArrayToString(k.uint8Array(), 'base64')} could not be stored in the routing`
       log.error(errMsg)
       log.error(err)
 
