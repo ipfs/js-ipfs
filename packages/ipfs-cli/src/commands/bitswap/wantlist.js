@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'wantlist [peer]',
 
   describe: 'Print out all blocks currently on the bitswap wantlist for the local peer.',

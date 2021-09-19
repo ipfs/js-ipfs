@@ -1,10 +1,10 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../utils')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../utils.js'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+
+export default {
   command: 'get <key>',
 
   describe: 'Given a key, query the routing system for its best value.',

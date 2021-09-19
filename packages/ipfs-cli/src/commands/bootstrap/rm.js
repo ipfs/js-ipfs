@@ -1,9 +1,9 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceMultiaddr } = require('../../utils')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+import { coerceMultiaddr } from '../../utils.js'
+
+export default {
   command: 'rm [<peer>]',
 
   describe: 'Removes peers from the bootstrap list',

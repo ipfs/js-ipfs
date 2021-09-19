@@ -1,18 +1,18 @@
-'use strict'
 
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const first = require('it-first')
-const last = require('it-last')
-const { resolve } = require('../../utils')
-const errCode = require('err-code')
+
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import first from 'it-first'
+import last from 'it-last'
+import { resolve } from '../../utils.js'
+import errCode from 'err-code'
 
 /**
  * @param {Object} config
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = ({ codecs, repo, preload }) => {
+export function createGet ({ codecs, repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/dag').API["get"]}
    */

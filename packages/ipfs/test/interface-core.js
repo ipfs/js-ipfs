@@ -1,9 +1,9 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const tests = require('interface-ipfs-core')
-const { isNode } = require('ipfs-utils/src/env')
-const factory = require('./utils/factory')
+
+import * as tests from 'interface-ipfs-core'
+import { isNode } from 'ipfs-utils/src/env.js'
+import factory from './utils/factory.js'
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 

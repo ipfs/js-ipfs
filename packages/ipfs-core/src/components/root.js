@@ -1,10 +1,10 @@
-'use strict'
 
-const createAddAPI = require('./add')
-const createAddAllAPI = require('./add-all')
-const createCatAPI = require('./cat')
-const createGetAPI = require('./get')
-const createLsAPI = require('./ls')
+
+import {createAdd} from './add.js'
+import {createAddAll} from './add-all/index.js'
+import {createCat} from './cat.js'
+import {createGet} from './get.js'
+import {createLs} from './ls.js'
 
 /**
  * @typedef {AddAllContext & CatContext & GetContext & ListContext } Context
@@ -13,23 +13,21 @@ const createLsAPI = require('./ls')
  * @typedef {import('./get').Context} GetContext
  * @typedef {import('./ls').Context} ListContext
  */
-class Root {
+export class RootAPI {
   /**
    * @param {Context} context
    */
   constructor ({ preload, repo, options }) {
-    const addAll = createAddAllAPI({
+    const addAll = createAddAll({
       preload,
       repo,
       options
     })
 
     this.addAll = addAll
-    this.add = createAddAPI({ addAll })
-    this.cat = createCatAPI({ repo, preload })
-    this.get = createGetAPI({ repo, preload })
-    this.ls = createLsAPI({ repo, preload })
+    this.add = createAdd({ addAll })
+    this.cat = createCat({ repo, preload })
+    this.get = createGet({ repo, preload })
+    this.ls = createLs({ repo, preload })
   }
 }
-
-module.exports = Root

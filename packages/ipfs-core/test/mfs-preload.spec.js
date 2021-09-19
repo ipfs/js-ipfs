@@ -1,14 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const delay = require('delay')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { nanoid } = require('nanoid')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { CID } = require('multiformats/cid')
-const waitFor = require('./utils/wait-for')
-const mfsPreload = require('../src/mfs-preload')
+
+import { expect } from 'aegir/utils/chai.js'
+import delay from 'delay'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { nanoid } from 'nanoid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { CID } from 'multiformats/cid'
+import {waitFor} from './utils/wait-for.js'
+import { createMfsPreload } from '../src/mfs-preload.js'
 
 const fakeCid = async () => {
   const mh = await sha256.digest(uint8ArrayFromString(nanoid()))
@@ -62,7 +62,7 @@ describe('MFS preload', () => {
 
     // The CIDs we expect to have been preloaded
     const expectedPreloadCids = [testCids.same, testCids.updated]
-    const preloader = mfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: true, interval: 10 } })
+    const preloader = createMfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: true, interval: 10 } })
 
     await preloader.start()
 
@@ -82,7 +82,7 @@ describe('MFS preload', () => {
   })
 
   it('should disable preloading MFS', async () => {
-    const preloader = mfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: false, interval: 10 } })
+    const preloader = createMfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: false, interval: 10 } })
     await preloader.start()
     await delay(500)
     expect(mockPreload.cids).to.be.empty()

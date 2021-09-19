@@ -1,14 +1,15 @@
-'use strict'
 
-const Hapi = require('@hapi/hapi')
-const Pino = require('hapi-pino')
-const debug = require('debug')
-const { Multiaddr } = require('multiaddr')
+
+import Hapi from '@hapi/hapi'
+import Pino from 'hapi-pino'
+import debug from 'debug'
+import { Multiaddr } from 'multiaddr'
 // @ts-ignore no types
-const toMultiaddr = require('uri-to-multiaddr')
-const Boom = require('@hapi/boom')
-const { AbortController } = require('native-abort-controller')
-const errorHandler = require('./error-handler')
+import toMultiaddr from 'uri-to-multiaddr'
+import Boom from '@hapi/boom'
+import { AbortController } from 'native-abort-controller'
+import { routes } from './api/routes/index.js'
+import { errorHandler } from './error-handler.js'
 const LOG = 'ipfs:http-api'
 const LOG_ERROR = 'ipfs:http-api:error'
 
@@ -87,7 +88,7 @@ function isAllowedOrigin (str, allowedOrigins = []) {
   return false
 }
 
-class HttpApi {
+export class HttpApi {
   /**
    * @param {IPFS} ipfs
    */
@@ -252,7 +253,7 @@ class HttpApi {
       }
     })
 
-    server.route(require('./api/routes'))
+    server.route(routes)
 
     errorHandler(server)
 
@@ -278,5 +279,3 @@ class HttpApi {
     this._log('stopped')
   }
 }
-
-module.exports = HttpApi

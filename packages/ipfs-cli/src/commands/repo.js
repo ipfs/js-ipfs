@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'repo <command>',
 
   description: 'Manipulate the IPFS repo.',

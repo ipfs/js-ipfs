@@ -1,8 +1,8 @@
-'use strict'
 
-const Joi = require('../../../utils/joi')
 
-const mfsFlush = {
+import Joi from '../../../utils/joi.js'
+
+export const flushResource = {
   options: {
     validate: {
       options: {
@@ -58,5 +58,3 @@ const mfsFlush = {
     })
   }
 }
-
-module.exports = mfsFlush

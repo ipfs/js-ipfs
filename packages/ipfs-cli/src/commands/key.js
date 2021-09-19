@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'key <command>',
 
   description: 'Manage your keys',

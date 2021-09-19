@@ -1,15 +1,15 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const serverStreamToIterator = require('../../utils/server-stream-to-iterator')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+import { CID } from 'multiformats/cid'
+import { serverStreamToIterator } from '../../utils/server-stream-to-iterator.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {import('@improbable-eng/grpc-web').grpc} grpc
  * @param {*} service
  * @param {import('../../types').Options} opts
  */
-module.exports = function grpcMfsLs (grpc, service, opts) {
+export function grpcMfsLs (grpc, service, opts) {
   /**
    * @type {import('ipfs-core-types/src/files').API["ls"]}
    */

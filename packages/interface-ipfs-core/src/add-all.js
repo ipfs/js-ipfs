@@ -1,22 +1,23 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const { fixtures } = require('./utils')
-const { Readable } = require('readable-stream')
-const all = require('it-all')
-const last = require('it-last')
-const drain = require('it-drain')
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const { supportsFileReader } = require('ipfs-utils/src/supports')
-const globSource = require('ipfs-utils/src/files/glob-source')
-const { isNode } = require('ipfs-utils/src/env')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const bufferStream = require('it-buffer-stream')
-const raw = require('multiformats/codecs/raw')
-const dagPb = require('@ipld/dag-pb')
+
+import { fixtures } from './utils/index.js'
+import { Readable } from 'readable-stream'
+import all from 'it-all'
+import last from 'it-last'
+import drain from 'it-drain'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import { supportsFileReader } from 'ipfs-utils/src/supports.js'
+import globSource from 'ipfs-utils/src/files/glob-source.js'
+import { isNode } from 'ipfs-utils/src/env.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import bufferStream from 'it-buffer-stream'
+import * as raw from 'multiformats/codecs/raw'
+import * as dagPB from '@ipld/dag-pb'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -27,7 +28,7 @@ const dagPb = require('@ipld/dag-pb')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testAddAll (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -493,7 +494,7 @@ module.exports = (factory, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
-      expect(files[0].cid.code).to.equal(dagPb.code)
+      expect(files[0].cid.code).to.equal(dagPB.code)
       expect(files[0].size).to.equal(18)
     })
 
@@ -509,7 +510,7 @@ module.exports = (factory, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('QmaZTosBmPwo9LQ48ESPCEcNuX2kFxkpXYy8i3rxqBdzRG')
-      expect(files[0].cid.code).to.equal(dagPb.code)
+      expect(files[0].cid.code).to.equal(dagPB.code)
       expect(files[0].size).to.equal(11)
     })
 

@@ -1,9 +1,9 @@
-'use strict'
 
-const fs = require('fs')
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import fs from 'fs'
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'import <name>',
 
   describe: 'Import the key from a PKCS #8 PEM file',

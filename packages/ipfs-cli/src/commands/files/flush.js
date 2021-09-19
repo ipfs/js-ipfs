@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'flush [path]',
 
   describe: ' Flush a given path\'s data to disk',

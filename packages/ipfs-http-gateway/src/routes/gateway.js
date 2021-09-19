@@ -1,9 +1,9 @@
-'use strict'
 
-const Joi = require('joi')
-const resources = require('../resources')
 
-module.exports = [
+import Joi from 'joi'
+import resources from '../resources/index.js'
+
+export default [
   {
     method: '*',
     path: '/ipfs/{path*}',

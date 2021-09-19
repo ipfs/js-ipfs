@@ -223,7 +223,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const fs = require('fs')
+import fs from 'fs'
 
 for await (const result of ipfs.dag.import(fs.createReadStream('./path/to/archive.car'))) {
   console.info(result)

@@ -1,18 +1,18 @@
-'use strict'
 
-const { Multiaddr } = require('multiaddr')
+
+import { Multiaddr } from 'multiaddr'
 // @ts-ignore no types
-const multiAddrToUri = require('multiaddr-to-uri')
+import multiAddrToUri from 'multiaddr-to-uri'
 
 /**
  * @param {string|Multiaddr|URL} url - A string, multiaddr or URL to convert to a url string
  * @returns {string}
  */
-module.exports = (url) => {
+export function toUrlString (url) {
   try {
     // @ts-expect-error
     url = multiAddrToUri(new Multiaddr(url))
-  } catch (err) { }
+  } catch (/** @type {any} */ err) { }
 
   url = url.toString()
 

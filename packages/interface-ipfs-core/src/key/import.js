@@ -1,9 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { nanoid } = require('nanoid')
-const { keys } = require('libp2p-crypto')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+
+import { nanoid } from 'nanoid'
+import { keys } from 'libp2p-crypto'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -13,7 +14,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testImport (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

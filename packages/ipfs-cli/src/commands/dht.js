@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'dht <command>',
 
   description: 'Issue commands directly through the DHT.',

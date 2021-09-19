@@ -1,10 +1,14 @@
-'use strict'
+import { createLevel } from './level.js'
+import { createLs } from './ls.js'
+import { createTail } from './tail.js'
 
-/**
- * @param {import('../types').Options} config
- */
-module.exports = config => ({
-  tail: require('./tail')(config),
-  ls: require('./ls')(config),
-  level: require('./level')(config)
-})
+export class LogAPI {
+  /**
+   * @param {import('../types').Options} config
+   */
+  constructor (config) {
+    this.level = createLevel(config)
+    this.ls = createLs(config)
+    this.tail = createTail(config)
+  }
+}

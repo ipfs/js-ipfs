@@ -1,10 +1,10 @@
-'use strict'
 
-const { gateway } = require('ipfs-http-gateway/src/resources')
+
+import { gateway } from 'ipfs-http-gateway/resources'
 
 const webuiCid = 'bafybeif4zkmu7qdhkpf3pnhwxipylqleof7rl6ojbe7mq3fzogz6m4xk3i' // v2.11.4
 
-module.exports = [
+export default [
   {
     method: 'GET',
     path: `/ipfs/${webuiCid}/{path*}`, // only the whitelisted webui is allowed on API port

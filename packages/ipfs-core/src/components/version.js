@@ -1,13 +1,11 @@
-'use strict'
-
-const pkg = require('../../package.json')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { version, gitHead, devDependencies} from '../../package.json'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ repo }) => {
+export function createVersion ({ repo }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["version"]}
    */
@@ -15,12 +13,10 @@ module.exports = ({ repo }) => {
     const repoVersion = await repo.version.get()
 
     return {
-      version: pkg.version,
+      version: `${version}`,
       repo: `${repoVersion}`,
-
-      // @ts-ignore gitHead is defined in published versions
-      commit: pkg.gitHead || '',
-      'interface-ipfs-core': pkg.devDependencies['interface-ipfs-core']
+      commit: gitHead || '',
+      'interface-ipfs-core': devDependencies['interface-ipfs-core']
     }
   }
 

@@ -1,13 +1,13 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const { expect } = require('aegir/utils/chai')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const { AbortSignal } = require('native-abort-controller')
+
+import { CID } from 'multiformats/cid'
+import { expect } from 'aegir/utils/chai.js'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import http from '../utils/http.js'
+import sinon from 'sinon'
+import { AbortSignal } from 'native-abort-controller'
 
 describe('/name', function () {
   const cid = CID.parse('QmbndGRXYRyfU41TUvc52gMrwq87JJg18QsDPcCeaMcM61')

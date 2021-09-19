@@ -1,11 +1,11 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const {
+
+import parseDuration from 'parse-duration'
+import {
   makeEntriesPrintable
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   // bracket syntax with '...' tells yargs to optionally accept a list
   command: 'ls [ipfsPath...]',
 

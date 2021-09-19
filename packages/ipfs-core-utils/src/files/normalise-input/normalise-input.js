@@ -1,19 +1,19 @@
-'use strict'
 
-const errCode = require('err-code')
-const browserStreamToIt = require('browser-readablestream-to-it')
-const itPeekable = require('it-peekable')
-const map = require('it-map')
-const {
+
+import errCode from 'err-code'
+import browserStreamToIt from 'browser-readablestream-to-it'
+import itPeekable from 'it-peekable'
+import map from 'it-map'
+import {
   isBytes,
   isBlob,
   isReadableStream,
   isFileObject
-} = require('./utils')
-const {
+} from './utils.js'
+import {
   parseMtime,
   parseMode
-} = require('ipfs-unixfs')
+} from 'ipfs-unixfs'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
@@ -26,7 +26,7 @@ const {
  * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 // eslint-disable-next-line complexity
-module.exports = async function * normaliseInput (input, normaliseContent) {
+export async function * normalise (input, normaliseContent) {
   if (input === null || input === undefined) {
     throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
   }

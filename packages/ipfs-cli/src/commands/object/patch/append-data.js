@@ -1,11 +1,11 @@
-'use strict'
 
-const concat = require('it-concat')
-const fs = require('fs')
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../../utils')
 
-module.exports = {
+import concat from 'it-concat'
+import fs from 'fs'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../../utils.js'
+
+export default {
   command: 'append-data <root> [data]',
 
   describe: 'Append data to the data segment of a dag node',

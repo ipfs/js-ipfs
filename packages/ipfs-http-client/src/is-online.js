@@ -1,6 +1,6 @@
-'use strict'
 
-const callId = require('./id')
+
+import { createId } from './id.js'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -10,8 +10,8 @@ const callId = require('./id')
 /**
  * @param {import('./types').Options} options
  */
-module.exports = options => {
-  const id = callId(options)
+ export const createIsOnline = options => {
+  const id = createId(options)
 
   /**
    * @type {RootAPI["isOnline"]}

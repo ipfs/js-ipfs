@@ -1,23 +1,27 @@
-'use strict'
 
-const ipns = require('ipns')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 
-module.exports = {
+import ipns from 'ipns'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+
   /**
    * @param {Uint8Array} buf
    */
-  encodeBase32: (buf) => uint8ArrayToString(buf, 'base32upper'),
-  validator: {
-    /**
-     * @param {Uint8Array} key
-     * @param {Uint8Array} record
-     */
-    func: (key, record) => ipns.validator.validate(record, key)
-  },
+export function encodeBase32 (buf) {
+  return uint8ArrayToString(buf, 'base32upper')
+}
+
+export const validator = {
   /**
-   * @param {*} _k
-   * @param {Uint8Array[]} records
+   * @param {Uint8Array} key
+   * @param {Uint8Array} record
    */
-  selector: (_k, records) => ipns.validator.select(records[0], records[1])
+  func: (key, record) => ipns.validator.validate(record, key)
+}
+
+/**
+ * @param {*} _k
+ * @param {Uint8Array[]} records
+ */
+export function selector (_k, records) {
+  return ipns.validator.select(records[0], records[1])
 }

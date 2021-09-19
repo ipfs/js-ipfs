@@ -1,9 +1,8 @@
 /* eslint-env browser */
-'use strict'
 
-const TLRU = require('../utils/tlru')
-const { default: PQueue } = require('p-queue')
-const HTTP = require('ipfs-utils/src/http')
+import {TLRU} from '../utils/tlru.js'
+import PQueue from 'p-queue'
+import HTTP from 'ipfs-utils/src/http.js'
 
 // Avoid sending multiple queries for the same hostname by caching results
 const cache = new TLRU(1000)
@@ -28,13 +27,13 @@ const ipfsPath = (response) => {
  * @param {string} fqdn
  * @param {object} opts
  */
-module.exports = async (fqdn, opts) => { // eslint-disable-line require-await
+export async function resolveDnslink (fqdn, opts) { // eslint-disable-line require-await
   /**
    * @param {string} fqdn
    * @param {object} opts
    * @param {boolean} [opts.nocache]
    */
-  const resolveDnslink = async (fqdn, opts = {}) => {
+  const resolve = async (fqdn, opts = {}) => {
     // @ts-ignore - URLSearchParams does not take boolean options, only strings
     const searchParams = new URLSearchParams(opts)
     searchParams.set('arg', fqdn)
@@ -60,5 +59,5 @@ module.exports = async (fqdn, opts) => { // eslint-disable-line require-await
     return ipfsPath(response)
   }
 
-  return resolveDnslink(fqdn, opts)
+  return resolve(fqdn, opts)
 }

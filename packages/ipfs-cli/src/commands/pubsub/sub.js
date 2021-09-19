@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'sub <topic>',
 
   describe: 'Subscribe to a topic',

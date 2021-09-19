@@ -1,8 +1,8 @@
-'use strict'
 
-const Joi = require('../../utils/joi')
 
-exports.wantlist = {
+import Joi from '../../utils/joi.js'
+
+export const wantlistResource = {
   options: {
     validate: {
       options: {
@@ -66,7 +66,7 @@ exports.wantlist = {
   }
 }
 
-exports.stat = {
+export const statResource = {
   options: {
     validate: {
       options: {
@@ -127,7 +127,7 @@ exports.stat = {
   }
 }
 
-exports.unwant = {
+export const unwantResource = {
   options: {
     validate: {
       options: {

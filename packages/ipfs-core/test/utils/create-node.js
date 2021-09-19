@@ -1,13 +1,15 @@
-'use strict'
 
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const { create } = require('../../src')
-const createTempRepo = require('./create-repo')
+
+import mergeOpts from 'merge-options'
+import { create } from '../../src/index.js'
+import { createTempRepo } from './create-repo.js'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @param {import('../../src/types').Options} config
  */
-module.exports = async (config = {}) => {
+export default async (config = {}) => {
   let repo
 
   if (config.repo) {

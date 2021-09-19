@@ -1,20 +1,14 @@
-'use strict'
+
 
 /* eslint-env browser */
-const { DAGService } = require('./dag')
-exports.DAGService = DAGService
+export { DAGService } from './dag.js'
 
-const { CoreService } = require('./core')
-exports.CoreService = CoreService
+export { CoreService } from './core.js'
 
-const { FilesService } = require('./files')
-exports.FilesService = FilesService
+export { FilesService } from './files.js'
 
-const { BlockService } = require('./block')
-exports.BlockService = BlockService
+export { BlockService } from './block.js'
 
-const { IPFSService } = require('./service')
-exports.IPFSService = IPFSService
+export { IPFSService } from './service.js'
 
-const { Server } = require('./server')
-exports.Server = Server
+export { Server } from './server.js'

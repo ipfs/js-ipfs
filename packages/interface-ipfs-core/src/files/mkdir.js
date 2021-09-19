@@ -1,12 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { nanoid } = require('nanoid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { sha512 } = require('multiformats/hashes/sha2')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const all = require('it-all')
-const isShardAtPath = require('../utils/is-shard-at-path')
+
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { sha512 } from 'multiformats/hashes/sha2'
+import createShardedDirectory from '../utils/create-sharded-directory'
+import all from 'it-all'
+import isShardAtPath from '../utils/is-shard-at-path.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -16,7 +17,7 @@ const isShardAtPath = require('../utils/is-shard-at-path')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testMkdir (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

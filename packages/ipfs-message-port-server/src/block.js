@@ -1,11 +1,7 @@
-'use strict'
-
-const collect = require('it-all')
-const { encodeError } = require('ipfs-message-port-protocol/src/error')
-const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
-const {
-  encodeBlock
-} = require('ipfs-message-port-protocol/src/block')
+import all from 'it-all'
+import { encodeError } from 'ipfs-message-port-protocol/error'
+import { decodeCID, encodeCID } from 'ipfs-message-port-protocol/cid'
+import { encodeBlock } from 'ipfs-message-port-protocol/block'
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
@@ -16,7 +12,7 @@ const {
  * @typedef {import('ipfs-core-types/src/block').PutOptions} PutOptions
  */
 
-exports.BlockService = class BlockService {
+export class BlockService {
   /**
    * @param {IPFS} ipfs
    */
@@ -84,7 +80,7 @@ exports.BlockService = class BlockService {
   async rm (query) {
     /** @type {Transferable[]} */
     const transfer = []
-    const result = await collect(
+    const result = await all(
       this.ipfs.block.rm(query.cids.map(decodeCID), query)
     )
 

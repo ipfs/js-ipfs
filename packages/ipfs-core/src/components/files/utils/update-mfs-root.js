@@ -1,10 +1,12 @@
-'use strict'
 
-const log = require('debug')('ipfs:mfs:utils:update-mfs-root')
-const {
+
+import debug from 'debug'
+import {
   MFS_ROOT_KEY
-} = require('../../../utils')
-const errCode = require('err-code')
+} from '../../../utils.js'
+import errCode from 'err-code'
+
+const log = debug('ipfs:mfs:utils:update-mfs-root')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext
@@ -15,7 +17,7 @@ const errCode = require('err-code')
  * @param {import('multiformats/cid').CID} cid
  * @param {import('ipfs-core-types/src/utils').AbortOptions} options
  */
-const updateMfsRoot = async (context, cid, options) => {
+export async function updateMfsRoot (context, cid, options) {
   if (options && options.signal && options.signal.aborted) {
     throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
   }
@@ -26,5 +28,3 @@ const updateMfsRoot = async (context, cid, options) => {
 
   return cid
 }
-
-module.exports = updateMfsRoot

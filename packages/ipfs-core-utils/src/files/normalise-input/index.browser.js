@@ -1,7 +1,7 @@
-'use strict'
 
-const normaliseContent = require('./normalise-content.browser')
-const normalise = require('./normalise-input')
+
+import {normaliseContent} from './normalise-content.browser.js'
+import {normalise} from './normalise-input.js'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
@@ -20,11 +20,7 @@ const normalise = require('./normalise-input')
  * @param {ImportCandidateStream} input
  * @returns {AsyncGenerator<BrowserImportCandidate, void, undefined>}
  */
-function normaliseInput (input) {
+export function normaliseInput (input) {
   // @ts-ignore normaliseContent returns Blob and not AsyncIterator
   return normalise(input, normaliseContent)
-}
-
-module.exports = {
-  normaliseInput
 }

@@ -1,6 +1,6 @@
-'use strict'
 
-const Service = require('../utils/service')
+
+import { Service } from '../utils/service.js'
 
 /**
  * @param {Object} config
@@ -10,11 +10,11 @@ const Service = require('../utils/service')
  * @param {import('../types').Print} config.print
  * @param {import('../types').Preload} config.preload
  * @param {import('../types').MfsPreload} config.mfsPreload
- * @param {import('./ipns')} config.ipns
+ * @param {import('./ipns').IPNSAPI} config.ipns
  * @param {import('libp2p/src/keychain')} config.keychain
  * @param {import('../types').Options} config.options
  */
-module.exports = ({ network, preload, peerId, keychain, repo, ipns, mfsPreload, print, options }) => {
+export function createStart ({ network, preload, peerId, keychain, repo, ipns, mfsPreload, print, options }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["start"]}
    */

@@ -1,13 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { CID } = require('multiformats/cid')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const all = require('it-all')
-const { randomBytes } = require('iso-random-stream')
-const raw = require('multiformats/codecs/raw')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { CID } from 'multiformats/cid'
+import createShardedDirectory from '../utils/create-sharded-directory'
+import all from 'it-all'
+import { randomBytes } from 'iso-random-stream'
+import * as raw from 'multiformats/codecs/raw'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -17,7 +18,7 @@ const raw = require('multiformats/codecs/raw')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testLs (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
   const largeFile = randomBytes(490668)

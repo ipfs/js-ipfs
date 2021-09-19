@@ -1,10 +1,10 @@
-'use strict'
 
-const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
-const raw = require('multiformats/codecs/raw')
-const { CID } = require('multiformats/cid')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import * as raw from 'multiformats/codecs/raw'
+import { CID } from 'multiformats/cid'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @typedef {import('@ipld/dag-pb').PBLink} DAGLink
@@ -58,9 +58,9 @@ function findLinks (node, links = []) {
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  */
-module.exports = ({ repo, codecs }) => {
+export function createLinks ({ repo, codecs }) {
   /**
    * @type {import('ipfs-core-types/src/object').API["links"]}
    */
@@ -73,11 +73,11 @@ module.exports = ({ repo, codecs }) => {
       return []
     }
 
-    if (cid.code === dagPb.code) {
+    if (cid.code === dagPB.code) {
       return node.Links
     }
 
-    if (cid.code === dagCbor.code) {
+    if (cid.code === dagCBOR.code) {
       return findLinks(node)
     }
 

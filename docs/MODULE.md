@@ -99,7 +99,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 - `privateKey` (string/PeerId) A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
     ```js
     // Generating a Peer ID:
-    const PeerId = require('peer-id')
+    import PeerId from 'peer-id'
     // Generates a new Peer ID, complete with public/private keypair
     // See https://github.com/libp2p/js-peer-id
     const peerId = await PeerId.create({ bits: 2048 })
@@ -346,7 +346,7 @@ console.log('Node is ready to use but not started!')
 try {
   await node.start()
   console.log('Node started!')
-} catch (error) {
+} catch (/** @type {any} */ error) {
   console.error('Node failed to start!', error)
 }
 ```

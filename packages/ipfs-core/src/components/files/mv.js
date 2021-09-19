@@ -1,9 +1,11 @@
-'use strict'
 
-const cp = require('./cp')
-const rm = require('./rm')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+import { createCp } from './cp.js'
+import { createRm } from './rm.js'
+import mergeOpts from 'merge-options'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -32,7 +34,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createMv (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["mv"]}
    */
@@ -40,8 +42,8 @@ module.exports = (context) => {
     /** @type {DefaultOptions} */
     const opts = mergeOptions(defaultOptions, options)
 
-    await cp(context)(from, to, opts)
-    await rm(context)(from, {
+    await createCp(context)(from, to, opts)
+    await createRm(context)(from, {
       ...opts,
       recursive: true
     })

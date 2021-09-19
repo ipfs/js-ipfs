@@ -1,7 +1,7 @@
-'use strict'
 
-const { nanoid } = require('nanoid')
-const delay = require('delay')
+
+import { nanoid } from 'nanoid'
+import delay from 'delay'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
@@ -10,7 +10,7 @@ const delay = require('delay')
  * @param {number} waitForMs
  * @returns
  */
-async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
+export async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
   const start = Date.now()
 
   while (true) {
@@ -29,6 +29,6 @@ async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
   }
 }
 
-exports.waitForPeers = waitForPeers
-
-exports.getTopic = () => 'pubsub-tests-' + nanoid()
+export function getTopic () {
+  return 'pubsub-tests-' + nanoid()
+}

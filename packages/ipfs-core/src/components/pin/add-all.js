@@ -1,10 +1,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
-'use strict'
 
-const { resolvePath } = require('../../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
-const { PinTypes } = require('ipfs-repo')
+
+import { resolvePath } from '../../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
+import { PinTypes } from 'ipfs-repo'
 
 /**
  * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Source} Source
@@ -20,10 +20,10 @@ const { PinTypes } = require('ipfs-repo')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ repo, codecs }) => {
+export function createAddAll ({ repo, codecs }) {
   /**
    * @type {import('ipfs-core-types/src/pin').API["addAll"]}
    */

@@ -1,14 +1,19 @@
-'use strict'
 
-const log = require('debug')('ipfs:daemon')
-const set = require('just-safe-set')
-// @ts-ignore - no types
-const WebRTCStar = require('libp2p-webrtc-star')
-const IPFS = require('ipfs-core')
-const HttpApi = require('ipfs-http-server')
-const HttpGateway = require('ipfs-http-gateway')
-const gRPCServer = require('ipfs-grpc-server')
-const { isElectron } = require('ipfs-utils/src/env')
+
+import debug from 'debug'
+import set from 'just-safe-set'
+// @ts-expect-error - no types
+import WebRTCStar from 'libp2p-webrtc-star'
+import * as IPFS from 'ipfs-core'
+import HttpApi from 'ipfs-http-server'
+import HttpGateway from 'ipfs-http-gateway'
+import gRPCServer from 'ipfs-grpc-server'
+import { isElectron } from 'ipfs-utils/src/env'
+import prometheusClient from 'prom-client'
+// @ts-expect-error - no types
+import prometheusGcStats from 'prometheus-gc-stats'
+
+const log = debug('ipfs:daemon')
 
 class Daemon {
   /**
@@ -19,9 +24,6 @@ class Daemon {
 
     if (process.env.IPFS_MONITORING) {
       // Setup debug metrics collection
-      const prometheusClient = require('prom-client')
-      // @ts-ignore - no types
-      const prometheusGcStats = require('prometheus-gc-stats')
       const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
       // @ts-ignore - timeout isn't in typedefs
       collectDefaultMetrics({ timeout: 5000 })
@@ -82,7 +84,7 @@ async function getLibp2p ({ libp2pOptions }) {
     try {
       // @ts-ignore - cant find type info
       electronWebRTC = require('electron-webrtc')()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log('failed to load optional electron-webrtc dependency')
     }
   }
@@ -91,7 +93,7 @@ async function getLibp2p ({ libp2pOptions }) {
     try {
       // @ts-ignore - cant find type info
       wrtc = require('wrtc')
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log('failed to load optional webrtc dependency')
     }
   }

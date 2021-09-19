@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const allNdjson = require('../utils/all-ndjson')
-const { AbortSignal } = require('native-abort-controller')
+
+import { expect } from 'aegir/utils/chai.js'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import http from '../utils/http.js'
+import sinon from 'sinon'
+import { allNdjson } from '../utils/all-ndjson.js'
+import { AbortSignal } from 'native-abort-controller'
 
 describe('/stats', () => {
   let ipfs

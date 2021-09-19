@@ -1,6 +1,6 @@
-'use strict'
 
-const configure = require('../lib/configure')
+
+import { configure } from '../lib/configure.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -8,10 +8,10 @@ const configure = require('../lib/configure')
  */
 
 /**
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {import('../types').Options} options
  */
-module.exports = (codecs, options) => {
+ export const createPut = (codecs, options) => {
   const fn = configure((api) => {
     const dagPut = require('../dag/put')(codecs, options)
 

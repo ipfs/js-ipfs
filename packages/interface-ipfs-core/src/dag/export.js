@@ -1,14 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const all = require('it-all')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { CarReader } = require('@ipld/car')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
-const loadFixture = require('aegir/utils/fixtures')
-const toBuffer = require('it-to-buffer')
+import all from 'it-all'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { CarReader } from '@ipld/car'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import loadFixture from 'aegir/utils/fixtures.js'
+import toBuffer from 'it-to-buffer'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -18,7 +18,7 @@ const toBuffer = require('it-to-buffer')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testExport (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -32,7 +32,7 @@ module.exports = (factory, options) => {
     after(() => factory.clean())
 
     it('should export a car file', async () => {
-      const child = dagPb.encode({
+      const child = dagPB.encode({
         Data: uint8ArrayFromString('block-' + Math.random()),
         Links: []
       })
@@ -40,7 +40,7 @@ module.exports = (factory, options) => {
         format: 'dag-pb',
         version: 0
       })
-      const parent = dagPb.encode({
+      const parent = dagPB.encode({
         Links: [{
           Hash: childCid,
           Tsize: child.length,
@@ -51,7 +51,7 @@ module.exports = (factory, options) => {
         format: 'dag-pb',
         version: 0
       })
-      const grandParent = dagCbor.encode({
+      const grandParent = dagCBOR.encode({
         parent: parentCid
       })
       const grandParentCid = await await ipfs.block.put(grandParent, {

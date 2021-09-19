@@ -1,11 +1,7 @@
-'use strict'
-
-const Client = require('./client')
-const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const { decodeError } = require('ipfs-message-port-protocol/src/error')
-const {
-  encodeBlock
-} = require('ipfs-message-port-protocol/src/block')
+import { Client } from './client.js'
+import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
+import { decodeError } from 'ipfs-message-port-protocol/src/error'
+import { encodeBlock } from 'ipfs-message-port-protocol/block'
 
 /**
  * @typedef {import('./client').MessageTransport} MessageTransport
@@ -18,7 +14,7 @@ const {
  * @class
  * @extends {Client<BlockService>}
  */
-class BlockClient extends Client {
+export class BlockClient extends Client {
   /**
    * @param {MessageTransport} transport
    */
@@ -94,5 +90,3 @@ const decodeRmEntry = entry => {
     return { cid }
   }
 }
-
-module.exports = BlockClient

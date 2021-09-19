@@ -1,7 +1,7 @@
-'use strict'
 
-const { NotStartedError, AlreadyStartingError, AlreadyStartedError } = require('../errors')
-const { withTimeout } = require('../utils')
+
+import { NotStartedError, AlreadyStartingError, AlreadyStartedError } from '../errors.js'
+import { withTimeout } from '../utils.js'
 
 /**
  * @template T
@@ -40,7 +40,7 @@ const { withTimeout } = require('../utils')
  * functionality before service is started.
  *
  */
-class Service {
+export class Service {
   /**
    * Takes `activation` function that takes `options` and (async) returns
    * an implementation.
@@ -86,7 +86,7 @@ class Service {
           return result
         // If failed to start, transiton from 'starting' to 'stopped'
         // state.
-        } catch (error) {
+        } catch (/** @type {any} */ error) {
           service.state = { status: 'stopped' }
           throw error
         }
@@ -237,5 +237,3 @@ class Service {
     return Service.try(this)
   }
 }
-
-module.exports = Service

@@ -1,9 +1,9 @@
-'use strict'
+
 
 module.exports = async fnOrPromise => {
   try {
     await (fnOrPromise.then ? fnOrPromise : fnOrPromise())
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     return err
   }
   throw new Error('did not throw')

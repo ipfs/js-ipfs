@@ -1,15 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const fs = require('fs')
+
+import { expect } from 'aegir/utils/chai.js'
+import fs from 'fs'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { CID } = require('multiformats/cid')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
-const dagPb = require('@ipld/dag-pb')
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+import * as dagPB from '@ipld/dag-pb'
 
 describe('object', () => {
   const cid = CID.parse('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
@@ -233,7 +233,7 @@ describe('object', () => {
       const out = await cli('object put --input-enc protobuf', {
         ipfs,
         getStdin: function * () {
-          yield dagPb.encode({ Links: [] })
+          yield dagPB.encode({ Links: [] })
         }
       })
 

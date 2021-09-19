@@ -1,16 +1,16 @@
-'use strict'
 
-const createExport = require('./export')
-const createGet = require('./get')
-const createImport = require('./import')
-const createPut = require('./put')
-const createResolve = require('./resolve')
 
-class DagAPI {
+import {createExport} from './export.js'
+import {createGet} from './get.js'
+import {createImport} from './import.js'
+import {createPut} from './put.js'
+import {createResolve} from './resolve.js'
+
+export class DagAPI {
   /**
    * @param {Object} config
-   * @param {import('ipfs-core-utils/src/multihashes')} config.hashers
-   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+   * @param {import('ipfs-core-utils/multihashes').Multihashes} config.hashers
+   * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
    * @param {import('../../types').Preload} config.preload
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
@@ -22,5 +22,3 @@ class DagAPI {
     this.put = createPut({ repo, codecs, hashers, preload })
   }
 }
-
-module.exports = DagAPI

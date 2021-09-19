@@ -1,14 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { isWebWorker } = require('ipfs-utils/src/env')
-const { randomBytes } = require('iso-random-stream')
-const concat = require('it-concat')
-const { nanoid } = require('nanoid')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const pmap = require('p-map')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { isWebWorker } from 'ipfs-utils/src/env.js'
+import { randomBytes } from 'iso-random-stream'
+import concat from 'it-concat'
+import { nanoid } from 'nanoid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import pmap from 'p-map'
+import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -19,7 +19,7 @@ const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testTransfer (factory, options) {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)

@@ -1,20 +1,19 @@
-'use strict'
 
-const errCode = require('err-code')
-const itPeekable = require('it-peekable')
-const browserStreamToIt = require('browser-readablestream-to-it')
-const all = require('it-all')
 
-const {
+import errCode from 'err-code'
+import itPeekable from 'it-peekable'
+import browserStreamToIt from 'browser-readablestream-to-it'
+import all from 'it-all'
+import {
   isBytes,
   isBlob,
   isReadableStream
-} = require('./utils')
+} from './utils.js'
 
 /**
  * @param {import('./normalise-input').ToContent} input
  */
-async function toBlob (input) {
+export async function normaliseContent (input) {
   // Bytes
   if (isBytes(input)) {
     return new Blob([input])
@@ -76,5 +75,3 @@ async function itToBlob (stream) {
 
   return new Blob(parts)
 }
-
-module.exports = toBlob

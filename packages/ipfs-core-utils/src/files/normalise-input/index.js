@@ -1,7 +1,7 @@
-'use strict'
 
-const normaliseContent = require('./normalise-content')
-const normalise = require('./normalise-input')
+
+import {normaliseContent} from './normalise-content.js'
+import {normalise} from './normalise-input.js'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
@@ -19,10 +19,6 @@ const normalise = require('./normalise-input')
  *
  * @param {ImportCandidateStream} input
  */
-function normaliseInput (input) {
+export function normaliseInput (input) {
   return normalise(input, normaliseContent)
-}
-
-module.exports = {
-  normaliseInput
 }

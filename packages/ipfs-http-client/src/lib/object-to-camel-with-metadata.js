@@ -1,12 +1,12 @@
-'use strict'
 
-const toCamel = require('./object-to-camel')
+
+import {objectToCamel} from './object-to-camel.js'
 
 /**
  * @param {Record<string, any>} entry
  */
-function toCamelWithMetadata (entry) {
-  const file = toCamel(entry)
+export function toCamelWithMetadata (entry) {
+  const file = objectToCamel(entry)
 
   if (Object.prototype.hasOwnProperty.call(file, 'mode')) {
     file.mode = parseInt(file.mode, 8)
@@ -23,5 +23,3 @@ function toCamelWithMetadata (entry) {
 
   return file
 }
-
-module.exports = toCamelWithMetadata

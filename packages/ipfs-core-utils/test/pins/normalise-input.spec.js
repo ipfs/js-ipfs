@@ -1,11 +1,11 @@
-'use strict'
+
 
 /* eslint-env mocha */
 
-const { expect } = require('aegir/utils/chai')
-const { normaliseInput } = require('../../src/pins/normalise-input')
-const all = require('it-all')
-const { CID } = require('multiformats/cid')
+import { expect } from 'aegir/utils/chai.js'
+import { normaliseInput } from '../../src/pins/normalise-input.js'
+import all from 'it-all'
+import { CID } from 'multiformats/cid'
 
 const STRING = () => '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt'
 const PLAIN_CID = () => CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')

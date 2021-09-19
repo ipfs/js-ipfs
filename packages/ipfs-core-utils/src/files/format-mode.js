@@ -1,4 +1,4 @@
-'use strict'
+
 
 const S_ISUID = parseInt('4000', 8) //   set UID bit
 const S_ISGID = parseInt('2000', 8) //   set-group-ID bit (see below)
@@ -35,7 +35,7 @@ function checkPermission (mode, perm, type, output) {
  * @param {boolean} isDirectory
  * @returns {string}
  */
-function formatMode (mode, isDirectory) {
+export function formatMode (mode, isDirectory) {
   const output = []
 
   if (isDirectory) {
@@ -73,5 +73,3 @@ function formatMode (mode, isDirectory) {
 
   return output.join('')
 }
-
-module.exports = formatMode

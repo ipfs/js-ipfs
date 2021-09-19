@@ -1,15 +1,17 @@
-'use strict'
+
 
 // @ts-ignore - TODO vmx 2021-03-31
-const dagPb = require('@ipld/dag-pb')
-const { CID } = require('multiformats/cid')
-const log = require('debug')('ipfs:mfs:core:utils:remove-link')
-const { UnixFS } = require('ipfs-unixfs')
-const {
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
+import debug from 'debug'
+import { UnixFS } from 'ipfs-unixfs'
+import {
   generatePath,
   updateHamtDirectory
-} = require('./hamt-utils')
-const errCode = require('err-code')
+} from './hamt-utils.js'
+import errCode from 'err-code'
+
+const log = debug('ipfs:mfs:core:utils:remove-link')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext
@@ -39,7 +41,7 @@ const errCode = require('err-code')
  * @param {MfsContext} context
  * @param {RemoveLinkOptions} options
  */
-const removeLink = async (context, options) => {
+export async function removeLink (context, options) {
   let parent = options.parent
 
   if (options.parentCid) {
@@ -50,7 +52,7 @@ const removeLink = async (context, options) => {
 
     log(`Loading parent node ${parentCid}`)
     const block = await context.repo.blocks.get(parentCid)
-    parent = dagPb.decode(block)
+    parent = dagPB.decode(block)
   }
 
   if (!parent) {
@@ -94,10 +96,10 @@ const removeFromDirectory = async (context, options) => {
     return link.Name !== options.name
   })
 
-  const parentBlock = await dagPb.encode(options.parent)
+  const parentBlock = await dagPB.encode(options.parent)
   const hasher = await context.hashers.getHasher(options.hashAlg)
   const hash = await hasher.digest(parentBlock)
-  const parentCid = CID.create(options.cidVersion, dagPb.code, hash)
+  const parentCid = CID.create(options.cidVersion, dagPB.code, hash)
 
   await context.repo.blocks.put(parentCid, parentBlock)
 
@@ -217,5 +219,3 @@ const updateShardParent = (context, bucket, parent, oldName, newName, size, cid,
 
   return updateHamtDirectory(context, parentLinks, bucket, options)
 }
-
-module.exports = removeLink

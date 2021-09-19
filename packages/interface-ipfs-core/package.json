@@ -3,7 +3,42 @@
   "version": "0.150.2",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "type": "module",
   "main": "src/index.js",
+  "types": "types/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "test/fixtures/*"
+    ]
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "browser": {
@@ -19,10 +54,6 @@
     "test": "echo 'No tests here'",
     "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf"
   },
-  "files": [
-    "src/",
-    "test/"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -31,13 +62,6 @@
     "IPFS"
   ],
   "license": "MIT",
-  "eslintConfig": {
-    "extends": "ipfs",
-    "ignorePatterns": [
-      "test/fixtures/*"
-    ]
-  },
-  "types": "dist/src/index.d.ts",
   "dependencies": {
     "@ipld/car": "^3.1.6",
     "@ipld/dag-cbor": "^6.0.5",

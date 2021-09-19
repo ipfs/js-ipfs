@@ -1,14 +1,10 @@
-'use strict'
 
-const dagCBOR = require('@ipld/dag-cbor')
-const dagPB = require('@ipld/dag-pb')
-const concat = require('it-concat')
-const { CID } = require('multiformats/cid')
-const { default: parseDuration } = require('parse-duration')
 
-/**
- * @typedef {'dag-cbor' | 'dag-pb' | 'raw'} SupportedFormat
- */
+import * as dagCBOR from '@ipld/dag-cbor'
+import * as dagPB from '@ipld/dag-pb'
+import concat from 'it-concat'
+import { CID } from 'multiformats/cid'
+import parseDuration from 'parse-duration'
 
 /**
  * @type {Record<string, (buf: Buffer) => any>}
@@ -21,7 +17,7 @@ const inputDecoders = {
 }
 
 /**
- * @type {Record<string, SupportedFormat>}
+ * @type {Record<string, 'dag-cbor' | 'dag-pb' | 'raw'>}
  */
 const formats = {
   cbor: 'dag-cbor',
@@ -31,7 +27,7 @@ const formats = {
   'dag-pb': 'dag-pb'
 }
 
-module.exports = {
+export default {
   command: 'put [data]',
 
   describe: 'accepts input from a file or stdin and parses it into an object of the specified format',

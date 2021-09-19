@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'patch',
 
   description: 'Create a new merkledag object based on an existing one.',

@@ -1,8 +1,8 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const { Multiaddr } = require('multiaddr')
-const { expect } = require('aegir/utils/chai')
+
+import { Multiaddr } from 'multiaddr'
+import { expect } from 'aegir/utils/chai.js'
 const f = require('./utils/factory')()
 const { create: ipfsClient } = require('../src/index.js')
 const { isBrowser } = require('ipfs-utils/src/env')

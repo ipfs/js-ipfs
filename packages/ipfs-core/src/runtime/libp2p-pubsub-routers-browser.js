@@ -1,5 +1,7 @@
-'use strict'
 
-module.exports = {
-  gossipsub: require('libp2p-gossipsub')
+import libp2pGossipsub from 'libp2p-gossipsub'
+
+export const routers = {
+  gossipsub: libp2pGossipsub
 }
+

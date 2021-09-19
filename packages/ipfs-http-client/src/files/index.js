@@ -1,18 +1,30 @@
-'use strict'
+import { createChmod } from './chmod.js'
+import { createCp } from './cp.js'
+import { createFlush } from './flush.js'
+import { createLs } from './ls.js'
+import { createMkdir } from './mkdir.js'
+import { createMv } from './mv.js'
+import { createRead } from './read.js'
+import { createRm } from './rm.js'
+import { createStat } from './stat.js'
+import { createTouch } from './touch.js'
+import { createWrite } from './write.js'
 
-/**
- * @param {import('../types').Options} config
- */
-module.exports = config => ({
-  chmod: require('./chmod')(config),
-  cp: require('./cp')(config),
-  flush: require('./flush')(config),
-  ls: require('./ls')(config),
-  mkdir: require('./mkdir')(config),
-  mv: require('./mv')(config),
-  read: require('./read')(config),
-  rm: require('./rm')(config),
-  stat: require('./stat')(config),
-  touch: require('./touch')(config),
-  write: require('./write')(config)
-})
+export class FilesAPI {
+  /**
+   * @param {import('../types').Options} config
+   */
+  constructor (config) {
+    this.chmod = createChmod(config)
+    this.cp = createCp(config)
+    this.flush = createFlush(config)
+    this.ls = createLs(config)
+    this.mkdir = createMkdir(config)
+    this.mv = createMv(config)
+    this.read = createRead(config)
+    this.rm = createRm(config)
+    this.stat = createStat(config)
+    this.touch = createTouch(config)
+    this.write = createWrite(config)
+  }
+}

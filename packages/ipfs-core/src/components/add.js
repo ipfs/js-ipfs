@@ -1,12 +1,12 @@
-'use strict'
 
-const last = require('it-last')
+
+import last from 'it-last'
 
 /**
  * @param {Object} context
  * @param {import('ipfs-core-types/src/root').API["addAll"]} context.addAll
  */
-module.exports = ({ addAll }) => {
+export function createAdd ({ addAll }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["add"]}
    */

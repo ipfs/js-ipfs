@@ -1,15 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const path = require('path')
-const fs = require('fs')
-const PeerId = require('peer-id')
+
+import { expect } from 'aegir/utils/chai.js'
+import path from 'path'
+import fs from 'fs'
+import PeerId from 'peer-id'
 const { supportedKeys } = require('libp2p-crypto/src/keys')
 const clean = require('./utils/clean')
-const { nanoid } = require('nanoid')
+import { nanoid } from 'nanoid'
 const ipfsExec = require('./utils/ipfs-exec')
-const os = require('os')
+import os from 'os'
 const tempWrite = require('temp-write')
 
 describe.skip('init', function () {

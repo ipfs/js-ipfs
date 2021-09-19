@@ -1,18 +1,18 @@
-'use strict'
 
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const abortSignal = require('../lib/abort-signal')
-const multipartRequest = require('../lib/multipart-request')
-const { AbortController } = require('native-abort-controller')
-const { CID } = require('multiformats/cid')
+
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { abortSignal } from '../lib/abort-signal'
+import { multipartRequest } from '../lib/multipart-request.js'
+import { AbortController } from 'native-abort-controller'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/dag').API<HTTPClientExtraOptions>} DAGAPI
  */
 
-module.exports = configure(api => {
+ export const createImport = configure(api => {
   /**
    * @type {DAGAPI["import"]}
    */

@@ -1,15 +1,15 @@
-'use strict'
 
-const map = require('it-map')
-const { pipe } = require('it-pipe')
-const streamResponse = require('../../utils/stream-response')
-const Joi = require('../../utils/joi')
 
-exports.bitswap = require('./bitswap').stat
+import map from 'it-map'
+import { pipe } from 'it-pipe'
+import { streamResponse } from '../../utils/stream-response.js'
+import Joi from '../../utils/joi.js'
 
-exports.repo = require('./repo').stat
+export { statResource as bitswapResource } from './bitswap.js'
 
-exports.bw = {
+export { statResource as repoResource } from './repo.js'
+
+export const bwResource = {
   options: {
     validate: {
       options: {

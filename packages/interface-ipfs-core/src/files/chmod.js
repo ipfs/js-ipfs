@@ -1,10 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { nanoid } = require('nanoid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const isShardAtPath = require('../utils/is-shard-at-path')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import isShardAtPath from '../utils/is-shard-at-path.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +15,7 @@ const isShardAtPath = require('../utils/is-shard-at-path')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testChmod (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

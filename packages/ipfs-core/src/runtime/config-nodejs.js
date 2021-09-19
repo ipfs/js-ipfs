@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = () => ({
+
+export default () => ({
   Addresses: {
     Swarm: [
       '/ip4/0.0.0.0/tcp/4002',

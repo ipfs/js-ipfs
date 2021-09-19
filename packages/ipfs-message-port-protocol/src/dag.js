@@ -1,7 +1,7 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const { encodeCID, decodeCID } = require('./cid')
+
+import { CID } from 'multiformats/cid'
+import { encodeCID, decodeCID } from './cid.js'
 
 /**
  * @typedef {import('./data').JSONValue} JSONValue
@@ -23,7 +23,7 @@ const { encodeCID, decodeCID } = require('./cid')
  * @param {EncodedDAGNode} encodedNode
  * @returns {DAGNode}
  */
-const decodeNode = ({ dagNode, cids }) => {
+export const decodeNode = ({ dagNode, cids }) => {
   // It is not ideal to have to mutate prototype chains like
   // this, but it removes a need of traversing node first on client
   // and now on server.
@@ -33,8 +33,6 @@ const decodeNode = ({ dagNode, cids }) => {
 
   return dagNode
 }
-
-exports.decodeNode = decodeNode
 
 /**
  * Encodes DAG node for over the message channel transfer by collecting all
@@ -48,13 +46,12 @@ exports.decodeNode = decodeNode
  * @param {Transferable[]} [transfer]
  * @returns {EncodedDAGNode}
  */
-const encodeNode = (dagNode, transfer) => {
+export const encodeNode = (dagNode, transfer) => {
   /** @type {CID[]} */
   const cids = []
   collectNode(dagNode, cids, transfer)
   return { dagNode, cids }
 }
-exports.encodeNode = encodeNode
 
 /**
  * Recursively traverses passed `value` and collects encountered `CID` instances

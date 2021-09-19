@@ -1,9 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const PeerId = require('peer-id')
-const all = require('it-all')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+
+import PeerId from 'peer-id'
+import all from 'it-all'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -13,7 +14,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testCancel (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

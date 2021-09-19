@@ -1,14 +1,14 @@
-'use strict'
 
-const multipart = require('../../utils/multipart-request-parser')
-const Joi = require('../../utils/joi')
-const Boom = require('@hapi/boom')
-const all = require('it-all')
-const { pipe } = require('it-pipe')
-const map = require('it-map')
-const streamResponse = require('../../utils/stream-response')
 
-exports.get = {
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import Joi from '../../utils/joi.js'
+import Boom from '@hapi/boom'
+import all from 'it-all'
+import { pipe } from 'it-pipe'
+import map from 'it-map'
+import { streamResponse } from '../../utils/stream-response.js'
+
+export const getResource = {
   options: {
     payload: {
       parse: false,
@@ -56,7 +56,7 @@ exports.get = {
         timeout,
         signal
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get block' })
     }
 
@@ -67,7 +67,7 @@ exports.get = {
     return h.response(Buffer.from(block.buffer, block.byteOffset, block.byteLength)).header('X-Stream-Output', '1')
   }
 }
-exports.put = {
+export const putResource = {
   options: {
     payload: {
       parse: false,
@@ -86,7 +86,7 @@ exports.put = {
 
         let data
 
-        for await (const part of multipart(request.raw.req)) {
+        for await (const part of multipartRequestParser(request.raw.req)) {
           if (part.type !== 'file') {
             continue
           }
@@ -164,7 +164,7 @@ exports.put = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to put block' })
     }
 
@@ -177,7 +177,7 @@ exports.put = {
   }
 }
 
-exports.rm = {
+export const rmResource = {
   options: {
     validate: {
       options: {
@@ -241,7 +241,7 @@ exports.rm = {
   }
 }
 
-exports.stat = {
+export const statResource = {
   options: {
     validate: {
       options: {
@@ -291,7 +291,7 @@ exports.stat = {
         timeout,
         signal
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get block stats' })
     }
 

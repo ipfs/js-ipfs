@@ -1,8 +1,8 @@
-'use strict'
+
 
 /** @type {typeof import('hashlru').default} */
 // @ts-ignore - hashlru has incorrect typedefs
-const hashlru = require('hashlru')
+import hashlru from 'hashlru'
 
 /**
  * Time Aware Least Recent Used Cache
@@ -13,7 +13,7 @@ const hashlru = require('hashlru')
  * @template T
  * @class TLRU
  */
-class TLRU {
+export class TLRU {
   /**
    * Creates an instance of TLRU.
    *
@@ -86,5 +86,3 @@ class TLRU {
     this.lru.clear()
   }
 }
-
-module.exports = TLRU

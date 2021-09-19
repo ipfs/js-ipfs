@@ -1,7 +1,7 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 
 describe('submodules', () => {
   it('bitswap', () => {

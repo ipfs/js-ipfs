@@ -1,22 +1,22 @@
-'use strict'
 
-const errCode = require('err-code')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const browserStreamToIt = require('browser-readablestream-to-it')
-const blobToIt = require('blob-to-it')
-const itPeekable = require('it-peekable')
-const all = require('it-all')
-const map = require('it-map')
-const {
+
+import errCode from 'err-code'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import browserStreamToIt from 'browser-readablestream-to-it'
+import blobToIt from 'blob-to-it'
+import itPeekable from 'it-peekable'
+import all from 'it-all'
+import map from 'it-map'
+import {
   isBytes,
   isReadableStream,
   isBlob
-} = require('./utils')
+} from './utils.js'
 
 /**
  * @param {import('./normalise-input').ToContent} input
  */
-async function * toAsyncIterable (input) {
+export async function * normaliseContent (input) {
   // Bytes | String
   if (isBytes(input)) {
     yield toBytes(input)
@@ -93,5 +93,3 @@ function toBytes (chunk) {
 
   return uint8ArrayFromString(chunk.toString())
 }
-
-module.exports = toAsyncIterable

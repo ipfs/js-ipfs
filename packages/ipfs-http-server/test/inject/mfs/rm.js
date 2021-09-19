@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const http = require('../../utils/http')
-const sinon = require('sinon')
-const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('native-abort-controller')
+
+import { expect } from 'aegir/utils/chai.js'
+import http from '../../utils/http.js'
+import sinon from 'sinon'
+import { testHttpMethod } from '../../utils/test-http-method.js'
+import { AbortSignal } from 'native-abort-controller'
 
 const defaultOptions = {
   recursive: false,

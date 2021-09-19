@@ -1,16 +1,16 @@
-'use strict'
 
-const serverStreamToIterator = require('../../utils/server-stream-to-iterator')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const subscriptions = require('./subscriptions')
-const defer = require('p-defer')
+
+import { serverStreamToIterator } from '../../utils/server-stream-to-iterator.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { subscriptions } from './subscriptions.js'
+import defer from 'p-defer'
 
 /**
  * @param {import('@improbable-eng/grpc-web').grpc} grpc
  * @param {*} service
  * @param {import('../../types').Options} opts
  */
-module.exports = function grpcPubsubSubscribe (grpc, service, opts) {
+export function grpcPubsubSubscribe (grpc, service, opts) {
   /**
    * @type {import('ipfs-core-types/src/pubsub').API["subscribe"]}
    */
@@ -44,7 +44,7 @@ module.exports = function grpcPubsubSubscribe (grpc, service, opts) {
             })
           }
         }
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (options && options.onError) {
           options.onError(err)
         }

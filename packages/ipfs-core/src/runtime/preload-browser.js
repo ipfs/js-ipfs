@@ -1,9 +1,9 @@
 /* eslint-env browser */
-'use strict'
+
 
 const { default: PQueue } = require('p-queue')
-const HTTP = require('ipfs-utils/src/http')
-const debug = require('debug')
+import HTTP from 'ipfs-utils/src/http.js'
+import debug from 'debug'
 
 const log = Object.assign(debug('ipfs:preload'), {
   error: debug('ipfs:preload:error')
@@ -17,7 +17,7 @@ const httpQueue = new PQueue({ concurrency: 4 })
  * @param {string} url
  * @param {import('ipfs-core-types/src/utils').AbortOptions} options
  */
-module.exports = function preload (url, options = {}) {
+export function preload (url, options = {}) {
   log(url)
 
   return httpQueue.add(async () => {

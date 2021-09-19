@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const ipfsClient = require('../src').create
 
 describe('.getEndpointConfig', () => {

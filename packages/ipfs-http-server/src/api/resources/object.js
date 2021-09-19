@@ -1,19 +1,19 @@
-'use strict'
 
-const multipart = require('../../utils/multipart-request-parser')
-const all = require('it-all')
-const dagPB = require('@ipld/dag-pb')
-const Joi = require('../../utils/joi')
-const Boom = require('@hapi/boom')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const debug = require('debug')
+
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import all from 'it-all'
+import * as dagPB from '@ipld/dag-pb'
+import Joi from '../../utils/joi.js'
+import Boom from '@hapi/boom'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import debug from 'debug'
 const log = Object.assign(debug('ipfs:http-api:object'), {
   error: debug('ipfs:http-api:object:error')
 })
 const { base64pad } = require('multiformats/bases/base64')
 const { base16 } = require('multiformats/bases/base16')
-const { CID } = require('multiformats/cid')
+import { CID } from 'multiformats/cid'
 
 /**
  * @type {Record<string, (str: string) => Uint8Array>}
@@ -36,7 +36,7 @@ const readFilePart = async (request, _h) => {
 
   let data
 
-  for await (const part of multipart(request.raw.req)) {
+  for await (const part of multipartRequestParser(request.raw.req)) {
     if (part.type !== 'file') {
       continue
     }
@@ -51,7 +51,7 @@ const readFilePart = async (request, _h) => {
   if (request.query.enc === 'json') {
     try {
       data = JSON.parse(data.toString('utf8'))
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log(err)
       throw Boom.badRequest("File argument 'data' is required")
     }
@@ -62,7 +62,7 @@ const readFilePart = async (request, _h) => {
   }
 }
 
-exports.new = {
+export const newResource = {
   options: {
     validate: {
       options: {
@@ -117,7 +117,7 @@ exports.new = {
         timeout
       })
       block = dagPB.encode(node)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to create object' })
     }
 
@@ -140,7 +140,7 @@ exports.new = {
   }
 }
 
-exports.get = {
+export const getResource = {
   options: {
     validate: {
       options: {
@@ -201,7 +201,7 @@ exports.get = {
         timeout
       })
       block = dagPB.encode(node)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get object' })
     }
 
@@ -222,7 +222,7 @@ exports.get = {
   }
 }
 
-exports.put = {
+export const putResource = {
   options: {
     payload: {
       parse: false,
@@ -321,7 +321,7 @@ exports.put = {
         timeout
       })
       block = dagPB.encode(node)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.badRequest(err, { message: 'Failed to put node' })
     }
 
@@ -344,7 +344,7 @@ exports.put = {
   }
 }
 
-exports.stat = {
+export const statResource = {
   options: {
     validate: {
       options: {
@@ -393,7 +393,7 @@ exports.stat = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to stat object' })
     }
 
@@ -406,7 +406,7 @@ exports.stat = {
   }
 }
 
-exports.data = {
+export const dataResource = {
   options: {
     validate: {
       options: {
@@ -454,7 +454,7 @@ exports.data = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get object data' })
     }
 
@@ -462,7 +462,7 @@ exports.data = {
   }
 }
 
-exports.links = {
+export const linksResource = {
   options: {
     validate: {
       options: {
@@ -527,7 +527,7 @@ exports.links = {
   }
 }
 
-exports.patchAppendData = {
+export const patchAppendDataResource = {
   options: {
     payload: {
       parse: false,
@@ -605,7 +605,7 @@ exports.patchAppendData = {
         timeout
       })
       block = dagPB.encode(node)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to append data to object' })
     }
 
@@ -628,7 +628,7 @@ exports.patchAppendData = {
   }
 }
 
-exports.patchSetData = {
+export const patchSetDataResource = {
   options: {
     payload: {
       parse: false,
@@ -693,7 +693,7 @@ exports.patchSetData = {
       node = await ipfs.object.get(newCid, {
         signal: request.app.signal
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to set data on object' })
     }
 
@@ -712,7 +712,7 @@ exports.patchSetData = {
   }
 }
 
-exports.patchAddLink = {
+export const patchAddLinkResource = {
   options: {
     validate: {
       options: {
@@ -786,7 +786,7 @@ exports.patchAddLink = {
         timeout
       })
       block = dagPB.encode(node)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to add link to object' })
     }
 
@@ -809,7 +809,7 @@ exports.patchAddLink = {
   }
 }
 
-exports.patchRmLink = {
+export const patchRmLinkResource = {
   options: {
     validate: {
       options: {
@@ -876,7 +876,7 @@ exports.patchRmLink = {
         timeout
       })
       block = dagPB.encode(node)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to remove link from object' })
     }
 

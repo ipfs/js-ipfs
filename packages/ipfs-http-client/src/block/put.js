@@ -1,18 +1,18 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const multipartRequest = require('../lib/multipart-request')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const abortSignal = require('../lib/abort-signal')
-const { AbortController } = require('native-abort-controller')
+
+import { CID } from 'multiformats/cid'
+import { multipartRequest } from '../lib/multipart-request.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { abortSignal } from '../lib/abort-signal'
+import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/block').API<HTTPClientExtraOptions>} BlockAPI
  */
 
-module.exports = configure(api => {
+export const createPut = configure(api => {
   /**
    * @type {BlockAPI["put"]}
    */
@@ -31,7 +31,7 @@ module.exports = configure(api => {
         )
       })
       res = await response.json()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       // Retry with "protobuf"/"cbor" format for go-ipfs
       // TODO: remove when https://github.com/ipfs/go-cid/issues/75 resolved
       if (options.format === 'dag-pb') {

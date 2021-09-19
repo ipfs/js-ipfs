@@ -1,9 +1,9 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../utils')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../utils.js'
+
+export default {
   command: 'provide <key>',
 
   describe: 'Announce to the network that you are providing given values.',

@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const { AbortSignal } = require('native-abort-controller')
+
+import { expect } from 'aegir/utils/chai.js'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import http from '../utils/http.js'
+import sinon from 'sinon'
+import { AbortSignal } from 'native-abort-controller'
 
 const defaultOptions = {
   signal: sinon.match.instanceOf(AbortSignal),

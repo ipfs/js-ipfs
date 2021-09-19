@@ -1,19 +1,19 @@
 /* eslint-env mocha */
-'use strict'
 
-const fs = require('fs')
-const { expect } = require('aegir/utils/chai')
-const path = require('path')
+
+import fs from 'fs'
+import { expect } from 'aegir/utils/chai.js'
+import path from 'path'
 const clean = require('./utils/clean')
-const { CID } = require('multiformats/cid')
+import { CID } from 'multiformats/cid'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { pack } = require('it-tar')
-const { pipe } = require('it-pipe')
+import sinon from 'sinon'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { pack } from 'it-tar'
+import { pipe } from 'it-pipe'
 const { gzip, inflate } = require('pako')
-const map = require('it-map')
-const toBuffer = require('it-to-buffer')
+import map from 'it-map'
+import toBuffer from 'it-to-buffer'
 
 const defaultOptions = {
   timeout: undefined,

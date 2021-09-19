@@ -1,13 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { base58btc } = require('multiformats/bases/base58')
-const { CID } = require('multiformats/cid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
-const raw = require('multiformats/codecs/raw')
-const { sha512 } = require('multiformats/hashes/sha2')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { base58btc } from 'multiformats/bases/base58'
+import { CID } from 'multiformats/cid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import all from 'it-all'
+import * as raw from 'multiformats/codecs/raw'
+import { sha512 } from 'multiformats/hashes/sha2'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -17,7 +18,7 @@ const { sha512 } = require('multiformats/hashes/sha2')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testPut (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

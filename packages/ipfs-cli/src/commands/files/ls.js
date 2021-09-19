@@ -1,14 +1,14 @@
-'use strict'
 
-const {
+
+import {
   asBoolean,
   stripControlCharacters
-} = require('../../utils')
-const formatMode = require('ipfs-core-utils/src/files/format-mode')
-const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
-const { default: parseDuration } = require('parse-duration')
+} from '../../utils.js'
+import formatMode from 'ipfs-core-utils/files/format-mode.js'
+import formatMtime from 'ipfs-core-utils/files/format-mtime.js'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'ls [path]',
 
   describe: 'List mfs directories',

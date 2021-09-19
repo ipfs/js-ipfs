@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * @typedef {Object} FixedChunkerOptions
@@ -24,7 +24,7 @@
  *
  * @returns {ChunkerOptions}   Chunker options for DAGBuilder
  */
-const parseChunkerString = (chunker) => {
+export const parseChunkerString = (chunker) => {
   if (!chunker) {
     return {
       chunker: 'fixed'
@@ -64,7 +64,7 @@ const parseChunkerString = (chunker) => {
  *
  * @returns {RabinChunkerSettings}   rabin chunker options
  */
-const parseRabinString = (chunker) => {
+export const parseRabinString = (chunker) => {
   const options = {}
   const parts = chunker.split('-')
   switch (parts.length) {
@@ -92,17 +92,11 @@ const parseRabinString = (chunker) => {
  * @param {string} name
  * @returns {number}
  */
-const parseChunkSize = (str, name) => {
+export const parseChunkSize = (str, name) => {
   const size = parseInt(str)
   if (isNaN(size)) {
     throw new Error(`Chunker parameter ${name} must be an integer`)
   }
 
   return size
-}
-
-module.exports = {
-  parseChunkSize,
-  parseRabinString,
-  parseChunkerString
 }

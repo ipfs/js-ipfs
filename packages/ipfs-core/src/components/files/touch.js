@@ -1,17 +1,20 @@
-'use strict'
 
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const toMfsPath = require('./utils/to-mfs-path')
-const log = require('debug')('ipfs:mfs:touch')
-const errCode = require('err-code')
-const { UnixFS } = require('ipfs-unixfs')
-const toTrail = require('./utils/to-trail')
-const addLink = require('./utils/add-link')
-const updateTree = require('./utils/update-tree')
-const updateMfsRoot = require('./utils/update-mfs-root')
-const dagPb = require('@ipld/dag-pb')
-const { CID } = require('multiformats/cid')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+import mergeOpts from 'merge-options'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import debug from 'debug'
+import errCode from 'err-code'
+import { UnixFS } from 'ipfs-unixfs'
+import { toTrail } from './utils/to-trail.js'
+import { addLink } from './utils/add-link.js'
+import { updateTree } from './utils/update-tree.js'
+import { updateMfsRoot } from './utils/update-mfs-root.js'
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:mfs:touch')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -40,7 +43,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createTouch (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["touch"]}
    */
@@ -72,24 +75,24 @@ module.exports = (context) => {
         // @ts-ignore TODO: restore hrtime support to ipfs-unixfs constructor - it's in the code, just not the signature
         mtime: settings.mtime
       })
-      updatedBlock = dagPb.encode({ Data: metadata.marshal(), Links: [] })
+      updatedBlock = dagPB.encode({ Data: metadata.marshal(), Links: [] })
 
       const hash = await hasher.digest(updatedBlock)
 
-      updatedCid = CID.create(settings.cidVersion, dagPb.code, hash)
+      updatedCid = CID.create(settings.cidVersion, dagPB.code, hash)
 
       if (settings.flush) {
         await context.repo.blocks.put(updatedCid, updatedBlock)
       }
     } else {
-      if (cid.code !== dagPb.code) {
+      if (cid.code !== dagPB.code) {
         throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
       }
 
       cidVersion = cid.version
 
       const block = await context.repo.blocks.get(cid)
-      const node = dagPb.decode(block)
+      const node = dagPB.decode(block)
 
       if (!node.Data) {
         throw errCode(new Error(`${path} had no data`), 'ERR_INVALID_NODE')
@@ -100,13 +103,13 @@ module.exports = (context) => {
       // @ts-ignore TODO: restore setting all date types as mtime - it's in the code, just not the signature
       metadata.mtime = settings.mtime
 
-      updatedBlock = dagPb.encode({
+      updatedBlock = dagPB.encode({
         Data: metadata.marshal(),
         Links: node.Links
       })
 
       const hash = await hasher.digest(updatedBlock)
-      updatedCid = CID.create(settings.cidVersion, dagPb.code, hash)
+      updatedCid = CID.create(settings.cidVersion, dagPB.code, hash)
 
       if (settings.flush) {
         await context.repo.blocks.put(updatedCid, updatedBlock)
@@ -117,7 +120,7 @@ module.exports = (context) => {
     const parent = trail[trail.length - 1]
     const parentCid = parent.cid
     const parentBlock = await context.repo.blocks.get(parentCid)
-    const parentNode = dagPb.decode(parentBlock)
+    const parentNode = dagPB.decode(parentBlock)
 
     const result = await addLink(context, {
       parent: parentNode,

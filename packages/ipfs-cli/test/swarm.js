@@ -1,11 +1,11 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { Multiaddr } = require('multiaddr')
+import sinon from 'sinon'
+import { Multiaddr } from 'multiaddr'
 
 describe('swarm', () => {
   let ipfs

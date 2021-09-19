@@ -1,13 +1,9 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { CID } = require('multiformats/cid')
 
-/**
- * @typedef {import('ipfs-core-types').IPFS} IPFS
- */
+import parseDuration from 'parse-duration'
+import { CID } from 'multiformats/cid'
 
-module.exports = {
+export default {
   command: 'export <root cid>',
 
   describe: 'Streams the DAG beginning at the given root CID as a CAR stream on stdout.',

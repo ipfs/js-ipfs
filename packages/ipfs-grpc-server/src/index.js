@@ -1,10 +1,18 @@
-'use strict'
 
-const grpc = require('@grpc/grpc-js')
-const first = require('it-first')
-const debug = require('debug')('ipfs:grpc-server')
-const webSocketServer = require('./utils/web-socket-server')
-const loadServices = require('./utils/load-services')
+
+import grpc from '@grpc/grpc-js'
+import first from 'it-first'
+import debug from 'debug'
+import {webSocketServer} from './utils/web-socket-server'
+import {loadServices} from './utils/load-services'
+import {grpcAdd} from './endpoints/add.js'
+import {grpcId} from './endpoints/id.js'
+import {grpcMfsLs} from './endpoints/mfs/ls.js'
+import {grpcMfsWrite} from './endpoints/mfs/write.js'
+import {grpcPubsubSubscribe} from './endpoints/pubsub/subscribe.js'
+import {grpcPubsubUnsubscribe} from './endpoints/pubsub/unsubscribe.js'
+
+const log = debug('ipfs:grpc-server')
 
 const {
   Root,
@@ -22,26 +30,26 @@ module.exports = async function createServer (ipfs, options = {}) {
   const server = new grpc.Server()
   server.addService(Root, {
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
-    add: require('./endpoints/add')(ipfs, options),
+    add: grpcAdd(ipfs, options),
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
-    id: require('./endpoints/id')(ipfs, options)
+    id: grpcId(ipfs, options)
   })
   server.addService(MFS, {
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
-    ls: require('./endpoints/mfs/ls')(ipfs, options),
+    ls: grpcMfsLs(ipfs, options),
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
-    write: require('./endpoints/mfs/write')(ipfs, options)
+    write: grpcMfsWrite(ipfs, options)
   })
   server.addService(PubSub, {
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
-    subscribe: require('./endpoints/pubsub/subscribe')(ipfs, options),
+    subscribe: grpcPubsubSubscribe(ipfs, options),
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
-    unsubscribe: require('./endpoints/pubsub/unsubscribe')(ipfs, options)
+    unsubscribe: grpcPubsubUnsubscribe(ipfs, options)
   })
 
   const socket = options.socket || await webSocketServer(ipfs, options)
 
-  socket.on('error', (error) => debug(error))
+  socket.on('error', (error) => log(error))
 
   socket.on('data', async ({ path, metadata, channel }) => {
     // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
@@ -121,7 +129,7 @@ module.exports = async function createServer (ipfs, options = {}) {
 
         break
       default:
-        debug(`Invalid handler type ${handler.type}`)
+        log(`Invalid handler type ${handler.type}`)
     }
   })
 

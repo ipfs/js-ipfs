@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * @typedef {object} Subscription
@@ -7,6 +7,4 @@
  */
 
 /** @type {Map<string, Subscription>} */
-const subs = new Map()
-
-module.exports = subs
+export const subscriptions = new Map()

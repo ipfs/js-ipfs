@@ -1,11 +1,13 @@
-'use strict'
 
-const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input')
-const { nanoid } = require('nanoid')
-const modeToString = require('./mode-to-string')
-const merge = require('merge-options').bind({ ignoreUndefined: true })
+
+import { normaliseInput } from 'ipfs-core-utils/src/files/normalise-input.js'
+import { nanoid } from 'nanoid'
+import modeToString from './mode-to-string.js'
+import mergeOpts from 'merge-options'
 // @ts-ignore no types
-const toStream = require('it-to-stream')
+import toStream from 'it-to-stream'
+
+const merge = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
@@ -18,7 +20,7 @@ const toStream = require('it-to-stream')
  * @param {Headers|Record<string, string>} [headers]
  * @param {string} [boundary]
  */
-async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
+export async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   /**
    * @param {ImportCandidateStream|ImportCandidate} source
    */
@@ -86,5 +88,3 @@ async function multipartRequest (source, abortController, headers = {}, boundary
     body: await toStream(streamFiles(source))
   }
 }
-
-module.exports = multipartRequest

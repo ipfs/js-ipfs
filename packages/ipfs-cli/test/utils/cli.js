@@ -1,8 +1,8 @@
-'use strict'
+
 
 const { parseArgsStringToArgv } = require('string-argv')
 const cli = require('../../src')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const output = () => {
   const output = []
@@ -66,7 +66,7 @@ module.exports.fail = async (command, ctx = {}) => {
     })
 
     throw new Error('Command did not error')
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.message === 'Command did not error') {
       throw err
     }

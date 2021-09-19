@@ -1,9 +1,9 @@
-'use strict'
 
-const JSONDiff = require('jsondiffpatch')
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import JSONDiff from 'jsondiffpatch'
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'apply <profile>',
 
   describe: 'Apply profile to config',

@@ -1,9 +1,9 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceUint8Array } = require('../../utils')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+import { coerceUint8Array } from '../../utils.js'
+
+export default {
   command: 'pub <topic> <data>',
 
   describe: 'Publish data to a topic',

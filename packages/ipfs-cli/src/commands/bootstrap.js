@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'bootstrap <command>',
 
   description: 'Show or edit the list of bootstrap peers.',

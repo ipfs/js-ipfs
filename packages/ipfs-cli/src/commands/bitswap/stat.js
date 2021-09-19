@@ -1,9 +1,9 @@
-'use strict'
 
-const prettyBytes = require('pretty-bytes')
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import prettyBytes from 'pretty-bytes'
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'stat',
 
   describe: 'Show some diagnostic information on the bitswap agent.',

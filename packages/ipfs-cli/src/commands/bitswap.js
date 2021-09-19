@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'bitswap <command>',
 
   description: 'Interact with the bitswap agent.',

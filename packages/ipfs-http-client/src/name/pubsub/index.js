@@ -1,10 +1,14 @@
-'use strict'
+import { createCancel } from './cancel.js'
+import { createState } from './state.js'
+import { createSubs } from './subs.js'
 
-/**
- * @param {import('../../types').Options} config
- */
-module.exports = config => ({
-  cancel: require('./cancel')(config),
-  state: require('./state')(config),
-  subs: require('./subs')(config)
-})
+export class PubsubAPI {
+  /**
+   * @param {import('../../types').Options} config
+   */
+  constructor (config) {
+    this.cancel = createCancel(config)
+    this.state = createState(config)
+    this.subs = createSubs(config)
+  }
+}

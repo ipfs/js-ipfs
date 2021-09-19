@@ -1,9 +1,9 @@
-'use strict'
 
-const { BlockstoreAdapter } = require('interface-blockstore')
-const merge = require('it-merge')
-const pushable = require('it-pushable')
-const filter = require('it-filter')
+
+import { BlockstoreAdapter } from 'interface-blockstore'
+import merge from 'it-merge'
+import pushable from 'it-pushable'
+import filter from 'it-filter'
 
 /**
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
@@ -22,7 +22,7 @@ const filter = require('it-filter')
  *
  * @implements {Blockstore}
  */
-class BlockStorage extends BlockstoreAdapter {
+export class BlockStorage extends BlockstoreAdapter {
   /**
    * Create a new BlockStorage
    *
@@ -170,5 +170,3 @@ class BlockStorage extends BlockstoreAdapter {
     yield * this.child.queryKeys(q, options)
   }
 }
-
-module.exports = BlockStorage

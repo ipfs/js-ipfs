@@ -1,10 +1,10 @@
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { default: parseDuration } = require('parse-duration')
-const { base32 } = require('multiformats/bases/base32')
 
-module.exports = {
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import parseDuration from 'parse-duration'
+import { base32 } from 'multiformats/bases/base32'
+
+export default {
   command: 'refs-local',
 
   describe: 'List all local references.',

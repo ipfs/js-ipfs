@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { Multiaddr } = require('multiaddr')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { Multiaddr } from 'multiaddr'
 
 const invalidArg = 'this/Is/So/Invalid/'
 const validIp4 = new Multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z')
@@ -15,7 +15,7 @@ const validIp4 = new Multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJ
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testAdd (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

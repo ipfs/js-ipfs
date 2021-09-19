@@ -1,22 +1,22 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { randomBytes } = require('iso-random-stream')
-const { expect } = require('aegir/utils/chai')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const { CID } = require('multiformats/cid')
-const first = require('it-first')
-const toBuffer = require('it-to-buffer')
-const { AbortSignal } = require('native-abort-controller')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
-const matchIterable = require('../utils/match-iterable')
-const drain = require('it-drain')
+
+import { randomBytes } from 'iso-random-stream'
+import { expect } from 'aegir/utils/chai.js'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import http from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import first from 'it-first'
+import toBuffer from 'it-to-buffer'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+import { matchIterable } from '../utils/match-iterable.js'
+import drain from 'it-drain'
 
 describe('/files', () => {
   const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')

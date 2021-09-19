@@ -1,11 +1,11 @@
-'use strict'
 
-const createAdd = require('./add')
-const createClear = require('./clear')
-const createList = require('./list')
-const createReset = require('./reset')
-const createRm = require('./rm')
-class BootstrapAPI {
+
+import {createAdd} from './add.js'
+import {createClear} from './clear.js'
+import {createList} from './list.js'
+import {createReset} from './reset.js'
+import {createRm} from './rm.js'
+export class BootstrapAPI {
   /**
    * @param {Object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
@@ -18,4 +18,3 @@ class BootstrapAPI {
     this.reset = createReset({ repo })
   }
 }
-module.exports = BootstrapAPI

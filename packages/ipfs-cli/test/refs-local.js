@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { base32 } = require('multiformats/bases/base32')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import sinon from 'sinon'
+import { base32 } from 'multiformats/bases/base32'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 const defaultOptions = {
   timeout: undefined

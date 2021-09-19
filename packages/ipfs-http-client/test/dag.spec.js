@@ -1,15 +1,15 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
 
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { expect } = require('aegir/utils/chai')
-const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
-const raw = require('multiformats/codecs/raw')
-const { base58btc } = require('multiformats/bases/base58')
-const { base32 } = require('multiformats/bases/base32')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import * as raw from 'multiformats/codecs/raw'
+import { base58btc } from 'multiformats/bases/base58'
+import { base32 } from 'multiformats/bases/base32'
 const f = require('./utils/factory')()
 const ipfsHttpClient = require('../src')
 
@@ -31,7 +31,7 @@ describe('.dag', function () {
     }
 
     const cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256', cidVersion: 0 })
-    expect(cid.code).to.equal(dagPb.code)
+    expect(cid.code).to.equal(dagPB.code)
     expect(cid.toString(base58btc)).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
 
     const result = await ipfs.dag.get(cid)
@@ -43,7 +43,7 @@ describe('.dag', function () {
     const cbor = { foo: 'dag-cbor-bar' }
     const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
 
-    expect(cid.code).to.equal(dagCbor.code)
+    expect(cid.code).to.equal(dagCBOR.code)
     expect(cid.toString(base32)).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
     const result = await ipfs.dag.get(cid)

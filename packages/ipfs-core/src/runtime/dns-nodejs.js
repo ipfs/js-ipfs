@@ -1,9 +1,9 @@
-'use strict'
 
-const dns = require('dns')
-const isIPFS = require('is-ipfs')
-const errcode = require('err-code')
-const { promisify } = require('util')
+
+import dns from 'dns'
+import isIPFS from 'is-ipfs'
+import errcode from 'err-code'
+import { promisify } from 'util'
 
 const MAX_RECURSIVE_DEPTH = 32
 
@@ -12,7 +12,7 @@ const MAX_RECURSIVE_DEPTH = 32
  * @param {object} opts
  * @param {boolean} [opts.recursive]
  */
-module.exports = (domain, opts) => {
+export function resolveDnslink (domain, opts) {
   // recursive is true by default, it's set to false only if explicitly passed as argument in opts
   const nonRecursive = !opts.recursive
 
@@ -38,8 +38,8 @@ async function recursiveResolveDnslink (domain, depth) {
   let dnslinkRecord
 
   try {
-    dnslinkRecord = await resolveDnslink(domain)
-  } catch (err) {
+    dnslinkRecord = await resolve(domain)
+  } catch (/** @type {any} */ err) {
     // If the code is not ENOTFOUND or ERR_DNSLINK_NOT_FOUND or ENODATA then throw the error
     if (err.code !== 'ENOTFOUND' && err.code !== 'ERR_DNSLINK_NOT_FOUND' && err.code !== 'ENODATA') {
       throw err
@@ -48,12 +48,12 @@ async function recursiveResolveDnslink (domain, depth) {
     if (domain.startsWith('_dnslink.')) {
       // The supplied domain contains a _dnslink component
       // Check the non-_dnslink domain
-      dnslinkRecord = await resolveDnslink(domain.replace('_dnslink.', ''))
+      dnslinkRecord = await resolve(domain.replace('_dnslink.', ''))
     } else {
       // Check the _dnslink subdomain
       const _dnslinkDomain = `_dnslink.${domain}`
       // If this throws then we propagate the error
-      dnslinkRecord = await resolveDnslink(_dnslinkDomain)
+      dnslinkRecord = await resolve(_dnslinkDomain)
     }
   }
 
@@ -71,7 +71,7 @@ async function recursiveResolveDnslink (domain, depth) {
 /**
  * @param {string} domain
  */
-async function resolveDnslink (domain) {
+async function resolve (domain) {
   const DNSLINK_REGEX = /^dnslink=.+$/
   const records = await promisify(dns.resolveTxt)(domain)
   const dnslinkRecords = records.reduce((rs, r) => rs.concat(r), [])

@@ -1,9 +1,9 @@
-'use strict'
 
-const { MemoryDatastore } = require('interface-datastore')
-const BlockstoreDatastoreAdapter = require(('blockstore-datastore-adapter'))
 
-function createBackend (overrides = {}) {
+import { MemoryDatastore } from 'interface-datastore'
+import BlockstoreDatastoreAdapter from 'blockstore-datastore-adapter'
+
+export function createBackend (overrides = {}) {
   return {
     datastore: new MemoryDatastore(),
     blocks: new BlockstoreDatastoreAdapter(
@@ -15,5 +15,3 @@ function createBackend (overrides = {}) {
     ...overrides
   }
 }
-
-module.exports = createBackend

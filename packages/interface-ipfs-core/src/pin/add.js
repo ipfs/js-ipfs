@@ -1,11 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { fixtures, clearPins, expectPinned, expectNotPinned, pinTypes } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
-const drain = require('it-drain')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { fixtures, clearPins, expectPinned, expectNotPinned, pinTypes } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import all from 'it-all'
+import drain from 'it-drain'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -15,7 +16,7 @@ const drain = require('it-drain')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testAdd (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

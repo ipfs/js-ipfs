@@ -1,12 +1,12 @@
-'use strict'
 
-const last = require('it-last')
+
+import last from 'it-last'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-core-types/src/pin').API["rmAll"]} config.rmAll
  */
-module.exports = ({ rmAll }) =>
+export function createRm ({ rmAll }) {
   /**
    * @type {import('ipfs-core-types/src/pin').API["rm"]}
    */
@@ -14,3 +14,4 @@ module.exports = ({ rmAll }) =>
     // @ts-ignore return value of last can be undefined
     return last(rmAll([{ path, ...options }], options))
   }
+}

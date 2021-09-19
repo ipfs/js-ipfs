@@ -1,10 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
-const drain = require('it-drain')
-const testTimeout = require('../utils/test-timeout')
+
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import all from 'it-all'
+import drain from 'it-drain'
+import testTimeout from '../utils/test-timeout.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +15,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testQuery (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -52,7 +53,7 @@ module.exports = (factory, options) => {
       try {
         const peers = await all(nodeA.dht.query(nodeBId.id, { timeout: timeout - 1000 }))
         expect(peers.map(p => p.id.toString())).to.include(nodeBId.id)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.name === 'TimeoutError') {
           // This test is meh. DHT works best with >= 20 nodes. Therefore a
           // failure might happen, but we don't want to report it as such.

@@ -70,7 +70,7 @@ port2.onmessage = ({data}) => {
 Codec for DAGNodes accepted by `ipfs.dag.put` API.
 
 ```js
-const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
+import { encodeNode, decodeNode } from 'ipfs-message-port-protocol/dag'
 
 
 const cid = CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')

@@ -1,16 +1,18 @@
-'use strict'
 
-const get = require('dlv')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const errCode = require('err-code')
-const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
-// @ts-ignore - no types
-const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
-// @ts-ignore - no types
-const DelegatedContentRouter = require('libp2p-delegated-content-routing')
-const { create: ipfsHttpClient } = require('ipfs-http-client')
-const { Multiaddr } = require('multiaddr')
-const pkgversion = require('../../package.json').version
+
+import get from 'dlv'
+import mergeOpts from 'merge-options'
+import errCode from 'err-code'
+import PubsubRouters from '../runtime/libp2p-pubsub-routers-nodejs.js'
+// @ts-expect-error - no types
+import DelegatedPeerRouter from 'libp2p-delegated-peer-routing'
+// @ts-expect-error - no types
+import DelegatedContentRouter from 'libp2p-delegated-content-routing'
+import { create as ipfsHttpClient } from 'ipfs-http-client'
+import { Multiaddr } from 'multiaddr'
+import { version as pkgversion } from '../../package.json'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {object} DekOptions
@@ -40,14 +42,14 @@ const pkgversion = require('../../package.json').version
  * @param {KeychainConfig|undefined} config.keychainConfig
  * @param {Partial<IPFSConfig>|undefined} config.config
  */
-module.exports = ({
+export function createLibp2p ({
   options = {},
   peerId,
   multiaddrs = [],
   repo,
   keychainConfig = {},
   config = {}
-}) => {
+}) {
   const { datastore, keys } = repo
 
   const libp2pOptions = getLibp2pOptions({

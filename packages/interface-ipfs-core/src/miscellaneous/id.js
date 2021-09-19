@@ -1,10 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { Multiaddr } = require('multiaddr')
-const { isWebWorker } = require('ipfs-utils/src/env')
-const retry = require('p-retry')
+
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { Multiaddr } from 'multiaddr'
+import { isWebWorker } from 'ipfs-utils/src/env.js'
+import retry from 'p-retry'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +15,7 @@ const retry = require('p-retry')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+ export function testId (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

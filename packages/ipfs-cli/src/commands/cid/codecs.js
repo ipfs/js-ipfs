@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'codecs',
 
   describe: 'List available CID codec names.',

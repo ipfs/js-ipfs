@@ -1,10 +1,12 @@
-'use strict'
 
-const log = require('debug')('ipfs:mfs:utils:update-tree')
-const addLink = require('./add-link')
-const {
+
+import debug from 'debug'
+import {addLink} from './add-link.js'
+import {
   decode
-} = require('@ipld/dag-pb')
+} from '@ipld/dag-pb'
+
+const log = debug('ipfs:mfs:utils:update-tree')
 
 const defaultOptions = {
   shardSplitThreshold: 1000
@@ -28,7 +30,7 @@ const defaultOptions = {
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  */
-const updateTree = async (context, trail, options) => {
+export async function updateTree (context, trail, options) {
   options = Object.assign({}, defaultOptions, options)
 
   log('Trail', trail)
@@ -81,5 +83,3 @@ const updateTree = async (context, trail, options) => {
 
   return cid
 }
-
-module.exports = updateTree

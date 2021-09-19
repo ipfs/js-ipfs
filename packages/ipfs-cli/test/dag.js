@@ -1,17 +1,17 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
-const dagCBOR = require('@ipld/dag-cbor')
-const dagPB = require('@ipld/dag-pb')
-const sinon = require('sinon')
-const { CID } = require('multiformats/cid')
-const raw = require('multiformats/codecs/raw')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import * as dagCBOR from '@ipld/dag-cbor'
+import * as dagPB from '@ipld/dag-pb'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import * as raw from 'multiformats/codecs/raw'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 const matchIterable = require('./utils/match-iterable')
 
 describe('dag', () => {

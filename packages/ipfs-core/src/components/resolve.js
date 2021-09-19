@@ -1,19 +1,19 @@
-'use strict'
 
-const isIpfs = require('is-ipfs')
-const { CID } = require('multiformats/cid')
-const PeerID = require('peer-id')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { resolve: res } = require('../utils')
+
+import isIpfs from 'is-ipfs'
+import { CID } from 'multiformats/cid'
+import PeerId from 'peer-id'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { resolve as res } from '../utils.js'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-core-utils/src/multibases')} config.bases
  * @param {import('ipfs-core-types/src/name').API} config.name
  */
-module.exports = ({ repo, codecs, bases, name }) => {
+export function createResolve ({ repo, codecs, bases, name }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["resolve"]}
    */
@@ -67,7 +67,7 @@ module.exports = ({ repo, codecs, bases, name }) => {
  */
 function parseBytes (str) {
   try {
-    return PeerID.parse(str).toBytes()
+    return PeerId.parse(str).toBytes()
   } catch {
     return CID.parse(str).bytes
   }

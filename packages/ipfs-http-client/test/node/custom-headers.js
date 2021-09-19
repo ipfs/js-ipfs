@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { isNode } = require('ipfs-utils/src/env')
-const { expect } = require('aegir/utils/chai')
+
+import { isNode } from 'ipfs-utils/src/env.js'
+import { expect } from 'aegir/utils/chai.js'
 const ipfsClient = require('../../src').create
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 function startServer (fn) {
   let headersResolve

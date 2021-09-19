@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { Multiaddr } = require('multiaddr')
+import sinon from 'sinon'
+import { Multiaddr } from 'multiaddr'
 
 describe('bootstrap', () => {
   const peer = new Multiaddr('/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')

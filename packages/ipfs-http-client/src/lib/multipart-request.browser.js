@@ -1,9 +1,9 @@
-'use strict'
+
 
 // Import browser version otherwise electron-renderer will end up with node
 // version and fail.
-const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input/index.browser')
-const modeToString = require('./mode-to-string')
+import { normaliseInput } from 'ipfs-core-utils/files/normalise-input'
+import {modeToString} from './mode-to-string.js'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
@@ -15,7 +15,7 @@ const modeToString = require('./mode-to-string')
  * @param {AbortController} abortController
  * @param {Headers|Record<string, string>} [headers]
  */
-async function multipartRequest (source, abortController, headers = {}) {
+export async function multipartRequest (source, abortController, headers = {}) {
   const parts = []
   const formData = new FormData()
   let index = 0
@@ -72,5 +72,3 @@ async function multipartRequest (source, abortController, headers = {}) {
     body: formData
   }
 }
-
-module.exports = multipartRequest

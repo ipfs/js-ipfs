@@ -1,19 +1,19 @@
-'use strict'
 
-const debug = require('debug')
-const { default: parseDuration } = require('parse-duration')
-const crypto = require('libp2p-crypto')
-const errcode = require('err-code')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+
+import debug from 'debug'
+import parseDuration from 'parse-duration'
+import crypto from 'libp2p-crypto'
+import errcode from 'err-code'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const log = Object.assign(debug('ipfs:name:publish'), {
   error: debug('ipfs:name:publish:error')
 })
 
-const { OFFLINE_ERROR, normalizePath } = require('../../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { resolvePath } = require('./utils')
+import { OFFLINE_ERROR, normalizePath } from '../../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { resolvePath } from './utils.js'
 
 /**
  * IPNS - Inter-Planetary Naming System
@@ -21,12 +21,12 @@ const { resolvePath } = require('./utils')
  * @param {Object} config
  * @param {import('../ipns')} config.ipns
  * @param {import('ipfs-repo').IPFSRepo} config.repo
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('peer-id')} config.peerId
  * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
  * @param {import('libp2p/src/keychain')} config.keychain
  */
-module.exports = ({ ipns, repo, codecs, peerId, isOnline, keychain }) => {
+export function createPublish ({ ipns, repo, codecs, peerId, isOnline, keychain }) {
   /**
    * @param {string} keyName
    */
@@ -40,7 +40,7 @@ module.exports = ({ ipns, repo, codecs, peerId, isOnline, keychain }) => {
       const pem = await keychain.exportKey(keyName, 'temp')
       const privateKey = await crypto.keys.import(pem, 'temp')
       return privateKey
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
       throw errcode(err, 'ERR_CANNOT_GET_KEY')
     }
@@ -62,7 +62,7 @@ module.exports = ({ ipns, repo, codecs, peerId, isOnline, keychain }) => {
     // Normalize path value
     try {
       value = normalizePath(value)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
       throw err
     }
@@ -73,7 +73,7 @@ module.exports = ({ ipns, repo, codecs, peerId, isOnline, keychain }) => {
 
       // Calculate lifetime with nanoseconds precision
       pubLifetime = parseFloat(pubLifetime.toFixed(6))
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
       throw err
     }

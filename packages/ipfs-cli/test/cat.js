@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats/cid')
+
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import sinon from 'sinon'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 const defaultOptions = {
   offset: undefined,

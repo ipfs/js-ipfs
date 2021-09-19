@@ -1,4 +1,4 @@
-'use strict'
+
 
 // @ts-ignore no types
 const WS = require('libp2p-websockets')

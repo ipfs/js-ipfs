@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'cat <ipfsPath>',
 
   describe: 'Fetch and cat an IPFS path referencing a file',

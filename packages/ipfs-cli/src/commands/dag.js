@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'dag <command>',
 
   description: 'Interact with ipld dag objects.',

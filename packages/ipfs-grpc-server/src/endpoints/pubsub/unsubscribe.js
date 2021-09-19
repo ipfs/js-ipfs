@@ -1,13 +1,13 @@
-'use strict'
 
-const subscriptions = require('./subscriptions')
-const { callbackify } = require('util')
+
+import { subscriptions } from './subscriptions.js'
+import { callbackify } from 'util'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('../../types').Options} options
  */
-module.exports = function grpcPubsubUnsubscribe (ipfs, options = {}) {
+export function grpcPubsubUnsubscribe (ipfs, options = {}) {
   /**
    * TODO: Fill out input/output types after https://github.com/ipfs/js-ipfs/issues/3594
    *

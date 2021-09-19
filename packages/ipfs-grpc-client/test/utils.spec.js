@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const all = require('it-all')
+
+import { expect } from 'aegir/utils/chai.js'
+import all from 'it-all'
 const bidiToDuplex = require('../src/utils/bidi-to-duplex')
 const toHeaders = require('../src/utils/to-headers')
-const sinon = require('sinon')
+import sinon from 'sinon'
 
 describe('utils', () => {
   describe('bidi-to-duplex', () => {

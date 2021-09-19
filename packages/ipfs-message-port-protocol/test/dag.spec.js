@@ -1,11 +1,11 @@
-'use strict'
+
 
 /* eslint-env mocha */
 
-const { CID } = require('multiformats/cid')
-const { encodeNode } = require('../src/dag')
-const { expect } = require('aegir/utils/chai')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { CID } from 'multiformats/cid'
+import { encodeNode } from '../src/dag.js'
+import { expect } from 'aegir/utils/chai.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 describe('dag', function () {
   this.timeout(10 * 1000)

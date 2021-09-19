@@ -1,14 +1,21 @@
-'use strict'
-
-/**
- * @param {import('../types').Options} config
- */
-module.exports = config => ({
-  gen: require('./gen')(config),
-  list: require('./list')(config),
-  rename: require('./rename')(config),
-  rm: require('./rm')(config),
-  import: require('./import')(config),
-  export: require('./export')(config),
-  info: require('./info')(config)
-})
+import { createExport } from './export.js'
+import { createGen } from './gen.js'
+import { createImport } from './import.js'
+import { createInfo } from './info.js'
+import { createList } from './list.js'
+import { createRename } from './rename.js'
+import { createRm } from './rm.js'
+export class KeyAPI {
+  /**
+   * @param {import('../types').Options} config
+   */
+  constructor (config) {
+    this.export = createExport(config)
+    this.gen = createGen(config)
+    this.import = createImport(config)
+    this.info = createInfo(config)
+    this.list = createList(config)
+    this.rename = createRename(config)
+    this.rm = createRm(config)
+  }
+}

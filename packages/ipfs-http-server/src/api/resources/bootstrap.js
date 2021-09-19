@@ -1,9 +1,9 @@
-'use strict'
 
-const Boom = require('@hapi/boom')
-const Joi = require('../../utils/joi')
 
-exports.list = {
+import Boom from '@hapi/boom'
+import Joi from '../../utils/joi.js'
+
+export const listResource = {
   options: {
     validate: {
       options: {
@@ -43,7 +43,7 @@ exports.list = {
   }
 }
 
-exports.add = {
+export const addResource = {
   options: {
     validate: {
       options: {
@@ -103,7 +103,7 @@ exports.add = {
   }
 }
 
-exports.addDefault = {
+export const addDefaultResource = {
   options: {
     validate: {
       options: {
@@ -143,7 +143,7 @@ exports.addDefault = {
   }
 }
 
-exports.rm = {
+export const rmResource = {
   options: {
     validate: {
       options: {
@@ -203,7 +203,7 @@ exports.rm = {
   }
 }
 
-exports.rmAll = {
+export const rmAllResource = {
   options: {
     validate: {
       options: {

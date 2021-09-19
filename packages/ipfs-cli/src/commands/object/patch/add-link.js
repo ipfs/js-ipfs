@@ -1,10 +1,10 @@
-'use strict'
 
-const dagPB = require('@ipld/dag-pb')
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../../utils')
 
-module.exports = {
+import * as dagPB from '@ipld/dag-pb'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../../utils.js'
+
+export default {
   command: 'add-link <root> <name> <ref>',
 
   describe: 'Add a link to a given object',

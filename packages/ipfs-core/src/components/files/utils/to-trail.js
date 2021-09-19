@@ -1,7 +1,9 @@
-'use strict'
 
-const { walkPath } = require('ipfs-unixfs-exporter')
-const log = require('debug')('ipfs:mfs:utils:to-trail')
+
+import { walkPath } from 'ipfs-unixfs-exporter'
+import debug from 'debug'
+
+const log = debug('ipfs:mfs:utils:to-trail')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext
@@ -19,7 +21,7 @@ const log = require('debug')('ipfs:mfs:utils:to-trail')
  * @param {string} path
  * @returns {Promise<MfsTrail[]>}
  */
-const toTrail = async (context, path) => {
+export async function toTrail (context, path) {
   log(`Creating trail for path ${path}`)
 
   const output = []
@@ -35,5 +37,3 @@ const toTrail = async (context, path) => {
 
   return output
 }
-
-module.exports = toTrail

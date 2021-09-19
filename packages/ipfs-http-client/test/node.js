@@ -1,4 +1,4 @@
-'use strict'
+
 
 require('./node/agent')
 require('./node/swarm')

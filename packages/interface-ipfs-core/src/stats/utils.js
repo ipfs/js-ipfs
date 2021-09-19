@@ -1,4 +1,4 @@
-'use strict'
+
 
 const { expect } = require('../utils/mocha')
 

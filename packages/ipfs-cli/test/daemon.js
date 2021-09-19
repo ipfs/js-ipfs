@@ -1,14 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const clean = require('./utils/clean')
 const ipfsCmd = require('./utils/ipfs-exec')
 const { isWindows } = require('./utils/platforms')
-const os = require('os')
-const path = require('path')
-const { nanoid } = require('nanoid')
-const fs = require('fs')
+import os from 'os'
+import path from 'path'
+import { nanoid } from 'nanoid'
+import fs from 'fs'
 const tempWrite = require('temp-write')
 const pkg = require('../package.json')
 
@@ -28,7 +28,7 @@ const daemonReady = async (daemon, options) => {
         if (options.onReady) {
           try {
             await options.onReady(stdout)
-          } catch (err) {
+          } catch (/** @type {any} */ err) {
             return reject(err)
           }
         }
@@ -54,7 +54,7 @@ const daemonReady = async (daemon, options) => {
     daemon.kill(options.killSignal)
     await daemon
     return stdout
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     // Windows does not support sending signals, but Node.js offers some
     // emulation. Sending SIGINT, SIGTERM, and SIGKILL cause the unconditional
     // termination of the target process.

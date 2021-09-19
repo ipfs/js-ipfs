@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'files <command>',
 
   description: 'Operations over mfs files (ls, mkdir, rm, etc)',

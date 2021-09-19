@@ -1,4 +1,4 @@
-'use strict'
 
-require('./cid.spec')
-require('./dag.spec')
+
+import './cid.spec.js'
+import './dag.spec.js'

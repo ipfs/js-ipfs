@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -8,9 +8,9 @@
 
 /**
  * @param {Options} options
- * @param {import('./subscription-tracker')} subsTracker
+ * @param {import('./subscription-tracker').SubscriptionTracker} subsTracker
  */
-module.exports = (options, subsTracker) => {
+ export const createUnsubscribe = (options, subsTracker) => {
   /**
    * @type {PubsubAPI["unsubscribe"]}
    */

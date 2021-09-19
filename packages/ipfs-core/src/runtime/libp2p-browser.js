@@ -1,17 +1,17 @@
-'use strict'
 
-// @ts-ignore - no types
+
+// @ts-expect-error - no types
 const WS = require('libp2p-websockets')
-// @ts-ignore - no types
+// @ts-expect-error - no types
 const WebRTCStar = require('libp2p-webrtc-star')
-// @ts-ignore - no types
+// @ts-expect-error - no types
 const Multiplex = require('libp2p-mplex')
 const { NOISE } = require('@chainsafe/libp2p-noise')
 const KadDHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 const ipnsUtils = require('../ipns/routing/utils')
 
-module.exports = () => {
+export function libp2pConfig () {
   /** @type {import('libp2p').Libp2pOptions} */
   const options = {
     dialer: {

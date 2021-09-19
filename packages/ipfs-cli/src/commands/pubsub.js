@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'pubsub <command>',
 
   description: 'pubsub commands',

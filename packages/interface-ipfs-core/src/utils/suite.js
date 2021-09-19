@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

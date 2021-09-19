@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'cid <command>',
 
   description: 'Convert, format and discover properties of CIDs.',

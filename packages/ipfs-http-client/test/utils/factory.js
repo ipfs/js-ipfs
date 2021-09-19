@@ -1,9 +1,10 @@
-'use strict'
+
 
 // @ts-ignore no types
-const { createFactory } = require('ipfsd-ctl')
-const merge = require('merge-options').bind({ ignoreUndefined: true })
-const { isNode } = require('ipfs-utils/src/env')
+import { createFactory } from 'ipfsd-ctl'
+import mergeOpts from 'merge-options'
+const merge = mergeOpts.bind({ ignoreUndefined: true })
+import { isNode } from 'ipfs-utils/src/env.js'
 
 const commonOptions = {
   test: true,

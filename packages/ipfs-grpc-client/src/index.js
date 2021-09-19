@@ -1,8 +1,14 @@
-'use strict'
 
-const toUrlString = require('ipfs-core-utils/src/to-url-string')
-const loadServices = require('./utils/load-services')
-const { grpc } = require('@improbable-eng/grpc-web')
+
+import { toUrlString } from 'ipfs-core-utils/to-url-string'
+import {loadServices} from './utils/load-services.js'
+import { grpc } from '@improbable-eng/grpc-web'
+import { grpcAddAll } from './core-api/add-all.js'
+import { grpcId } from './core-api/id.js'
+import { grpcMfsLs } from './core-api/files/ls.js'
+import { grpcMfsWrite } from './core-api/files/write.js'
+import { grpcPubsubSubscribe } from './core-api/pubsub/subscribe.js'
+import { grpcPubsubUnsubscribe } from './core-api/pubsub/unsubscribe.js'
 
 /**
  * @typedef {import('./types').Options} Options
@@ -30,7 +36,7 @@ function normaliseUrls (opts) {
 /**
  * @param {Options} [opts]
  */
-function create (opts = { url: '' }) {
+export function create (opts = { url: '' }) {
   const options = {
     ...opts,
     url: toUrlString(opts.url)
@@ -41,26 +47,22 @@ function create (opts = { url: '' }) {
 
   const client = {
     // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-    addAll: require('./core-api/add-all')(grpc, service.Root.add, options),
+    addAll: grpcAddAll(grpc, service.Root.add, options),
     // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-    id: require('./core-api/id')(grpc, service.Root.id, options),
+    id: grpcId(grpc, service.Root.id, options),
     files: {
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      ls: require('./core-api/files/ls')(grpc, service.MFS.ls, options),
+      ls: grpcMfsLs(grpc, service.MFS.ls, options),
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      write: require('./core-api/files/write')(grpc, service.MFS.write, options)
+      write: grpcMfsWrite(grpc, service.MFS.write, options)
     },
     pubsub: {
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      subscribe: require('./core-api/pubsub/subscribe')(grpc, service.PubSub.subscribe, options),
+      subscribe: grpcPubsubSubscribe(grpc, service.PubSub.subscribe, options),
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      unsubscribe: require('./core-api/pubsub/unsubscribe')(grpc, service.PubSub.unsubscribe, options)
+      unsubscribe: grpcPubsubUnsubscribe(grpc, service.PubSub.unsubscribe, options)
     }
   }
 
   return client
-}
-
-module.exports = {
-  create
 }

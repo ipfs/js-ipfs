@@ -1,27 +1,12 @@
-'use strict'
 
-const chmod = require('./chmod')
-const cp = require('./cp')
-const flush = require('./flush')
-const ls = require('./ls')
-const mkdir = require('./mkdir')
-const mv = require('./mv')
-const read = require('./read')
-const rm = require('./rm')
-const stat = require('./stat')
-const touch = require('./touch')
-const write = require('./write')
-
-module.exports = {
-  chmod,
-  cp,
-  flush,
-  ls,
-  mkdir,
-  mv,
-  read,
-  rm,
-  stat,
-  touch,
-  write
-}
+export { chmodResource } from './chmod.js'
+export { cpResource } from './cp.js'
+export { flushResource } from './flush.js'
+export { lsResource } from './ls.js'
+export { mkdirResource } from './mkdir.js'
+export { mvResource } from './mv.js'
+export { readResource } from './read.js'
+export { rmResource } from './rm.js'
+export { statResource } from './stat.js'
+export { touchResource } from './touch.js'
+export { writeResource } from './write.js'

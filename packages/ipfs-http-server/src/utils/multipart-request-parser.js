@@ -1,12 +1,12 @@
-'use strict'
+
 
 // @ts-ignore no types
 const Content = require('@hapi/content')
 const multipart = require('it-multipart')
-const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 const qs = require('querystring')
-const drain = require('it-drain')
+import drain from 'it-drain'
 
 const multipartFormdataType = 'multipart/form-data'
 const applicationDirectory = 'application/x-directory'
@@ -126,7 +126,7 @@ const readQueryParam = value => Array.isArray(value) ? value[0] : value
  * @param {IncomingMessage} stream
  * @returns {AsyncGenerator<MultipartEntry, void, undefined>}
  */
-async function * parser (stream) {
+export async function * multipartRequestParser (stream) {
   for await (const entry of parseEntry(multipart(stream))) {
     if (entry.type === 'directory') {
       /** @type {import('../types').MultipartDirectory} */
@@ -163,5 +163,3 @@ async function * parser (stream) {
     }
   }
 }
-
-module.exports = parser

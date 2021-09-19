@@ -1,9 +1,9 @@
-'use strict'
 
-const Joi = require('../../../utils/joi')
-const streamResponse = require('../../../utils/stream-response')
 
-const mfsRead = {
+import Joi from '../../../utils/joi.js'
+import { streamResponse } from '../../../utils/stream-response.js'
+
+export const readResource = {
   options: {
     validate: {
       options: {
@@ -54,5 +54,3 @@ const mfsRead = {
     }))
   }
 }
-
-module.exports = mfsRead

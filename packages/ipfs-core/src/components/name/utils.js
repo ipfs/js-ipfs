@@ -1,9 +1,9 @@
-'use strict'
 
-const isIPFS = require('is-ipfs')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const drain = require('it-drain')
-const { resolve } = require('../../utils')
+
+import isIPFS from 'is-ipfs'
+import toCidAndPath from 'ipfs-core-utils/to-cid-and-path'
+import drain from 'it-drain'
+import { resolve } from '../../utils.js'
 
 /**
  * resolves the given path by parsing out protocol-specific entries
@@ -12,11 +12,11 @@ const { resolve } = require('../../utils')
  * @param {Object} context
  * @param {import('../ipns')} context.ipns
  * @param {import('ipfs-repo').IPFSRepo} context.repo
- * @param {import('ipfs-core-utils/src/multicodecs')} context.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} context.codecs
  * @param {string} name
  * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-exports.resolvePath = async ({ ipns, repo, codecs }, name, options) => {
+export async function resolvePath ({ ipns, repo, codecs }, name, options) {
   // ipns path
   if (isIPFS.ipnsPath(name)) {
     return ipns.resolve(name)

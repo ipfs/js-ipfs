@@ -85,7 +85,7 @@ $ npm install ipfs-core
 Then start a node in your app:
 
 ```javascript
-const IPFS = require('ipfs-core')
+import * as IPFS from 'ipfs-core'
 
 const ipfs = await IPFS.create()
 const { cid } = await ipfs.add('Hello world')

@@ -6,22 +6,74 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "type": "module",
   "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
-  "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
-  ],
+  "types": "types/src/index.d.ts",
   "typesVersions": {
     "*": {
-      "src/*": [
-        "dist/src/*",
-        "dist/src/*/index"
+      "*": [
+        "types/*",
+        "types/src/*"
       ],
-      "src/": [
-        "dist/src/index"
+      "types/*": [
+        "types/*",
+        "types/src/*"
       ]
+    }
+  },
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "test/fixtures/*"
+    ]
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./files/normalise-input": {
+      "browser": "./src/files/normalise-input/index.browser.js",
+      "import": "./src/files/normalise-input/index.js"
+    },
+    "./files/format-mode": {
+      "import": "./src/files/format-mode.js"
+    },
+    "./files/format-mtime": {
+      "import": "./src/files/format-mtime.js"
+    },
+    "./pins/normalise-input": {
+      "import": "./src/pins/normalise-input.js"
+    },
+    "./errors": {
+      "import": "./src/errors.js"
+    },
+    "./multibases": {
+      "import": "./src/multibases.js"
+    },
+    "./multicodecs": {
+      "import": "./src/multicodecs.js"
+    },
+    "./multihashes": {
+      "import": "./src/multihashes.js"
+    },
+    "./to-cid-and-path": {
+      "import": "./src/to-cid-and-path.js"
+    },
+    "./to-url-string": {
+      "import": "./src/to-url-string.js"
+    },
+    "./with-timeout-option": {
+      "import": "./src/with-timeout-option.js"
     }
   },
   "repository": {

@@ -1,19 +1,17 @@
 /* eslint-env browser */
-'use strict'
 
-const http = require('http')
-const { URL } = require('iso-url')
 
-const defaultPort = 1138
-const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
+import http from 'http'
+import { URL } from 'iso-url'
 
-module.exports.defaultAddr = defaultAddr
+export const defaultPort = 1138
+export const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
 
 // Create a mock preload IPFS node with a gateway that'll respond 200 to a
 // request for /api/v0/refs?arg=*. It remembers the preload CIDs it has been
 // called with, and you can ask it for them and also clear them by issuing a
 // GET/DELETE request to /cids.
-module.exports.createNode = () => {
+export function createNode () {
   /** @type {string[]} */
   let cids = []
 

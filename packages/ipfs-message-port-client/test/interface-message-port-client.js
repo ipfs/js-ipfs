@@ -1,8 +1,8 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const tests = require('interface-ipfs-core')
-const { activate } = require('./util/client')
+
+import * as tests from 'interface-ipfs-core'
+import { activate } from './util/client.js'
 
 describe('interface-ipfs-core tests', () => {
   const factory = {

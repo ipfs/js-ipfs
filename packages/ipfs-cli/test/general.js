@@ -1,20 +1,20 @@
 /* eslint-env mocha */
-'use strict'
 
-const os = require('os')
-const fs = require('fs').promises
-const path = require('path')
-const { nanoid } = require('nanoid')
-const { expect } = require('aegir/utils/chai')
+
+import os from 'os'
+import { promises as fs } from 'fs'
+import path from 'path'
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
 const { repoVersion } = require('ipfs-repo')
-const { promisify } = require('util')
+import { promisify } from 'util'
 const ncp = promisify(require('ncp').ncp)
 const ipfsExec = require('./utils/ipfs-exec')
 const clean = require('./utils/clean')
 const { isWindows } = require('./utils/platforms')
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import sinon from 'sinon'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 describe.skip('general cli options', () => {
   let ipfs

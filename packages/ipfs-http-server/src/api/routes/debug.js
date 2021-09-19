@@ -1,14 +1,14 @@
-'use strict'
 
-const client = require('prom-client')
-const Boom = require('@hapi/boom')
+
+import client from 'prom-client'
+import Boom from '@hapi/boom'
 
 // Clear the register to make sure we're not registering multiple ones
 client.register.clear()
 const gauge = new client.Gauge({ name: 'number_of_peers', help: 'the_number_of_currently_connected_peers' })
 
 // Endpoint for handling debug metrics
-module.exports = {
+export default [{
   method: 'POST',
   path: '/debug/metrics/prometheus',
   /**
@@ -28,4 +28,4 @@ module.exports = {
     return h.response(client.register.metrics())
       .type(client.register.contentType)
   }
-}
+}]

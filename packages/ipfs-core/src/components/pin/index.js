@@ -1,15 +1,15 @@
-'use strict'
 
-const createAdd = require('./add')
-const createAddAll = require('./add-all')
-const createLs = require('./ls')
-const createRm = require('./rm')
-const createRmAll = require('./rm-all')
 
-class PinAPI {
+import {createAdd} from './add.js'
+import {createAddAll} from './add-all.js'
+import {createLs} from './ls.js'
+import {createRm} from './rm.js'
+import {createRmAll} from './rm-all.js'
+
+export class PinAPI {
   /**
    * @param {Object} config
-   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+   * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
   constructor ({ codecs, repo }) {
@@ -37,5 +37,3 @@ class PinAPI {
     }
   }
 }
-
-module.exports = PinAPI

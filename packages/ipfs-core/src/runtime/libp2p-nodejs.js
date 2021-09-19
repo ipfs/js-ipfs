@@ -1,20 +1,18 @@
-'use strict'
 
-// @ts-ignore - no types
-const TCP = require('libp2p-tcp')
-// @ts-ignore - no types
-const MulticastDNS = require('libp2p-mdns')
-// @ts-ignore - no types
-const WS = require('libp2p-websockets')
-const KadDHT = require('libp2p-kad-dht')
-const GossipSub = require('libp2p-gossipsub')
-// @ts-ignore - no types
-const Multiplex = require('libp2p-mplex')
-const { NOISE } = require('@chainsafe/libp2p-noise')
-const ipnsUtils = require('../ipns/routing/utils')
-const os = require('os')
+import TCP from 'libp2p-tcp'
+// @ts-expect-error - no types
+import MulticastDNS from 'libp2p-mdns'
+// @ts-expect-error - no types
+import WS from 'libp2p-websockets'
+import KadDHT from 'libp2p-kad-dht'
+import GossipSub from 'libp2p-gossipsub'
+// @ts-expect-error - no types
+import Multiplex from 'libp2p-mplex'
+import { NOISE } from '@chainsafe/libp2p-noise'
+import { validator, selector } from '../ipns/routing/utils.js'
+import os from 'os'
 
-module.exports = () => {
+export function libp2pConfig () {
   /** @type {import('libp2p').Libp2pOptions} */
   const options = {
     dialer: {
@@ -60,10 +58,10 @@ module.exports = () => {
           enabled: false
         },
         validators: {
-          ipns: ipnsUtils.validator
+          ipns: validator
         },
         selectors: {
-          ipns: ipnsUtils.selector
+          ipns: selector
         }
       },
       pubsub: {

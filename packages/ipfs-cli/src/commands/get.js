@@ -1,18 +1,18 @@
-'use strict'
 
-const fs = require('fs')
-const path = require('path')
+
+import fs from 'fs'
+import path from 'path'
 // @ts-ignore no types
-const toIterable = require('stream-to-it')
-const { pipe } = require('it-pipe')
-const { default: parseDuration } = require('parse-duration')
-const {
+import toIterable from 'stream-to-it'
+import { pipe } from 'it-pipe'
+import parseDuration from 'parse-duration'
+import {
   stripControlCharacters
-} = require('../utils')
-const { extract } = require('it-tar')
-const map = require('it-map')
+} from '../utils.js'
+import { extract } from 'it-tar'
+import map from 'it-map'
 
-module.exports = {
+export default {
   command: 'get <ipfsPath>',
 
   describe: 'Download IPFS objects',

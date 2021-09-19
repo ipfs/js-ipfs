@@ -1,13 +1,15 @@
-'use strict'
 
-const errCode = require('err-code')
-const updateTree = require('./utils/update-tree')
-const updateMfsRoot = require('./utils/update-mfs-root')
-const removeLink = require('./utils/remove-link')
-const toMfsPath = require('./utils/to-mfs-path')
-const toTrail = require('./utils/to-trail')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
+
+import errCode from 'err-code'
+import { updateTree } from './utils/update-tree.js'
+import { updateMfsRoot } from './utils/update-mfs-root.js'
+import { removeLink } from './utils/remove-link.js'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import { toTrail } from './utils/to-trail.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import mergeOpts from 'merge-options'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -36,7 +38,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createRm (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["rm"]}
    */

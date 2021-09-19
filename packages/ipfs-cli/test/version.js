@@ -1,11 +1,11 @@
 /* eslint max-nested-callbacks: ["error", 5] */
 /* eslint-env mocha */
-'use strict'
 
-const os = require('os')
-const { expect } = require('aegir/utils/chai')
+
+import os from 'os'
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
+import sinon from 'sinon'
 
 const defaultOptions = {
   timeout: undefined

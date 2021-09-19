@@ -1,22 +1,22 @@
-'use strict'
+
 
 /* eslint-env browser */
 
-const Client = require('./client')
-const { CID } = require('multiformats/cid')
-const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const {
+import { Client } from './client.js'
+import { CID } from 'multiformats/cid'
+import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
+import {
   decodeIterable,
   encodeIterable,
   encodeCallback
-} = require('ipfs-message-port-protocol/src/core')
+} from 'ipfs-message-port-protocol/core'
 /** @type {<T>(stream:ReadableStream<T>) => AsyncIterable<T>} */
 // @ts-ignore - browser-stream-to-it has no types
-const iterateReadableStream = require('browser-readablestream-to-it')
-const {
+import iterateReadableStream from 'browser-readablestream-to-it'
+import {
   parseMode,
   parseMtime
-} = require('ipfs-unixfs')
+} from 'ipfs-unixfs'
 
 /**
  * @template T
@@ -50,7 +50,7 @@ const {
  * @class
  * @extends {Client<CoreService>}
  */
-class CoreClient extends Client {
+export class CoreClient extends Client {
   /**
    * @param {MessageTransport} transport
    */
@@ -449,5 +449,3 @@ const asFileObject = (input) => {
     return null
   }
 }
-
-module.exports = CoreClient

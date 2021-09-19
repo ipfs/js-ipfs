@@ -1,20 +1,21 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
-const { nanoid } = require('nanoid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { isNode } = require('ipfs-utils/src/env')
-const { sha512 } = require('multiformats/hashes/sha2')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { isNode } from 'ipfs-utils/src/env.js'
+import { sha512 } from 'multiformats/hashes/sha2'
 const traverseLeafNodes = require('../utils/traverse-leaf-nodes')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const createTwoShards = require('../utils/create-two-shards')
-const { randomBytes } = require('iso-random-stream')
+import createShardedDirectory from '../utils/create-sharded-directory'
+import createTwoShards from '../utils/create-two-shards'
+import { randomBytes } from 'iso-random-stream'
 const { randomStream } = require('iso-random-stream')
-const all = require('it-all')
-const isShardAtPath = require('../utils/is-shard-at-path')
-const raw = require('multiformats/codecs/raw')
+import all from 'it-all'
+import isShardAtPath from '../utils/is-shard-at-path.js'
+import * as raw from 'multiformats/codecs/raw'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -24,7 +25,7 @@ const raw = require('multiformats/codecs/raw')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testWrite (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
   const smallFile = randomBytes(13)
@@ -256,7 +257,7 @@ module.exports = (factory, options) => {
           create: true
         })
         throw new Error('Writing a file to a non-existent folder without the --parents flag should have failed')
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         expect(err.message).to.contain('does not exist')
       }
     })
@@ -267,7 +268,7 @@ module.exports = (factory, options) => {
       try {
         await ipfs.files.write(filePath, smallFile)
         throw new Error('Writing a file to a non-existent file without the --create flag should have failed')
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         expect(err.message).to.contain('file does not exist')
       }
     })
@@ -285,7 +286,7 @@ module.exports = (factory, options) => {
         })
 
         throw new Error('Writing a path with a file in it should have failed')
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         expect(err.message).to.contain('Not a directory')
       }
     })

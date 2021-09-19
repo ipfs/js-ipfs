@@ -1,7 +1,7 @@
-'use strict'
 
-const errCode = require('err-code')
-const { CID } = require('multiformats/cid')
+
+import errCode from 'err-code'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {Object} Pinnable
@@ -46,7 +46,7 @@ const { CID } = require('multiformats/cid')
  * @returns {AsyncIterable<Pin>}
  */
 // eslint-disable-next-line complexity
-async function * normaliseInput (input) {
+export async function * normaliseInput (input) {
   // must give us something
   if (input === null || input === undefined) {
     throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
@@ -152,8 +152,4 @@ function toPin (input) {
   }
 
   return pin
-}
-
-module.exports = {
-  normaliseInput
 }

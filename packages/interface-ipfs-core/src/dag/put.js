@@ -1,11 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const dagCbor = require('@ipld/dag-cbor')
-const { CID } = require('multiformats/cid')
-const { sha256, sha512 } = require('multiformats/hashes/sha2')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as dagCBOR from '@ipld/dag-cbor'
+import { CID } from 'multiformats/cid'
+import { sha256, sha512 } from 'multiformats/hashes/sha2'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -15,7 +16,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testPut (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -71,9 +72,9 @@ module.exports = (factory, options) => {
       expect(cid).to.exist()
       expect(cid).to.be.an.instanceOf(CID)
 
-      const bytes = dagCbor.encode(cborNode)
+      const bytes = dagCBOR.encode(cborNode)
       const hash = await sha256.digest(bytes)
-      const _cid = CID.createV1(dagCbor.code, hash)
+      const _cid = CID.createV1(dagCBOR.code, hash)
 
       expect(cid.bytes).to.eql(_cid.bytes)
     })
@@ -84,7 +85,7 @@ module.exports = (factory, options) => {
 
     it('should set defaults when calling put without options', async () => {
       const cid = await ipfs.dag.put(cborNode)
-      expect(cid.code).to.equal(dagCbor.code)
+      expect(cid.code).to.equal(dagCBOR.code)
       expect(cid.multihash.code).to.equal(sha256.code)
     })
 
@@ -93,7 +94,7 @@ module.exports = (factory, options) => {
         format: 'dag-cbor',
         hashAlg: 'sha2-512'
       })
-      expect(cid.code).to.equal(dagCbor.code)
+      expect(cid.code).to.equal(dagCBOR.code)
       expect(cid.multihash.code).to.equal(sha512.code)
     })
 

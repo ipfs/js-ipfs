@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const tests = require('interface-ipfs-core')
-const { isNode, isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const factory = require('./utils/factory')
+
+import * as tests from 'interface-ipfs-core'
+import { isNode, isBrowser, isWebWorker } from 'ipfs-utils/src/env'
+import factory from './utils/factory.js'
 const isFirefox = globalThis.navigator?.userAgent?.toLowerCase().includes('firefox')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */

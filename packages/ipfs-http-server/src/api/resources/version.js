@@ -1,9 +1,9 @@
-'use strict'
 
-const Joi = require('../../utils/joi')
-const pkg = require('../../../package.json')
 
-module.exports = {
+import Joi from '../../utils/joi.js'
+import pkg from '../../../package.json'
+
+export const versionResource = {
   options: {
     validate: {
       options: {

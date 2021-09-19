@@ -1,5 +1,6 @@
-'use strict'
 
-module.exports = {
-  gateway: require('./gateway')
+import { Gateway } from './gateway.js'
+
+export default {
+  gateway: Gateway
 }

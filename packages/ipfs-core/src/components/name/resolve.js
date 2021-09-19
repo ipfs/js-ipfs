@@ -1,20 +1,22 @@
-'use strict'
 
-const debug = require('debug')
-const errcode = require('err-code')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const { CID } = require('multiformats/cid')
-const PeerId = require('peer-id')
+
+import debug from 'debug'
+import errcode from 'err-code'
+import mergeOpts from 'merge-options'
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+
+import { CID } from 'multiformats/cid'
+import PeerId from 'peer-id'
 // @ts-ignore no types
-const isDomain = require('is-domain-name')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import isDomain from 'is-domain-name'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const log = Object.assign(debug('ipfs:name:resolve'), {
   error: debug('ipfs:name:resolve:error')
 })
 
-const { OFFLINE_ERROR } = require('../../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { OFFLINE_ERROR } from '../../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  *
@@ -37,7 +39,7 @@ const appendRemainder = (result, remainder) =>
  * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
  * @param {import('../../types').Options} config.options
  */
-module.exports = ({ dns, ipns, peerId, isOnline, options: { offline } }) => {
+export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline } }) {
   /**
    * @type {import('ipfs-core-types/src/name').API["resolve"]}
    */
@@ -68,7 +70,7 @@ module.exports = ({ dns, ipns, peerId, isOnline, options: { offline } }) => {
       } else {
         CID.parse(hash)
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
       if (isDomain(hash)) {
         yield appendRemainder(await dns(hash, options), remainder)

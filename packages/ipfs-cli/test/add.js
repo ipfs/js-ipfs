@@ -1,14 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats/cid')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
-const first = require('it-first')
+
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+import first from 'it-first'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import sinon from 'sinon'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 const matchIterable = require('./utils/match-iterable')
 
 // TODO: Test against all algorithms Object.keys(mh.names)

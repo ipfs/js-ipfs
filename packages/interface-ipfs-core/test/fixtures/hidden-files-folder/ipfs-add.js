@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-'use strict'
+
 
 const ipfs = require('../src')('localhost', 5001)
 const files = process.argv.slice(2)

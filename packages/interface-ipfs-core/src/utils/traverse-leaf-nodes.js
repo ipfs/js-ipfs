@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode

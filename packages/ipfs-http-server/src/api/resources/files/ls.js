@@ -1,10 +1,10 @@
-'use strict'
 
-const Joi = require('../../../utils/joi')
-const all = require('it-all')
-const map = require('it-map')
-const { pipe } = require('it-pipe')
-const streamResponse = require('../../../utils/stream-response')
+
+import Joi from '../../../utils/joi.js'
+import all from 'it-all'
+import map from 'it-map'
+import { pipe } from 'it-pipe'
+import { streamResponse } from '../../../utils/stream-response.js'
 
 /**
  * @param {*} entry
@@ -25,7 +25,7 @@ const mapEntry = (entry, base, long) => {
   }
 }
 
-const mfsLs = {
+export const lsResource = {
   options: {
     validate: {
       options: {
@@ -91,5 +91,3 @@ const mfsLs = {
     })
   }
 }
-
-module.exports = mfsLs

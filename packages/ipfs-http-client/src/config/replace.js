@@ -1,18 +1,18 @@
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const multipartRequest = require('../lib/multipart-request')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const abortSignal = require('../lib/abort-signal')
-const { AbortController } = require('native-abort-controller')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { multipartRequest } from '../lib/multipart-request.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { abortSignal } from '../lib/abort-signal'
+import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/config').API<HTTPClientExtraOptions>} ConfigAPI
  */
 
-module.exports = configure(api => {
+export const createReplace = configure(api => {
   /**
    * @type {ConfigAPI["replace"]}
    */

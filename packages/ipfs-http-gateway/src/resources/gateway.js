@@ -1,23 +1,25 @@
-'use strict'
 
-const debug = require('debug')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const Boom = require('@hapi/boom')
-const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
-const last = require('it-last')
-const { CID } = require('multiformats/cid')
-const { base32 } = require('multiformats/bases/base32')
-const { resolver, utils: { detectContentType } } = require('ipfs-http-response')
-const isIPFS = require('is-ipfs')
+
+import debug from 'debug'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import Boom from '@hapi/boom'
+import Ammo from '@hapi/ammo'
+import last from 'it-last'
+import { CID } from 'multiformats/cid'
+import { base32 } from 'multiformats/bases/base32'
+import { resolver, utils } from 'ipfs-http-response'
+import isIPFS from 'is-ipfs'
 // @ts-ignore no types
-const toStream = require('it-to-stream')
-const PathUtils = require('../utils/path')
+import toStream from 'it-to-stream'
+import * as PathUtils from '../utils/path'
+
+const { detectContentType } = utils
 
 const log = Object.assign(debug('ipfs:http-gateway'), {
   error: debug('ipfs:http-gateway:error')
 })
 
-module.exports = {
+export const Gateway = {
 
   /**
    * @param {import('../types').Request} request
@@ -43,7 +45,7 @@ module.exports = {
     let data
     try {
       data = await resolver.cid(ipfs, ipfsPath)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       const errorToString = err.toString()
       log.error('err: ', errorToString, ' fileName: ', err.fileName)
 

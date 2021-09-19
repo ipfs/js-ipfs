@@ -1,12 +1,12 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const {
+
+import parseDuration from 'parse-duration'
+import {
   stripControlCharacters,
   coerceCID
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'links <key>',
 
   describe: 'Outputs the links pointed to by the specified object',

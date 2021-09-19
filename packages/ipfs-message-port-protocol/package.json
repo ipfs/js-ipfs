@@ -9,21 +9,52 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
-  ],
-  "types": "dist/src/index.d.ts",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "types/src/index.d.ts",
   "typesVersions": {
     "*": {
-      "src/*": [
-        "dist/src/*",
-        "dist/src/*/index"
+      "*": [
+        "types/*",
+        "types/src/*"
       ],
-      "src/": [
-        "dist/src/index"
+      "types/*": [
+        "types/*",
+        "types/src/*"
       ]
+    }
+  },
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./block": {
+      "import": "./src/block.js"
+    },
+    "./cid": {
+      "import": "./src/cid.js"
+    },
+    "./core": {
+      "import": "./src/core.js"
+    },
+    "./dag": {
+      "import": "./src/dag"
+    },
+    "./error": {
+      "import": "./src/error.js"
     }
   },
   "browser": {},

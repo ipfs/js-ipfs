@@ -1,9 +1,9 @@
-'use strict'
 
-const { exporter } = require('ipfs-unixfs-exporter')
-const toMfsPath = require('./utils/to-mfs-path')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const map = require('it-map')
+
+import { exporter } from 'ipfs-unixfs-exporter'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import map from 'it-map'
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -33,7 +33,7 @@ const toOutput = (fsEntry) => {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createLs (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["ls"]}
    */

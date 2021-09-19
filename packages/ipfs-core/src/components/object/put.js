@@ -1,16 +1,16 @@
-'use strict'
 
-const dagPb = require('@ipld/dag-pb')
-const { CID } = require('multiformats/cid')
-const { sha256 } = require('multiformats/hashes/sha2')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = ({ repo, preload }) => {
+export function createPut ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/object').API["put"]}
    */
@@ -18,7 +18,7 @@ module.exports = ({ repo, preload }) => {
     const release = await repo.gcLock.readLock()
 
     try {
-      const buf = dagPb.encode(obj)
+      const buf = dagPB.encode(obj)
       const hash = await sha256.digest(buf)
       const cid = CID.createV0(hash)
 

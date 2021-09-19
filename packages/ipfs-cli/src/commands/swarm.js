@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'swarm <command>',
 
   description: 'Swarm inspection tool.',

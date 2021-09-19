@@ -1,7 +1,7 @@
-'use strict'
+
 
 const { createServer } = require('ipfsd-ctl')
-const getPort = require('aegir/utils/get-port')
+import getPort from 'aegir/utils/get-port.js'
 
 /** @type {import('aegir').PartialOptions} */
 module.exports = {

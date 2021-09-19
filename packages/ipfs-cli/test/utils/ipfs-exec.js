@@ -1,7 +1,7 @@
-'use strict'
 
-const execa = require('execa')
-const path = require('path')
+
+import execa from 'execa'
+import path from 'path'
 
 // This is our new test utility to easily check and execute ipfs cli commands.
 //

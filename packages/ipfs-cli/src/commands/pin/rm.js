@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'rm <ipfsPath...>',
 
   describe: 'Unpins the corresponding block making it available for garbage collection',

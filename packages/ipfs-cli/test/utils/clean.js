@@ -1,13 +1,13 @@
-'use strict'
 
-const rimraf = require('rimraf')
-const fs = require('fs').promises
-const { promisify } = require('util')
+
+import rimraf from 'rimraf'
+import { promises as fs } from 'fs'
+import { promisify } from 'util'
 
 module.exports = async dir => {
   try {
     await fs.access(dir)
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     // Does not exist so all good
     return
   }

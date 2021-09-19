@@ -1,16 +1,16 @@
-'use strict'
 
-const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
-const { resolvePath } = require('../../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { PinTypes } = require('ipfs-repo')
+
+import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
+import { resolvePath } from '../../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { PinTypes } from 'ipfs-repo'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  */
-module.exports = ({ repo, codecs }) => {
+export function createRmAll ({ repo, codecs }) {
   /**
    * @type {import('ipfs-core-types/src/pin').API["rmAll"]}
    */

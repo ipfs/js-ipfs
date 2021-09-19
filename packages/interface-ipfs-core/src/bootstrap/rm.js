@@ -1,8 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { Multiaddr } = require('multiaddr')
+
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { Multiaddr } from 'multiaddr'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -12,7 +13,7 @@ const { Multiaddr } = require('multiaddr')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testRm (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

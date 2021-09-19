@@ -1,14 +1,3 @@
-'use strict'
-
-const globSource = require('ipfs-utils/src/files/glob-source')
-const urlSource = require('ipfs-utils/src/files/url-source')
-const PeerId = require('peer-id')
-const crypto = require('libp2p-crypto')
-const isIPFS = require('is-ipfs')
-const { multiaddr } = require('multiaddr')
-const { CID } = require('multiformats/cid')
-const { create } = require('./components')
-
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('./types').Options} Options
@@ -26,13 +15,11 @@ const { create } = require('./components')
  * @typedef {import('./types').IPLDOptions} IPLDOptions
  */
 
-module.exports = {
-  create,
-  crypto,
-  isIPFS,
-  CID,
-  multiaddr,
-  PeerId,
-  globSource,
-  urlSource
-}
+export { create } from './components/index.js'
+export { default as crypto } from 'libp2p-crypto'
+export { default as isIPFS } from 'is-ipfs'
+export { CID } from 'multiformats/cid'
+export { Multiaddr } from 'multiaddr'
+export { default as PeerId } from 'peer-id'
+export { default as globSource } from 'ipfs-utils/src/files/glob-source.js'
+export { default as urlSource } from 'ipfs-utils/src/files/url-source.js'

@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats/cid')
+
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
+import sinon from 'sinon'
 
 const defaultOptions = {
   recursive: false,

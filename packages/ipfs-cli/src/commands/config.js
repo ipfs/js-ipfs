@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'config <key> [value]',
 
   description: 'Get and set IPFS config values.',
@@ -58,7 +58,7 @@ module.exports = {
       } else if (json) {
         try {
           value = JSON.parse(value)
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           throw new Error('invalid JSON provided')
         }
       }

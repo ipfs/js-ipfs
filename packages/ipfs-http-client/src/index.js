@@ -1,17 +1,49 @@
-'use strict'
+
 /* eslint-env browser */
 
-const { CID } = require('multiformats/cid')
-const { multiaddr } = require('multiaddr')
-const globSource = require('ipfs-utils/src/files/glob-source')
-const urlSource = require('ipfs-utils/src/files/url-source')
-const Multicodecs = require('ipfs-core-utils/src/multicodecs')
-const Multihashes = require('ipfs-core-utils/src/multihashes')
-const Multibases = require('ipfs-core-utils/src/multibases')
-const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
-const { identity } = require('multiformats/hashes/identity')
-const { bases, hashes, codecs } = require('multiformats/basics')
+import { Multibases } from 'ipfs-core-utils/multibases'
+import { Multicodecs } from 'ipfs-core-utils/multicodecs'
+import { Multihashes } from 'ipfs-core-utils/multihashes'
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import { identity } from 'multiformats/hashes/identity'
+import { bases, hashes, codecs } from 'multiformats/basics'
+
+import { BitswapAPI } from './bitswap/index.js'
+import { BlockAPI } from './block/index.js'
+import { BootstrapAPI } from './bootstrap/index.js'
+import { ConfigAPI } from './config/index.js'
+import { DAGAPI } from './dag/index.js'
+import { DHTAPI } from './dht/index.js'
+import { DiagAPI } from './diag/index.js'
+import { FilesAPI } from './files/index.js'
+import { KeyAPI } from './key/index.js'
+import { LogAPI } from './log/index.js'
+import { NameAPI } from './name/index.js'
+import { ObjectAPI } from './object/index.js'
+import { PinAPI } from './pin/index.js'
+import { PubsubAPI } from './pubsub/index.js'
+import { createRefs } from './refs/index.js'
+import { RepoAPI } from './repo/index.js'
+import { StatsAPI } from './stats/index.js'
+import { SwarmAPI } from './swarm/index.js'
+
+import { createAdd } from './add.js'
+import { createAddAll } from './add-all.js'
+import { createCat } from './cat.js'
+import { createCommands } from './commands.js'
+import { createDns } from './dns.js'
+import { createGetEndpointConfig } from './get-endpoint-config.js'
+import { createGet } from './get.js'
+import { createId } from './id.js'
+import { createIsOnline } from './is-online.js'
+import { createLs } from './ls.js'
+import { createMount } from './mount.js'
+import { createPing } from './ping.js'
+import { createResolve } from './resolve.js'
+import { createStart } from './start.js'
+import { createStop } from './stop.js'
+import { createVersion } from './version.js'
 
 /**
  * @typedef {import('./types').EndpointConfig} EndpointConfig
@@ -25,7 +57,7 @@ const { bases, hashes, codecs } = require('multiformats/basics')
 /**
  * @param {Options} options
  */
-function create (options = {}) {
+export function create (options = {}) {
   /**
    * @type {BlockCodec}
    */
@@ -49,7 +81,7 @@ function create (options = {}) {
   /** @type {BlockCodec[]} */
   const blockCodecs = Object.values(codecs);
 
-  [dagPb, dagCbor, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
+  [dagPB, dagCBOR, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
 
   const multicodecs = new Multicodecs({
     codecs: blockCodecs,
@@ -68,40 +100,40 @@ function create (options = {}) {
 
   /** @type {IPFSHTTPClient} */
   const client = {
-    add: require('./add')(options),
-    addAll: require('./add-all')(options),
-    bitswap: require('./bitswap')(options),
-    block: require('./block')(options),
-    bootstrap: require('./bootstrap')(options),
-    cat: require('./cat')(options),
-    commands: require('./commands')(options),
-    config: require('./config')(options),
-    dag: require('./dag')(multicodecs, options),
-    dht: require('./dht')(options),
-    diag: require('./diag')(options),
-    dns: require('./dns')(options),
-    files: require('./files')(options),
-    get: require('./get')(options),
-    getEndpointConfig: require('./get-endpoint-config')(options),
-    id: require('./id')(options),
-    isOnline: require('./is-online')(options),
-    key: require('./key')(options),
-    log: require('./log')(options),
-    ls: require('./ls')(options),
-    mount: require('./mount')(options),
-    name: require('./name')(options),
-    object: require('./object')(multicodecs, options),
-    pin: require('./pin')(options),
-    ping: require('./ping')(options),
-    pubsub: require('./pubsub')(options),
-    refs: require('./refs')(options),
-    repo: require('./repo')(options),
-    resolve: require('./resolve')(options),
-    start: require('./start')(options),
-    stats: require('./stats')(options),
-    stop: require('./stop')(options),
-    swarm: require('./swarm')(options),
-    version: require('./version')(options),
+    add: createAdd(options),
+    addAll: createAddAll(options),
+    bitswap: new BitswapAPI(options),
+    block: new BlockAPI(options),
+    bootstrap: new BootstrapAPI(options),
+    cat: createCat(options),
+    commands: createCommands(options),
+    config: new ConfigAPI(options),
+    dag: new DAGAPI(multicodecs, options),
+    dht: new DHTAPI(options),
+    diag: new DiagAPI(options),
+    dns: createDns(options),
+    files: new FilesAPI(options),
+    get: createGet(options),
+    getEndpointConfig: createGetEndpointConfig(options),
+    id: createId(options),
+    isOnline: createIsOnline(options),
+    key: new KeyAPI(options),
+    log: new LogAPI(options),
+    ls: createLs(options),
+    mount: createMount(options),
+    name: new NameAPI(options),
+    object: new ObjectAPI(multicodecs, options),
+    pin: new PinAPI(options),
+    ping: createPing(options),
+    pubsub: new PubsubAPI(options),
+    refs: createRefs(options),
+    repo: new RepoAPI(options),
+    resolve: createResolve(options),
+    start: createStart(options),
+    stats: new StatsAPI(options),
+    stop: createStop(options),
+    swarm: new SwarmAPI(options),
+    version: createVersion(options),
     bases: multibases,
     codecs: multicodecs,
     hashers: multihashes
@@ -110,10 +142,7 @@ function create (options = {}) {
   return client
 }
 
-module.exports = {
-  create,
-  CID,
-  multiaddr,
-  globSource,
-  urlSource
-}
+export { CID } from 'multiformats/cid'
+export { Multiaddr } from 'multiaddr'
+export { default as globSource } from 'ipfs-utils/src/files/glob-source.js'
+export { default as urlSource } from 'ipfs-utils/src/files/url-source.js'

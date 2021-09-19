@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'pin <command>',
 
   description: 'Pin and unpin objects to local storage.',

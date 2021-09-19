@@ -1,8 +1,8 @@
-'use strict'
-const { createSuite } = require('../utils/suite')
+
+import { createSuite } from '../utils/suite.js'
 
 const tests = {
   ping: require('./ping')
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

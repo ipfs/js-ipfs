@@ -1,6 +1,6 @@
-'use strict'
 
-const pushable = require('it-pushable')
+
+import pushable from 'it-pushable'
 
 class MessageChannel {
   constructor () {
@@ -43,6 +43,6 @@ class MessageChannel {
   }
 }
 
-module.exports = () => {
+export function createChannel () {
   return new MessageChannel()
 }

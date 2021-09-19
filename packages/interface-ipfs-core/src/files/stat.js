@@ -1,16 +1,17 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { nanoid } = require('nanoid')
-const { fixtures } = require('../utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const { CID } = require('multiformats/cid')
-const { identity } = require('multiformats/hashes/identity')
-const { randomBytes } = require('iso-random-stream')
-const isShardAtPath = require('../utils/is-shard-at-path')
-const raw = require('multiformats/codecs/raw')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { nanoid } from 'nanoid'
+import { fixtures } from '../utils'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import createShardedDirectory from '../utils/create-sharded-directory'
+import { CID } from 'multiformats/cid'
+import { identity } from 'multiformats/hashes/identity'
+import { randomBytes } from 'iso-random-stream'
+import isShardAtPath from '../utils/is-shard-at-path.js'
+import * as raw from 'multiformats/codecs/raw'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -20,7 +21,7 @@ const raw = require('multiformats/codecs/raw')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testStat (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
   const smallFile = randomBytes(13)

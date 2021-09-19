@@ -1,24 +1,23 @@
-'use strict'
 
-exports.version = require('./version')
-exports.shutdown = require('./shutdown')
-exports.id = require('./id')
-exports.ping = require('./ping')
-exports.bootstrap = require('./bootstrap')
-exports.repo = require('./repo')
-exports.object = require('./object')
-exports.pin = require('./pin')
-exports.config = require('./config')
-exports.block = require('./block')
-exports.swarm = require('./swarm')
-exports.bitswap = require('./bitswap')
-exports.filesRegular = require('./files-regular')
-exports.pubsub = require('./pubsub')
-exports.dag = require('./dag')
-exports.dns = require('./dns')
-exports.key = require('./key')
-exports.stats = require('./stats')
-exports.resolve = require('./resolve')
-exports.name = require('./name')
-exports.dht = require('./dht')
-exports.files = require('./files')
+export * as versionResource from './version.js'
+export * as shutdownResource from './shutdown.js'
+export * as idResource from './id.js'
+export * as pingResource from './ping.js'
+export * as bootstrapResource from './bootstrap.js'
+export * as repoResource from './repo.js'
+export * as objectResource from './object.js'
+export * as pinResource from './pin.js'
+export * as configResource from './config.js'
+export * as blockResource from './block.js'
+export * as swarmResource from './swarm.js'
+export * as bitswapResource from './bitswap.js'
+export * as filesRegularResource from './files-regular.js'
+export * as pubsubResource from './pubsub.js'
+export * as dagResource from './dag.js'
+export * as dnsResource from './dns.js'
+export * as keyResource from './key.js'
+export * as statsResource from './stats.js'
+export * as resolveResource from './resolve.js'
+export * as nameResource from './name.js'
+export * as dhtResource from './dht.js'
+export * as filesResource from './files/index.js'

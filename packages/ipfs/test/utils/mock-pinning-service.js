@@ -1,13 +1,13 @@
-'use strict'
 
-const http = require('http')
-const { setup } = require('mock-ipfs-pinning-service')
-const getPort = require('aegir/utils/get-port')
+
+import http from 'http'
+import { setup } from 'mock-ipfs-pinning-service'
+import getPort from 'aegir/utils/get-port.js'
 
 const defaultPort = 1139
 const defaultToken = 'secret'
 
-class PinningService {
+export class PinningService {
   /**
    * @param {Object} options
    * @param {number} [options.port]
@@ -51,5 +51,3 @@ class PinningService {
     return `http://${this.host}:${this.port}`
   }
 }
-
-module.exports = PinningService

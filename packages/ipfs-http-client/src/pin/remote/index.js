@@ -1,9 +1,9 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const Client = require('../../lib/core')
-const Service = require('./service')
-const toUrlSearchParams = require('../../lib/to-url-search-params')
+
+import { CID } from 'multiformats/cid'
+import { Client } from '../../lib/core.js'
+import { Service } from './service.js'
+import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../../types').Options} Options
@@ -16,7 +16,7 @@ const toUrlSearchParams = require('../../lib/to-url-search-params')
  * @typedef {import('ipfs-core-types/src/pin/remote').API<HTTPClientExtraOptions>} RemotePiningAPI
  */
 
-class Remote {
+export class RemoteAPI {
   /**
    * @param {Options} options
    */
@@ -30,7 +30,7 @@ class Remote {
 /**
  * @type {RemotePiningAPI["add"]}
  */
-Remote.prototype.add = async function add (cid, { timeout, signal, headers, ...query }) {
+ RemoteAPI.prototype.add = async function add (cid, { timeout, signal, headers, ...query }) {
   const response = await this.client.post('pin/remote/add', {
     timeout,
     signal,
@@ -44,7 +44,7 @@ Remote.prototype.add = async function add (cid, { timeout, signal, headers, ...q
 /**
  * @type {RemotePiningAPI["ls"]}
  */
-Remote.prototype.ls = async function * ls ({ timeout, signal, headers, ...query }) {
+ RemoteAPI.prototype.ls = async function * ls ({ timeout, signal, headers, ...query }) {
   const response = await this.client.post('pin/remote/ls', {
     timeout,
     signal,
@@ -60,7 +60,7 @@ Remote.prototype.ls = async function * ls ({ timeout, signal, headers, ...query 
 /**
  * @type {RemotePiningAPI["rm"]}
  */
-Remote.prototype.rm = async function rm ({ timeout, signal, headers, ...query }) {
+ RemoteAPI.prototype.rm = async function rm ({ timeout, signal, headers, ...query }) {
   await this.client.post('pin/remote/rm', {
     timeout,
     signal,
@@ -75,7 +75,7 @@ Remote.prototype.rm = async function rm ({ timeout, signal, headers, ...query })
 /**
  * @type {RemotePiningAPI["rmAll"]}
  */
-Remote.prototype.rmAll = async function ({ timeout, signal, headers, ...query }) {
+ RemoteAPI.prototype.rmAll = async function ({ timeout, signal, headers, ...query }) {
   await this.client.post('pin/remote/rm', {
     timeout,
     signal,
@@ -172,5 +172,3 @@ const encodeAddParams = ({ cid, service, background, name, origins }) => {
 
   return params
 }
-
-module.exports = Remote

@@ -9,13 +9,27 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "type": "module",
   "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "types/src/index.d.ts",
   "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
+    "*",
+    "!**/*.tsbuildinfo"
   ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
   "browser": {
     "./src/runtime/init-assets-nodejs.js": "./src/runtime/init-assets-browser.js",
     "./src/runtime/config-nodejs.js": "./src/runtime/config-browser.js",
@@ -25,17 +39,6 @@
     "./src/runtime/preload-nodejs.js": "./src/runtime/preload-browser.js",
     "./src/runtime/repo-nodejs.js": "./src/runtime/repo-browser.js",
     "ipfs-utils/src/files/glob-source": false
-  },
-  "typesVersions": {
-    "*": {
-      "src/*": [
-        "dist/src/*",
-        "dist/src/*/index"
-      ],
-      "src/": [
-        "dist/src/index"
-      ]
-    }
   },
   "repository": {
     "type": "git",
@@ -145,5 +148,6 @@
     "p-defer": "^3.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1"
-  }
+  },
+  "gitHead": ""
 }

@@ -1,10 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const dagPB = require('@ipld/dag-pb')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+
+import * as dagPB from '@ipld/dag-pb'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import testTimeout from '../utils/test-timeout.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +15,7 @@ const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testResolve (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

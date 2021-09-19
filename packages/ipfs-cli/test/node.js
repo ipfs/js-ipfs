@@ -1,7 +1,7 @@
 /* eslint-env mocha */
-'use strict'
 
-const fs = require('fs')
+
+import fs from 'fs'
 
 describe('cli', () => {
   fs.readdirSync(__dirname)

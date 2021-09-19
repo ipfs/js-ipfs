@@ -1,13 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const MemoryStore = require('interface-datastore').MemoryDatastore
-const PeerId = require('peer-id')
-const Libp2p = require('libp2p')
-const EE = require('events')
-const libp2pComponent = require('../src/components/libp2p')
-const { NOISE: Crypto } = require('@chainsafe/libp2p-noise')
+
+import { expect } from 'aegir/utils/chai.js'
+import { MemoryDatastore } from 'interface-datastore'
+import PeerId from 'peer-id'
+import Libp2p from 'libp2p'
+import { EventEmitter } from 'events'
+import { createLibp2p as libp2pComponent } from '../src/components/libp2p.js'
+import { NOISE as Crypto } from '@chainsafe/libp2p-noise'
 
 /**
  * @type {import('libp2p-interfaces/src/transport/types').TransportFactory<any, any>}
@@ -22,7 +22,7 @@ class DummyTransport {
   }
 }
 
-class DummyDiscovery extends EE {
+class DummyDiscovery extends EventEmitter {
   get [Symbol.toStringTag] () {
     return 'DummyDiscovery'
   }
@@ -75,7 +75,7 @@ describe('libp2p customization', function () {
         }
       }
     }
-    datastore = new MemoryStore()
+    datastore = new MemoryDatastore()
     peerId = await PeerId.create()
   })
 

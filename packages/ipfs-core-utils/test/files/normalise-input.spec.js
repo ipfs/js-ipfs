@@ -1,14 +1,15 @@
-'use strict'
+
 
 /* eslint-env mocha */
 
-const { expect } = require('aegir/utils/chai')
-const blobToIt = require('blob-to-it')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const all = require('it-all')
-const { File } = require('@web-std/file')
+import { expect } from 'aegir/utils/chai.js'
+import blobToIt from 'blob-to-it'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import all from 'it-all'
+import { File } from '@web-std/file'
+import { isBrowser, isWebWorker, isElectronRenderer } from 'ipfs-utils/src/env.js'
+
 const { Blob, ReadableStream } = globalThis
-const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
 
 let { normaliseInput } = require('../../src/files/normalise-input')
 

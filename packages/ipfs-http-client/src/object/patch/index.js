@@ -1,11 +1,16 @@
-'use strict'
+import { createAddLink } from './add-link.js'
+import { createAppendData } from './append-data.js'
+import { createRmLink } from './rm-link.js'
+import { createSetData } from './set-data.js'
 
-/**
- * @param {import('../../types').Options} config
- */
-module.exports = config => ({
-  addLink: require('./add-link')(config),
-  appendData: require('./append-data')(config),
-  rmLink: require('./rm-link')(config),
-  setData: require('./set-data')(config)
-})
+export class PatchAPI {
+  /**
+   * @param {import('../../types').Options} config
+   */
+  constructor (config) {
+    this.addLink = createAddLink(config)
+    this.appendData = createAppendData(config)
+    this.rmLink = createRmLink(config)
+    this.setData = createSetData(config)
+  }
+}

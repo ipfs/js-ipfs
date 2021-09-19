@@ -1,16 +1,16 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/object').API<HTTPClientExtraOptions>} ObjectAPI
  */
 
-module.exports = configure(api => {
+ export const createGet = configure(api => {
   /**
    * @type {ObjectAPI["get"]}
    */

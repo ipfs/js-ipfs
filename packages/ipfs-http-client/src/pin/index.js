@@ -1,15 +1,20 @@
-'use strict'
+import { createAddAll } from './add-all.js'
+import { createAdd } from './add.js'
+import { createLs } from './ls.js'
+import { createRmAll } from './rm-all.js'
+import { createRm } from './rm.js'
+import { RemoteAPI } from './remote/index.js'
 
-const Remote = require('./remote')
-
-/**
- * @param {import('../types').Options} config
- */
-module.exports = config => ({
-  add: require('./add')(config),
-  addAll: require('./add-all')(config),
-  ls: require('./ls')(config),
-  rm: require('./rm')(config),
-  rmAll: require('./rm-all')(config),
-  remote: new Remote(config)
-})
+export class PinAPI {
+  /**
+   * @param {import('../types').Options} config
+   */
+  constructor (config) {
+    this.addAll = createAddAll(config)
+    this.add = createAdd(config)
+    this.ls = createLs(config)
+    this.rmAll = createRmAll(config)
+    this.rm = createRm(config)
+    this.remote = new RemoteAPI(config)
+  }
+}

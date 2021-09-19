@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import testTimeout from '../utils/test-timeout.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -12,7 +12,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testFindPeer (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

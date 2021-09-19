@@ -1,18 +1,18 @@
-'use strict'
 
-const { Key } = require('interface-datastore')
-const { Record } = require('libp2p-record')
-const { encodeBase32 } = require('./utils')
 
-const errcode = require('err-code')
-const debug = require('debug')
+import { Key } from 'interface-datastore'
+import { Record } from 'libp2p-record'
+import { encodeBase32 } from './utils.js'
+
+import errcode from 'err-code'
+import debug from 'debug'
 const log = Object.assign(debug('ipfs:ipns:offline-datastore'), {
   error: debug('ipfs:ipns:offline-datastore:error')
 })
 
 // Offline datastore aims to mimic the same encoding as routing when storing records
 // to the local datastore
-class OfflineDatastore {
+export class OfflineDatastore {
   /**
    * @param {import('ipfs-repo').IPFSRepo} repo
    */
@@ -41,7 +41,7 @@ class OfflineDatastore {
 
     try {
       routingKey = this._routingKey(key)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
       throw errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY')
     }
@@ -66,7 +66,7 @@ class OfflineDatastore {
 
     try {
       routingKey = this._routingKey(key)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
       throw errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY')
     }
@@ -77,7 +77,7 @@ class OfflineDatastore {
     let record
     try {
       record = Record.deserialize(res)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
       throw err
     }
@@ -94,5 +94,3 @@ class OfflineDatastore {
     return new Key('/' + encodeBase32(key), false)
   }
 }
-
-exports = module.exports = OfflineDatastore

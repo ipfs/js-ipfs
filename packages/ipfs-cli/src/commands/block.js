@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'block <command>',
 
   description: 'Manipulate raw IPFS blocks.',

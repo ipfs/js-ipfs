@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { CID } = require('multiformats/cid')
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
 
 describe('repo', () => {
   let ipfs

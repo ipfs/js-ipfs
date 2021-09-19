@@ -1,4 +1,4 @@
-'use strict'
+
 
 /* eslint-env browser */
 
@@ -26,17 +26,16 @@
  * @param {ExtendedError} error
  * @returns {EncodedError}
  */
-const encodeError = error => {
+export const encodeError = error => {
   const { name, message, stack, code, detail } = error
   return { name, message, stack, code, detail }
 }
-exports.encodeError = encodeError
 
 /**
  * @param {EncodedError} error
  * @returns {Error}
  */
-const decodeError = error => {
+export const decodeError = error => {
   if (error instanceof Error) {
     return error
   } else {
@@ -44,7 +43,6 @@ const decodeError = error => {
     return Object.assign(createError(name, message), { name, stack, code })
   }
 }
-exports.decodeError = decodeError
 
 /**
  * Create error by error name.

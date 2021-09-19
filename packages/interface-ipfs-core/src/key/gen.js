@@ -1,9 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { nanoid } = require('nanoid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { keys: { supportedKeys, import: importKey } } = require('libp2p-crypto')
+
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import { keys } from 'libp2p-crypto'
+
+const { supportedKeys, import: importKey } = keys
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -13,7 +16,7 @@ const { keys: { supportedKeys, import: importKey } } = require('libp2p-crypto')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testGen (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -58,7 +61,7 @@ module.exports = (factory, options) => {
           const imported = await importKey(exported, password)
 
           expect(imported).to.be.an.instanceOf(kt.expectedType)
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           if (err.code === 'ERR_NOT_IMPLEMENTED') {
             // key export is not exposed over the HTTP API
             // @ts-ignore this is mocha

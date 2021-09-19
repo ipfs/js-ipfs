@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const errCode = require('err-code')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+import parseDuration from 'parse-duration'
+import errCode from 'err-code'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @typedef {Object} BWOptions
@@ -64,7 +64,7 @@ function getBandwidthStats (libp2p, opts) {
  * @param {Object} config
  * @param {import('../../types').NetworkService} config.network
  */
-module.exports = ({ network }) => {
+export function createBw ({ network }) {
   /**
    * @type {import('ipfs-core-types/src/stats').API["bw"]}
    */
@@ -81,7 +81,7 @@ module.exports = ({ network }) => {
     try {
       ms = typeof interval === 'string' ? parseDuration(interval) || -1 : interval
       if (!ms || ms < 0) throw new Error('invalid duration')
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw errCode(err, 'ERR_INVALID_POLL_INTERVAL')
     }
 

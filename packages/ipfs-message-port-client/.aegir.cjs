@@ -1,4 +1,5 @@
 'use strict'
+
 const path = require('path')
 const esbuild = require('esbuild')
 const EchoServer = require('aegir/utils/echo-server')

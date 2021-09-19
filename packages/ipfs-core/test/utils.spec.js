@@ -1,13 +1,13 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const utils = require('../src/utils')
-const createTempRepo = require('./utils/create-repo')
-const { importer } = require('ipfs-unixfs-importer')
-const all = require('it-all')
-const codecs = require('./utils/codecs')
+
+import { expect } from 'aegir/utils/chai.js'
+import {resolvePath} from '../src/utils.js'
+import { createTempRepo } from './utils/create-repo.js'
+import { importer } from 'ipfs-unixfs-importer'
+import all from 'it-all'
+import {codecs} from './utils/codecs.js'
 
 describe('utils', () => {
   /** @type {import('multiformats/cid').CID} */
@@ -43,14 +43,14 @@ describe('utils', () => {
     })
 
     it('handles base58 hash format', async () => {
-      const { cid, remainderPath } = await utils.resolvePath(repo, codecs, rootCid)
+      const { cid, remainderPath } = await resolvePath(repo, codecs, rootCid)
 
       expect(cid.toString()).to.equal(rootCid.toString())
       expect(remainderPath).to.be.empty()
     })
 
     it('handles multihash format', async () => {
-      const { cid, remainderPath } = await utils.resolvePath(repo, codecs, aboutMultihash)
+      const { cid, remainderPath } = await resolvePath(repo, codecs, aboutMultihash)
 
       expect(cid.toString()).to.equal(aboutCid.toString())
       expect(remainderPath).to.be.empty()
@@ -58,19 +58,19 @@ describe('utils', () => {
 
     it('handles ipfs paths format', async function () {
       this.timeout(200 * 1000)
-      const { cid, remainderPath } = await utils.resolvePath(repo, codecs, aboutPath)
+      const { cid, remainderPath } = await resolvePath(repo, codecs, aboutPath)
 
       expect(cid.toString()).to.equal(aboutCid.toString())
       expect(remainderPath).to.be.empty()
     })
 
     it('should error on invalid hashes', () => {
-      return expect(utils.resolvePath(repo, codecs, '/ipfs/asdlkjahsdfkjahsdfd'))
+      return expect(resolvePath(repo, codecs, '/ipfs/asdlkjahsdfkjahsdfd'))
         .to.eventually.be.rejected()
     })
 
     it('should error when a link doesn\'t exist', () => {
-      return expect(utils.resolvePath(repo, codecs, `${aboutPath}/fusion`))
+      return expect(resolvePath(repo, codecs, `${aboutPath}/fusion`))
         .to.eventually.be.rejected()
         .and.have.property('message')
         .that.include(`no link named "fusion" under ${aboutCid}`)

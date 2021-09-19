@@ -1,15 +1,16 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const PeerId = require('peer-id')
-const { isNode } = require('ipfs-utils/src/env')
-const ipns = require('ipns')
-const delay = require('delay')
-const last = require('it-last')
-const waitFor = require('../utils/wait-for')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import PeerId from 'peer-id'
+import { isNode } from 'ipfs-utils/src/env.js'
+import ipns from 'ipns'
+import delay from 'delay'
+import last from 'it-last'
+import waitFor from '../utils/wait-for.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
@@ -30,7 +31,7 @@ const daemonsOptions = {
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testPubsub (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

@@ -1,10 +1,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { nanoid } = require('nanoid')
-const createNode = require('./utils/create-node')
+
+import { expect } from 'aegir/utils/chai.js'
+import { nanoid } from 'nanoid'
+import createNode from './utils/create-node.js'
 
 describe('key exchange', function () {
   this.timeout(20 * 1000)

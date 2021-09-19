@@ -1,19 +1,20 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { nanoid } = require('nanoid')
-const pushable = require('it-pushable')
-const all = require('it-all')
-const { waitForPeers, getTopic } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('delay')
-const { AbortController } = require('native-abort-controller')
-const { isWebWorker, isNode } = require('ipfs-utils/src/env')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
-const first = require('it-first')
-const sinon = require('sinon')
+
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { nanoid } from 'nanoid'
+import pushable from 'it-pushable'
+import all from 'it-all'
+import { waitForPeers, getTopic } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import delay from 'delay'
+import { AbortController } from 'native-abort-controller'
+import { isWebWorker, isNode } from 'ipfs-utils/src/env'
+import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
+import first from 'it-first'
+import sinon from 'sinon'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -23,7 +24,7 @@ const sinon = require('sinon')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testSubscribe (factory, options) {
   const ipfsOptions = getIpfsOptions()
   const describe = getDescribe(options)
   const it = getIt(options)

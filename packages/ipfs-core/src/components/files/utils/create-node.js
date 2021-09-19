@@ -1,8 +1,8 @@
-'use strict'
 
-const { UnixFS } = require('ipfs-unixfs')
-const dagPb = require('@ipld/dag-pb')
-const { CID } = require('multiformats/cid')
+
+import { UnixFS } from 'ipfs-unixfs'
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
@@ -20,7 +20,7 @@ const { CID } = require('multiformats/cid')
  * @param {MtimeLike} [options.mtime]
  * @param {number} [options.mode]
  */
-const createNode = async (context, type, options) => {
+export async function createNode (context, type, options) {
   const metadata = new UnixFS({
     type,
     mode: options.mode,
@@ -34,9 +34,9 @@ const createNode = async (context, type, options) => {
     Data: metadata.marshal(),
     Links: []
   }
-  const buf = dagPb.encode(node)
+  const buf = dagPB.encode(node)
   const hash = await hasher.digest(buf)
-  const cid = CID.create(options.cidVersion, dagPb.code, hash)
+  const cid = CID.create(options.cidVersion, dagPB.code, hash)
 
   if (options.flush) {
     await context.repo.blocks.put(cid, buf)
@@ -47,5 +47,3 @@ const createNode = async (context, type, options) => {
     node
   }
 }
-
-module.exports = createNode

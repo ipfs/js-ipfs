@@ -1,9 +1,11 @@
-'use strict'
 
-const set = require('just-safe-set')
-const getDefaultConfig = require('../runtime/config-nodejs.js')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const log = require('debug')('ipfs:core:config')
+
+import set from 'just-safe-set'
+import getDefaultConfig from '../runtime/config-nodejs.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import debug from 'debug'
+
+const log = debug('ipfs:core:config')
 
 /**
  * @typedef {import('ipfs-core-types/src/config').Config} Config
@@ -17,7 +19,7 @@ const log = require('debug')('ipfs:core:config')
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ repo }) => {
+export function createConfig ({ repo }) {
   return {
     getAll: withTimeoutOption(getAll),
     get: withTimeoutOption(get),
@@ -91,7 +93,7 @@ module.exports = ({ repo }) => {
 
       // @ts-ignore TODO: move config typedefs into ipfs-repo
       return { original: oldCfg, updated: newCfg }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log(err)
 
       throw new Error(`Could not apply profile '${profileName}' to config: ${err.message}`)
@@ -112,7 +114,7 @@ async function listProfiles (_options) { // eslint-disable-line require-await
 /**
  * @type {Record<string, Transformer>}
  */
-const profiles = {
+export const profiles = {
   server: {
     description: 'Recommended for nodes with public IPv4 address (servers, VPSes, etc.), disables host and content discovery and UPnP in local networks.',
     transform: (config) => {
@@ -203,7 +205,4 @@ const profiles = {
       return config
     }
   }
-
 }
-
-module.exports.profiles = profiles

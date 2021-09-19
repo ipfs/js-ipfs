@@ -1,18 +1,22 @@
-'use strict'
+import { createLs } from './ls.js'
+import { createPeers } from './peers.js'
+import { createPublish } from './publish.js'
+import { createSubscribe } from './subscribe.js'
+import { createUnsubscribe } from './unsubscribe.js'
+import { SubscriptionTracker } from './subscription-tracker.js'
 
-const SubscriptionTracker = require('./subscription-tracker')
+export class PubsubAPI {
+  /**
+   * @param {import('../types').Options} config
+   */
+  constructor (config) {
+    const subscriptionTracker = new SubscriptionTracker()
 
-/**
- * @param {import('../types').Options} config
- */
-module.exports = config => {
-  const subscriptionTracker = new SubscriptionTracker()
-
-  return {
-    ls: require('./ls')(config),
-    peers: require('./peers')(config),
-    publish: require('./publish')(config),
-    subscribe: require('./subscribe')(config, subscriptionTracker),
-    unsubscribe: require('./unsubscribe')(config, subscriptionTracker)
+    this.ls = createLs(config)
+    this.peers = createPeers(config)
+    this.ls = createLs(config)
+    this.publish = createPublish(config)
+    this.subscribe = createSubscribe(config, subscriptionTracker)
+    this.unsubscribe = createUnsubscribe(config, subscriptionTracker)
   }
 }

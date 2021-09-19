@@ -1,9 +1,9 @@
-'use strict'
 
-const { Multiaddr } = require('multiaddr')
-const toCamel = require('../lib/object-to-camel')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+
+import { Multiaddr } from 'multiaddr'
+import { objectToCamel } from '../lib/object-to-camel'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -11,7 +11,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
  * @typedef {import('multiformats/cid').CID} CID
  */
 
-module.exports = configure(api => {
+ export const createProvide = configure(api => {
   /**
    * @type {DHTAPI["provide"]}
    */

@@ -1,9 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const bootstrapList = require('../src/runtime/config-browser.js')().Bootstrap
-const waitFor = require('./utils/wait-for')
-const createNode = require('./utils/create-node')
+
+import createConfig from '../src/runtime/config-browser.js'
+import { waitFor } from './utils/wait-for.js'
+import createNode from './utils/create-node.js'
+
+const { Bootstrap: bootstrapList } = createConfig()
 
 /*
  * These tests were graciously made for lgierth, so that he can test the

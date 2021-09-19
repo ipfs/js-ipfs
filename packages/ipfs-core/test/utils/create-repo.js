@@ -1,11 +1,13 @@
-'use strict'
 
-const { nanoid } = require('nanoid')
+
+import { nanoid } from 'nanoid'
 // @ts-expect-error locks is missing from types?
-const { createRepo, locks: { memory } } = require('ipfs-repo')
-const codecs = require('./codecs')
-const createBackend = require('./create-backend')
-const { Key } = require('interface-datastore')
+import { createRepo, locks} from 'ipfs-repo'
+import {codecs} from './codecs.js'
+import { createBackend } from './create-backend.js'
+import { Key } from 'interface-datastore'
+// @ts-ignore
+const memory = locks.memory
 
 /**
  * @param {object} options
@@ -16,7 +18,7 @@ const { Key } = require('interface-datastore')
  * @param {(version: number, percentComplete: string, message: string) => void} [options.onMigrationProgress]
  * @param {import('ipfs-core-types/src/config').Config} [options.config]
  */
-module.exports = async function createTempRepo (options = {}) {
+export async function createTempRepo (options = {}) {
   const path = options.path || 'ipfs-test-' + nanoid()
 
   const backend = createBackend()

@@ -1,14 +1,16 @@
-'use strict'
 
-const os = require('os')
-const fs = require('fs')
+
+import os from 'os'
+import fs from 'fs'
 // @ts-ignore no types
-const toUri = require('multiaddr-to-uri')
-const { ipfsPathHelp } = require('../utils')
-const { isTest } = require('ipfs-utils/src/env')
-const debug = require('debug')('ipfs:cli:daemon')
+import toUri from 'multiaddr-to-uri'
+import { ipfsPathHelp } from '../utils.js'
+import { isTest } from 'ipfs-utils/src/env.js'
+import debug from 'debug'
 
-module.exports = {
+const log = debug('ipfs:cli:daemon')
+
+export default {
   command: 'daemon',
 
   describe: 'Start a long-running daemon process',
@@ -75,8 +77,8 @@ module.exports = {
       try {
         const raw = fs.readFileSync(argv.initConfig, { encoding: 'utf8' })
         config = JSON.parse(raw)
-      } catch (error) {
-        debug(error)
+      } catch (/** @type {any} */ error) {
+        log(error)
         throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
       }
     }
@@ -123,7 +125,7 @@ module.exports = {
           print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
         })
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_REPO_NOT_INITIALIZED' || err.message.match(/uninitialized/i)) {
         err.message = 'no initialized ipfs repo found in ' + repoPath + '\nplease run: jsipfs init'
       }

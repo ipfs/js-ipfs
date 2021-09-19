@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('../utils/cli')
-const sinon = require('sinon')
-const { isNode } = require('ipfs-utils/src/env')
+import sinon from 'sinon'
+import { isNode } from 'ipfs-utils/src/env.js'
 
 const defaultOptions = {
   mtime: null,

@@ -1,15 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const cli = require('./utils/cli')
-const sinon = require('sinon')
-const { base32 } = require('multiformats/bases/base32')
-const { base58btc } = require('multiformats/bases/base58')
-const raw = require('multiformats/codecs/raw')
-const { sha256 } = require('multiformats/hashes/sha2')
-const dagPb = require('@ipld/dag-pb')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import sinon from 'sinon'
+import { base32 } from 'multiformats/bases/base32'
+import { base58btc } from 'multiformats/bases/base58'
+import * as raw from 'multiformats/codecs/raw'
+import { sha256 } from 'multiformats/hashes/sha2'
+import * as dagPB from '@ipld/dag-pb'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 describe('cid', () => {
   let ipfs

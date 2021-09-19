@@ -1,10 +1,11 @@
 /* eslint-env mocha */
-'use strict'
+
 
 const { expectIsBandwidth } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const last = require('it-last')
-const all = require('it-all')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import last from 'it-last'
+import all from 'it-all'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +15,7 @@ const all = require('it-all')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testBw (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

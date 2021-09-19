@@ -1,6 +1,6 @@
-'use strict'
 
-module.exports = {
+
+export default {
   command: 'profile <command>',
 
   description: 'Interact with config profiles.',

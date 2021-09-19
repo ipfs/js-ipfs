@@ -2,7 +2,7 @@
 
 const { createServer } = require('ipfsd-ctl')
 const MockPreloadNode = require('./test/utils/mock-preload-node')
-const path = require('path')
+import path from 'path'
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {

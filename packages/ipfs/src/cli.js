@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 
 /* eslint-disable no-console */
-'use strict'
 
 /**
  * Handle any uncaught errors
@@ -29,8 +28,8 @@ const onUnhandledRejection = (err) => {
 process.once('uncaughtException', onUncaughtException)
 process.once('unhandledRejection', onUnhandledRejection)
 
-const semver = require('semver')
-const pkg = require('../package.json')
+import semver from 'semver'
+import pkg from '../package.json'
 
 process.title = pkg.name
 
@@ -51,7 +50,7 @@ if (!pkg.version.includes('-rc')) {
 const { NotEnabledError } = require('ipfs-core/src/errors')
 // @ts-ignore - TODO: refactor this so it does not require deep requires
 const { print, getIpfs, getRepoPath } = require('ipfs-cli/src/utils')
-const debug = require('debug')('ipfs:cli')
+import debug from 'debug'('ipfs:cli')
 const cli = require('ipfs-cli')
 
 /**
@@ -91,7 +90,7 @@ async function main (argv) {
     if (data) {
       print(data)
     }
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     // TODO: export errors from ipfs-repo to use .code constants
     if (err.code === 'ERR_INVALID_REPO_VERSION') {
       err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'

@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * Convert object properties to camel case.
@@ -9,7 +9,7 @@
  *
  * @param {Record<string, any>} obj
  */
-module.exports = obj => {
+export function objectToCamel (obj) {
   if (obj == null) {
     return obj
   }

@@ -1,16 +1,16 @@
-'use strict'
+
 
 // @ts-ignore no types
 const toIterable = require('stream-to-it/source')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
-module.exports = configure(api => {
+ export const createRead = configure(api => {
   /**
    * @type {FilesAPI["read"]}
    */

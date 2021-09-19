@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'stats <command>',
 
   description: 'Query IPFS statistics.',

@@ -1,9 +1,9 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCIDs } = require('../../utils')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+import { coerceCIDs } from '../../utils.js'
+
+export default {
   command: 'rm <hash...>',
 
   describe: 'Remove IPFS block(s)',

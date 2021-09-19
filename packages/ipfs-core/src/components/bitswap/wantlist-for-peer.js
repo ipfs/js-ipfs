@@ -1,13 +1,13 @@
-'use strict'
 
-const PeerId = require('peer-id')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+
+import PeerId from 'peer-id'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
  * @param {import('../../types').NetworkService} config.network
  */
-module.exports = ({ network }) => {
+export function createWantlistForPeer ({ network }) {
   /**
    * @type {import('ipfs-core-types/src/bitswap').API["wantlistForPeer"]}
    */

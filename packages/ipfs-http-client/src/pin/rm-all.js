@@ -1,16 +1,16 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const configure = require('../lib/configure')
-const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/pin').API<HTTPClientExtraOptions>} PinAPI
  */
 
-module.exports = configure(api => {
+ export const createRmAll = configure(api => {
   /**
    * @type {PinAPI["rmAll"]}
    */

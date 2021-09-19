@@ -1,7 +1,7 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt } = require('../utils/mocha')
+
+import { getDescribe, getIt } from '../utils/mocha.js'
 const { expectIsBitswap } = require('./utils')
 
 /**
@@ -12,7 +12,7 @@ const { expectIsBitswap } = require('./utils')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testBitswap (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

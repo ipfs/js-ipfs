@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const all = require('it-all')
+
+import { expect } from 'aegir/utils/chai.js'
+import all from 'it-all'
 const f = require('./utils/factory')()
 
 describe('stats', function () {

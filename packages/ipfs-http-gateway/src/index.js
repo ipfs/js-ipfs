@@ -1,10 +1,12 @@
-'use strict'
 
-const Hapi = require('@hapi/hapi')
-const Pino = require('hapi-pino')
-const debug = require('debug')
+
+import Hapi from '@hapi/hapi'
+import Pino from 'hapi-pino'
+import debug from 'debug'
 // @ts-ignore no types
-const toMultiaddr = require('uri-to-multiaddr')
+import toMultiaddr from 'uri-to-multiaddr'
+import routes from './routes/index.js'
+
 const LOG = 'ipfs:http-gateway'
 const LOG_ERROR = 'ipfs:http-gateway:error'
 
@@ -51,7 +53,7 @@ async function serverCreator (serverAddrs, createServer, ipfs) {
   return servers
 }
 
-class HttpGateway {
+export class HttpGateway {
   /**
    * @param {IPFS} ipfs
    */
@@ -106,7 +108,7 @@ class HttpGateway {
       }
     })
 
-    server.route(require('./routes'))
+    server.route(routes.gateway)
 
     return server
   }
@@ -123,5 +125,3 @@ class HttpGateway {
     this._log('stopped')
   }
 }
-
-module.exports = HttpGateway

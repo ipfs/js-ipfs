@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { getDescribe, getIt, expect } = require('../../utils/mocha')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -12,7 +12,7 @@ const { getDescribe, getIt, expect } = require('../../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testSetData (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

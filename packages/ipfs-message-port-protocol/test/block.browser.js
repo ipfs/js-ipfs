@@ -1,11 +1,11 @@
-'use strict'
+
 
 /* eslint-env mocha */
 
-const { encodeBlock } = require('../src/block')
-const { ipc } = require('./util')
-const { expect } = require('aegir/utils/chai')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { encodeBlock } from '../src/block.js'
+import { ipc } from './util.js'
+import { expect } from 'aegir/utils/chai.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 describe('block (browser)', function () {
   this.timeout(10 * 1000)

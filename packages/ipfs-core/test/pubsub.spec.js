@@ -1,11 +1,11 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { nanoid } = require('nanoid')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { expect } = require('aegir/utils/chai')
-const createNode = require('./utils/create-node')
+
+import { nanoid } from 'nanoid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import createNode from './utils/create-node.js'
 
 describe('pubsub disabled', () => {
   /** @type {import('ipfs-core-types').IPFS} */

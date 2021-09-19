@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+
+import { expect } from 'aegir/utils/chai.js'
 const ipfsClient = require('../../src').create
-const delay = require('delay')
+import delay from 'delay'
 
 /**
  * @typedef {import('http').IncomingMessage} IncomingMessage

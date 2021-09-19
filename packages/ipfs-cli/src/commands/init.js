@@ -1,8 +1,11 @@
-'use strict'
 
-const fs = require('fs')
-const debug = require('debug')('ipfs:cli:init')
-const { ipfsPathHelp } = require('../utils')
+
+import fs from 'fs'
+import debug from 'debug'
+import { ipfsPathHelp } from '../utils.js'
+import * as IPFS from 'ipfs-core'
+
+const log = debug('ipfs:cli:init')
 
 /** @type {Record<string, import('libp2p-crypto').KeyType>} */
 const keyTypes = {
@@ -11,7 +14,7 @@ const keyTypes = {
   secp256k1: 'secp256k1'
 }
 
-module.exports = {
+export default {
   command: 'init [default-config] [options]',
   describe: 'Initialize a local IPFS node\n\n' +
     'If you are going to run IPFS in a server environment, you may want to ' +
@@ -81,16 +84,13 @@ module.exports = {
       try {
         const raw = fs.readFileSync(argv.defaultConfig, { encoding: 'utf8' })
         config = JSON.parse(raw)
-      } catch (error) {
-        debug(error)
+      } catch (/** @type {any} */ error) {
+        log(error)
         throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
       }
     }
 
     print(`initializing ipfs node at ${repoPath}`)
-
-    // Required inline to reduce startup time
-    const IPFS = require('ipfs-core')
 
     try {
       await IPFS.create({
@@ -107,7 +107,7 @@ module.exports = {
         // @ts-ignore - Expects more than {}
         config
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === 'EACCES') {
         err.message = 'EACCES: permission denied, stat $IPFS_PATH/version'
       }

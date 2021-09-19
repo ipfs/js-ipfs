@@ -1,12 +1,12 @@
-'use strict'
 
-const Joi = require('../../utils/joi')
-const map = require('it-map')
-const filter = require('it-filter')
-const { pipe } = require('it-pipe')
-const streamResponse = require('../../utils/stream-response')
 
-exports.gc = {
+import Joi from '../../utils/joi.js'
+import map from 'it-map'
+import filter from 'it-filter'
+import { pipe } from 'it-pipe'
+import { streamResponse } from '../../utils/stream-response.js'
+
+export const gcResource = {
   options: {
     validate: {
       options: {
@@ -61,7 +61,7 @@ exports.gc = {
   }
 }
 
-exports.version = {
+export const versionResource = {
   options: {
     validate: {
       options: {
@@ -102,7 +102,7 @@ exports.version = {
   }
 }
 
-exports.stat = {
+export const statResource = {
   options: {
     validate: {
       options: {

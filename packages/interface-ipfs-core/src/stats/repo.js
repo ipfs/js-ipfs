@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-'use strict'
+
 
 const { expectIsRepo } = require('./utils')
-const { getDescribe, getIt } = require('../utils/mocha')
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -12,7 +12,7 @@ const { getDescribe, getIt } = require('../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testRepo (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

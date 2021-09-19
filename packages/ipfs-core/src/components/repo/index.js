@@ -1,15 +1,15 @@
-'use strict'
 
-const createGC = require('./gc')
-const createStat = require('./stat')
-const createVersion = require('./version')
+
+import {createGC} from './gc.js'
+import {createStat} from './stat.js'
+import {createVersion} from './version.js'
 
 /**
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
- * @typedef {import('ipfs-core-utils/src/multihashes')} Multihashes
+ * @typedef {import('ipfs-core-utils/multihashes').Multihashes} Multihashes
  */
 
-class RepoAPI {
+export class RepoAPI {
   /**
    * @param {Object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
@@ -26,4 +26,3 @@ class RepoAPI {
     this.setApiAddr = (addr) => repo.apiAddr.set(addr)
   }
 }
-module.exports = RepoAPI

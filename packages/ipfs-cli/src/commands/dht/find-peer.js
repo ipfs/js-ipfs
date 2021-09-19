@@ -1,8 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
 
-module.exports = {
+import parseDuration from 'parse-duration'
+
+export default {
   command: 'findpeer <peerId>',
 
   describe: 'Find the multiaddresses associated with a Peer ID.',

@@ -1,16 +1,16 @@
-'use strict'
 
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const errCode = require('err-code')
-const { NotEnabledError } = require('../errors')
-const get = require('dlv')
+
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import errCode from 'err-code'
+import { NotEnabledError } from '../errors.js'
+import get from 'dlv'
 
 /**
  * @param {Object} config
  * @param {import('../types').NetworkService} config.network
  * @param {import('ipfs-core-types/src/config').Config} [config.config]
  */
-module.exports = ({ network, config }) => {
+export function createPubsub ({ network, config }) {
   const isEnabled = get(config || {}, 'Pubsub.Enabled', true)
 
   return {

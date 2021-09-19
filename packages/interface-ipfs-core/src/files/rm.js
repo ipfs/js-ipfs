@@ -1,12 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { nanoid } = require('nanoid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const createTwoShards = require('../utils/create-two-shards')
-const { randomBytes } = require('iso-random-stream')
-const isShardAtPath = require('../utils/is-shard-at-path')
+
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt }  from '../utils/mocha.js'
+import createShardedDirectory from '../utils/create-sharded-directory'
+import createTwoShards from '../utils/create-two-shards'
+import { randomBytes } from 'iso-random-stream'
+import isShardAtPath from '../utils/is-shard-at-path.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -16,7 +17,7 @@ const isShardAtPath = require('../utils/is-shard-at-path')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testRm (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

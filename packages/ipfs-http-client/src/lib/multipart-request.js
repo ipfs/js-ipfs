@@ -1,10 +1,29 @@
-'use strict'
-const { isElectronRenderer } = require('ipfs-utils/src/env')
 
-// In electron-renderer we use native fetch and should encode body using native
-// form data.
-if (isElectronRenderer) {
-  module.exports = require('./multipart-request.browser')
-} else {
-  module.exports = require('./multipart-request.node')
+import { isElectronRenderer } from 'ipfs-utils/src/env'
+import { multipartRequest as multipartRequestNode } from './multipart-request.node'
+import { multipartRequest as multipartRequestBrowser } from './multipart-request.browser'
+import {nanoid} from 'nanoid'
+
+/**
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
+ */
+
+/**
+ * @param {ImportCandidateStream|ImportCandidate} source
+ * @param {AbortController} abortController
+ * @param {Headers|Record<string, string>} [headers]
+ * @param {string} [boundary]
+ */
+ export async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
+  let req = multipartRequestNode
+
+  // In electron-renderer we use native fetch and should encode body using native
+  // form data.
+  if (isElectronRenderer) {
+    // @ts-ignore types are different
+    req = multipartRequestBrowser
+  }
+
+  return req.call(null, source, abortController, headers, boundary)
 }

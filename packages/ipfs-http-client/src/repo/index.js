@@ -1,10 +1,14 @@
-'use strict'
+import { createGc } from './gc.js'
+import { createStat } from './stat.js'
+import { createVersion } from './version.js'
 
-/**
- * @param {import('../types').Options} config
- */
-module.exports = config => ({
-  gc: require('./gc')(config),
-  stat: require('./stat')(config),
-  version: require('./version')(config)
-})
+export class RepoAPI {
+  /**
+   * @param {import('../types').Options} config
+   */
+  constructor (config) {
+    this.gc = createGc(config)
+    this.stat = createStat(config)
+    this.version = createVersion(config)
+  }
+}

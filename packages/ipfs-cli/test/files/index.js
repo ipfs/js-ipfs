@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-'use strict'
+
 
 describe('files', () => {
   require('./chmod')

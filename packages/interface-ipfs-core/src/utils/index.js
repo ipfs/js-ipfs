@@ -1,12 +1,12 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const loadFixture = require('aegir/utils/fixtures')
+
+import { CID } from 'multiformats/cid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import loadFixture from 'aegir/utils/fixtures.js'
 
 const ONE_MEG = Math.pow(2, 20)
 
-exports.fixtures = Object.freeze({
+export const fixtures = Object.freeze({
   directory: Object.freeze({
     cid: CID.parse('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'),
     /** @type {Record<string, Buffer>} */

@@ -1,9 +1,9 @@
-'use strict'
 
-const path = require('path')
-const execa = require('execa')
 
-module.exports = {
+import path from 'path'
+import execa from 'execa'
+
+export default {
   command: 'edit',
 
   describe: 'Opens the config file for editing in $EDITOR',

@@ -1,10 +1,10 @@
-'use strict'
 
-const path = require('path')
-const glob = require('it-glob')
-const all = require('it-all')
 
-module.exports = {
+import path from 'path'
+import glob from 'it-glob'
+import all from 'it-all'
+
+export default {
   command: 'commands',
 
   describe: 'List all available commands',
