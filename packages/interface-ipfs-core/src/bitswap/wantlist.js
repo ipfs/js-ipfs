@@ -1,14 +1,14 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import { waitForWantlistKey, waitForWantlistKeyToBeRemoved } from './utils.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
 import testTimeout from '../utils/test-timeout.js'
 import { AbortController } from 'native-abort-controller'
 import { CID } from 'multiformats/cid'
 import delay from 'delay'
-import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

@@ -1,14 +1,14 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
 import { randomBytes } from 'iso-random-stream'
 import concat from 'it-concat'
 import { nanoid } from 'nanoid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import pmap from 'p-map'
-import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

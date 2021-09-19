@@ -3,7 +3,7 @@
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import isShardAtPath from '../utils/is-shard-at-path.js'
 
 /**

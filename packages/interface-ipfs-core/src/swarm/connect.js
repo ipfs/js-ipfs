@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

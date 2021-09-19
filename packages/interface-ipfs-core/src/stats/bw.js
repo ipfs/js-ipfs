@@ -2,7 +2,7 @@
 
 import { expectIsBandwidth } from './utils.js'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import last from 'it-last'
 import all from 'it-all'
 

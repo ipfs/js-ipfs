@@ -4,7 +4,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import delay from 'delay'
 import all from 'it-all'
 

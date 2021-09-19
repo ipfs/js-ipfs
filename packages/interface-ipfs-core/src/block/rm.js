@@ -2,7 +2,7 @@
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import { nanoid } from 'nanoid'
 import all from 'it-all'
 import last from 'it-last'

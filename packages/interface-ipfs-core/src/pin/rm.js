@@ -2,7 +2,7 @@
 
 import { fixtures, expectPinned, clearPins } from './utils.js'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 
 /**

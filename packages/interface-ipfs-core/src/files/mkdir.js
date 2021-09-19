@@ -2,7 +2,7 @@
 
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import { sha512 } from 'multiformats/hashes/sha2'
 import { createShardedDirectory } from '../utils/create-sharded-directory.js'
 import all from 'it-all'

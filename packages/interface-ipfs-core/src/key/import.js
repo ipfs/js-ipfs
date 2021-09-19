@@ -3,7 +3,7 @@
 import { nanoid } from 'nanoid'
 import { keys } from 'libp2p-crypto'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

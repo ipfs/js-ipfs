@@ -2,7 +2,7 @@
 
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

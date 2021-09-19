@@ -2,7 +2,7 @@
 
 import * as dagPB from '@ipld/dag-pb'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import testTimeout from '../utils/test-timeout.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 

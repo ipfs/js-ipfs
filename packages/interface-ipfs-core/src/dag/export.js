@@ -2,7 +2,7 @@
 
 import all from 'it-all'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import { CarReader } from '@ipld/car'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import * as dagPB from '@ipld/dag-pb'

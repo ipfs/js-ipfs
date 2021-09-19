@@ -5,10 +5,10 @@ import isIpfs from 'is-ipfs'
 import { nanoid } from 'nanoid'
 import { base64url } from 'multiformats/bases/base64'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -18,7 +18,7 @@ import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-f
  * @param {Factory} factory
  * @param {Object} options
  */
- export function testResolve (factory, options) {
+export function testResolve (factory, options) {
   const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)

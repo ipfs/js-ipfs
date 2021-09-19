@@ -2,7 +2,7 @@
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../../utils/mocha.js'
+import { getDescribe, getIt } from '../../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

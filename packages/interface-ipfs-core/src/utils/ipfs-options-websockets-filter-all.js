@@ -5,7 +5,7 @@ import filters from 'libp2p-websockets/src/filters.js'
 
 const transportKey = WS.prototype[Symbol.toStringTag]
 
-export function ipfsOptionsWebsocketsFilterAll ()  {
+export function ipfsOptionsWebsocketsFilterAll () {
   return {
     libp2p: {
       config: {

@@ -14,10 +14,10 @@ import { getDescribe, getIt } from './utils/mocha.js'
 import testTimeout from './utils/test-timeout.js'
 import { importer } from 'ipfs-unixfs-importer'
 import blockstore from './utils/blockstore-adapter.js'
-const { Inflate } = require('pako')
 import { extract } from 'it-tar'
 import { pipe } from 'it-pipe'
 import toBuffer from 'it-to-buffer'
+const { Inflate } = require('pako')
 
 /**
  * @param {string} name

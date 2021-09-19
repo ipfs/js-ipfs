@@ -3,7 +3,7 @@
 import * as dagPB from '@ipld/dag-pb'
 import { nanoid } from 'nanoid'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import { UnixFS } from 'ipfs-unixfs'
 import { randomBytes } from 'iso-random-stream'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'

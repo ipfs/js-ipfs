@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 

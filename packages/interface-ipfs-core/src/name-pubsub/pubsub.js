@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 import PeerId from 'peer-id'
 import { isNode } from 'ipfs-utils/src/env.js'
 import ipns from 'ipns'

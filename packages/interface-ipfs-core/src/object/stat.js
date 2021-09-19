@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

@@ -3,7 +3,7 @@
 import PeerId from 'peer-id'
 import all from 'it-all'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../utils/mocha.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

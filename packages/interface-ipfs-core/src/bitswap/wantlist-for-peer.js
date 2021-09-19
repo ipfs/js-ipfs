@@ -3,7 +3,7 @@
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { waitForWantlistKey } from './utils.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 import { CID } from 'multiformats/cid'
 
 /**

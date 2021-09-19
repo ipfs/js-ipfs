@@ -2,7 +2,7 @@
 
 import { fixtures, clearRemotePins, clearServices } from '../utils.js'
 import { expect } from 'aegir/utils/chai.js'
-import { getDescribe, getIt }  from '../../utils/mocha.js'
+import { getDescribe, getIt } from '../../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -12,7 +12,7 @@ import { getDescribe, getIt }  from '../../utils/mocha.js'
  * @param {Factory} factory
  * @param {Object} options
  */
- export function testAdd (factory, options) {
+export function testAdd (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
