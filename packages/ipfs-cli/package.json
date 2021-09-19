@@ -12,6 +12,18 @@
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
   "files": [
     "*",
     "!**/*.tsbuildinfo"
@@ -28,6 +40,9 @@
   "exports": {
     ".": {
       "import": "./src/index.js"
+    },
+    "./utils": {
+      "import": "./src/utils.js"
     }
   },
   "repository": {

@@ -1,9 +1,10 @@
 
 import { configure } from '../lib/configure.js'
-const resolve = require('../lib/resolve')
+import {resolve} from '../lib/resolve.js'
 import first from 'it-first'
 import last from 'it-last'
 import errCode from 'err-code'
+import { createGet as createBlockGet } from '../block/get.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -16,7 +17,7 @@ import errCode from 'err-code'
  */
 export const createGet = (codecs, options) => {
   const fn = configure((api, opts) => {
-    const getBlock = require('../block/get')(opts)
+    const getBlock = createBlockGet(opts)
 
     /**
      * @type {DAGAPI["get"]}

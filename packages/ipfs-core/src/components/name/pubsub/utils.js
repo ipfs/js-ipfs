@@ -10,7 +10,7 @@ import errcode from 'err-code'
 /**
  * Get pubsub from IPNS routing
  *
- * @param {import('../../ipns')} ipns
+ * @param {import('../../ipns').IPNSAPI} ipns
  * @param {ExperimentalOptions} [options]
  */
 export function getPubsubRouting (ipns, options) {

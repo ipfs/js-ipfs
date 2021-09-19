@@ -2,14 +2,15 @@
 import get from 'dlv'
 import mergeOpts from 'merge-options'
 import errCode from 'err-code'
-import PubsubRouters from '../runtime/libp2p-pubsub-routers-nodejs.js'
+import * as PubsubRouters from '../runtime/libp2p-pubsub-routers-nodejs.js'
 // @ts-expect-error - no types
 import DelegatedPeerRouter from 'libp2p-delegated-peer-routing'
 // @ts-expect-error - no types
 import DelegatedContentRouter from 'libp2p-delegated-content-routing'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { Multiaddr } from 'multiaddr'
-import { version as pkgversion } from '../../package.json'
+import { version as pkgversion } from '../version.js'
+import { libp2pConfig as getEnvLibp2pOptions } from '../runtime/libp2p-nodejs.js'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
@@ -158,10 +159,6 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
       agentVersion: `js-ipfs/${pkgversion}`
     }
   }
-
-  // Required inline to reduce startup time
-  // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
-  const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
 
   /** @type {import('libp2p').Libp2pOptions | undefined} */
   let constructorOptions = get(options, 'libp2p', undefined)

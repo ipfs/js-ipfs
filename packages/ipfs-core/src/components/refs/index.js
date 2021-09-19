@@ -1,7 +1,7 @@
 
 import * as dagPB from '@ipld/dag-pb'
 import { Errors } from 'interface-datastore'
-import {toCIDAndPath} from 'ipfs-core-utils/to-cid-and-path'
+import {toCidAndPath} from 'ipfs-core-utils/to-cid-and-path'
 import { CID } from 'multiformats/cid'
 // @ts-expect-error no types
 import TimeoutController from 'timeout-abort-controller'
@@ -88,7 +88,7 @@ function getFullPath (preload, ipfsPath, options) {
   const {
     cid,
     path
-  } = toCIDAndPath(ipfsPath)
+  } = toCidAndPath(ipfsPath)
 
   if (options.preload !== false) {
     preload(cid)
@@ -111,7 +111,7 @@ async function * refsStream (resolve, repo, codecs, path, options) {
   const resPath = await resolve(path, options)
   const {
     cid
-  } = toCIDAndPath(resPath)
+  } = toCidAndPath(resPath)
 
   const maxDepth = options.maxDepth != null ? options.maxDepth : Infinity
   const unique = options.unique || false

@@ -4,7 +4,7 @@ import {objectToCamel} from './object-to-camel.js'
 /**
  * @param {Record<string, any>} entry
  */
-export function toCamelWithMetadata (entry) {
+export function objectToCamelWithMetadata (entry) {
   const file = objectToCamel(entry)
 
   if (Object.prototype.hasOwnProperty.call(file, 'mode')) {

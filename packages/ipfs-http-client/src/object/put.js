@@ -1,5 +1,6 @@
 
 import { configure } from '../lib/configure.js'
+import { createPut as createDagPut } from '../dag/put.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -12,7 +13,7 @@ import { configure } from '../lib/configure.js'
  */
  export const createPut = (codecs, options) => {
   const fn = configure((api) => {
-    const dagPut = require('../dag/put')(codecs, options)
+    const dagPut = createDagPut(codecs, options)
 
     /**
      * @type {ObjectAPI["put"]}

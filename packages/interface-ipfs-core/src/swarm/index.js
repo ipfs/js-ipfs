@@ -1,4 +1,3 @@
-
 import { createSuite } from '../utils/suite.js'
 import { testConnect } from './connect.js'
 import { testPeers } from './peers.js'

@@ -6,12 +6,12 @@ import type { Libp2pOptions } from 'libp2p'
 
 import type { IPFSRepo } from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
-import type Network from './components/network'
+import type { Network } from './components/network'
 import type { Options as NetworkOptions } from './components/network'
 
 import type { Datastore } from 'interface-datastore'
 
-import type Service from './utils/service'
+import type { Service } from './utils/service'
 import type { CID } from 'multiformats/cid'
 import type { BlockCodec } from 'multiformats/codecs/interface'
 import type { MultibaseCodec } from 'multiformats/bases/interface'

@@ -1,4 +1,3 @@
-
 import last from 'it-last'
 
 /**
@@ -9,8 +8,16 @@ export function createRm ({ rmAll }) {
   /**
    * @type {import('ipfs-core-types/src/pin').API["rm"]}
    */
-  (path, options = {}) => {
+  async function rm (path, options = {}) {
     // @ts-ignore return value of last can be undefined
-    return last(rmAll([{ path, ...options }], options))
+    const cid = await last(rmAll([{ path, ...options }], options))
+
+    if (!cid) {
+      throw new Error('CID expected')
+    }
+
+    return cid
   }
+
+  return rm
 }

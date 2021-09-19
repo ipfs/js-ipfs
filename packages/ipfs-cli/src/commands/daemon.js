@@ -6,6 +6,7 @@ import toUri from 'multiaddr-to-uri'
 import { ipfsPathHelp } from '../utils.js'
 import { isTest } from 'ipfs-utils/src/env.js'
 import debug from 'debug'
+import { Daemon } from 'ipfs-daemon'
 
 const log = debug('ipfs:cli:daemon')
 
@@ -66,7 +67,6 @@ export default {
   async handler (argv) {
     const { print, repoPath } = argv.ctx
     print('Initializing IPFS daemon...')
-    print(`js-ipfs version: ${require('../../package.json').version}`)
     print(`System version: ${os.arch()}/${os.platform()}`)
     print(`Node.js version: ${process.versions.node}`)
 
@@ -82,8 +82,6 @@ export default {
       }
     }
 
-    // Required inline to reduce startup time
-    const Daemon = require('ipfs-daemon')
     const daemon = new Daemon({
       config,
       silent: argv.silent,
@@ -101,6 +99,10 @@ export default {
 
     try {
       await daemon.start()
+
+      const version = await daemon._ipfs.version()
+
+      print(`js-ipfs version: ${version.version}`)
 
       if (daemon._httpApi && daemon._httpApi._apiServers) {
         daemon._httpApi._apiServers.forEach(apiServer => {

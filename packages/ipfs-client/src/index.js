@@ -1,9 +1,9 @@
 
-import { create: httpClient } from 'ipfs-http-client'
-import { create: grpcClient } from 'ipfs-grpc-client'
+import { create as httpClient } from 'ipfs-http-client'
+import { create as grpcClient } from 'ipfs-grpc-client'
 import mergeOpts from 'merge-options'
-const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('ipfs-http-client').Options} HTTPOptions

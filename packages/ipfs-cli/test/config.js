@@ -2,7 +2,7 @@
 /* eslint max-nested-callbacks: ["error", 5] */
 
 import { expect } from 'aegir/utils/chai.js'
-const cli = require('./utils/cli')
+import cli from './utils/cli.js'
 import sinon from 'sinon'
 const { profiles } = require('ipfs-core/src/components/config')
 
@@ -106,7 +106,7 @@ describe('config', () => {
   describe('replace', () => {
     it('replace config with file', async () => {
       const filePath = './package.json'
-      const expectedConfig = require('../package.json')
+      const expectedConfig = {}
 
       await cli(`config replace ${filePath}`, { ipfs })
 
@@ -117,7 +117,7 @@ describe('config', () => {
 
     it('replace config with file in daemon mode', async () => {
       const filePath = './package.json'
-      const fullPath = require.resolve('../package.json')
+      const fullPath = ''
 
       await cli(`config replace ${filePath}`, { ipfs, isDaemon: true })
 
@@ -128,7 +128,7 @@ describe('config', () => {
 
     it('replace config with file and timeout', async () => {
       const filePath = './package.json'
-      const expectedConfig = require('../package.json')
+      const expectedConfig = {}
 
       await cli(`config replace ${filePath} --timeout=1s`, { ipfs })
 

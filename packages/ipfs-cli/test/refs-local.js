@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-const cli = require('./utils/cli')
+import cli from './utils/cli.js'
 import sinon from 'sinon'
 import { base32 } from 'multiformats/bases/base32'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'

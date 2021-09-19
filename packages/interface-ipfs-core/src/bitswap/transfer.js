@@ -8,7 +8,7 @@ import concat from 'it-concat'
 import { nanoid } from 'nanoid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import pmap from 'p-map'
-import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
+import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -20,7 +20,7 @@ import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
  * @param {Object} options
  */
 export function testTransfer (factory, options) {
-  const ipfsOptions = getIpfsOptions()
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 

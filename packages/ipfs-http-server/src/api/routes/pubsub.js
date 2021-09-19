@@ -3,7 +3,7 @@ import {
   publishResource,
   lsResource,
   peersResource
-} from '../resources/pubsub'
+} from '../resources/pubsub.js'
 
 export default [
   {

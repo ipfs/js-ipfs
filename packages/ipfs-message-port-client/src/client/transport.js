@@ -3,7 +3,7 @@ import { DisconnectError, TimeoutError, AbortError } from './error.js'
 
 /**
  * @template I,O
- * @typedef {import('./query')<I, O>} Query
+ * @typedef {import('./query').Query<I, O>} Query
  */
 
 

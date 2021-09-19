@@ -21,7 +21,7 @@ const log = debug('ipfs:repo:gc')
  * @param {IPFSRepo} config.repo
  * @param {Multihashes} config.hashers
  */
-export function createGc({ repo, hashers }) {
+export function createGc ({ repo, hashers }) {
   /**
    * @type {import('ipfs-core-types/src/repo').API["gc"]}
    */

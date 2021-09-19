@@ -1,14 +1,16 @@
 
-const yargs = require('yargs/yargs')(process.argv.slice(2))
-const utils = require('./utils')
+import yargs from 'yargs/yargs'
+import { ipfsPathHelp, disablePrinting } from './utils.js'
 
-export default yargs
+const args = yargs(process.argv.slice(2))
+
+export default args
   .option('silent', {
     desc: 'Write no output',
     type: 'boolean',
     default: false,
     coerce: silent => {
-      if (silent) utils.disablePrinting()
+      if (silent) disablePrinting()
       return silent
     }
   })
@@ -26,7 +28,7 @@ export default yargs
     desc: 'Remote API multiaddr to use',
     type: 'string'
   })
-  .epilog(utils.ipfsPathHelp)
+  .epilog(ipfsPathHelp)
   .demandCommand(1, 'Please specify a command')
   .showHelpOnFail(false)
   .commandDir('commands')

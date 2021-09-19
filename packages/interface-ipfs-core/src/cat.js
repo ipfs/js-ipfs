@@ -9,7 +9,7 @@ import all from 'it-all'
 import drain from 'it-drain'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from './utils/mocha.js'
-import testTimeout from './utils/test-timeout'
+import testTimeout from './utils/test-timeout.js'
 import { importer } from 'ipfs-unixfs-importer'
 import blockstore from './utils/blockstore-adapter.js'
 

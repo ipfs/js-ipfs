@@ -3,10 +3,10 @@
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import drain from 'it-drain'
 import all from 'it-all'
-import { fixtures } from '../utils'
+import { fixtures } from '../utils/index.js'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'
-import { createShardedDirectory } from '../utils/create-sharded-directory'
+import { createShardedDirectory } from '../utils/create-sharded-directory.js'
 import { randomBytes } from 'iso-random-stream'
 
 /**

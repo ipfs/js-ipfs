@@ -17,10 +17,11 @@ import {
  * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
  * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImporterImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  */
 
 /**
- * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} input
+ * @param {ImportCandidate | ImportCandidateStream} input
  * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
  */
 // eslint-disable-next-line complexity
@@ -49,7 +50,8 @@ export async function * normalise (input, normaliseContent) {
 
   // Iterable<?>
   if (Symbol.iterator in input || Symbol.asyncIterator in input) {
-    /** @type {any} peekable */
+    /** @type {any} */
+    // @ts-ignore it's (async)interable
     const peekable = itPeekable(input)
 
     /** @type {any} value **/

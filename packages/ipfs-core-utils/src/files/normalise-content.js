@@ -12,7 +12,7 @@ import {
 } from './utils.js'
 
 /**
- * @param {import('./normalise-input').ToContent} input
+ * @param {import('./normalise').ToContent} input
  */
 export async function * normaliseContent (input) {
   // Bytes | String

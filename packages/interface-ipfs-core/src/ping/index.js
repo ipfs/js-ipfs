@@ -1,4 +1,3 @@
-
 import { createSuite } from '../utils/suite.js'
 
 const tests = {

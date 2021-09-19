@@ -5,7 +5,7 @@ import { getDescribe, getIt }  from '../utils/mocha.js'
 import { expectIsPingResponse, isPong } from './utils.js'
 import all from 'it-all'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
+import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -16,7 +16,7 @@ import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
  * @param {Object} options
  */
 export function testPing (factory, options) {
-  const ipfsOptions = getIpfsOptions()
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 

@@ -1,10 +1,9 @@
-
 import last from 'it-last'
 import { CID } from 'multiformats/cid'
 
 /**
  * @param {Object} config
- * @param {ReturnType<typeof import('./add-all')>} config.addAll
+ * @param {ReturnType<typeof import('./add-all').createAddAll>} config.addAll
  */
 export function createAdd ({ addAll }) {
   /**

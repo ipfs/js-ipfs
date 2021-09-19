@@ -4,7 +4,7 @@ const Joi = require('joi')
 import { CID } from 'multiformats/cid'
 import parseDuration from 'parse-duration'
 import { Multiaddr } from 'multiaddr'
-import toCidAndPath from 'ipfs-core-utils/to-cid-and-path'
+import {toCidAndPath} from 'ipfs-core-utils/to-cid-and-path'
 
 /**
  * @param {*} value

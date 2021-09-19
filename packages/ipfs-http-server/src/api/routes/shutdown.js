@@ -1,6 +1,6 @@
 import {
   shutdownResource
-} from '../resources/shutdown'
+} from '../resources/shutdown.js'
 
 export default [{
   method: 'POST',

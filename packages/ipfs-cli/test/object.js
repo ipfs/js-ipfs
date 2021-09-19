@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import fs from 'fs'
-const cli = require('./utils/cli')
+import cli from './utils/cli.js'
 import sinon from 'sinon'
 import { CID } from 'multiformats/cid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'

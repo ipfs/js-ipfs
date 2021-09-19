@@ -1,7 +1,7 @@
 
 
-const { parseArgsStringToArgv } = require('string-argv')
-const cli = require('../../src')
+import { parseArgsStringToArgv } from 'string-argv'
+import cli from '../../src/index.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const output = () => {

@@ -21,6 +21,24 @@
   "exports": {
     ".": {
       "import": "./src/index.js"
+    },
+    "./block": {
+      "import": "./src/block.js"
+    },
+    "./core": {
+      "import": "./src/core.js"
+    },
+    "./dag": {
+      "import": "./src/dag.js"
+    },
+    "./files": {
+      "import": "./src/files.js"
+    },
+    "./server": {
+      "import": "./src/server.js"
+    },
+    "./service": {
+      "import": "./src/service.js"
     }
   },
   "eslintConfig": {

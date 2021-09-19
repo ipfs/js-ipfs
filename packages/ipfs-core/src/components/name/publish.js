@@ -17,7 +17,7 @@ import { resolvePath } from './utils.js'
  * IPNS - Inter-Planetary Naming System
  *
  * @param {Object} config
- * @param {import('../ipns')} config.ipns
+ * @param {import('../ipns').IPNSAPI} config.ipns
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('peer-id')} config.peerId

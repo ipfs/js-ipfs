@@ -300,5 +300,8 @@
     "Jacob Karlsson <jacob.karlsson95@gmail.com>",
     "João Santos <joaosantos15@users.noreply.github.com>",
     "Julien Malard <julien.malard@mail.mcgill.ca>"
-  ]
+  ],
+  "dependencies": {
+    "@rollup/plugin-json": "^4.1.0"
+  }
 }

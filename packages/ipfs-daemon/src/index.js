@@ -3,10 +3,10 @@ import debug from 'debug'
 import set from 'just-safe-set'
 // @ts-expect-error - no types
 import WebRTCStar from 'libp2p-webrtc-star'
-import * as IPFS from 'ipfs-core'
-import HttpApi from 'ipfs-http-server'
-import HttpGateway from 'ipfs-http-gateway'
-import gRPCServer from 'ipfs-grpc-server'
+import { create } from 'ipfs-core'
+import {HttpApi} from 'ipfs-http-server'
+import {HttpGateway} from 'ipfs-http-gateway'
+import {gRPCServer} from 'ipfs-grpc-server'
 import { isElectron } from 'ipfs-utils/src/env'
 import prometheusClient from 'prom-client'
 // @ts-expect-error - no types
@@ -14,7 +14,7 @@ import prometheusGcStats from 'prometheus-gc-stats'
 
 const log = debug('ipfs:daemon')
 
-class Daemon {
+export class Daemon {
   /**
    * @param {import('ipfs-core').Options} options
    */
@@ -28,6 +28,9 @@ class Daemon {
       collectDefaultMetrics({ timeout: 5000 })
       prometheusGcStats(prometheusClient.register)()
     }
+
+    /** @type {import('ipfs-core-types').IPFS} */
+    this._ipfs
   }
 
   /**
@@ -37,7 +40,7 @@ class Daemon {
     log('starting')
 
     // start the daemon
-    this._ipfs = await IPFS.create(
+    this._ipfs = await create(
       Object.assign({}, { start: true, libp2p: getLibp2p }, this._options)
     )
 
@@ -106,5 +109,3 @@ async function getLibp2p ({ libp2pOptions }) {
   const Libp2p = require('libp2p')
   return Libp2p.create(libp2pOptions)
 }
-
-module.exports = Daemon

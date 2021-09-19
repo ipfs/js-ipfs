@@ -1,16 +1,14 @@
-import {
-  chmodResource,
-  cpResource,
-  flushResource,
-  lsResource,
-  mkdirResource,
-  mvResource,
-  readResource,
-  rmResource,
-  statResource,
-  touchResource,
-  writeResource
-} from '../resources/files/index.js'
+import { chmodResource } from '../resources/files/chmod.js'
+import { cpResource } from '../resources/files/cp.js'
+import { flushResource } from '../resources/files/flush.js'
+import { lsResource } from '../resources/files/ls.js'
+import { mkdirResource } from '../resources/files/mkdir.js'
+import { mvResource } from '../resources/files/mv.js'
+import { readResource } from '../resources/files/read.js'
+import { rmResource } from '../resources/files/rm.js'
+import { statResource } from '../resources/files/stat.js'
+import { touchResource } from '../resources/files/touch.js'
+import { writeResource } from '../resources/files/write.js'
 
 export default [
   {

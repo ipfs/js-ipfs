@@ -11,7 +11,7 @@ import { getDescribe, getIt }  from '../utils/mocha.js'
 import delay from 'delay'
 import { AbortController } from 'native-abort-controller'
 import { isWebWorker, isNode } from 'ipfs-utils/src/env'
-import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
+import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
 import first from 'it-first'
 import sinon from 'sinon'
 
@@ -24,7 +24,7 @@ import sinon from 'sinon'
  * @param {Object} options
  */
 export function testSubscribe (factory, options) {
-  const ipfsOptions = getIpfsOptions()
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 

@@ -2,7 +2,7 @@
 import { Multiaddr } from 'multiaddr'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
-const { FinalPeer } = require('./response-types')
+import { FinalPeer } from './response-types.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions

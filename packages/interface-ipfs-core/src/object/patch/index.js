@@ -1,4 +1,3 @@
-
 import { createSuite } from '../../utils/suite.js'
 import { testAddLink } from './add-link.js'
 import { testRmLink } from './rm-link.js'

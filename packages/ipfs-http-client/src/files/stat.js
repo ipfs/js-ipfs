@@ -1,6 +1,6 @@
 
 import { CID } from 'multiformats/cid'
-const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
+import {objectToCamelWithMetadata} from '../lib/object-to-camel-with-metadata.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
@@ -25,7 +25,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
     const data = await res.json()
 
     data.WithLocality = data.WithLocality || false
-    return toCoreInterface(toCamelWithMetadata(data))
+    return toCoreInterface(objectToCamelWithMetadata(data))
   }
   return stat
 })

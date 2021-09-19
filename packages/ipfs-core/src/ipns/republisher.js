@@ -1,4 +1,3 @@
-
 import ipns from 'ipns'
 import crypto from 'libp2p-crypto'
 import PeerId from 'peer-id'

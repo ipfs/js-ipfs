@@ -1,5 +1,5 @@
 
-import { objectToCamel } from '../lib/object-to-camel'
+import { objectToCamel } from '../lib/object-to-camel.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
@@ -24,7 +24,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
     const data = await res.json()
 
     // @ts-ignore server output is not typed
-    return toCamel(data)
+    return objectToCamel(data)
   }
   return gen
 })

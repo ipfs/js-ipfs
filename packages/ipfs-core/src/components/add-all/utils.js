@@ -1,5 +1,3 @@
-
-
 /**
  * @typedef {Object} FixedChunkerOptions
  * @property {'fixed'} chunker

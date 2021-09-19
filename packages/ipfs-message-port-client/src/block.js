@@ -1,6 +1,6 @@
 import { Client } from './client.js'
 import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
-import { decodeError } from 'ipfs-message-port-protocol/src/error'
+import { decodeError } from 'ipfs-message-port-protocol/error'
 import { encodeBlock } from 'ipfs-message-port-protocol/block'
 
 /**

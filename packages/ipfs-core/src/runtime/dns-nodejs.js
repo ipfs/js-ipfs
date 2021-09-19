@@ -1,4 +1,3 @@
-
 import dns from 'dns'
 import isIPFS from 'is-ipfs'
 import errcode from 'err-code'

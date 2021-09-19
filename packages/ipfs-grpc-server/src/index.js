@@ -2,8 +2,8 @@
 import grpc from '@grpc/grpc-js'
 import first from 'it-first'
 import debug from 'debug'
-import {webSocketServer} from './utils/web-socket-server'
-import {loadServices} from './utils/load-services'
+import {webSocketServer} from './utils/web-socket-server.js'
+import {loadServices} from './utils/load-services.js'
 import {grpcAdd} from './endpoints/add.js'
 import {grpcId} from './endpoints/id.js'
 import {grpcMfsLs} from './endpoints/mfs/ls.js'
@@ -23,7 +23,7 @@ const {
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('./types').Options} options
  */
-module.exports = async function createServer (ipfs, options = {}) {
+export async function gRPCServer (ipfs, options = {}) {
   options = options || {}
 
   const server = new grpc.Server()

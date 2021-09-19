@@ -1,10 +1,10 @@
 
 import { Multiaddr } from 'multiaddr'
-import { objectToCamel } from '../lib/object-to-camel'
+import { objectToCamel } from '../lib/object-to-camel.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { multipartRequest } from '../lib/multipart-request.js'
-import { abortSignal } from '../lib/abort-signal'
+import { abortSignal } from '../lib/abort-signal.js'
 import { AbortController } from 'native-abort-controller'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
@@ -34,7 +34,7 @@ import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
     })
 
     for await (let message of res.ndjson()) {
-      message = toCamel(message)
+      message = objectToCamel(message)
       if (message.responses) {
         message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,

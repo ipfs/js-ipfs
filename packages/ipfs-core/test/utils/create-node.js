@@ -1,4 +1,3 @@
-
 import mergeOpts from 'merge-options'
 import { create } from '../../src/index.js'
 import { createTempRepo } from './create-repo.js'
@@ -21,6 +20,7 @@ export default async (config = {}) => {
     repo = await createTempRepo()
   }
 
+  /** @type {import('ipfs-core-types').IPFS} */
   const ipfs = await create(mergeOptions({
     silent: true,
     repo,

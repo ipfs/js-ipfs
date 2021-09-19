@@ -4,7 +4,7 @@ import {
   replaceResource,
   profilesApplyResource,
   profilesListResource
-} from '../resources/config'
+} from '../resources/config.js'
 
 export default [
   {

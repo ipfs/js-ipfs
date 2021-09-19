@@ -9,7 +9,7 @@ import { resolve as res } from '../utils.js'
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
- * @param {import('ipfs-core-utils/src/multibases')} config.bases
+ * @param {import('ipfs-core-utils/src/multibases').Multibases} config.bases
  * @param {import('ipfs-core-types/src/name').API} config.name
  */
 export function createResolve ({ repo, codecs, bases, name }) {

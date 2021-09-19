@@ -31,7 +31,7 @@ const appendRemainder = (result, remainder) =>
  *
  * @param {Object} config
  * @param {import('ipfs-core-types/src/root').API["dns"]} config.dns
- * @param {import('../ipns')} config.ipns
+ * @param {import('../ipns').IPNSAPI} config.ipns
  * @param {import('peer-id')} config.peerId
  * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
  * @param {import('../../types').Options} config.options

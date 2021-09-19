@@ -45,7 +45,9 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "build": "aegir build",
+    "build": "run-s build:*",
+    "build:update-version": "node scripts/update-version.js",
+    "build:aegir": "aegir build",
     "lint": "aegir ts -p check && aegir lint",
     "test": "aegir test",
     "test:node": "aegir test -t node",
@@ -145,6 +147,7 @@
     "ipfsd-ctl": "^10.0.3",
     "iso-url": "^1.0.0",
     "nanoid": "^3.1.12",
+    "npm-run-all": "^4.1.5",
     "p-defer": "^3.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1"

@@ -2,7 +2,7 @@
 
 import { nanoid } from 'nanoid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { fixture } from './utils'
+import { fixture } from './utils.js'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt }  from '../utils/mocha.js'
 import last from 'it-last'

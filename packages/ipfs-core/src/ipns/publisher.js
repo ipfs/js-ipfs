@@ -1,14 +1,14 @@
-
 import PeerId from 'peer-id'
 import { Key, Errors } from 'interface-datastore'
 import errcode from 'err-code'
 import debug from 'debug'
-const log = Object.assign(debug('ipfs:ipns:publisher'), {
-  error: debug('ipfs:ipns:publisher:error')
-})
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { equals as uint8ArrayEquals } from 'uint8arrays/equals'
 import ipns from 'ipns'
+
+const log = Object.assign(debug('ipfs:ipns:publisher'), {
+  error: debug('ipfs:ipns:publisher:error')
+})
 
 /**
  * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey

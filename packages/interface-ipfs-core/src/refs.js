@@ -6,7 +6,7 @@ import loadFixture from 'aegir/utils/fixtures.js'
 import { CID } from 'multiformats/cid'
 import all from 'it-all'
 import drain from 'it-drain'
-import testTimeout from './utils/test-timeout'
+import testTimeout from './utils/test-timeout.js'
 import * as dagPB from '@ipld/dag-pb'
 import { UnixFS } from 'ipfs-unixfs'
 

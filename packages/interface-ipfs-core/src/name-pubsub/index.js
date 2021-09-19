@@ -1,4 +1,3 @@
-
 import { createSuite } from '../utils/suite.js'
 import { testCancel } from './cancel.js'
 import { testState } from './state.js'

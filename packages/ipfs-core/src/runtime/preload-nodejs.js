@@ -18,6 +18,7 @@ export async function preload (url, options = {}) {
 
   if (res.body) {
     // Read to completion but do not cache
+    // @ts-ignore
     await drain(res.body)
   }
 }

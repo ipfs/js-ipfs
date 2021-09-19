@@ -4,7 +4,7 @@ import {
   importResource,
   putResource,
   resolveResource
-} from '../resources/dag'
+} from '../resources/dag.js'
 
 export default [
   {

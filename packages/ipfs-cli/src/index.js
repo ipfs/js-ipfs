@@ -1,4 +1,3 @@
-
 import parser from './parser.js'
 import commandAlias from './command-alias.js'
 import errCode from 'err-code'
@@ -7,7 +6,7 @@ import errCode from 'err-code'
  * @param {string[]} command
  * @param {import('yargs').MiddlewareFunction} ctxMiddleware
  */
-export default function (command, ctxMiddleware) {
+export function cli (command, ctxMiddleware) {
   // Apply command aliasing (eg `refs local` -> `refs-local`)
   command = commandAlias(command)
 

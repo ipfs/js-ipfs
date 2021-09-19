@@ -4,7 +4,7 @@ import {
   stateResource,
   pubsubSubsResource,
   pubsubCancelResource
-} from '../resources/name'
+} from '../resources/name.js'
 
 export default [
   {

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-const cli = require('./utils/cli')
+import cli from './utils/cli.js'
 import sinon from 'sinon'
 import { CID } from 'multiformats/cid'
 import { base58btc } from 'multiformats/bases/base58'

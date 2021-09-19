@@ -29,10 +29,7 @@
     "extends": "ipfs",
     "parserOptions": {
       "sourceType": "module"
-    },
-    "ignorePatterns": [
-      "test/fixtures/*"
-    ]
+    }
   },
   "publishConfig": {
     "directory": "dist"
@@ -42,8 +39,18 @@
       "import": "./src/index.js"
     },
     "./files/normalise-input": {
-      "browser": "./src/files/normalise-input/index.browser.js",
-      "import": "./src/files/normalise-input/index.js"
+      "browser": "./src/files/normalise-input.browser.js",
+      "import": "./src/files/normalise-input.js"
+    },
+    "./files/normalise-input.browser": {
+      "import": "./src/files/normalise-input.browser.js"
+    },
+    "./files/normalise-content": {
+      "browser": "./src/files/normalise-content.browser.js",
+      "import": "./src/files/normalise-content.js"
+    },
+    "./files/normalise-content.browser": {
+      "import": "./src/files/normalise-content.browser.js"
     },
     "./files/format-mode": {
       "import": "./src/files/format-mode.js"
@@ -89,7 +96,7 @@
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
-    "build": "aegir build --no-bundle"
+    "build": "aegir build"
   },
   "license": "MIT",
   "dependencies": {

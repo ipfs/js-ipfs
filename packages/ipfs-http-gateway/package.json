@@ -12,6 +12,18 @@
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
   "files": [
     "*",
     "!**/*.tsbuildinfo"
@@ -19,6 +31,9 @@
   "exports": {
     ".": {
       "import": "./src/index.js"
+    },
+    "./resources/index": {
+      "import": "./src/resources/index.js"
     }
   },
   "eslintConfig": {

@@ -5,7 +5,7 @@ import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from './utils/mocha.js'
 import all from 'it-all'
 import { CID } from 'multiformats/cid'
-import testTimeout from './utils/test-timeout'
+import testTimeout from './utils/test-timeout.js'
 
 /**
  * @param {string} prefix

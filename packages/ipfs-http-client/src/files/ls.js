@@ -1,6 +1,6 @@
 
 import { CID } from 'multiformats/cid'
-const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
+import { objectToCamelWithMetadata } from '../lib/object-to-camel-with-metadata.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
@@ -33,10 +33,10 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
       // go-ipfs does not yet support the "stream" option
       if ('Entries' in result) {
         for (const entry of result.Entries || []) {
-          yield toCoreInterface(toCamelWithMetadata(entry))
+          yield toCoreInterface(objectToCamelWithMetadata(entry))
         }
       } else {
-        yield toCoreInterface(toCamelWithMetadata(result))
+        yield toCoreInterface(objectToCamelWithMetadata(result))
       }
     }
   }

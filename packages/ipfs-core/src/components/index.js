@@ -12,6 +12,7 @@ import { initAssets } from '../runtime/init-assets-nodejs.js'
 import { AlreadyInitializedError } from '../errors.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import {createStart} from './start.js'
+
 import {createStop} from './stop.js'
 import {createDns} from './dns.js'
 import {createIsOnline} from './is-online.js'
@@ -42,7 +43,7 @@ import { Service } from '../utils/service.js'
 import {SwarmAPI} from './swarm/index.js'
 import {createPing} from './ping.js'
 import {createDht} from './dht.js'
-import {createPubSub} from './pubsub/index.js'
+import {createPubsub} from './pubsub.js'
 import { Multicodecs } from 'ipfs-core-utils/multicodecs'
 import { Multihashes } from 'ipfs-core-utils/multihashes'
 import { Multibases } from 'ipfs-core-utils/multibases'
@@ -167,7 +168,7 @@ class IPFS {
     })
 
     this.dht = createDht({ network, repo })
-    this.pubsub = createPubSub({ network, config: options.config })
+    this.pubsub = createPubsub({ network, config: options.config })
     this.dns = dns
     this.isOnline = isOnline
     this.id = createId({ network, peerId })

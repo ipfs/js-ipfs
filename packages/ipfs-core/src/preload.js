@@ -3,12 +3,12 @@
 // @ts-expect-error no types
 import toUri from 'multiaddr-to-uri'
 import debug from 'debug'
-const shuffle = require('array-shuffle')
+import shuffle from 'array-shuffle'
 import { AbortController } from 'native-abort-controller'
-const preload = require('./runtime/preload-nodejs')
+import {preload} from './runtime/preload-nodejs.js'
 /** @type {typeof import('hashlru').default} */
 // @ts-ignore - hashlru has incorrect typedefs
-const hashlru = require('hashlru')
+import hashlru from 'hashlru'
 
 const log = Object.assign(
   debug('ipfs:preload'),

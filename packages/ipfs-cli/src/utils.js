@@ -1,4 +1,3 @@
-
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
@@ -6,11 +5,11 @@ import debug from 'debug'
 import Progress from 'progress'
 // @ts-expect-error no types
 import byteman from 'byteman'
-import * as IPFS from 'ipfs-core'
+import { create } from 'ipfs-core'
 import { CID } from 'multiformats/cid'
 import { Multiaddr } from 'multiaddr'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { create: httpClient } from 'ipfs-http-client'
+import { create as httpClient } from 'ipfs-http-client'
 
 const log = debug('ipfs:cli:utils')
 
@@ -120,7 +119,8 @@ export const ipfsPathHelp = 'ipfs uses a repository in the local file system. By
  */
 export async function getIpfs (argv) {
   if (!argv.api && !isDaemonOn()) {
-    const ipfs = await IPFS.create({
+    /** @type {import('ipfs-core-types').IPFS} */
+    const ipfs = await create({
       silent: argv.silent,
       repoAutoMigrate: argv.migrate,
       repo: getRepoPath(),
@@ -146,9 +146,12 @@ export async function getIpfs (argv) {
     endpoint = argv.api
   }
 
+  /** @type {import('ipfs-core-types').IPFS} */
+  const ipfs = httpClient({ url: endpoint })
+
   return {
     isDaemon: true,
-    ipfs: httpClient({ url: endpoint }),
+    ipfs,
     cleanup: async () => { }
   }
 }

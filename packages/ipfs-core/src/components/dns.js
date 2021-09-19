@@ -1,7 +1,5 @@
-
-
 // dns-nodejs gets replaced by dns-browser when bundled
-import dns from '../runtime/dns-nodejs'
+import { resolveDnslink } from '../runtime/dns-nodejs.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
@@ -28,7 +26,7 @@ export function createDns () {
 
     domain = fqdnFixups(domain)
 
-    return dns(domain, options)
+    return resolveDnslink(domain, options)
   }
 
   return withTimeoutOption(resolveDNS)

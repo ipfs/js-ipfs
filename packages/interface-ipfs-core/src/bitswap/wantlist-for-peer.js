@@ -3,7 +3,7 @@
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { waitForWantlistKey } from './utils.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
+import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
 import { CID } from 'multiformats/cid'
 
 /**
@@ -15,7 +15,7 @@ import { CID } from 'multiformats/cid'
  * @param {Object} options
  */
 export function testWantlistForPeer (factory, options) {
-  const ipfsOptions = getIpfsOptions()
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 

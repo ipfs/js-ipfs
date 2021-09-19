@@ -5,7 +5,7 @@ import { expect } from 'aegir/utils/chai.js'
 import path from 'path'
 const clean = require('./utils/clean')
 import { CID } from 'multiformats/cid'
-const cli = require('./utils/cli')
+import cli from './utils/cli.js'
 import sinon from 'sinon'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { pack } from 'it-tar'

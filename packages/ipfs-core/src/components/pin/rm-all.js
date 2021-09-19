@@ -1,4 +1,3 @@
-
 import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
 import { resolvePath } from '../../utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

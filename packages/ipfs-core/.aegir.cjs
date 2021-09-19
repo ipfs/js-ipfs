@@ -1,8 +1,7 @@
 'use strict'
 
 const { createServer } = require('ipfsd-ctl')
-const MockPreloadNode = require('./test/utils/mock-preload-node')
-import path from 'path'
+const path = require('path')
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
@@ -29,6 +28,7 @@ module.exports = {
       }
     },
     async before (options) {
+      const MockPreloadNode = await import('./test/utils/mock-preload-node')
       const preloadNode = MockPreloadNode.createNode()
       await preloadNode.start()
       if (options.runner !== 'node') {

@@ -4,7 +4,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
- * @param {import('../../ipns')} config.ipns
+ * @param {import('../../ipns').IPNSAPI} config.ipns
  * @param {import('../../../types').Options} config.options
  */
 export function createSubs ({ ipns, options }) {

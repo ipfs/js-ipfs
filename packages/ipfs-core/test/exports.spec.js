@@ -13,7 +13,7 @@ describe('exports', () => {
     expect(Ipfs.crypto).to.equal(crypto)
     expect(Ipfs.isIPFS).to.equal(isIPFS)
     expect(Ipfs.CID).to.equal(CID)
-    expect(Ipfs.Multiaddr).to.equal(Multiaddr)
+    expect(Ipfs.multiaddr).to.equal(Multiaddr)
     expect(Ipfs.PeerId).to.equal(PeerId)
   })
 })

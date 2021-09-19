@@ -10,7 +10,7 @@ import { resolver, utils } from 'ipfs-http-response'
 import isIPFS from 'is-ipfs'
 // @ts-expect-error no types
 import toStream from 'it-to-stream'
-import * as PathUtils from '../utils/path'
+import * as PathUtils from '../utils/path.js'
 
 const { detectContentType } = utils
 

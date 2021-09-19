@@ -8,7 +8,7 @@ import testTimeout from '../utils/test-timeout.js'
 import { AbortController } from 'native-abort-controller'
 import { CID } from 'multiformats/cid'
 import delay from 'delay'
-import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
+import {ipfsOptionsWebsocketsFilterAll} from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -19,7 +19,7 @@ import getIpfsOptions from '../utils/ipfs-options-websockets-filter-all.js'
  * @param {Object} options
  */
 export function testWantlist (factory, options) {
-  const ipfsOptions = getIpfsOptions()
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 

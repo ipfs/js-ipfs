@@ -27,14 +27,18 @@ const onUnhandledRejection = (err) => {
 
 process.once('uncaughtException', onUncaughtException)
 process.once('unhandledRejection', onUnhandledRejection)
+
 import semver from 'semver'
-import pkg from '../package.json'
+import * as pkg from './package.js'
+import debug from 'debug'
+
+const log = debug('ipfs:cli')
 
 process.title = pkg.name
 
 // Check for node version
-if (!semver.satisfies(process.versions.node, pkg.engines.node)) {
-  console.error(`Please update your Node.js version to ${pkg.engines.node}`)
+if (!semver.satisfies(process.versions.node, pkg.node)) {
+  console.error(`Please update your Node.js version to ${pkg.node}`)
   process.exit(1)
 }
 
@@ -46,11 +50,8 @@ if (!pkg.version.includes('-rc')) {
   updateNotifier({ pkg, updateCheckInterval: oneWeek }).notify()
 }
 
-const { NotEnabledError } = require('ipfs-core/src/errors')
-// @ts-ignore - TODO: refactor this so it does not require deep requires
-const { print, getIpfs, getRepoPath } = require('ipfs-cli/src/utils')
-import debug from 'debug'('ipfs:cli')
-const cli = require('ipfs-cli')
+import { print, getIpfs, getRepoPath } from 'ipfs-cli/utils'
+import { cli } from 'ipfs-cli'
 
 /**
  * @param {string[]} argv
@@ -63,6 +64,7 @@ async function main (argv) {
     repoPath: getRepoPath(),
     cleanup: () => {},
     isDaemon: false,
+    /** @type {import('ipfs-core-types').IPFS | undefined} */
     ipfs: undefined
   }
 
@@ -71,6 +73,7 @@ async function main (argv) {
   try {
     const data = await cli(command, async (argv) => {
       if (!['daemon', 'init'].includes(command[0])) {
+        // @ts-ignore argv as no properties in common
         const { ipfs, isDaemon, cleanup } = await getIpfs(argv)
 
         ctx = {
@@ -95,7 +98,7 @@ async function main (argv) {
       err.message = 'Incompatible repo version. Migration needed. Pass --migrate for automatic migration'
     }
 
-    if (err.code === NotEnabledError.code) {
+    if (err.code === 'ERR_NOT_ENABLED') {
       err.message = `no IPFS repo found in ${ctx.repoPath}.\nplease run: 'ipfs init'`
     }
 
@@ -104,9 +107,9 @@ async function main (argv) {
       err.yargs.showHelp()
       ctx.print.error('\n')
       ctx.print.error(`Error: ${err.message}`)
-    } else if (debug.enabled) {
+    } else if (log.enabled) {
       // Handle commands handler errors
-      debug(err)
+      log(err)
     } else {
       ctx.print.error(err.message)
     }

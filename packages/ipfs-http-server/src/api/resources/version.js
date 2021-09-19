@@ -1,6 +1,5 @@
 
 import Joi from '../../utils/joi.js'
-import pkg from '../../../package.json'
 
 export const versionResource = {
   options: {
@@ -41,9 +40,7 @@ export const versionResource = {
     return h.response({
       Version: version.version,
       Commit: version.commit,
-      Repo: version.repo,
-      'ipfs-http-client': pkg.devDependencies['ipfs-http-client'],
-      'interface-ipfs-core': version['interface-ipfs-core']
+      Repo: version.repo
     })
   }
 }

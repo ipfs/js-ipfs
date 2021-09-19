@@ -6,9 +6,9 @@ import { encodeBlock } from 'ipfs-message-port-protocol/block'
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('multiformats/cid').CID} CID
- * @typedef {import('ipfs-message-port-protocol/src/error').EncodedError} EncodedError
- * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
- * @typedef {import('ipfs-message-port-protocol/src/block').EncodedRmResult} EncodedRmResult
+ * @typedef {import('ipfs-message-port-protocol/error').EncodedError} EncodedError
+ * @typedef {import('ipfs-message-port-protocol/cid').EncodedCID} EncodedCID
+ * @typedef {import('ipfs-message-port-protocol/block').EncodedRmResult} EncodedRmResult
  * @typedef {import('ipfs-core-types/src/block').PutOptions} PutOptions
  */
 

@@ -1,12 +1,10 @@
+'use strict'
 
-
-import getPort from 'aegir/utils/get-port.js'
+const getPort = require('aegir/utils/get-port')
 const { createServer } = require('ipfsd-ctl')
-const MockPreloadNode = require('./test/utils/mock-preload-node')
-const PinningService = require('./test/utils/mock-pinning-service')
 const EchoServer = require('aegir/utils/echo-server')
 const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
-import path from 'path'
+const path = require('path')
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
@@ -33,6 +31,9 @@ module.exports = {
       }
     },
     before: async (options) => {
+      const MockPreloadNode = await import('./test/utils/mock-preload-node.js')
+      const PinningService = await import('./test/utils/mock-pinning-service.js')
+
       const echoServer = new EchoServer()
       const preloadNode = MockPreloadNode.createNode()
       const pinningService = await PinningService.start()

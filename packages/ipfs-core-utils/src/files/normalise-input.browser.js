@@ -1,8 +1,9 @@
 import { normaliseContent } from './normalise-content.browser.js'
-import { normalise } from './normalise-input.js'
+import { normalise } from './normalise.js'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').BrowserImportCandidate} BrowserImportCandidate
  */
 
@@ -15,7 +16,7 @@ import { normalise } from './normalise-input.js'
  *
  * See https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsadddata-options
  *
- * @param {ImportCandidateStream} input
+ * @param {ImportCandidate | ImportCandidateStream} input
  * @returns {AsyncGenerator<BrowserImportCandidate, void, undefined>}
  */
 export function normaliseInput (input) {

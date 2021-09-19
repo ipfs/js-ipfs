@@ -1,5 +1,5 @@
 
-import { versionResource } from '../resources/index.js'
+import { versionResource } from '../resources/version.js'
 
 export default [{
   method: 'POST',

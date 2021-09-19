@@ -1,6 +1,6 @@
 
 import { Multiaddr } from 'multiaddr'
-import { objectToCamel } from '../lib/object-to-camel'
+import { objectToCamel } from '../lib/object-to-camel.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
@@ -28,7 +28,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
     })
 
     for await (let message of res.ndjson()) {
-      message = toCamel(message)
+      message = objectToCamel(message)
       if (message.responses) {
         message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,

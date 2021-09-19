@@ -1,5 +1,5 @@
 
-import { objectToCamel } from '../lib/object-to-camel'
+import { objectToCamel } from '../lib/object-to-camel.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
@@ -25,7 +25,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
       headers: options.headers
     })
 
-    return toCamel(await res.json())
+    return objectToCamel(await res.json())
   }
   return level
 })

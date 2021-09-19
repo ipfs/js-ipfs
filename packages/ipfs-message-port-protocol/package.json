@@ -51,7 +51,7 @@
       "import": "./src/core.js"
     },
     "./dag": {
-      "import": "./src/dag"
+      "import": "./src/dag.js"
     },
     "./error": {
       "import": "./src/error.js"
@@ -63,8 +63,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "prepare": "npm run build",
-    "build": "aegir build --no-bundle",
+    "build": "aegir build",
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",

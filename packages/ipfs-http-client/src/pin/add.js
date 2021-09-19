@@ -1,6 +1,6 @@
 
 
-const addAll = require('./add-all')
+import { createAddAll } from './add-all.js'
 import last from 'it-last'
 import { configure } from '../lib/configure.js'
 
@@ -13,7 +13,7 @@ import { configure } from '../lib/configure.js'
  * @param {import('../types').Options} config
  */
  export const createAdd = (config) => {
-  const all = addAll(config)
+  const all = createAddAll(config)
 
   return configure(() => {
     /**

@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import { CID } from 'multiformats/cid'
-const cli = require('./utils/cli')
+import cli from './utils/cli.js'
 import sinon from 'sinon'
 
 const defaultOptions = {

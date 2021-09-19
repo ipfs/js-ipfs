@@ -1,3 +1,12 @@
+import { create as createImport } from './components/index.js'
+import cryptoImport from 'libp2p-crypto'
+import isIPFSImport from 'is-ipfs'
+import { CID as CIDImport } from 'multiformats/cid'
+import { Multiaddr } from 'multiaddr'
+import PeerIdImport from 'peer-id'
+import globSourceImport from 'ipfs-utils/src/files/glob-source.js'
+import urlSourceImport from 'ipfs-utils/src/files/glob-source.js'
+
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('./types').Options} Options
@@ -15,11 +24,11 @@
  * @typedef {import('./types').IPLDOptions} IPLDOptions
  */
 
-export { create } from './components/index.js'
-export { default as crypto } from 'libp2p-crypto'
-export { default as isIPFS } from 'is-ipfs'
-export { CID } from 'multiformats/cid'
-export { Multiaddr } from 'multiaddr'
-export { default as PeerId } from 'peer-id'
-export { default as globSource } from 'ipfs-utils/src/files/glob-source.js'
-export { default as urlSource } from 'ipfs-utils/src/files/url-source.js'
+export const create = createImport
+export const crypto = cryptoImport
+export const isIPFS = isIPFSImport
+export const CID = CIDImport
+export const multiaddr = Multiaddr
+export const PeerId = PeerIdImport
+export const globSource = globSourceImport
+export const urlSource = urlSourceImport

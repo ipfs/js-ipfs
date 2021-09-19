@@ -5,12 +5,9 @@ import * as dagPB from '@ipld/dag-pb'
 import { sha256 } from 'multiformats/hashes/sha2'
 import debug from 'debug'
 import errCode from 'err-code'
+import { MFS_ROOT_KEY } from '../../../utils.js'
 
 const log = debug('ipfs:mfs:utils:with-mfs-root')
-
-const {
-  MFS_ROOT_KEY
-} = require('../../../utils')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext

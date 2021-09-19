@@ -11,7 +11,7 @@ const ncp = promisify(require('ncp').ncp)
 const ipfsExec = require('./utils/ipfs-exec')
 const clean = require('./utils/clean')
 const { isWindows } = require('./utils/platforms')
-const cli = require('./utils/cli')
+import cli from './utils/cli.js'
 import sinon from 'sinon'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 

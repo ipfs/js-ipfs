@@ -1,7 +1,7 @@
 
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
-import { abortSignal } from '../lib/abort-signal'
+import { abortSignal } from '../lib/abort-signal.js'
 import { multipartRequest } from '../lib/multipart-request.js'
 import { AbortController } from 'native-abort-controller'
 import { CID } from 'multiformats/cid'

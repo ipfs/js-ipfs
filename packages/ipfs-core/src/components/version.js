@@ -1,4 +1,4 @@
-import { version, gitHead, devDependencies} from '../../package.json'
+import * as versionInfo from '../version.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
@@ -13,12 +13,11 @@ export function createVersion ({ repo }) {
     const repoVersion = await repo.version.get()
 
     return {
-      version: `${version}`,
-      repo: `${repoVersion}`,
-      commit: gitHead || '',
-      'interface-ipfs-core': devDependencies['interface-ipfs-core']
+      ...versionInfo,
+      repo: `${repoVersion}`
     }
   }
 
   return withTimeoutOption(version)
 }
+
