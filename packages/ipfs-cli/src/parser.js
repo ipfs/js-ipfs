@@ -1,10 +1,9 @@
 
-import yargs from 'yargs/yargs'
+import yargs from 'yargs'
 import { ipfsPathHelp, disablePrinting } from './utils.js'
+import { commandList } from './commands/index.js'
 
 const args = yargs(process.argv.slice(2))
-
-export default args
   .option('silent', {
     desc: 'Write no output',
     type: 'boolean',
@@ -31,7 +30,10 @@ export default args
   .epilog(ipfsPathHelp)
   .demandCommand(1, 'Please specify a command')
   .showHelpOnFail(false)
-  .commandDir('commands')
+  // @ts-ignore types are wrong
+  .command(commandList)
   .help()
   .strict()
   .completion()
+
+export default args

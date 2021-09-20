@@ -51,6 +51,7 @@
   },
   "scripts": {
     "lint": "aegir ts -p check && aegir lint",
+    "test": "npm run test:node",
     "test:node": "aegir test -t node",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core-types",
@@ -93,6 +94,7 @@
     "yargs": "^16.0.3"
   },
   "devDependencies": {
+    "@types/ncp": "^2.0.5",
     "@types/progress": "^2.0.3",
     "@types/yargs": "^16.0.0",
     "aegir": "^35.0.3",

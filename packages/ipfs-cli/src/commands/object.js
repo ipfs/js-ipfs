@@ -1,3 +1,4 @@
+import { commands } from './object/index.js'
 
 export default {
   command: 'object <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('object')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

@@ -1,5 +1,5 @@
 
-require('./node/agent')
-require('./node/swarm')
-require('./node/request-api')
-require('./node/custom-headers')
+import './node/agent.js'
+import './node/swarm.js'
+import './node/request-api.js'
+import './node/custom-headers.js'

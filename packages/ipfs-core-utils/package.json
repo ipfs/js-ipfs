@@ -83,6 +83,9 @@
       "import": "./src/with-timeout-option.js"
     }
   },
+  "browser": {
+    "./src/files/normalise-input.js": "./src/files/normalise-input.browser.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"

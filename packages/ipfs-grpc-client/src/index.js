@@ -1,7 +1,7 @@
 
 import { toUrlString } from 'ipfs-core-utils/to-url-string'
 import { loadServices } from './utils/load-services.js'
-import { grpc } from '@improbable-eng/grpc-web'
+import grpcWeb from '@improbable-eng/grpc-web'
 import { grpcAddAll } from './core-api/add-all.js'
 import { grpcId } from './core-api/id.js'
 import { grpcMfsLs } from './core-api/files/ls.js'
@@ -46,20 +46,20 @@ export function create (opts = { url: '' }) {
 
   const client = {
     // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-    addAll: grpcAddAll(grpc, service.Root.add, options),
+    addAll: grpcAddAll(grpcWeb.grpc, service.Root.add, options),
     // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-    id: grpcId(grpc, service.Root.id, options),
+    id: grpcId(grpcWeb.grpc, service.Root.id, options),
     files: {
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      ls: grpcMfsLs(grpc, service.MFS.ls, options),
+      ls: grpcMfsLs(grpcWeb.grpc, service.MFS.ls, options),
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      write: grpcMfsWrite(grpc, service.MFS.write, options)
+      write: grpcMfsWrite(grpcWeb.grpc, service.MFS.write, options)
     },
     pubsub: {
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      subscribe: grpcPubsubSubscribe(grpc, service.PubSub.subscribe, options),
+      subscribe: grpcPubsubSubscribe(grpcWeb.grpc, service.PubSub.subscribe, options),
       // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-      unsubscribe: grpcPubsubUnsubscribe(grpc, service.PubSub.unsubscribe, options)
+      unsubscribe: grpcPubsubUnsubscribe(grpcWeb.grpc, service.PubSub.unsubscribe, options)
     }
   }
 

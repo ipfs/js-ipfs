@@ -3,7 +3,8 @@
 import { expect } from 'aegir/utils/chai.js'
 import all from 'it-all'
 
-const f = require('./utils/factory')()
+import { factory } from './utils/factory.js'
+const f = factory()
 
 // Determine if a ping response object is a pong, or something else, like a status message
 function isPong (pingResponse) {

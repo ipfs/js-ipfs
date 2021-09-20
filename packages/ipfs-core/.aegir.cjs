@@ -28,7 +28,7 @@ module.exports = {
       }
     },
     async before (options) {
-      const MockPreloadNode = await import('./test/utils/mock-preload-node')
+      const MockPreloadNode = await import('./test/utils/mock-preload-node.js')
       const preloadNode = MockPreloadNode.createNode()
       await preloadNode.start()
       if (options.runner !== 'node') {
@@ -37,9 +37,9 @@ module.exports = {
           port: 57483
         }, {
           type: 'js',
-          ipfsModule: require(__dirname),
-          ipfsHttpModule: require(path.join(__dirname, '..', 'ipfs-http-client')),
-          ipfsBin: path.resolve(path.join(__dirname, '..', 'ipfs', 'src', 'cli.js')),
+          ipfsModule: await import('./src/index.js'),
+          ipfsHttpModule: await import('../ipfs-http-client/src/index.js'),
+          ipfsBin: path.resolve('../ipfs/src/cli.js'),
           ipfsOptions: {
             libp2p: {
               dialer: {

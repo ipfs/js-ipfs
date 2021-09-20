@@ -1,6 +1,8 @@
 
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-const { repoVersion } = require('ipfs-repo')
+import IpfsRepo from 'ipfs-repo'
+
+const { repoVersion } = IpfsRepo
 
 /**
  * @param {Object} config

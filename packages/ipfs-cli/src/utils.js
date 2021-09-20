@@ -83,7 +83,7 @@ print.columns = process.stdout.columns
 
 /**
  * @param {number} totalBytes
- * @param {*} output
+ * @param {*} [output]
  */
 export const createProgressBar = (totalBytes, output) => {
   const total = byteman(totalBytes, 2, 'MB')

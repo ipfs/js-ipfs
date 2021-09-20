@@ -1,2 +1,2 @@
 
-require('./agent')
+import './agent.js'

@@ -1,3 +1,4 @@
+import { commands } from './dht/index.js'
 
 export default {
   command: 'dht <command>',
@@ -8,6 +9,7 @@ export default {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('dht')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

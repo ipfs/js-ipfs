@@ -1,3 +1,4 @@
+import { commands } from './dag/index.js'
 
 export default {
   command: 'dag <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('dag')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

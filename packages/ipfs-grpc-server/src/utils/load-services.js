@@ -1,5 +1,5 @@
 import protocol from 'ipfs-grpc-protocol'
-import protobuf from 'protobufjs/light'
+import protobuf from 'protobufjs/light.js'
 
 const { Service } = protobuf
 

@@ -3,7 +3,7 @@
 import { expect } from 'aegir/utils/chai.js'
 import sinon from 'sinon'
 import { isNode } from 'ipfs-utils/src/env.js'
-const cli = require('../utils/cli')
+import { cli } from '../utils/cli.js'
 
 const defaultOptions = {
   recursive: false,

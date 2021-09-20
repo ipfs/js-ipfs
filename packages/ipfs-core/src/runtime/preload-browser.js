@@ -2,7 +2,7 @@
 
 import HTTP from 'ipfs-utils/src/http.js'
 import debug from 'debug'
-const { default: PQueue } = require('p-queue')
+import PQueue from 'p-queue'
 
 const log = Object.assign(debug('ipfs:preload'), {
   error: debug('ipfs:preload:error')

@@ -5,7 +5,7 @@ import map from 'it-map'
 import { pipe } from 'it-pipe'
 import { streamResponse } from '../../utils/stream-response.js'
 import all from 'it-all'
-const reduce = require('it-reduce')
+import reduce from 'it-reduce'
 
 /**
  * @typedef {import('multiformats/cid').CID} CID

@@ -1,3 +1,4 @@
+import { commands } from './cid/index.js'
 
 export default {
   command: 'cid <command>',
@@ -8,6 +9,7 @@ export default {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('cid')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

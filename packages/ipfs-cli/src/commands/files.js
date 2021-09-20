@@ -1,3 +1,4 @@
+import { commands } from './files/index.js'
 
 export default {
   command: 'files <command>',
@@ -8,7 +9,8 @@ export default {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('files')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   },
 
   /**

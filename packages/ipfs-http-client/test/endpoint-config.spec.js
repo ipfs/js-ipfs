@@ -2,11 +2,11 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 
 import { expect } from 'aegir/utils/chai.js'
-const ipfsClient = require('../src').create
+import { create as httpClient } from '../src/index.js'
 
 describe('.getEndpointConfig', () => {
   it('should return the endpoint configuration', function () {
-    const ipfs = ipfsClient('https://127.0.0.1:5501/ipfs/api/')
+    const ipfs = httpClient('https://127.0.0.1:5501/ipfs/api/')
     const endpoint = ipfs.getEndpointConfig()
 
     expect(endpoint.host).to.equal('127.0.0.1')

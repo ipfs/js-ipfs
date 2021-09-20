@@ -1,7 +1,8 @@
 import { createSuite } from '../utils/suite.js'
+import { testPing } from './ping.js'
 
 const tests = {
-  ping: require('./ping')
+  ping: testPing
 }
 
 export default createSuite(tests)

@@ -16,7 +16,7 @@ module.exports = {
         port: port
       }, {
         type: 'go',
-        ipfsHttpModule: require('./src'),
+        ipfsHttpModule: await import('./src/index.js'),
         ipfsBin: require('go-ipfs').path()
       })
 

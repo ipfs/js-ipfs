@@ -1,3 +1,4 @@
+import { commands } from './pin/index.js'
 
 export default {
   command: 'pin <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('pin')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

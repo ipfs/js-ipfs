@@ -8,8 +8,9 @@ import * as dagCBOR from '@ipld/dag-cbor'
 import * as raw from 'multiformats/codecs/raw'
 import { base58btc } from 'multiformats/bases/base58'
 import { base32 } from 'multiformats/bases/base32'
-const f = require('./utils/factory')()
-const ipfsHttpClient = require('../src')
+import { create as httpClient } from '../src/index.js'
+import { factory } from './utils/factory.js'
+const f = factory()
 
 let ipfs
 
@@ -77,7 +78,7 @@ describe('.dag', function () {
 
   it('should attempt to load an unsupported format', async () => {
     let askedToLoadFormat
-    const ipfs2 = ipfsHttpClient.create({
+    const ipfs2 = httpClient({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {
         loadCodec: (format) => {
@@ -98,7 +99,7 @@ describe('.dag', function () {
   })
 
   it('should allow formats to be specified without overwriting others', async () => {
-    const ipfs2 = ipfsHttpClient.create({
+    const ipfs2 = httpClient({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {
         codecs: [{

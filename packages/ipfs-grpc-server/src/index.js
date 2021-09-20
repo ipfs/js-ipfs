@@ -23,7 +23,7 @@ const {
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('./types').Options} options
  */
-export async function gRPCServer (ipfs, options = {}) {
+export async function createServer (ipfs, options = {}) {
   options = options || {}
 
   const server = new grpc.Server()

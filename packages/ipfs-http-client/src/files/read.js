@@ -1,7 +1,7 @@
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 // @ts-expect-error no types
-import toIterable from 'stream-to-it/source'
+import toIterable from 'stream-to-it/source.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions

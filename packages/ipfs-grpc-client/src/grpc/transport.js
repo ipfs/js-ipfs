@@ -5,8 +5,8 @@ import { transport as browserTransport } from './transport.browser.js'
 export function transport () {
   // In electron-renderer we use the browser transport
   if (isElectronRenderer) {
-    return browserTransport
+    return browserTransport()
   } else {
-    return nodeTransport
+    return nodeTransport()
   }
 }

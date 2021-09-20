@@ -3,7 +3,9 @@
 import { resolvePath } from '../../utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
-import { PinTypes } from 'ipfs-repo'
+import IpfsRepo from 'ipfs-repo'
+
+const { PinTypes } = IpfsRepo
 
 /**
  * @typedef {import('ipfs-core-utils/src/pins/normalise-input').Source} Source

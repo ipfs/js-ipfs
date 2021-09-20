@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-const f = require('./utils/factory')()
+import { factory } from './utils/factory.js'
+const f = factory()
 
 describe('.repo', function () {
   this.timeout(50 * 1000) // slow CI

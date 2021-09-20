@@ -1,4 +1,4 @@
-
+import { commands } from './config/index.js'
 import parseDuration from 'parse-duration'
 
 export default {
@@ -11,7 +11,8 @@ export default {
    */
   builder: (yargs) => {
     return yargs
-      .commandDir('config')
+      // @ts-expect-error types are wrong
+      .command(commands)
       .option('bool', {
         type: 'boolean',
         describe: 'Set a boolean value.',

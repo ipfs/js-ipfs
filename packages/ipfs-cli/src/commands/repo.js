@@ -1,3 +1,4 @@
+import { commands } from './repo/index.js'
 
 export default {
   command: 'repo <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('repo')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

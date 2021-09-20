@@ -5,7 +5,7 @@ import fs from 'fs'
 import FormData from 'form-data'
 import streamToPromise from 'stream-to-promise'
 import { testHttpMethod } from '../utils/test-http-method.js'
-import http from '../utils/http.js'
+import { http } from '../utils/http.js'
 import sinon from 'sinon'
 import { AbortSignal } from 'native-abort-controller'
 

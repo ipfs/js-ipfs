@@ -3,7 +3,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import { testHttpMethod } from '../utils/test-http-method.js'
-import http from '../utils/http.js'
+import { http } from '../utils/http.js'
 import sinon from 'sinon'
 import { CID } from 'multiformats/cid'
 import { allNdjson } from '../utils/all-ndjson.js'

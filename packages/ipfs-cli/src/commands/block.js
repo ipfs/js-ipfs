@@ -1,3 +1,4 @@
+import { commands } from './block/index.js'
 
 export default {
   command: 'block <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('block')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

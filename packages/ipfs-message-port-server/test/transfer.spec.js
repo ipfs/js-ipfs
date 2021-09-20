@@ -5,6 +5,7 @@ import { encodeCID } from 'ipfs-message-port-protocol/cid'
 import { CID } from 'multiformats/cid'
 import { Server } from '../src/server.js'
 import { IPFSService } from '../src/index.js'
+import { MessageChannel } from 'worker_threads'
 
 describe('Server', function () {
   this.timeout(10 * 1000)
@@ -15,7 +16,7 @@ describe('Server', function () {
     return new Promise((resolve, reject) => {
       const channel = process.browser
         ? new globalThis.MessageChannel()
-        : new (require('worker_threads').MessageChannel)()
+        : new MessageChannel()
 
       channel.port1.onmessageerror = reject
       channel.port1.onmessage = event => {

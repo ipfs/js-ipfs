@@ -1,10 +1,12 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 
-import { PinTypes } from 'ipfs-repo'
 import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
 import { resolvePath } from '../../utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import errCode from 'err-code'
+import IpfsRepo from 'ipfs-repo'
+
+const { PinTypes } = IpfsRepo
 
 /**
  * @typedef {import('multiformats/cid').CID} CID

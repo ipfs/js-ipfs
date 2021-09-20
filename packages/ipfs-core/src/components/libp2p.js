@@ -2,7 +2,7 @@
 import get from 'dlv'
 import mergeOpts from 'merge-options'
 import errCode from 'err-code'
-import * as PubsubRouters from '../runtime/libp2p-pubsub-routers-nodejs.js'
+import { routers } from '../runtime/libp2p-pubsub-routers-nodejs.js'
 // @ts-expect-error - no types
 import DelegatedPeerRouter from 'libp2p-delegated-peer-routing'
 // @ts-expect-error - no types
@@ -11,6 +11,8 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { Multiaddr } from 'multiaddr'
 import { version as pkgversion } from '../version.js'
 import { libp2pConfig as getEnvLibp2pOptions } from '../runtime/libp2p-nodejs.js'
+import bootstrap from 'libp2p-bootstrap'
+import Libp2p from 'libp2p'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
@@ -66,9 +68,6 @@ export function createLibp2p ({
     return options.libp2p({ libp2pOptions, options, config, datastore, peerId })
   }
 
-  // Required inline to reduce startup time
-  const Libp2p = require('libp2p')
-
   return Libp2p.create(libp2pOptions)
 }
 
@@ -87,13 +86,11 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
-    // @ts-ignore - `router` value is not constrained
-    if (!PubsubRouters[router]) {
+    if (!routers[router]) {
       throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
     }
 
-    // @ts-ignore - `router` value is not constrained
-    return PubsubRouters[router]
+    return routers[router]
   }
 
   const libp2pDefaults = {
@@ -178,7 +175,7 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   const bootstrapList = get(libp2pConfig, 'config.peerDiscovery.bootstrap.list', [])
 
   if (bootstrapList.length > 0) {
-    libp2pConfig.modules.peerDiscovery.push(require('libp2p-bootstrap'))
+    libp2pConfig.modules.peerDiscovery.push(bootstrap)
   }
 
   // Set up Delegate Routing based on the presence of Delegates in the config

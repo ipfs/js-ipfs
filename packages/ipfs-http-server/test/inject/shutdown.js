@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { testHttpMethod } from '../utils/test-http-method.js'
-import http from '../utils/http.js'
+import { http } from '../utils/http.js'
 
 describe('/shutdown', () => {
   let ipfs

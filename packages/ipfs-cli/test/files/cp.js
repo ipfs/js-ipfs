@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import sinon from 'sinon'
-const cli = require('../utils/cli')
+import { cli } from '../utils/cli.js'
 
 const defaultOptions = {
   parents: false,

@@ -1,7 +1,13 @@
 
-import path from 'path'
+import path, { dirname } from 'path'
 import globSource from 'ipfs-utils/src/files/glob-source.js'
 import all from 'it-all'
+import { fileURLToPath } from 'url'
+
+// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
+// but then the "--module" setting doesn't get used by the "--build" setting
+// which we use to build types from jsdoc
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
  * Add the default assets to the repo.

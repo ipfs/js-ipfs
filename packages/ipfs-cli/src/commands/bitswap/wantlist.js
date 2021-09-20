@@ -33,6 +33,8 @@ export default {
   async handler ({ ctx, peer, cidBase, timeout }) {
     const { ipfs, print } = ctx
     const base = await ipfs.bases.getBase(cidBase)
+
+    /** @type {import('multiformats/cid').CID[]} */
     let list
 
     if (peer) {

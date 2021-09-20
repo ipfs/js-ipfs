@@ -5,24 +5,42 @@
   "keywords": [
     "ipfs"
   ],
-  "main": "dist/ipfs.json",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "types/src/index.d.ts",
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-protocol#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "files": [
-    "src",
-    "dist"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json"
+    "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json && node ./scripts/update-index.js && npm run lint -- --fix && aegir build",
+    "lint": "aegir ts -p check && aegir lint"
   },
   "devDependencies": {
+    "aegir": "^35.0.3",
     "mkdirp": "^1.0.4",
     "protobufjs": "^6.10.2",
     "rimraf": "^3.0.2"

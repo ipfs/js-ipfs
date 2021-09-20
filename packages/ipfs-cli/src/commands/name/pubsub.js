@@ -1,3 +1,4 @@
+import { commands } from './pubsub/index.js'
 
 /*
 Manage and inspect the state of the IPNS pubsub resolver.
@@ -12,6 +13,7 @@ export default {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('pubsub')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

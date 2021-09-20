@@ -6,7 +6,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import all from 'it-all'
 import { File } from '@web-std/file'
 import { isBrowser, isWebWorker, isElectronRenderer } from 'ipfs-utils/src/env.js'
-import { normaliseInput } from '../../src/files/normalise-input'
+import { normaliseInput } from '../../src/files/normalise-input.js'
 
 const { Blob, ReadableStream } = globalThis
 

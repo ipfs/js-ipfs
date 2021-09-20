@@ -1,7 +1,7 @@
 import { createFactory } from 'ipfsd-ctl'
 import mergeOpts from 'merge-options'
 import { isNode } from 'ipfs-utils/src/env.js'
-import * as ipfsHttpModule from '../../src'
+import * as ipfsHttpModule from '../../src/index.js'
 // @ts-expect-error go-ipfs has no types
 import { path } from 'go-ipfs'
 

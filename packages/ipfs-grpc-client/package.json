@@ -31,7 +31,8 @@
     "directory": "dist"
   },
   "browser": {
-    "./src/grpc/transport.js": "./src/grpc/transport.browser.js"
+    "./src/grpc/transport.js": "./src/grpc/transport.browser.js",
+    "./src/grpc/transport.node.js": "./src/grpc/transport.browser.js"
   },
   "repository": {
     "type": "git",

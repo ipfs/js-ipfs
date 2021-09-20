@@ -1,3 +1,4 @@
+import { commands } from './pubsub/index.js'
 
 export default {
   command: 'pubsub <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('pubsub')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

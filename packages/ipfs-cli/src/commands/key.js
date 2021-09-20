@@ -1,3 +1,4 @@
+import { commands } from './key/index.js'
 
 export default {
   command: 'key <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('key')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { CID } from 'multiformats/cid'
 import { pack } from 'it-tar'
 import { pipe } from 'it-pipe'
-import { gzip } from 'pako'
+import Pako from 'pako'
 import map from 'it-map'
 import toBuffer from 'it-to-buffer'
 
@@ -78,7 +78,7 @@ export function createGet ({ repo, preload }) {
           async function * (source) {
             const buf = await toBuffer(source)
 
-            yield gzip(buf, {
+            yield Pako.gzip(buf, {
               level: options.compressionLevel || DEFAULT_COMPRESSION_LEVEL
             })
           }
@@ -147,7 +147,7 @@ export function createGet ({ repo, preload }) {
             async function * (source) {
               const buf = await toBuffer(source)
 
-              yield gzip(buf, {
+              yield Pako.gzip(buf, {
                 level: options.compressionLevel || DEFAULT_COMPRESSION_LEVEL
               })
             }

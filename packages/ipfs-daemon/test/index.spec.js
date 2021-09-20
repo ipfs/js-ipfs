@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import Daemon from '../src/index.js'
+import { Daemon } from '../src/index.js'
 import fetch from 'node-fetch'
 import WebSocket from 'ws'
 import os from 'os'

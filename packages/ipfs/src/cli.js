@@ -15,6 +15,8 @@ import debug from 'debug'
 import { print, getIpfs, getRepoPath } from 'ipfs-cli/utils'
 import { cli } from 'ipfs-cli'
 
+import updateNotifier from 'update-notifier'
+
 /**
  * @param {any} err
  * @param {string} origin
@@ -48,8 +50,6 @@ if (!semver.satisfies(process.versions.node, pkg.node)) {
   console.error(`Please update your Node.js version to ${pkg.node}`)
   process.exit(1)
 }
-
-const updateNotifier = require('update-notifier')
 
 // If we're not running an rc, check if an update is available and notify
 if (!pkg.version.includes('-rc')) {

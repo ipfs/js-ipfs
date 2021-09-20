@@ -7,7 +7,7 @@ import last from 'it-last'
 import drain from 'it-drain'
 import fs from 'fs'
 import os from 'os'
-import path from 'path'
+import path, { dirname } from 'path'
 import { supportsFileReader } from 'ipfs-utils/src/supports.js'
 import globSource from 'ipfs-utils/src/files/glob-source.js'
 import { isNode } from 'ipfs-utils/src/env.js'
@@ -17,6 +17,12 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import bufferStream from 'it-buffer-stream'
 import * as raw from 'multiformats/codecs/raw'
 import * as dagPB from '@ipld/dag-pb'
+import { fileURLToPath } from 'url'
+
+// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
+// but then the "--module" setting doesn't get used by the "--build" setting
+// which we use to build types from jsdoc
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory

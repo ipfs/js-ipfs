@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import * as tests from 'interface-ipfs-core'
-import { isNode, isBrowser, isWebWorker } from 'ipfs-utils/src/env'
+import { isNode, isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
 import { factory } from './utils/factory.js'
 const isFirefox = globalThis.navigator?.userAgent?.toLowerCase().includes('firefox')
 

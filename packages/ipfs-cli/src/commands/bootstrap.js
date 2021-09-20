@@ -1,3 +1,4 @@
+import { commands } from './bootstrap/index.js'
 
 export default {
   command: 'bootstrap <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('bootstrap')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

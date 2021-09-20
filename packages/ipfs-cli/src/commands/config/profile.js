@@ -1,3 +1,4 @@
+import { commands } from './profile/index.js'
 
 export default {
   command: 'profile <command>',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('profile')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

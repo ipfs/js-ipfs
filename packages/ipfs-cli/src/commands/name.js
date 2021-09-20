@@ -1,3 +1,4 @@
+import { commands } from './name/index.js'
 
 /*
 IPNS is a PKI namespace, where names are the hashes of public keys, and
@@ -14,6 +15,11 @@ export default {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('name')
+    commands.forEach(command => {
+      // @ts-ignore types are wrong
+      yargs.command(command)
+    })
+
+    return yargs
   }
 }

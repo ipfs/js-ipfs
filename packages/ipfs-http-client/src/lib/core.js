@@ -83,7 +83,7 @@ const normalizeOptions = (options = {}) => {
 /**
  * @param {Response} response
  */
-const errorHandler = async (response) => {
+export const errorHandler = async (response) => {
   let msg
 
   try {
@@ -210,4 +210,4 @@ export class Client extends HTTP {
   }
 }
 
-Client.errorHandler = errorHandler
+export const HTTPError = HTTP.HTTPError

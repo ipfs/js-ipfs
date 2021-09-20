@@ -1,4 +1,4 @@
 
-import { grpc } from '@improbable-eng/grpc-web'
+import grpcWeb from '@improbable-eng/grpc-web'
 
-export const transport = grpc.WebsocketTransport
+export const transport = () => grpcWeb.grpc.WebsocketTransport

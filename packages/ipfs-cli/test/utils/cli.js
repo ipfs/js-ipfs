@@ -1,6 +1,6 @@
 
 import { parseArgsStringToArgv } from 'string-argv'
-import { cli } from '../../src/index.js'
+import { cli as exec } from '../../src/index.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const output = () => {
@@ -30,12 +30,12 @@ const output = () => {
   return print
 }
 
-export default async function (command, ctx = {}) {
+export async function cli (command, ctx = {}) {
   const print = output()
 
   command = parseArgsStringToArgv(command)
 
-  await cli(command, (args) => {
+  await exec(command, (args) => {
     args.ctx = {
       print,
       ...ctx
@@ -51,13 +51,13 @@ export default async function (command, ctx = {}) {
   return uint8ArrayToString(out)
 }
 
-module.exports.fail = async (command, ctx = {}) => {
+export async function fail (command, ctx = {}) {
   const print = output()
 
   command = parseArgsStringToArgv(command)
 
   try {
-    await cli(command, (args) => {
+    await exec(command, (args) => {
       args.ctx = {
         print,
         ...ctx

@@ -1,5 +1,5 @@
 
-import { Server as WebSocketServer } from 'ws'
+import WS from 'ws'
 import { EventEmitter } from 'events'
 import { WebSocketMessageChannel } from './web-socket-message-channel.js'
 import debug from 'debug'
@@ -32,7 +32,7 @@ const fromHeaders = (buf) => {
 
 class Messages extends EventEmitter {
   /**
-   * @param {WebSocketServer} wss
+   * @param {WS.Server} wss
    */
   constructor (wss) {
     super()
@@ -120,7 +120,7 @@ export async function webSocketServer (ipfs, options = {}) {
 
   log(`starting ws server on ${host}:${port}`)
 
-  const wss = new WebSocketServer({
+  const wss = new WS.Server({
     host,
     port: parseInt(port, 10)
   })

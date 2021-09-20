@@ -3,7 +3,8 @@
 import { isNode } from 'ipfs-utils/src/env.js'
 import { expect } from 'aegir/utils/chai.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-const ipfsClient = require('../../src').create
+import { create as httpClient } from '../../src/index.js'
+import http from 'http'
 
 function startServer (fn) {
   let headersResolve
@@ -12,7 +13,7 @@ function startServer (fn) {
   })
 
   // spin up a test http server to inspect the requests made by the library
-  const server = require('http').createServer((req, res) => {
+  const server = http.createServer((req, res) => {
     req.on('data', () => {})
     req.on('end', () => {
       res.writeHead(200)
@@ -42,7 +43,7 @@ describe('custom headers', function () {
   describe('supported in the constructor', () => {
     // initialize ipfs with custom headers
     before(() => {
-      ipfs = ipfsClient({
+      ipfs = httpClient({
         host: 'localhost',
         port: 6001,
         protocol: 'http',
@@ -70,7 +71,7 @@ describe('custom headers', function () {
   describe('supported as API call arguemnts', () => {
     // initialize ipfs with custom headers
     before(() => {
-      ipfs = ipfsClient({
+      ipfs = httpClient({
         host: 'localhost',
         port: 6001,
         protocol: 'http'

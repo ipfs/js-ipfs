@@ -2,14 +2,16 @@
 import debug from 'debug'
 import { createRepo } from '../runtime/repo-nodejs.js'
 import getDefaultConfig from '../runtime/config-nodejs.js'
-import { errors } from 'ipfs-repo'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import PeerId from 'peer-id'
 import mergeOpts from 'merge-options'
-import { profiles as configProfiles } from './config.js'
+import { profiles as configProfiles } from './config/profiles.js'
 import { NotEnabledError, NotInitializedError } from '../errors.js'
 import { createLibp2p } from './libp2p.js'
+import IpfsRepo from 'ipfs-repo'
+
+const { errors } = IpfsRepo
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = debug('ipfs:components:peer:storage')

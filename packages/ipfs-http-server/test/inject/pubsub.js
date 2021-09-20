@@ -3,7 +3,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import { testHttpMethod } from '../utils/test-http-method.js'
-import http from '../utils/http.js'
+import { http } from '../utils/http.js'
 import FormData from 'form-data'
 import sinon from 'sinon'
 import { AbortSignal } from 'native-abort-controller'

@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import sinon from 'sinon'
-import http from '../utils/http.js'
+import { http } from '../utils/http.js'
 
 export default () => {
   describe('browser headers', () => {

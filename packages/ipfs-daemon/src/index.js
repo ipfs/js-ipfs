@@ -6,11 +6,12 @@ import WebRTCStar from 'libp2p-webrtc-star'
 import { create } from 'ipfs-core'
 import { HttpApi } from 'ipfs-http-server'
 import { HttpGateway } from 'ipfs-http-gateway'
-import { gRPCServer } from 'ipfs-grpc-server'
-import { isElectron } from 'ipfs-utils/src/env'
+import { createServer as gRPCServer } from 'ipfs-grpc-server'
+import { isElectron } from 'ipfs-utils/src/env.js'
 import prometheusClient from 'prom-client'
 // @ts-expect-error - no types
 import prometheusGcStats from 'prometheus-gc-stats'
+import Libp2p from 'libp2p'
 
 const log = debug('ipfs:daemon')
 
@@ -86,7 +87,7 @@ async function getLibp2p ({ libp2pOptions }) {
   if (isElectron) {
     try {
       // @ts-ignore - cant find type info
-      electronWebRTC = require('electron-webrtc')()
+      electronWebRTC = await import('electron-webrtc')()
     } catch (/** @type {any} */ err) {
       log('failed to load optional electron-webrtc dependency')
     }
@@ -95,7 +96,7 @@ async function getLibp2p ({ libp2pOptions }) {
   if (!electronWebRTC) {
     try {
       // @ts-ignore - cant find type info
-      wrtc = require('wrtc')
+      wrtc = await import('wrtc')
     } catch (/** @type {any} */ err) {
       log('failed to load optional webrtc dependency')
     }
@@ -107,6 +108,5 @@ async function getLibp2p ({ libp2pOptions }) {
     libp2pOptions.modules.transport.push(WebRTCStar)
   }
 
-  const Libp2p = require('libp2p')
   return Libp2p.create(libp2pOptions)
 }

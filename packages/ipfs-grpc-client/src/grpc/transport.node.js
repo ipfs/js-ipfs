@@ -180,4 +180,4 @@ function isValidHeaderAscii (val) {
   return isAllowedControlChars(val) || (val >= 0x20 && val <= 0x7e)
 }
 
-export const transport = WebsocketTransport
+export const transport = () => WebsocketTransport

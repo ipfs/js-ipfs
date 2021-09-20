@@ -17,7 +17,7 @@ import blockstore from './utils/blockstore-adapter.js'
 import { extract } from 'it-tar'
 import { pipe } from 'it-pipe'
 import toBuffer from 'it-to-buffer'
-const { Inflate } = require('pako')
+import { Inflate } from 'pako'
 
 /**
  * @param {string} name

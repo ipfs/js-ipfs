@@ -2,7 +2,8 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import all from 'it-all'
-const f = require('./utils/factory')()
+import { factory } from './utils/factory.js'
+const f = factory()
 
 describe('stats', function () {
   this.timeout(50 * 1000) // slow CI

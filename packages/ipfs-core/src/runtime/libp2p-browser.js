@@ -1,14 +1,14 @@
 
 // @ts-expect-error - no types
-const WS = require('libp2p-websockets')
+import WS from 'libp2p-websockets'
 // @ts-expect-error - no types
-const WebRTCStar = require('libp2p-webrtc-star')
+import WebRTCStar from 'libp2p-webrtc-star'
 // @ts-expect-error - no types
-const Multiplex = require('libp2p-mplex')
-const { NOISE } = require('@chainsafe/libp2p-noise')
-const KadDHT = require('libp2p-kad-dht')
-const GossipSub = require('libp2p-gossipsub')
-const ipnsUtils = require('../ipns/routing/utils')
+import Multiplex from 'libp2p-mplex'
+import { NOISE } from '@chainsafe/libp2p-noise'
+import KadDHT from 'libp2p-kad-dht'
+import GossipSub from 'libp2p-gossipsub'
+import { validator, selector } from '../ipns/routing/utils.js'
 
 export function libp2pConfig () {
   /** @type {import('libp2p').Libp2pOptions} */
@@ -53,10 +53,10 @@ export function libp2pConfig () {
           enabled: false
         },
         validators: {
-          ipns: ipnsUtils.validator
+          ipns: validator
         },
         selectors: {
-          ipns: ipnsUtils.selector
+          ipns: selector
         }
       },
       pubsub: {

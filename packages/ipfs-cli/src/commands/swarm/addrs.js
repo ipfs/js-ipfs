@@ -1,4 +1,4 @@
-
+import { commands } from './addrs/index.js'
 import parseDuration from 'parse-duration'
 
 export default {
@@ -11,7 +11,8 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('addrs')
+      // @ts-expect-error types are wrong
+      .command(commands)
       .option('timeout', {
         type: 'string',
         coerce: parseDuration

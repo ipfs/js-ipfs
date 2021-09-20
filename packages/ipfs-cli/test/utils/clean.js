@@ -1,9 +1,12 @@
 
 import rimraf from 'rimraf'
-import { promises as fs } from 'fs'
+import fs from 'fs/promises'
 import { promisify } from 'util'
 
-module.exports = async dir => {
+/**
+ * @param {string} dir
+ */
+export async function clean (dir) {
   try {
     await fs.access(dir)
   } catch (/** @type {any} */ err) {

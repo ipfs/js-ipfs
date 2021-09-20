@@ -1,3 +1,4 @@
+import { commands } from './patch/index.js'
 
 export default {
   command: 'patch',
@@ -9,6 +10,7 @@ export default {
    */
   builder (yargs) {
     return yargs
-      .commandDir('patch')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }
