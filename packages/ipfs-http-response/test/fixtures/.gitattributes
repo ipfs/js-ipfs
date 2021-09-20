@@ -1,0 +1,5 @@
+# Make sure fixtures have correct line endings on windows
+
+*.txt text eol=lf
+*.svg text eol=lf
+*.html text eol=lf
