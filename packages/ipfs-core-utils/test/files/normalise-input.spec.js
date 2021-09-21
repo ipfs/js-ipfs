@@ -5,7 +5,6 @@ import blobToIt from 'blob-to-it'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import all from 'it-all'
 import { File } from '@web-std/file'
-import { isBrowser, isWebWorker, isElectronRenderer } from 'ipfs-utils/src/env.js'
 import { normaliseInput } from '../../src/files/normalise-input.js'
 
 const { Blob, ReadableStream } = globalThis
@@ -33,12 +32,8 @@ async function verifyNormalisation (input) {
 
   let content = input[0].content
 
-  if (isBrowser || isWebWorker || isElectronRenderer) {
-    expect(content).to.be.an.instanceOf(Blob)
-
-    if (content instanceof Blob) {
-      content = blobToIt(content)
-    }
+  if (content instanceof Blob) {
+    content = blobToIt(content)
   }
 
   if (!content || content instanceof Uint8Array) {
