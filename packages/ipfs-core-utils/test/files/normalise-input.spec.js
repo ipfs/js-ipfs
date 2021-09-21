@@ -32,7 +32,7 @@ async function verifyNormalisation (input) {
 
   let content = input[0].content
 
-  if (content instanceof Blob) {
+  if (Blob && content instanceof Blob) {
     content = blobToIt(content)
   }
 
