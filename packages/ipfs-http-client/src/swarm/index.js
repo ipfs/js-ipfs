@@ -4,15 +4,15 @@ import { createDisconnect } from './disconnect.js'
 import { createLocalAddrs } from './local-addrs.js'
 import { createPeers } from './peers.js'
 
-export class SwarmAPI {
-  /**
-   * @param {import('../types').Options} config
-   */
-  constructor (config) {
-    this.addrs = createAddrs(config)
-    this.connect = createConnect(config)
-    this.disconnect = createDisconnect(config)
-    this.localAddrs = createLocalAddrs(config)
-    this.peers = createPeers(config)
+/**
+ * @param {import('../types').Options} config
+ */
+export function createSwarm (config) {
+  return {
+    addrs: createAddrs(config),
+    connect: createConnect(config),
+    disconnect: createDisconnect(config),
+    localAddrs: createLocalAddrs(config),
+    peers: createPeers(config)
   }
 }

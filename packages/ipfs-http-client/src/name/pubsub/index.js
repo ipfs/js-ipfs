@@ -2,13 +2,13 @@ import { createCancel } from './cancel.js'
 import { createState } from './state.js'
 import { createSubs } from './subs.js'
 
-export class PubsubAPI {
-  /**
-   * @param {import('../../types').Options} config
-   */
-  constructor (config) {
-    this.cancel = createCancel(config)
-    this.state = createState(config)
-    this.subs = createSubs(config)
+/**
+ * @param {import('../../types').Options} config
+ */
+export function createPubsub (config) {
+  return {
+    cancel: createCancel(config),
+    state: createState(config),
+    subs: createSubs(config)
   }
 }

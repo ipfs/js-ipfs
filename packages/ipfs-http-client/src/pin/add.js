@@ -11,7 +11,7 @@ import { configure } from '../lib/configure.js'
 /**
  * @param {import('../types').Options} config
  */
-export const createAdd = (config) => {
+export function createAdd (config) {
   const all = createAddAll(config)
 
   return configure(() => {

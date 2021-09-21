@@ -1,0 +1,16 @@
+{
+  "extends": "aegir/src/config/tsconfig.aegir.json",
+  "compilerOptions": {
+    "outDir": "types",
+    "module": "es2020"
+  },
+  "include": [
+    "src",
+    "test"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-core-types"
+    }
+  ]
+}

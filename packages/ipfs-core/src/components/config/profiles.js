@@ -1,5 +1,5 @@
 import set from 'just-safe-set'
-import getDefaultConfig from '../../runtime/config-nodejs.js'
+import getDefaultConfig from 'ipfs-core-config/config'
 
 /**
  * @typedef {import('ipfs-core-types/src/config').Config} Config

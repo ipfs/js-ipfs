@@ -8,7 +8,7 @@ import BlockstoreDatastoreAdapter from 'blockstore-datastore-adapter'
  */
 
 /**
- * @param {import('../types').Print} print
+ * @param {(...args: any[]) => void} print
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {object} options
  * @param {string} [options.path]

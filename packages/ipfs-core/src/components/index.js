@@ -1,4 +1,3 @@
-
 import mergeOpts from 'merge-options'
 import { isTest } from 'ipfs-utils/src/env.js'
 import debug from 'debug'
@@ -8,7 +7,7 @@ import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
 import { identity } from 'multiformats/hashes/identity'
 import { bases, hashes, codecs } from 'multiformats/basics'
-import { initAssets } from '../runtime/init-assets-nodejs.js'
+import { initAssets } from 'ipfs-core-config/init-assets'
 import { AlreadyInitializedError } from '../errors.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { createStart } from './start.js'

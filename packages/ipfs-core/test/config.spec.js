@@ -5,7 +5,7 @@ import { expect } from 'aegir/utils/chai.js'
 import { Multiaddr } from 'multiaddr'
 import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
 import createNode from './utils/create-node.js'
-import createConfig from '../src/runtime/config-nodejs.js'
+import createConfig from 'ipfs-core-config/config'
 
 const { Bootstrap: bootstrapList } = createConfig()
 

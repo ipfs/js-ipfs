@@ -8,7 +8,7 @@ import Multiplex from 'libp2p-mplex'
 import { NOISE } from '@chainsafe/libp2p-noise'
 import KadDHT from 'libp2p-kad-dht'
 import GossipSub from 'libp2p-gossipsub'
-import { validator, selector } from '../ipns/routing/utils.js'
+import { validator, selector } from './utils/ipns.js'
 
 export function libp2pConfig () {
   /** @type {import('libp2p').Libp2pOptions} */

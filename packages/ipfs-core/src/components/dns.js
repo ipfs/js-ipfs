@@ -1,5 +1,5 @@
 // dns-nodejs gets replaced by dns-browser when bundled
-import { resolveDnslink } from '../runtime/dns-nodejs.js'
+import { resolveDnslink } from 'ipfs-core-config/dns'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**

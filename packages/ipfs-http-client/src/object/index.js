@@ -4,20 +4,20 @@ import { createLinks } from './links.js'
 import { createNew } from './new.js'
 import { createPut } from './put.js'
 import { createStat } from './stat.js'
-import { PatchAPI } from './patch/index.js'
+import { createPatch } from './patch/index.js'
 
-export class ObjectAPI {
-  /**
-   * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
-   * @param {import('../types').Options} config
-   */
-  constructor (codecs, config) {
-    this.data = createData(config)
-    this.get = createGet(config)
-    this.links = createLinks(config)
-    this.new = createNew(config)
-    this.put = createPut(codecs, config)
-    this.stat = createStat(config)
-    this.patch = new PatchAPI(config)
+/**
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
+ * @param {import('../types').Options} config
+ */
+export function createObject (codecs, config) {
+  return {
+    data: createData(config),
+    get: createGet(config),
+    links: createLinks(config),
+    new: createNew(config),
+    put: createPut(codecs, config),
+    stat: createStat(config),
+    patch: createPatch(config)
   }
 }

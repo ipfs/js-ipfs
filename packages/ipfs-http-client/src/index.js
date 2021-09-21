@@ -8,24 +8,24 @@ import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
 import { identity } from 'multiformats/hashes/identity'
 import { bases, hashes, codecs } from 'multiformats/basics'
-import { BitswapAPI } from './bitswap/index.js'
-import { BlockAPI } from './block/index.js'
-import { BootstrapAPI } from './bootstrap/index.js'
-import { ConfigAPI } from './config/index.js'
-import { DAGAPI } from './dag/index.js'
-import { DHTAPI } from './dht/index.js'
-import { DiagAPI } from './diag/index.js'
-import { FilesAPI } from './files/index.js'
-import { KeyAPI } from './key/index.js'
-import { LogAPI } from './log/index.js'
-import { NameAPI } from './name/index.js'
-import { ObjectAPI } from './object/index.js'
-import { PinAPI } from './pin/index.js'
-import { PubsubAPI } from './pubsub/index.js'
+import { createBitswap } from './bitswap/index.js'
+import { createBlock } from './block/index.js'
+import { createBootstrap } from './bootstrap/index.js'
+import { createConfig } from './config/index.js'
+import { createDag } from './dag/index.js'
+import { createDht } from './dht/index.js'
+import { createDiag } from './diag/index.js'
+import { createFiles } from './files/index.js'
+import { createKey } from './key/index.js'
+import { createLog } from './log/index.js'
+import { createName } from './name/index.js'
+import { createObject } from './object/index.js'
+import { createPin } from './pin/index.js'
+import { createPubsub } from './pubsub/index.js'
 import { createRefs } from './refs/index.js'
-import { RepoAPI } from './repo/index.js'
-import { StatsAPI } from './stats/index.js'
-import { SwarmAPI } from './swarm/index.js'
+import { createRepo } from './repo/index.js'
+import { createStats } from './stats/index.js'
+import { createSwarm } from './swarm/index.js'
 import { createAdd } from './add.js'
 import { createAddAll } from './add-all.js'
 import { createCat } from './cat.js'
@@ -100,37 +100,37 @@ export function create (options = {}) {
   const client = {
     add: createAdd(options),
     addAll: createAddAll(options),
-    bitswap: new BitswapAPI(options),
-    block: new BlockAPI(options),
-    bootstrap: new BootstrapAPI(options),
+    bitswap: createBitswap(options),
+    block: createBlock(options),
+    bootstrap: createBootstrap(options),
     cat: createCat(options),
     commands: createCommands(options),
-    config: new ConfigAPI(options),
-    dag: new DAGAPI(multicodecs, options),
-    dht: new DHTAPI(options),
-    diag: new DiagAPI(options),
+    config: createConfig(options),
+    dag: createDag(multicodecs, options),
+    dht: createDht(options),
+    diag: createDiag(options),
     dns: createDns(options),
-    files: new FilesAPI(options),
+    files: createFiles(options),
     get: createGet(options),
     getEndpointConfig: createGetEndpointConfig(options),
     id: createId(options),
     isOnline: createIsOnline(options),
-    key: new KeyAPI(options),
-    log: new LogAPI(options),
+    key: createKey(options),
+    log: createLog(options),
     ls: createLs(options),
     mount: createMount(options),
-    name: new NameAPI(options),
-    object: new ObjectAPI(multicodecs, options),
-    pin: new PinAPI(options),
+    name: createName(options),
+    object: createObject(multicodecs, options),
+    pin: createPin(options),
     ping: createPing(options),
-    pubsub: new PubsubAPI(options),
+    pubsub: createPubsub(options),
     refs: createRefs(options),
-    repo: new RepoAPI(options),
+    repo: createRepo(options),
     resolve: createResolve(options),
     start: createStart(options),
-    stats: new StatsAPI(options),
+    stats: createStats(options),
     stop: createStop(options),
-    swarm: new SwarmAPI(options),
+    swarm: createSwarm(options),
     version: createVersion(options),
     bases: multibases,
     codecs: multicodecs,

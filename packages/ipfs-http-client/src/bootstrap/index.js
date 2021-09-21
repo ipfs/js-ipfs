@@ -5,15 +5,15 @@ import { createList } from './list.js'
 import { createReset } from './reset.js'
 import { createRm } from './rm.js'
 
-export class BootstrapAPI {
-  /**
-   * @param {import('../types').Options} config
-   */
-  constructor (config) {
-    this.add = createAdd(config)
-    this.clear = createClear(config)
-    this.list = createList(config)
-    this.reset = createReset(config)
-    this.rm = createRm(config)
+/**
+ * @param {import('../types').Options} config
+ */
+export function createBootstrap (config) {
+  return {
+    add: createAdd(config),
+    clear: createClear(config),
+    list: createList(config),
+    reset: createReset(config),
+    rm: createRm(config)
   }
 }

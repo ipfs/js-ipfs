@@ -1,7 +1,7 @@
 
 import debug from 'debug'
-import { createRepo } from '../runtime/repo-nodejs.js'
-import getDefaultConfig from '../runtime/config-nodejs.js'
+import { createRepo } from 'ipfs-core-config/repo'
+import getDefaultConfig from 'ipfs-core-config/config'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import PeerId from 'peer-id'

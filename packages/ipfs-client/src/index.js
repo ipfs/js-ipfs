@@ -31,5 +31,7 @@ export function create (opts = {}) {
   }
 
   // override http methods with grpc if address is supplied
-  return mergeOptions(...clients)
+  const out = mergeOptions({}, ...clients)
+
+  return out
 }

@@ -3,14 +3,14 @@ import { createWantlistForPeer } from './wantlist-for-peer.js'
 import { createStat } from './stat.js'
 import { createUnwant } from './unwant.js'
 
-export class BitswapAPI {
-  /**
-   * @param {import('../types').Options} config
-   */
-  constructor (config) {
-    this.wantlist = createWantlist(config)
-    this.wantlistForPeer = createWantlistForPeer(config)
-    this.unwant = createUnwant(config)
-    this.stat = createStat(config)
+/**
+ * @param {import('../types').Options} config
+ */
+export function createBitswap (config) {
+  return {
+    wantlist: createWantlist(config),
+    wantlistForPeer: createWantlistForPeer(config),
+    unwant: createUnwant(config),
+    stat: createStat(config)
   }
 }

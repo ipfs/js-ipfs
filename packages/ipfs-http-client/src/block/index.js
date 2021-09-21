@@ -4,14 +4,14 @@ import { createPut } from './put.js'
 import { createRm } from './rm.js'
 import { createStat } from './stat.js'
 
-export class BlockAPI {
-  /**
-   * @param {import('../types').Options} config
-   */
-  constructor (config) {
-    this.get = createGet(config)
-    this.put = createPut(config)
-    this.rm = createRm(config)
-    this.stat = createStat(config)
+/**
+ * @param {import('../types').Options} config
+ */
+export function createBlock (config) {
+  return {
+    get: createGet(config),
+    put: createPut(config),
+    rm: createRm(config),
+    stat: createStat(config)
   }
 }

@@ -10,21 +10,21 @@ import { createStat } from './stat.js'
 import { createTouch } from './touch.js'
 import { createWrite } from './write.js'
 
-export class FilesAPI {
-  /**
-   * @param {import('../types').Options} config
-   */
-  constructor (config) {
-    this.chmod = createChmod(config)
-    this.cp = createCp(config)
-    this.flush = createFlush(config)
-    this.ls = createLs(config)
-    this.mkdir = createMkdir(config)
-    this.mv = createMv(config)
-    this.read = createRead(config)
-    this.rm = createRm(config)
-    this.stat = createStat(config)
-    this.touch = createTouch(config)
-    this.write = createWrite(config)
+/**
+ * @param {import('../types').Options} config
+ */
+export function createFiles (config) {
+  return {
+    chmod: createChmod(config),
+    cp: createCp(config),
+    flush: createFlush(config),
+    ls: createLs(config),
+    mkdir: createMkdir(config),
+    mv: createMv(config),
+    read: createRead(config),
+    rm: createRm(config),
+    stat: createStat(config),
+    touch: createTouch(config),
+    write: createWrite(config)
   }
 }

@@ -5,16 +5,16 @@ import { createProvide } from './provide.js'
 import { createPut } from './put.js'
 import { createQuery } from './query.js'
 
-export class DHTAPI {
-  /**
-   * @param {import('../types').Options} config
-   */
-  constructor (config) {
-    this.findPeer = createFindPeer(config)
-    this.findProvs = createFindProvs(config)
-    this.get = createGet(config)
-    this.provide = createProvide(config)
-    this.put = createPut(config)
-    this.query = createQuery(config)
+/**
+ * @param {import('../types').Options} config
+ */
+export function createDht (config) {
+  return {
+    findPeer: createFindPeer(config),
+    findProvs: createFindProvs(config),
+    get: createGet(config),
+    provide: createProvide(config),
+    put: createPut(config),
+    query: createQuery(config)
   }
 }

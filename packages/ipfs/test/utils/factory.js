@@ -1,4 +1,3 @@
-
 import { createFactory } from 'ipfsd-ctl'
 import mergeOpts from 'merge-options'
 import { isNode, isBrowser } from 'ipfs-utils/src/env.js'
@@ -6,9 +5,15 @@ import * as ipfsHttpModule from 'ipfs-http-client'
 import * as ipfsModule from 'ipfs-core'
 // @ts-expect-error no types
 import goIpfs from 'go-ipfs'
-import path from 'path'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })
+
+// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
+// but then the "--module" setting doesn't get used by the "--build" setting
+// which we use to build types from jsdoc
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const commonOptions = {
   test: true,
@@ -30,7 +35,7 @@ const commonOverrides = {
   js: {
     ...(isNode
       ? {
-          ipfsBin: path.resolve('../../src/cli.js')
+          ipfsBin: path.resolve(path.join(__dirname, '../../src/cli.js'))
         }
       : {}),
     ...(isBrowser

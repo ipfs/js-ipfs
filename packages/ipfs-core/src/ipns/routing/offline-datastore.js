@@ -1,9 +1,10 @@
 
 import { Key } from 'interface-datastore'
 import { Record } from 'libp2p-record'
-import { encodeBase32 } from './utils.js'
 import errcode from 'err-code'
 import debug from 'debug'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+
 const log = Object.assign(debug('ipfs:ipns:offline-datastore'), {
   error: debug('ipfs:ipns:offline-datastore:error')
 })
@@ -89,6 +90,6 @@ export class OfflineDatastore {
    * @param {Uint8Array} key
    */
   _routingKey (key) {
-    return new Key('/' + encodeBase32(key), false)
+    return new Key('/' + uint8ArrayToString(key, 'base32upper'), false)
   }
 }

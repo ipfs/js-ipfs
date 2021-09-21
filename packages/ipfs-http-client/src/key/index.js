@@ -6,17 +6,17 @@ import { createList } from './list.js'
 import { createRename } from './rename.js'
 import { createRm } from './rm.js'
 
-export class KeyAPI {
-  /**
-   * @param {import('../types').Options} config
-   */
-  constructor (config) {
-    this.export = createExport(config)
-    this.gen = createGen(config)
-    this.import = createImport(config)
-    this.info = createInfo(config)
-    this.list = createList(config)
-    this.rename = createRename(config)
-    this.rm = createRm(config)
+/**
+ * @param {import('../types').Options} config
+ */
+export function createKey (config) {
+  return {
+    export: createExport(config),
+    gen: createGen(config),
+    import: createImport(config),
+    info: createInfo(config),
+    list: createList(config),
+    rename: createRename(config),
+    rm: createRm(config)
   }
 }

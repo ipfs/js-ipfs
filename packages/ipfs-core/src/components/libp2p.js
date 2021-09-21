@@ -2,7 +2,7 @@
 import get from 'dlv'
 import mergeOpts from 'merge-options'
 import errCode from 'err-code'
-import { routers } from '../runtime/libp2p-pubsub-routers-nodejs.js'
+import { routers } from 'ipfs-core-config/libp2p-pubsub-routers'
 // @ts-expect-error - no types
 import DelegatedPeerRouter from 'libp2p-delegated-peer-routing'
 // @ts-expect-error - no types
@@ -10,7 +10,7 @@ import DelegatedContentRouter from 'libp2p-delegated-content-routing'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { Multiaddr } from 'multiaddr'
 import { ipfsCore as pkgversion } from '../version.js'
-import { libp2pConfig as getEnvLibp2pOptions } from '../runtime/libp2p-nodejs.js'
+import { libp2pConfig as getEnvLibp2pOptions } from 'ipfs-core-config/libp2p'
 import bootstrap from 'libp2p-bootstrap'
 import Libp2p from 'libp2p'
 

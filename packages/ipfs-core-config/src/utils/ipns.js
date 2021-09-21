@@ -1,13 +1,5 @@
 
 import ipns from 'ipns'
-import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-
-/**
- * @param {Uint8Array} buf
- */
-export function encodeBase32 (buf) {
-  return uint8ArrayToString(buf, 'base32upper')
-}
 
 export const validator = {
   /**
