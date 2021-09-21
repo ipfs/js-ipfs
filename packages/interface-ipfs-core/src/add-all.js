@@ -19,10 +19,17 @@ import * as raw from 'multiformats/codecs/raw'
 import * as dagPB from '@ipld/dag-pb'
 import { fileURLToPath } from 'url'
 
-// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
-// but then the "--module" setting doesn't get used by the "--build" setting
-// which we use to build types from jsdoc
-const __dirname = dirname(fileURLToPath(import.meta.url))
+let fixturesFolder = ''
+
+if (isNode) {
+  // @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
+  // but then the "--module" setting doesn't get used by the "--build" setting
+  // which we use to build types from jsdoc
+  const __dirname = dirname(fileURLToPath(import.meta.url))
+
+  // @ts-ignore this is mocha
+  fixturesFolder = path.join(__dirname, '..', 'test', 'fixtures')
+}
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -403,7 +410,7 @@ export function testAddAll (factory, options) {
     it('should add a directory from the file system', async function () {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'test-folder')
+      const filesPath = path.join(fixturesFolder, 'test-folder')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
       expect(result.length).to.be.above(8)
@@ -413,7 +420,7 @@ export function testAddAll (factory, options) {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'weird name folder [v0]')
+      const filesPath = path.join(fixturesFolder, 'weird name folder [v0]')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
       expect(result.length).to.be.above(8)
@@ -423,7 +430,7 @@ export function testAddAll (factory, options) {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'test-folder')
+      const filesPath = path.join(fixturesFolder, 'test-folder')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, ignore: ['files/**'] })))
       expect(result.length).to.be.below(9)
@@ -433,18 +440,18 @@ export function testAddAll (factory, options) {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filePath = path.join(__dirname, 'add-all.js')
+      const filePath = path.join(fixturesFolder, 'test-folder', 'ipfs-add.js')
 
       const result = await all(ipfs.addAll(globSource(filePath)))
       expect(result.length).to.equal(1)
-      expect(result[0].path).to.equal('add-all.js')
+      expect(result[0].path).to.equal('ipfs-add.js')
     })
 
     it('should add a hidden file in a directory from the file system', async function () {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'hidden-files-folder')
+      const filesPath = path.join(fixturesFolder, 'hidden-files-folder')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, hidden: true })))
       expect(result.length).to.be.above(10)

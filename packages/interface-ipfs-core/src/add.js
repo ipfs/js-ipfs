@@ -76,7 +76,7 @@ export function testAdd (factory, options) {
         return this.skip('skip in node')
       }
 
-      const fileAdded = await ipfs.add(new self.File(['should add a File'], 'filename.txt', { type: 'text/plain' }))
+      const fileAdded = await ipfs.add(new File(['should add a File'], 'filename.txt', { type: 'text/plain' }))
       expect(fileAdded.cid.toString()).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
     })
 

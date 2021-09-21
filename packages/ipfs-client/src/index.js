@@ -13,7 +13,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
  *
  * @param {Options} [opts]
  */
-function create (opts = {}) {
+export function create (opts = {}) {
   const clients = []
 
   if (opts.http) {
@@ -32,8 +32,4 @@ function create (opts = {}) {
 
   // override http methods with grpc if address is supplied
   return mergeOptions(...clients)
-}
-
-module.exports = {
-  create
 }

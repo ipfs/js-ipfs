@@ -1,4 +1,4 @@
-import * as versionInfo from '../version.js'
+import { ipfsCore, interfaceIpfsCore, commit } from '../version.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
@@ -13,8 +13,11 @@ export function createVersion ({ repo }) {
     const repoVersion = await repo.version.get()
 
     return {
-      ...versionInfo,
-      repo: `${repoVersion}`
+      version: ipfsCore,
+      commit,
+      repo: `${repoVersion}`,
+      'ipfs-core': ipfsCore,
+      'interface-ipfs-core': interfaceIpfsCore
     }
   }
 

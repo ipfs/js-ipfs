@@ -9,7 +9,8 @@ const pkg = JSON.parse(
 await writeFile(
   new URL('../src/version.js', import.meta.url),
   `
-export const version = '${pkg.version}'
+export const ipfsCore = '${pkg.version}'
 export const commit = '${pkg.gitHead || ''}'
+export const interfaceIpfsCore = '${pkg.devDependencies['interface-ipfs-core']}'
 `
 )

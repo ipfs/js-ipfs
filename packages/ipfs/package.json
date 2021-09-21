@@ -49,7 +49,7 @@
     "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD IPFS_JS_HTTP_MODULE=$PWD/../ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
+    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -61,7 +61,7 @@
   "devDependencies": {
     "@types/semver": "^7.3.4",
     "@types/update-notifier": "^5.0.0",
-    "aegir": "^35.0.3",
+    "aegir": "^35.0.4",
     "assert": "^2.0.0",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",

@@ -72,7 +72,7 @@
     "test:electron-renderer": "aegir test -t electron-renderer",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller"
+    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller -i npm-run-all"
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^4.0.0",
@@ -153,7 +153,7 @@
     "@types/dlv": "^1.1.2",
     "@types/pako": "^1.0.2",
     "@types/rimraf": "^3.0.1",
-    "aegir": "^35.0.3",
+    "aegir": "^35.0.4",
     "delay": "^5.0.0",
     "go-ipfs": "0.9.1",
     "interface-blockstore-tests": "^1.0.0",

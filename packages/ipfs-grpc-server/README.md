@@ -107,7 +107,7 @@ ipfs.addAll(source, options)
 The simplest case, one request message and one response message.
 
 ```javascript
-module.exports = function grpcFunction (ipfs, options = {}) {
+export function grpcFunction (ipfs, options = {}) {
   async function handler (request, metadata) {
     const response = {
       //... some fields here
@@ -125,7 +125,7 @@ module.exports = function grpcFunction (ipfs, options = {}) {
 Where the server sends multiple messages.  `sink` is an [it-pushable][].
 
 ```javascript
-module.exports = function grpcFunction (ipfs, options = {}) {
+export function grpcFunction (ipfs, options = {}) {
   async function serverStreamingHandler (request, sink, metadata) {
     sink.push(..)
     sink.push(..)
@@ -142,7 +142,7 @@ module.exports = function grpcFunction (ipfs, options = {}) {
 Where the client sends multiple messages.  `source` is an [AsyncIterator][].
 
 ```javascript
-module.exports = function grpcFunction (ipfs, options = {}) {
+export function grpcFunction (ipfs, options = {}) {
   async function clientStreamingHandler (source, metadata) {
     const response = {
       //... some fields here
@@ -164,7 +164,7 @@ module.exports = function grpcFunction (ipfs, options = {}) {
 Where the client and the server both send multiple messages.  `source` is an [AsyncIterator][] and `sink` is an [it-pushable][].
 
 ```javascript
-module.exports = function grpcFunction (ipfs, options = {}) {
+export function grpcFunction (ipfs, options = {}) {
   async function bidirectionalHandler (source, sink, metadata) {
     for await (const thing of source) {
       sink.push(sink)

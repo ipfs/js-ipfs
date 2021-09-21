@@ -79,7 +79,24 @@ describe('interface-ipfs-core tests', function () {
 
   tests.object(commonFactory)
 
-  tests.pin(commonFactory)
+  tests.pin(commonFactory, {
+    skip: [{
+      name: '.pin.remote.service',
+      readon: 'Not implemented'
+    }, {
+      name: '.pin.remote.add',
+      readon: 'Not implemented'
+    }, {
+      name: '.pin.remote.ls',
+      readon: 'Not implemented'
+    }, {
+      name: '.pin.remote.rm',
+      readon: 'Not implemented'
+    }, {
+      name: '.pin.remote.rmAll',
+      readon: 'Not implemented'
+    }]
+  })
 
   tests.ping(commonFactory)
 

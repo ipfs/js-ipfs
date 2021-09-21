@@ -68,7 +68,7 @@
     "@types/pako": "^1.0.2",
     "@types/readable-stream": "^2.3.11",
     "abort-controller": "^3.0.0",
-    "aegir": "^35.0.3",
+    "aegir": "^35.0.4",
     "delay": "^5.0.0",
     "err-code": "^3.0.1",
     "interface-blockstore": "^1.0.0",

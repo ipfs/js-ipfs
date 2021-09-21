@@ -17,7 +17,7 @@ import blockstore from './utils/blockstore-adapter.js'
 import { extract } from 'it-tar'
 import { pipe } from 'it-pipe'
 import toBuffer from 'it-to-buffer'
-import { Inflate } from 'pako'
+import Pako from 'pako'
 
 /**
  * @param {string} name
@@ -61,7 +61,7 @@ export function testGet (factory, options) {
      * @param {AsyncIterable<Uint8Array>} source
      */
     async function * gzipped (source) {
-      const inflator = new Inflate()
+      const inflator = new Pako.Inflate()
 
       for await (const buf of source) {
         inflator.push(buf, false)

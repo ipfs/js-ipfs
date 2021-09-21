@@ -12,7 +12,7 @@ import { pipe } from 'it-pipe'
 import map from 'it-map'
 import toBuffer from 'it-to-buffer'
 import { clean } from './utils/clean.js'
-import { gzip, inflate } from 'pako'
+import Pako from 'pako'
 
 const defaultOptions = {
   timeout: undefined,
@@ -45,7 +45,7 @@ async function * gzipped (bytes, level = 6) {
     async function * (source) {
       const buf = await toBuffer(source)
 
-      yield gzip(buf, {
+      yield Pako.gzip(buf, {
         level
       })
     }
@@ -134,7 +134,7 @@ describe('get', () => {
     expect(out)
       .to.equal(`Saving file(s) ${cid}\n`)
 
-    expect(inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
+    expect(Pako.inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
 
     await clean(outPath)
   })
@@ -158,7 +158,7 @@ describe('get', () => {
     expect(out)
       .to.equal(`Saving file(s) ${cid}\n`)
 
-    expect(inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
+    expect(Pako.inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
 
     await clean(outPath)
   })
@@ -186,7 +186,7 @@ describe('get', () => {
     expect(out)
       .to.equal(`Saving file(s) ${cid}\n`)
 
-    expect(inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
+    expect(Pako.inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
 
     await clean(outPath)
   })
@@ -214,7 +214,7 @@ describe('get', () => {
     expect(out)
       .to.equal(`Saving file(s) ${cid}\n`)
 
-    expect(inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
+    expect(Pako.inflate(fs.readFileSync(outPath))).to.equalBytes(buf)
 
     await clean(outPath)
   })

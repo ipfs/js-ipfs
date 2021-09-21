@@ -1,5 +1,5 @@
 
-import { version as pkgversion } from '../version.js'
+import { ipfsCore as pkgversion } from '../version.js'
 import { Multiaddr } from 'multiaddr'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'

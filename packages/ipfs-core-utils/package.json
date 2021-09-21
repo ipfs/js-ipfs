@@ -39,14 +39,12 @@
       "import": "./src/index.js"
     },
     "./files/normalise-input": {
-      "browser": "./src/files/normalise-input.browser.js",
       "import": "./src/files/normalise-input.js"
     },
     "./files/normalise-input.browser": {
       "import": "./src/files/normalise-input.browser.js"
     },
     "./files/normalise-content": {
-      "browser": "./src/files/normalise-content.browser.js",
       "import": "./src/files/normalise-content.js"
     },
     "./files/normalise-content.browser": {
@@ -82,9 +80,6 @@
     "./with-timeout-option": {
       "import": "./src/with-timeout-option.js"
     }
-  },
-  "browser": {
-    "./src/files/normalise-input.js": "./src/files/normalise-input.browser.js"
   },
   "repository": {
     "type": "git",
@@ -122,7 +117,7 @@
   },
   "devDependencies": {
     "@web-std/file": "^1.1.2",
-    "aegir": "^35.0.3",
+    "aegir": "^35.0.4",
     "rimraf": "^3.0.2"
   }
 }

@@ -32,7 +32,7 @@ module.exports = {
     },
     before: async (options) => {
       const MockPreloadNode = await import('./test/utils/mock-preload-node.js')
-      const PinningService = await import('./test/utils/mock-pinning-service.js')
+      const { PinningService } = await import('./test/utils/mock-pinning-service.js')
 
       const echoServer = new EchoServer()
       const preloadNode = MockPreloadNode.createNode()
@@ -61,8 +61,8 @@ module.exports = {
           port: ipfsdPort
         }, {
           type: 'js',
-          ipfsModule: require(__dirname),
-          ipfsHttpModule: require('ipfs-http-client'),
+          ipfsModule: await import(path.join(__dirname, 'src', 'index.js')),
+          ipfsHttpModule: await import('ipfs-http-client'),
           ipfsBin: path.join(__dirname, 'src', 'cli.js'),
           ipfsOptions: {
             libp2p: {
@@ -76,7 +76,7 @@ module.exports = {
             ipfsBin: require('go-ipfs').path()
           },
           js: {
-            ipfsClientModule: require('ipfs-client')
+            ipfsClientModule: await import('ipfs-client')
           }
         }).start()
         return {
@@ -108,9 +108,12 @@ module.exports = {
       }
     },
     after: async (options, beforeResult) => {
+      const { PinningService } = await import('./test/utils/mock-pinning-service.js')
+
       await beforeResult.echoServer.stop()
       await beforeResult.preloadNode.stop()
       await PinningService.stop(beforeResult.pinningService)
+
       if (options.runner !== 'node') {
         await beforeResult.ipfsdServer.stop()
         await beforeResult.sigServerA.stop()

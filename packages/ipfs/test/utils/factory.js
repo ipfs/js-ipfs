@@ -6,6 +6,7 @@ import * as ipfsHttpModule from 'ipfs-http-client'
 import * as ipfsModule from 'ipfs-core'
 // @ts-expect-error no types
 import goIpfs from 'go-ipfs'
+import path from 'path'
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })
 
@@ -29,7 +30,7 @@ const commonOverrides = {
   js: {
     ...(isNode
       ? {
-          ipfsBin: require.resolve('../../src/cli.js')
+          ipfsBin: path.resolve('../../src/cli.js')
         }
       : {}),
     ...(isBrowser

@@ -27,7 +27,7 @@ export function testRm (factory, options) {
   const cid3 = CID.parse('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
   const cid4 = CID.parse('QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu')
 
-  describe('.pin.remote.rm()', function () {
+  describe('.pin.remote.rm', function () {
     this.timeout(50 * 1000)
 
     /** @type {import('ipfs-core-types').IPFS} */
