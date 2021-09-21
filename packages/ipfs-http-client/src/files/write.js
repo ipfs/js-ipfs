@@ -2,7 +2,7 @@
 import { modeToString } from '../lib/mode-to-string.js'
 import { parseMtime } from '../lib/parse-mtime.js'
 import { configure } from '../lib/configure.js'
-import { multipartRequest } from '../lib/multipart-request.js'
+import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { abortSignal } from '../lib/abort-signal.js'
 import { AbortController } from 'native-abort-controller'

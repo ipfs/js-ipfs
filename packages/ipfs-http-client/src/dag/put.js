@@ -1,7 +1,7 @@
 
 import { CID } from 'multiformats/cid'
 import { configure } from '../lib/configure.js'
-import { multipartRequest } from '../lib/multipart-request.js'
+import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { abortSignal } from '../lib/abort-signal.js'
 import { AbortController } from 'native-abort-controller'

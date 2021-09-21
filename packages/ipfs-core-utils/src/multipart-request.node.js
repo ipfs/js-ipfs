@@ -1,5 +1,5 @@
 
-import { normaliseInput } from 'ipfs-core-utils/files/normalise-input'
+import { normaliseInput } from './files/normalise-input.js'
 import { nanoid } from 'nanoid'
 import { modeToString } from './mode-to-string.js'
 import mergeOpts from 'merge-options'

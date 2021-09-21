@@ -11,6 +11,9 @@
   ],
   "references": [
     {
+      "path": "../ipfs-core-config"
+    },
+    {
       "path": "../ipfs-core-types"
     },
     {

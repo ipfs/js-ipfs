@@ -83,6 +83,10 @@
     "./agent": {
       "browser": "./src/agent.browser.js",
       "import": "./src/agent.js"
+    },
+    "./multipart-request": {
+      "browser": "./src/multipart-request.browser.js",
+      "import": "./src/multipart-request.js"
     }
   },
   "repository": {
@@ -107,6 +111,7 @@
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
     "err-code": "^3.0.1",
+    "form-data": "^4.0.0",
     "ipfs-core-types": "^0.7.3",
     "ipfs-unixfs": "^6.0.3",
     "it-all": "^1.0.4",

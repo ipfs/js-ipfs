@@ -1,7 +1,7 @@
 
 // Import browser version otherwise electron-renderer will end up with node
 // version and fail.
-import { normaliseInput } from 'ipfs-core-utils/files/normalise-input.browser'
+import { normaliseInput } from './files/normalise-input.browser.js'
 import { modeToString } from './mode-to-string.js'
 
 /**

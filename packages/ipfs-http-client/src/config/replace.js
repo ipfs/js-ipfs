@@ -1,6 +1,6 @@
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { multipartRequest } from '../lib/multipart-request.js'
+import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { abortSignal } from '../lib/abort-signal.js'
