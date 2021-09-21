@@ -8,8 +8,7 @@ import debug from 'debug'
 import HTTP from 'ipfs-utils/src/http.js'
 import mergeOpts from 'merge-options'
 import { toUrlString } from 'ipfs-core-utils/to-url-string'
-import http from 'http'
-import https from 'https'
+import getAgent from 'ipfs-core-utils/agent'
 
 const log = debug('ipfs-http-client:lib:error-handler')
 const merge = mergeOpts.bind({ ignoreUndefined: true })
@@ -60,7 +59,7 @@ const normalizeOptions = (options = {}) => {
   }
 
   if (isNode) {
-    const Agent = url.protocol.startsWith('https') ? https.Agent : http.Agent
+    const Agent = getAgent(url)
 
     agent = opts.agent || new Agent({
       keepAlive: true,
