@@ -20,7 +20,10 @@ export const createVersion = configure(api => {
     })
 
     // @ts-expect-error server output is not typed
-    return objectToCamel(await res.json())
+    return {
+      ...objectToCamel(await res.json()),
+      'ipfs-http-client': '1.0.0'
+    }
   }
 
   return version

@@ -1,5 +1,6 @@
 
 import Joi from '../../utils/joi.js'
+import { ipfsHttpClient } from '../../version.js'
 
 export const versionResource = {
   options: {
@@ -40,7 +41,10 @@ export const versionResource = {
     return h.response({
       Version: version.version,
       Commit: version.commit,
-      Repo: version.repo
+      Repo: version.repo,
+      'ipfs-core': version['ipfs-core'],
+      'interface-ipfs-core': version['interface-ipfs-core'],
+      'ipfs-http-client': ipfsHttpClient
     })
   }
 }
