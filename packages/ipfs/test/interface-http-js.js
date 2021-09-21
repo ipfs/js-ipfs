@@ -147,6 +147,21 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     }, {
       name: 'should throw an error on missing link for a specific path',
       reason: 'FIXME: fetch does not yet support HTTP trailers https://github.com/ipfs/js-ipfs/issues/2519'
+    }, {
+      name: '.pin.remote.service',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.add',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.ls',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.rm',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.rmAll',
+      reason: 'Not implemented'
     }]
   })
 

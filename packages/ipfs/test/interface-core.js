@@ -82,19 +82,19 @@ describe('interface-ipfs-core tests', function () {
   tests.pin(commonFactory, {
     skip: [{
       name: '.pin.remote.service',
-      readon: 'Not implemented'
+      reason: 'Not implemented'
     }, {
       name: '.pin.remote.add',
-      readon: 'Not implemented'
+      reason: 'Not implemented'
     }, {
       name: '.pin.remote.ls',
-      readon: 'Not implemented'
+      reason: 'Not implemented'
     }, {
       name: '.pin.remote.rm',
-      readon: 'Not implemented'
+      reason: 'Not implemented'
     }, {
       name: '.pin.remote.rmAll',
-      readon: 'Not implemented'
+      reason: 'Not implemented'
     }]
   })
 

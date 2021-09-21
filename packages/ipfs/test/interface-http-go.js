@@ -598,8 +598,6 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ]
   })
 
-  tests.pin.remote(commonFactory)
-
   tests.ping(commonFactory, {
     skip: [
       {
