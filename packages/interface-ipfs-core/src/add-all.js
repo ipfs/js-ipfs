@@ -5,8 +5,6 @@ import { Readable } from 'readable-stream'
 import all from 'it-all'
 import last from 'it-last'
 import drain from 'it-drain'
-import fs from 'fs'
-import os from 'os'
 import path, { dirname } from 'path'
 import { supportsFileReader } from 'ipfs-utils/src/supports.js'
 import globSource from 'ipfs-utils/src/files/glob-source.js'
@@ -459,20 +457,16 @@ export function testAddAll (factory, options) {
       expect(result.map(object => object.cid.toString())).to.include('QmdbAjVmLRdpFyi8FFvjPfhTGB2cVXvWLuK7Sbt38HXrtt')
     })
 
-    it('should add a file from the file system with only-hash=true', async function () {
+    it('should add a file with only-hash=true', async function () {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
       // @ts-ignore this is mocha
       this.slow(10 * 1000)
 
-      const content = String(Math.random() + Date.now())
-      const filepath = path.join(os.tmpdir(), `${content}.txt`)
-      fs.writeFileSync(filepath, content)
-
-      const out = await all(ipfs.addAll(globSource(filepath), { onlyHash: true }))
-
-      fs.unlinkSync(filepath)
+      const out = await all(ipfs.addAll([{
+        content: uint8ArrayFromString('hello world')
+      }], { onlyHash: true }))
 
       await expect(ipfs.object.get(out[0].cid, { timeout: 500 }))
         .to.eventually.be.rejected()

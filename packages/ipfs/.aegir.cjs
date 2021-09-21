@@ -42,6 +42,8 @@ module.exports = {
       await echoServer.start()
 
       if (options.runner !== 'node') {
+        const ipfsClient = await import('ipfs-client')
+
         const ipfsdPort = await getPort()
         const signalAPort = await getPort()
         const signalBPort = await getPort()
@@ -76,7 +78,9 @@ module.exports = {
             ipfsBin: require('go-ipfs').path()
           },
           js: {
-            ipfsClientModule: await import('ipfs-client')
+            ipfsClientModule: {
+              create: ipfsClient.create
+            }
           }
         }).start()
         return {
