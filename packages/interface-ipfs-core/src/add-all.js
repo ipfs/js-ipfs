@@ -5,7 +5,6 @@ import { Readable } from 'readable-stream'
 import all from 'it-all'
 import last from 'it-last'
 import drain from 'it-drain'
-import path, { dirname } from 'path'
 import { supportsFileReader } from 'ipfs-utils/src/supports.js'
 import globSource from 'ipfs-utils/src/files/glob-source.js'
 import { isNode } from 'ipfs-utils/src/env.js'
@@ -15,19 +14,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import bufferStream from 'it-buffer-stream'
 import * as raw from 'multiformats/codecs/raw'
 import * as dagPB from '@ipld/dag-pb'
-import { fileURLToPath } from 'url'
-
-let fixturesFolder = ''
-
-if (isNode) {
-  // @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
-  // but then the "--module" setting doesn't get used by the "--build" setting
-  // which we use to build types from jsdoc
-  const __dirname = dirname(fileURLToPath(import.meta.url))
-
-  // @ts-ignore this is mocha
-  fixturesFolder = path.join(__dirname, '..', 'test', 'fixtures')
-}
+import resolve from 'aegir/utils/resolve.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -408,7 +395,7 @@ export function testAddAll (factory, options) {
     it('should add a directory from the file system', async function () {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
-      const filesPath = path.join(fixturesFolder, 'test-folder')
+      const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
       expect(result.length).to.be.above(8)
@@ -418,7 +405,7 @@ export function testAddAll (factory, options) {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(fixturesFolder, 'weird name folder [v0]')
+      const filesPath = resolve('test/fixtures/weird name folder [v0]', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
       expect(result.length).to.be.above(8)
@@ -428,7 +415,7 @@ export function testAddAll (factory, options) {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(fixturesFolder, 'test-folder')
+      const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, ignore: ['files/**'] })))
       expect(result.length).to.be.below(9)
@@ -438,7 +425,7 @@ export function testAddAll (factory, options) {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filePath = path.join(fixturesFolder, 'test-folder', 'ipfs-add.js')
+      const filePath = resolve('test/fixtures/test-folder/ipfs-add.js', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filePath)))
       expect(result.length).to.equal(1)
@@ -449,7 +436,7 @@ export function testAddAll (factory, options) {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(fixturesFolder, 'hidden-files-folder')
+      const filesPath = resolve('test/fixtures/hidden-files-folder', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, hidden: true })))
       expect(result.length).to.be.above(10)

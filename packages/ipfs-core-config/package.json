@@ -101,10 +101,11 @@
     "libp2p-tcp": "^0.17.1",
     "libp2p-webrtc-star": "^0.23.0",
     "libp2p-websockets": "^0.16.1",
-    "p-queue": "^6.6.1"
+    "p-queue": "^6.6.1",
+    "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
-    "aegir": "^35.0.4",
+    "aegir": "^35.1.0",
     "rimraf": "^3.0.2",
     "ipfs-core-utils": "^0.10.5"
   }

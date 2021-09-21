@@ -73,7 +73,7 @@
     "multiformats": "^9.4.1"
   },
   "devDependencies": {
-    "aegir": "^35.0.4",
+    "aegir": "^35.1.0",
     "rimraf": "^3.0.2"
   },
   "engines": {

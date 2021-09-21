@@ -97,7 +97,7 @@
     "@types/ncp": "^2.0.5",
     "@types/progress": "^2.0.3",
     "@types/yargs": "^16.0.0",
-    "aegir": "^35.0.4",
+    "aegir": "^35.1.0",
     "it-to-buffer": "^2.0.0",
     "nanoid": "^3.1.23",
     "ncp": "^2.0.0",

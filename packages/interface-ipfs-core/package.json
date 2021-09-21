@@ -49,7 +49,7 @@
   },
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "aegir build",
+    "build": "aegir build && copyfiles ./test/fixtures/**/*, ./dist/cjs && copyfiles ./test/fixtures/**/*, ./dist/esm",
     "lint": "aegir ts -p check && aegir lint",
     "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf"
   },
@@ -68,7 +68,8 @@
     "@types/pako": "^1.0.2",
     "@types/readable-stream": "^2.3.11",
     "abort-controller": "^3.0.0",
-    "aegir": "^35.0.4",
+    "aegir": "^35.1.0",
+    "copyfiles": "^2.4.1",
     "delay": "^5.0.0",
     "err-code": "^3.0.1",
     "interface-blockstore": "^1.0.0",
