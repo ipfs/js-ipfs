@@ -29,6 +29,7 @@ jobs:
         run: |
            npm install
            npm run build
+           npm run link
 
   check:
     name: Check
@@ -54,6 +55,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - run: |
           npm run lint
           npm run dep-check -- -- -- -p
@@ -90,6 +92,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   test-browser:
@@ -127,6 +130,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - run: npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
 
   test-electron-main:
@@ -156,6 +160,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
@@ -187,6 +192,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
@@ -225,6 +231,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
 
   test-interface:
@@ -266,6 +273,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
 
   test-interface-message-port-client:
@@ -295,6 +303,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   test-examples:
@@ -415,6 +424,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - uses: GabrielBB/xvfb-action@v1
         name: Run npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
         with:
@@ -460,6 +470,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run link
       - uses: GabrielBB/xvfb-action@v1
         name: Run npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
         continue-on-error: true
