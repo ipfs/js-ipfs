@@ -41,6 +41,7 @@
     "build": "run-s build:*",
     "build:update-version": "node scripts/update-version.js",
     "build:aegir": "aegir build",
+    "build:copy-cli": "copyfiles ./src/cli.js ./src/package.js ./dist",
     "lint": "aegir ts -p check && aegir lint",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
@@ -49,7 +50,7 @@
     "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all"
+    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -63,6 +64,7 @@
     "@types/update-notifier": "^5.0.0",
     "aegir": "^35.1.0",
     "assert": "^2.0.0",
+    "copyfiles": "^2.4.1",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.9.1",
