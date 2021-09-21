@@ -1,4 +1,4 @@
-                    IPFS Alpha Security Notes
+export default `                    IPFS Alpha Security Notes
 
 We try hard to ensure our system is safe and robust, but all software
 has bugs, especially new software. This distribution is meant to be an
@@ -23,3 +23,4 @@ Please note the following:
   sure we benchmark our operations with encryption in mind. In the future,
   there will be an "unsafe" mode for high performance intranet apps.
   If this is a blocking feature for you, please contact us.
+`

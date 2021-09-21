@@ -1,4 +1,4 @@
-Hello and Welcome to IPFS!
+export default `Hello and Welcome to IPFS!
 
 ██╗██████╗ ███████╗███████╗
 ██║██╔══██╗██╔════╝██╔════╝
@@ -24,3 +24,4 @@ Check out some of the other files in this directory:
   ./quick-start     <-- usage examples
   ./readme          <-- this file
   ./security-notes
+`

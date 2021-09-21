@@ -1,4 +1,4 @@
-# 0.1 - Quick Start
+export default `# 0.1 - Quick Start
 
 This is a set of short examples with minimal explanation. It is meant as
 a "quick start". Soon, we'll write a longer tour :-)
@@ -111,3 +111,4 @@ Browse:
   markdown renderer app:
 
     http://localhost:8080/ipfs/QmX7M9CiYXjVeFnkfVGf3y5ixTZ2ACeSGyL1vBJY1HvQPp/mdown
+`

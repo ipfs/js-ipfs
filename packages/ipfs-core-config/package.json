@@ -74,8 +74,8 @@
   "scripts": {
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i aegir -i copyfiles -i rimraf -i ipfs-core-utils",
-    "build": "aegir build && copyfiles src/init-files/**/* dist/cjs && copyfiles src/init-files/**/* dist/esm"
+    "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-core-utils",
+    "build": "aegir build"
   },
   "license": "MIT",
   "dependencies": {
@@ -105,7 +105,6 @@
   },
   "devDependencies": {
     "aegir": "^35.0.4",
-    "copyfiles": "^2.4.1",
     "rimraf": "^3.0.2",
     "ipfs-core-utils": "^0.10.5"
   }

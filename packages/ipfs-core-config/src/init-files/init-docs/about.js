@@ -1,5 +1,4 @@
-
-                  IPFS -- Inter-Planetary File system
+export default `                  IPFS -- Inter-Planetary File system
 
 IPFS is a global, versioned, peer-to-peer filesystem. It combines good ideas
 from Git, BitTorrent, Kademlia, SFS, and the Web. It is like a single bit-
@@ -18,8 +17,8 @@ IPFS is a filesystem:
 
 IPFS is a web:
 - can be used to view documents like the web
-- files accessible via HTTP at `http://ipfs.io/<path>`
-- browsers or extensions can learn to use `ipfs://` directly
+- files accessible via HTTP at 'http://ipfs.io/<path>'
+- browsers or extensions can learn to use 'ipfs://' directly
 - hash-addressed content guarantees authenticity
 
 IPFS is modular:
@@ -51,3 +50,4 @@ IPFS has a name service:
 - serves to build trust chains
 - compatible with other NSes
 - can map DNS, .onion, .bit, etc to IPNS
+`

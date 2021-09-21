@@ -1,13 +1,5 @@
-
-import path, { dirname } from 'path'
-import globSource from 'ipfs-utils/src/files/glob-source.js'
 import all from 'it-all'
-import { fileURLToPath } from 'url'
-
-// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
-// but then the "--module" setting doesn't get used by the "--build" setting
-// which we use to build types from jsdoc
-const __dirname = dirname(fileURLToPath(import.meta.url))
+import assets from './init-files/init-docs/index.js'
 
 /**
  * Add the default assets to the repo.
@@ -17,9 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
  * @param {(msg: string) => void} arg.print
  */
 export async function initAssets ({ addAll, print }) {
-  const initDocsPath = path.join(__dirname, 'init-files', 'init-docs')
-  const results = await all(addAll(globSource(initDocsPath, { recursive: true }), { preload: false }))
-
+  const results = await all(addAll(assets, { preload: false }))
   const dir = results.filter(file => file.path === 'init-docs').pop()
 
   if (!dir) {

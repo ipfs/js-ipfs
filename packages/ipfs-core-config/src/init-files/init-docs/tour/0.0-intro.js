@@ -1,4 +1,4 @@
-WIP
+export default `WIP
 
 # 0.0 - Introduction
 
@@ -32,3 +32,4 @@ Different people learn different ways, so choose your own adventure:
   - Running the daemon
   - The Swarm
   - The Web
+`
