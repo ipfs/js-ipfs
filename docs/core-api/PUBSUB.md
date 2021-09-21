@@ -53,7 +53,7 @@ An optional object which may have the following keys:
 
 ```JavaScript
 const topic = 'fruit-of-the-day'
-const receiveMsg = (msg) => console.log(new TextDecoder("utf-8").decode(msg.data))
+const receiveMsg = (msg) => console.log(new TextDecoder().decode(msg.data))
 
 await ipfs.pubsub.subscribe(topic, receiveMsg)
 console.log(`subscribed to ${topic}`)
