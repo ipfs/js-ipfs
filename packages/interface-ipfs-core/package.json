@@ -51,7 +51,6 @@
     "clean": "rimraf ./dist",
     "build": "aegir build",
     "lint": "aegir ts -p check && aegir lint",
-    "pretest": "aegir build --esm-tests",
     "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf"
   },
   "repository": {

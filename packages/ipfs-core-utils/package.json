@@ -94,12 +94,11 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "pretest": "aegir build --esm-tests",
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
-    "test:electron-main": "aegir test -t electron-main -f ./dist/cjs/node-test/**/*.spec.js",
-    "test:electron-renderer": "aegir test -t electron-renderer -f ./dist/cjs/browser-test/**/*.spec.js",
+    "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/**/*.spec.js",
+    "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/**/*.spec.js",
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",

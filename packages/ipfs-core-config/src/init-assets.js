@@ -17,7 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
  * @param {(msg: string) => void} arg.print
  */
 export async function initAssets ({ addAll, print }) {
-  const initDocsPath = path.join(__dirname, '..', 'init-files', 'init-docs')
+  const initDocsPath = path.join(__dirname, 'init-files', 'init-docs')
   const results = await all(addAll(globSource(initDocsPath, { recursive: true }), { preload: false }))
 
   const dir = results.filter(file => file.path === 'init-docs').pop()
