@@ -22,7 +22,6 @@ jobs:
           git config --global user.name "Github Actions"
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
           npm install
-          npm run build
           npm run release:rc
           echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
           npm run docker:rc
