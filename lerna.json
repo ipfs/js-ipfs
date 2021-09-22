@@ -17,7 +17,9 @@
       "verifyAccess": false
     },
     "version": {
-      "private": false
+      "allowBranch": ["master", "release/*"],
+      "forcePublish": true,
+      "ignore-changes": [".github/**", "docs/**"]
     }
   }
 }
