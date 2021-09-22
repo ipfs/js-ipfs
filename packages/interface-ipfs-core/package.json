@@ -97,7 +97,7 @@
     "multiformats": "^9.4.1",
     "nanoid": "^3.1.23",
     "native-abort-controller": "^1.0.3",
-    "p-map": "^4.0.0",
+    "p-map": "^5.1.0",
     "p-retry": "^4.5.0",
     "pako": "^1.0.2",
     "peer-id": "^0.15.1",
