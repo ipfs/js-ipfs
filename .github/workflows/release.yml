@@ -5,29 +5,60 @@ on:
       - master
 
 jobs:
-  release-rc:
+  release-please:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.author.name, 'Github Actions')"
     steps:
-      - uses: actions/checkout@v2
+      - uses: GoogleCloudPlatform/release-please-action@v2
+        id: release
         with:
-          fetch-depth: 0
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - name: Release
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "Github Actions"
-          git fetch
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-          npm install
-          npm run release:rc
-          echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          npm run docker:rc
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-type: node
+          monorepo-tags: true
+  #     # The logic below handles the npm publication:
+  #     - uses: actions/checkout@v2
+  #       # these if statements ensure that a publication only occurs when
+  #       # a new release is created:
+  #       if: ${{ steps.release.outputs.release_created }}
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 16
+  #         registry-url: 'https://registry.npmjs.org'
+  #       if: ${{ steps.release.outputs.release_created }}
+  #     # if you are using Yarn, substitute the command below with `yarn install --frozen-lockfile`
+  #     - run: |
+  #         npm install
+  #         npm run build
+  #       if: ${{ steps.release.outputs.release_created }}
+  #     - run: npm run release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+  #         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  #         DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  #       if: ${{ steps.release.outputs.release_created }}
+
+  # release-rc:
+  #   runs-on: ubuntu-latest
+  #   if: "!contains(github.event.head_commit.author.name, 'Github Actions')"
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Setup node
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+  #     - name: Release
+  #       run: |
+  #         git config --global user.email "actions@github.com"
+  #         git config --global user.name "Github Actions"
+  #         echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+  #         npm install
+  #         npm run release:rc
+  #         echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  #         npm run docker:rc
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  #         DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
