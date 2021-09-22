@@ -1,19 +1,20 @@
 /* eslint-disable complexity */
-'use strict'
 
-const { promisify } = require('util')
-// @ts-ignore no types
-const getFolderSize = promisify(require('get-folder-size'))
-// @ts-ignore no types
-const byteman = require('byteman')
-const {
+import { promisify } from 'util'
+// @ts-expect-error no types
+import getFolderSizeCb from 'get-folder-size'
+// @ts-expect-error no types
+import byteman from 'byteman'
+import {
   createProgressBar,
   coerceMtime,
   coerceMtimeNsecs,
   stripControlCharacters
-} = require('../utils')
-const globSource = require('ipfs-utils/src/files/glob-source')
-const { default: parseDuration } = require('parse-duration')
+} from '../utils.js'
+import globSource from 'ipfs-utils/src/files/glob-source.js'
+import parseDuration from 'parse-duration'
+
+const getFolderSize = promisify(getFolderSizeCb)
 
 /**
  * @param {string[]} paths
@@ -23,7 +24,7 @@ async function getTotalBytes (paths) {
   return sizes.reduce((total, size) => total + size, 0)
 }
 
-module.exports = {
+export default {
   command: 'add [file...]',
 
   describe: 'Add a file to IPFS using the UnixFS data format',
@@ -325,7 +326,7 @@ module.exports = {
 
         log(message)
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       // Tweak the error message and add more relevant info for the CLI
       if (err.code === 'ERR_DIR_NON_RECURSIVE') {
         err.message = `'${err.path}' is a directory, use the '-r' flag to specify directories`

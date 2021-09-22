@@ -1,12 +1,11 @@
-'use strict'
 
-const createData = require('./data')
-const createGet = require('./get')
-const createLinks = require('./links')
-const createNew = require('./new')
-const createPut = require('./put')
-const createStat = require('./stat')
-const ObjectPatchAPI = require('./patch')
+import { createData } from './data.js'
+import { createGet } from './get.js'
+import { createLinks } from './links.js'
+import { createNew } from './new.js'
+import { createPut } from './put.js'
+import { createStat } from './stat.js'
+import { ObjectPatchAPI } from './patch/index.js'
 
 /**
  * @typedef {import('../../types').Preload} Preload
@@ -14,11 +13,11 @@ const ObjectPatchAPI = require('./patch')
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
-class ObjectAPI {
+export class ObjectAPI {
   /**
    * @param {Object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
-   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+   * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
    * @param {Preload} config.preload
    */
   constructor ({ repo, codecs, preload }) {
@@ -31,5 +30,3 @@ class ObjectAPI {
     this.patch = new ObjectPatchAPI({ repo, preload })
   }
 }
-
-module.exports = ObjectAPI

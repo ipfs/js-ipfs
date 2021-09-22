@@ -46,7 +46,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```js
-const { create } = require('ipfs-gprc-client')
+import { create } from 'ipfs-gprc-client'
 
 const client = create({
   url: '/ipv4/127.0.0.1/tcp/1234/ws'

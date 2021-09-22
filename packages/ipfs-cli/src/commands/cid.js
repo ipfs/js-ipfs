@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './cid/index.js'
 
-module.exports = {
+export default {
   command: 'cid <command>',
 
   description: 'Convert, format and discover properties of CIDs.',
@@ -9,6 +9,7 @@ module.exports = {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('cid')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

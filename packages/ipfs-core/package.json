@@ -9,50 +9,63 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "type": "module",
   "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
-  "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
-  ],
-  "browser": {
-    "./src/runtime/init-assets-nodejs.js": "./src/runtime/init-assets-browser.js",
-    "./src/runtime/config-nodejs.js": "./src/runtime/config-browser.js",
-    "./src/runtime/dns-nodejs.js": "./src/runtime/dns-browser.js",
-    "./src/runtime/libp2p-nodejs.js": "./src/runtime/libp2p-browser.js",
-    "./src/runtime/libp2p-pubsub-routers-nodejs.js": "./src/runtime/libp2p-pubsub-routers-browser.js",
-    "./src/runtime/preload-nodejs.js": "./src/runtime/preload-browser.js",
-    "./src/runtime/repo-nodejs.js": "./src/runtime/repo-browser.js",
-    "ipfs-utils/src/files/glob-source": false
-  },
+  "types": "types/src/index.d.ts",
   "typesVersions": {
     "*": {
-      "src/*": [
-        "dist/src/*",
-        "dist/src/*/index"
+      "*": [
+        "types/*",
+        "types/src/*"
       ],
-      "src/": [
-        "dist/src/index"
+      "types/*": [
+        "types/*",
+        "types/src/*"
       ]
     }
+  },
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./config/profiles": {
+      "import": "./src/components/config/profiles.js"
+    }
+  },
+  "browser": {
+    "ipfs-utils/src/files/glob-source": false
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "build": "aegir build",
+    "build": "run-s build:*",
+    "build:update-version": "node scripts/update-version.js",
+    "build:aegir": "aegir build",
     "lint": "aegir ts -p check && aegir lint",
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
     "test:webworker": "aegir test -t webworker",
-    "test:electron-main": "aegir test -t electron-main",
-    "test:electron-renderer": "aegir test -t electron-renderer",
+    "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
+    "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrapers.js",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller"
+    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller -i npm-run-all"
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^4.0.0",
@@ -60,13 +73,10 @@
     "@ipld/dag-cbor": "^6.0.5",
     "@ipld/dag-pb": "^2.1.3",
     "@multiformats/murmur3": "^1.0.1",
-    "abort-controller": "^3.0.0",
     "any-signal": "^2.1.2",
     "array-shuffle": "^2.0.0",
     "blockstore-datastore-adapter": "^1.0.2",
     "datastore-core": "^5.0.1",
-    "datastore-fs": "^5.0.2",
-    "datastore-level": "^6.0.2",
     "datastore-pubsub": "^0.7.0",
     "debug": "^4.1.1",
     "dlv": "^1.1.3",
@@ -76,6 +86,7 @@
     "interface-blockstore": "^1.0.0",
     "interface-datastore": "^5.2.0",
     "ipfs-bitswap": "^6.0.0",
+    "ipfs-core-config": "^0.0.0",
     "ipfs-core-types": "^0.7.3",
     "ipfs-core-utils": "^0.10.5",
     "ipfs-http-client": "^52.0.5",
@@ -105,15 +116,8 @@
     "libp2p-crypto": "^0.19.7",
     "libp2p-delegated-content-routing": "^0.11.0",
     "libp2p-delegated-peer-routing": "^0.10.0",
-    "libp2p-floodsub": "^0.27.0",
     "libp2p-gossipsub": "^0.11.1",
-    "libp2p-kad-dht": "^0.24.2",
-    "libp2p-mdns": "^0.17.0",
-    "libp2p-mplex": "^0.10.2",
     "libp2p-record": "^0.10.3",
-    "libp2p-tcp": "^0.17.1",
-    "libp2p-webrtc-star": "^0.23.0",
-    "libp2p-websockets": "^0.16.1",
     "mafmt": "^10.0.0",
     "merge-options": "^3.0.4",
     "mortice": "^2.0.0",
@@ -121,7 +125,6 @@
     "multiaddr-to-uri": "^8.0.0",
     "multiformats": "^9.4.1",
     "native-abort-controller": "^1.0.3",
-    "p-queue": "^6.6.1",
     "pako": "^1.0.2",
     "parse-duration": "^1.0.0",
     "peer-id": "^0.15.1",
@@ -133,16 +136,18 @@
     "@types/dlv": "^1.1.2",
     "@types/pako": "^1.0.2",
     "@types/rimraf": "^3.0.1",
-    "aegir": "^35.0.3",
+    "aegir": "^35.1.0",
     "delay": "^5.0.0",
     "go-ipfs": "0.9.1",
     "interface-blockstore-tests": "^1.0.0",
     "interface-ipfs-core": "^0.150.4",
     "ipfsd-ctl": "^10.0.3",
     "iso-url": "^1.0.0",
-    "nanoid": "^3.1.12",
+    "nanoid": "^3.1.23",
+    "npm-run-all": "^4.1.5",
     "p-defer": "^3.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1"
-  }
+  },
+  "gitHead": ""
 }

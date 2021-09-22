@@ -1,7 +1,6 @@
-'use strict'
 
-const { cleanCid } = require('./utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { cleanCid } from './utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
@@ -9,7 +8,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @param {import('../../types').Preload} config.preload
  */
 
-module.exports = ({ repo, preload }) => {
+export function createStat ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/block').API["stat"]}
    */

@@ -1,18 +1,17 @@
-'use strict'
 
-const pkgversion = require('../../package.json').version
-const { Multiaddr } = require('multiaddr')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const PeerId = require('peer-id')
-const { NotStartedError } = require('../errors')
+import { ipfsCore as pkgversion } from '../version.js'
+import { Multiaddr } from 'multiaddr'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import PeerId from 'peer-id'
+import { NotStartedError } from '../errors.js'
 
 /**
  * @param {Object} config
  * @param {import('peer-id')} config.peerId
  * @param {import('../types').NetworkService} config.network
  */
-module.exports = ({ peerId, network }) => {
+export function createId ({ peerId, network }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["id"]}
    */

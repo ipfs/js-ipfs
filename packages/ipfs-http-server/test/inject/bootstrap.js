@@ -1,18 +1,18 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const qs = require('qs')
+import { expect } from 'aegir/utils/chai.js'
+import qs from 'qs'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { AbortSignal } from 'native-abort-controller'
+
 const defaultList = [
   'server0',
   'server1',
   'server2',
   'server3'
 ]
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const { AbortSignal } = require('native-abort-controller')
 
 describe('/bootstrap', () => {
   const validIp4 = '/ip4/101.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z'

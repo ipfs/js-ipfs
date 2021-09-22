@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fixtures, expectPinned, clearPins } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
+import { fixtures, expectPinned, clearPins } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import all from 'it-all'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -13,7 +13,7 @@ const all = require('it-all')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testRm (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

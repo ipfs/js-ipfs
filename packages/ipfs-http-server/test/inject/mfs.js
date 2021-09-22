@@ -1,14 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-require('./mfs/chmod')
-require('./mfs/cp')
-require('./mfs/flush')
-require('./mfs/ls')
-require('./mfs/mkdir')
-require('./mfs/mv')
-require('./mfs/read')
-require('./mfs/rm')
-require('./mfs/stat')
-require('./mfs/touch')
-require('./mfs/write')
+import './mfs/chmod.js'
+import './mfs/cp.js'
+import './mfs/flush.js'
+import './mfs/ls.js'
+import './mfs/mkdir.js'
+import './mfs/mv.js'
+import './mfs/read.js'
+import './mfs/rm.js'
+import './mfs/stat.js'
+import './mfs/touch.js'
+import './mfs/write.js'

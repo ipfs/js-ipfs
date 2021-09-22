@@ -1,0 +1,7 @@
+export default `Come hang out in our IRC chat room if you have any questions.
+
+Contact the ipfs dev team:
+- Bugs: https://github.com/ipfs/go-ipfs/issues
+- Help: irc.freenode.org/#ipfs
+- Email: dev@ipfs.io
+`

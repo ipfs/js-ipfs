@@ -1,15 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const loadFixture = require('aegir/utils/fixtures')
-const { CID } = require('multiformats/cid')
-const all = require('it-all')
-const drain = require('it-drain')
-const testTimeout = require('./utils/test-timeout')
-const dagPb = require('@ipld/dag-pb')
-
-const { UnixFS } = require('ipfs-unixfs')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import loadFixture from 'aegir/utils/fixtures.js'
+import { CID } from 'multiformats/cid'
+import all from 'it-all'
+import drain from 'it-drain'
+import testTimeout from './utils/test-timeout.js'
+import * as dagPB from '@ipld/dag-pb'
+import { UnixFS } from 'ipfs-unixfs'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -19,7 +18,7 @@ const { UnixFS } = require('ipfs-unixfs')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testRefs (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -345,14 +344,14 @@ function loadPbContent (ipfs, node) {
   const store = {
     putData: (data) => {
       return ipfs.block.put(
-        dagPb.encode({
+        dagPB.encode({
           Data: data,
           Links: []
         })
       )
     },
     putLinks: (links) => {
-      return ipfs.block.put(dagPb.encode({
+      return ipfs.block.put(dagPB.encode({
         Links: links.map(({ name, cid }) => {
           return {
             Name: name,
@@ -377,7 +376,7 @@ function loadDagContent (ipfs, node) {
   const store = {
     putData: (data) => {
       const inner = new UnixFS({ type: 'file', data: data })
-      const serialized = dagPb.encode({
+      const serialized = dagPB.encode({
         Data: inner.marshal(),
         Links: []
       })

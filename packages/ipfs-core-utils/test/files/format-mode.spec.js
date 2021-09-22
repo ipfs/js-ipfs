@@ -1,9 +1,7 @@
-'use strict'
-
 /* eslint-env mocha */
 
-const { expect } = require('aegir/utils/chai')
-const formatMode = require('../../src/files/format-mode')
+import { expect } from 'aegir/utils/chai.js'
+import { formatMode } from '../../src/files/format-mode.js'
 
 describe('format-mode', function () {
   it('formats mode for directories', function () {

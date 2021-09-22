@@ -1,7 +1,5 @@
-'use strict'
-
-const delay = require('delay')
-const errCode = require('err-code')
+import delay from 'delay'
+import errCode from 'err-code'
 
 /**
  * Wait for async function `test` to resolve true or timeout after options.timeout milliseconds.
@@ -12,7 +10,7 @@ const errCode = require('err-code')
  * @param {number} [options.interval]
  * @param {string} [options.name]
  */
-module.exports = async function waitFor (test, options) {
+export default async function waitFor (test, options) {
   const opts = Object.assign({ timeout: 5000, interval: 0, name: 'event' }, options)
   const start = Date.now()
 

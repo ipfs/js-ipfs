@@ -1,36 +1,40 @@
-'use strict'
+import {
+  listResource,
+  addResource,
+  addDefaultResource,
+  rmResource,
+  rmAllResource
+} from '../resources/bootstrap.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/bootstrap',
-    ...resources.bootstrap.list
+    ...listResource
   },
   {
     method: 'POST',
     path: '/api/v0/bootstrap/add',
-    ...resources.bootstrap.add
+    ...addResource
   },
   {
     method: 'POST',
     path: '/api/v0/bootstrap/add/default',
-    ...resources.bootstrap.addDefault
+    ...addDefaultResource
   },
   {
     method: 'POST',
     path: '/api/v0/bootstrap/list',
-    ...resources.bootstrap.list
+    ...listResource
   },
   {
     method: 'POST',
     path: '/api/v0/bootstrap/rm',
-    ...resources.bootstrap.rm
+    ...rmResource
   },
   {
     method: 'POST',
     path: '/api/v0/bootstrap/rm/all',
-    ...resources.bootstrap.rmAll
+    ...rmAllResource
   }
 ]

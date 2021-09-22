@@ -33,3 +33,4 @@ tsconfig-check.aegir.json
 
 # Operating system files
 .DS_Store
+types

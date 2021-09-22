@@ -1,17 +1,16 @@
-'use strict'
 
 /* eslint-env browser */
 
-const { DAGService } = require('./dag')
-const { CoreService } = require('./core')
-const { FilesService } = require('./files')
-const { BlockService } = require('./block')
+import { DAGService } from './dag.js'
+import { CoreService } from './core.js'
+import { FilesService } from './files.js'
+import { BlockService } from './block.js'
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  */
 
-exports.IPFSService = class IPFSService {
+export class IPFSService {
   /**
    * @param {IPFS} ipfs
    */

@@ -1,16 +1,21 @@
-'use strict'
 
-const log = require('debug')('ipfs:daemon')
-const set = require('just-safe-set')
-// @ts-ignore - no types
-const WebRTCStar = require('libp2p-webrtc-star')
-const IPFS = require('ipfs-core')
-const HttpApi = require('ipfs-http-server')
-const HttpGateway = require('ipfs-http-gateway')
-const gRPCServer = require('ipfs-grpc-server')
-const { isElectron } = require('ipfs-utils/src/env')
+import debug from 'debug'
+import set from 'just-safe-set'
+// @ts-expect-error - no types
+import WebRTCStar from 'libp2p-webrtc-star'
+import { create } from 'ipfs-core'
+import { HttpApi } from 'ipfs-http-server'
+import { HttpGateway } from 'ipfs-http-gateway'
+import { createServer as gRPCServer } from 'ipfs-grpc-server'
+import { isElectron } from 'ipfs-utils/src/env.js'
+import prometheusClient from 'prom-client'
+// @ts-expect-error - no types
+import prometheusGcStats from 'prometheus-gc-stats'
+import Libp2p from 'libp2p'
 
-class Daemon {
+const log = debug('ipfs:daemon')
+
+export class Daemon {
   /**
    * @param {import('ipfs-core').Options} options
    */
@@ -19,14 +24,15 @@ class Daemon {
 
     if (process.env.IPFS_MONITORING) {
       // Setup debug metrics collection
-      const prometheusClient = require('prom-client')
-      // @ts-ignore - no types
-      const prometheusGcStats = require('prometheus-gc-stats')
       const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
       // @ts-ignore - timeout isn't in typedefs
       collectDefaultMetrics({ timeout: 5000 })
       prometheusGcStats(prometheusClient.register)()
     }
+
+    /** @type {import('ipfs-core-types').IPFS} */
+    // @ts-expect-error we set this in .start()
+    this._ipfs = undefined
   }
 
   /**
@@ -36,7 +42,7 @@ class Daemon {
     log('starting')
 
     // start the daemon
-    this._ipfs = await IPFS.create(
+    this._ipfs = await create(
       Object.assign({}, { start: true, libp2p: getLibp2p }, this._options)
     )
 
@@ -80,18 +86,18 @@ async function getLibp2p ({ libp2pOptions }) {
 
   if (isElectron) {
     try {
-      // @ts-ignore - cant find type info
-      electronWebRTC = require('electron-webrtc')()
-    } catch (err) {
+      // @ts-expect-error - cant find type info
+      electronWebRTC = await import('electron-webrtc')()
+    } catch (/** @type {any} */ err) {
       log('failed to load optional electron-webrtc dependency')
     }
   }
 
   if (!electronWebRTC) {
     try {
-      // @ts-ignore - cant find type info
-      wrtc = require('wrtc')
-    } catch (err) {
+      // @ts-expect-error - cant find type info
+      wrtc = (await import('wrtc')).default
+    } catch (/** @type {any} */ err) {
       log('failed to load optional webrtc dependency')
     }
   }
@@ -102,8 +108,5 @@ async function getLibp2p ({ libp2pOptions }) {
     libp2pOptions.modules.transport.push(WebRTCStar)
   }
 
-  const Libp2p = require('libp2p')
   return Libp2p.create(libp2pOptions)
 }
-
-module.exports = Daemon

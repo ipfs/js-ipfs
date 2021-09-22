@@ -1,9 +1,4 @@
 /* eslint-env mocha */
-'use strict'
-
-const { expect } = require('aegir/utils/chai')
-
-module.exports.expect = expect
 
 /**
  * @typedef {object} Skip
@@ -26,7 +21,7 @@ const isSkip = (o) => Object.prototype.toString.call(o) === '[object Object]' &&
  * @param {boolean | Skip | (string | Skip)[]} [config.skip]
  * @param {boolean} [config.only]
  */
-function getDescribe (config) {
+export function getDescribe (config) {
   if (config) {
     if (config.skip === true) {
       return describe.skip
@@ -88,8 +83,6 @@ function getDescribe (config) {
   return describe
 }
 
-module.exports.getDescribe = getDescribe
-
 /**
  * Get an "it" function that is optionally 'skipped' or 'onlyed'
  * If skip/only is an array, then we _might_ want to skip/only the specific
@@ -101,7 +94,7 @@ module.exports.getDescribe = getDescribe
  * @param {boolean | Skip | (string | Skip)[]} [config.skip]
  * @param {boolean} [config.only]
  */
-function getIt (config) {
+export function getIt (config) {
   if (!config) return it
 
   /**
@@ -140,5 +133,3 @@ function getIt (config) {
 
   return _it
 }
-
-module.exports.getIt = getIt

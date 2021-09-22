@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './key/index.js'
 
-module.exports = {
+export default {
   command: 'key <command>',
 
   description: 'Manage your keys',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('key')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

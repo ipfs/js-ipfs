@@ -1,4 +1,2 @@
-'use strict'
-
-require('./routes')
-require('./cors')
+import './routes.js'
+import './cors.js'

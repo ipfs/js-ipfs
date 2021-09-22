@@ -1,11 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt } = require('../utils/mocha')
-const { waitForWantlistKey } = require('./utils')
-const { isWebWorker } = require('ipfs-utils/src/env')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
-const { CID } = require('multiformats/cid')
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { waitForWantlistKey } from './utils.js'
+import { isWebWorker } from 'ipfs-utils/src/env.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -15,8 +14,8 @@ const { CID } = require('multiformats/cid')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
-  const ipfsOptions = getIpfsOptions()
+export function testWantlistForPeer (factory, options) {
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 

@@ -6,12 +6,11 @@ import type { Libp2pOptions } from 'libp2p'
 
 import type { IPFSRepo } from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
-import type Network from './components/network'
-import type { Options as NetworkOptions } from './components/network'
+import type { Network, Options as NetworkOptions } from './components/network'
 
 import type { Datastore } from 'interface-datastore'
 
-import type Service from './utils/service'
+import type { Service } from './utils/service'
 import type { CID } from 'multiformats/cid'
 import type { BlockCodec } from 'multiformats/codecs/interface'
 import type { MultibaseCodec } from 'multiformats/bases/interface'
@@ -64,8 +63,8 @@ export interface Options {
 
   /**
    * Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it.
-   * (Default: [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-nodejs.js)
-   * in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/config-browser.js)
+   * (Default: [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/config-nodejs.js)
+   * in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/config-browser.js)
    * in browsers)
    */
   config?: IPFSConfig
@@ -101,8 +100,8 @@ export interface Options {
    * will be *merged* with the default config; it will not replace it. Check IPLD
    * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information
    * on the available options. (Default: [`ipld.js`]
-   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld-browser.js)
-   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs/src/core/runtime/ipld.js)
+   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/ipld-nodejs.js) in Node.js, [`ipld-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/ipld-browser.js)
+   * (https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/ipld.js)
    * in browsers)
    */
   ipld?: Partial<IPLDOptions>
@@ -118,8 +117,8 @@ export interface Options {
    * - You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examplescustom-libp2p).
    * - Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md)
    * for the list of options libp2p supports.
-   * - Default: [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js)
-   * in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in
+   * - Default: [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/libp2p-nodejs.js)
+   * in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/libp2p-browser.js) in
    * browsers.
    */
   libp2p?: Partial<Libp2pOptions> | Libp2pFactoryFn

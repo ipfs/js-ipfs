@@ -1,17 +1,17 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
-const { nanoid } = require('nanoid')
-const all = require('it-all')
-const { fixtures } = require('../utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { identity } = require('multiformats/hashes/identity')
-const { CID } = require('multiformats/cid')
-const { randomBytes } = require('iso-random-stream')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const isShardAtPath = require('../utils/is-shard-at-path')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import { nanoid } from 'nanoid'
+import all from 'it-all'
+import { fixtures } from '../utils/index.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { identity } from 'multiformats/hashes/identity'
+import { CID } from 'multiformats/cid'
+import { randomBytes } from 'iso-random-stream'
+import { createShardedDirectory } from '../utils/create-sharded-directory.js'
+import isShardAtPath from '../utils/is-shard-at-path.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -21,7 +21,7 @@ const isShardAtPath = require('../utils/is-shard-at-path')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testCp (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -108,7 +108,7 @@ module.exports = (factory, options) => {
       try {
         await ipfs.files.cp(source, destination)
         throw new Error('No error was thrown when trying to overwrite a file')
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         expect(err.message).to.contain('directory already has entry by that name')
       }
     })
@@ -123,7 +123,7 @@ module.exports = (factory, options) => {
       try {
         await ipfs.files.cp(source, source)
         throw new Error('No error was thrown for a non-existent file')
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         expect(err.message).to.contain('directory already has entry by that name')
       }
     })

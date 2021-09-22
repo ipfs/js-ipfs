@@ -1,10 +1,8 @@
-'use strict'
 
-const { TieredDatastore } = require('datastore-core')
-const get = require('dlv')
-
-const PubsubDatastore = require('./pubsub-datastore')
-const OfflineDatastore = require('./offline-datastore')
+import { TieredDatastore } from 'datastore-core'
+import get from 'dlv'
+import { IpnsPubsubDatastore } from './pubsub-datastore.js'
+import { OfflineDatastore } from './offline-datastore.js'
 
 /**
  * @param {object} arg
@@ -13,7 +11,7 @@ const OfflineDatastore = require('./offline-datastore')
  * @param {import('peer-id')} arg.peerId
  * @param {object} arg.options
  */
-module.exports = ({ libp2p, repo, peerId, options }) => {
+export function createRouting ({ libp2p, repo, peerId, options }) {
   // Setup online routing for IPNS with a tiered routing composed by a DHT and a Pubsub router (if properly enabled)
   const ipnsStores = []
 
@@ -23,7 +21,7 @@ module.exports = ({ libp2p, repo, peerId, options }) => {
     const pubsub = libp2p.pubsub
     const localDatastore = repo.datastore
 
-    pubsubDs = new PubsubDatastore(pubsub, localDatastore, peerId)
+    pubsubDs = new IpnsPubsubDatastore(pubsub, localDatastore, peerId)
     ipnsStores.push(pubsubDs)
   }
 

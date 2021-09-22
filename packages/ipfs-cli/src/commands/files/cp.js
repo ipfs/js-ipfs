@@ -1,11 +1,10 @@
-'use strict'
 
-const {
+import {
   asBoolean
-} = require('../../utils')
-const { default: parseDuration } = require('parse-duration')
+} from '../../utils.js'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'cp <source> <dest>',
 
   describe: 'Copy files between locations in the mfs',

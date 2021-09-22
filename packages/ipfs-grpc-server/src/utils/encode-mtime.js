@@ -1,9 +1,8 @@
-'use strict'
 
 /**
  * @param {import('ipfs-unixfs').Mtime} [mtime]
  */
-function encodeMtime (mtime) {
+export function encodeMtime (mtime) {
   const output = {}
 
   if (!mtime) {
@@ -25,5 +24,3 @@ function encodeMtime (mtime) {
 
   return output
 }
-
-module.exports = encodeMtime

@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @typedef {import('multiformats/bases/interface').MultibaseCodec<any>} MultibaseCodec
  * @typedef {import('./types').LoadBaseFn} LoadBaseFn
@@ -11,7 +9,7 @@
  */
 const LOAD_BASE = (name) => Promise.reject(new Error(`No base found for "${name}"`))
 
-class Multibases {
+export class Multibases {
   /**
    * @param {object} options
    * @param {LoadBaseFn} [options.loadBase]
@@ -84,5 +82,3 @@ class Multibases {
     return Object.values(this._basesByName)
   }
 }
-
-module.exports = Multibases

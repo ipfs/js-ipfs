@@ -9,15 +9,30 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
-  ],
+  "type": "module",
   "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "types/src/index.d.ts",
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
   "browser": {
-    "./src/grpc/transport.js": "./src/grpc/transport.browser.js"
+    "./src/grpc/transport.js": "./src/grpc/transport.browser.js",
+    "./src/grpc/transport.node.js": "./src/grpc/transport.browser.js"
   },
   "repository": {
     "type": "git",
@@ -28,8 +43,8 @@
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
-    "test:electron-main": "aegir test -t electron-main",
-    "test:electron-renderer": "aegir test -t electron-renderer",
+    "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
+    "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol -i ipfs-core-types"
@@ -53,12 +68,9 @@
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "aegir": "^35.0.3",
+    "aegir": "^35.1.0",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1"
-  },
-  "eslintConfig": {
-    "extends": "ipfs"
   }
 }

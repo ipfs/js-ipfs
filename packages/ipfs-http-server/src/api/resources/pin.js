@@ -1,12 +1,11 @@
-'use strict'
 
-const Joi = require('../../utils/joi')
-const Boom = require('@hapi/boom')
-const map = require('it-map')
-const reduce = require('it-reduce')
-const { pipe } = require('it-pipe')
-const streamResponse = require('../../utils/stream-response')
-const all = require('it-all')
+import Joi from '../../utils/joi.js'
+import Boom from '@hapi/boom'
+import map from 'it-map'
+import { pipe } from 'it-pipe'
+import { streamResponse } from '../../utils/stream-response.js'
+import all from 'it-all'
+import reduce from 'it-reduce'
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -34,7 +33,7 @@ function toPin (type, cid, metadata) {
   return output
 }
 
-exports.ls = {
+export const lsResource = {
   options: {
     validate: {
       options: {
@@ -118,7 +117,7 @@ exports.ls = {
   }
 }
 
-exports.add = {
+export const addResource = {
   options: {
     validate: {
       options: {
@@ -171,7 +170,7 @@ exports.add = {
         signal,
         timeout
       }))
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_BAD_PATH') {
         throw Boom.boomify(err, { statusCode: 400 })
       }
@@ -191,7 +190,7 @@ exports.add = {
   }
 }
 
-exports.rm = {
+export const rmResource = {
   options: {
     validate: {
       options: {
@@ -242,7 +241,7 @@ exports.rm = {
         signal,
         timeout
       }))
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_BAD_PATH') {
         throw Boom.boomify(err, { statusCode: 400 })
       }

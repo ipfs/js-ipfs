@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  * @typedef {import('multiformats/cid').CID} CID
@@ -9,7 +7,7 @@
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {CID} cid
  */
-module.exports = async function * traverseLeafNodes (ipfs, cid) {
+export async function * traverseLeafNodes (ipfs, cid) {
   /**
    * @param {import('multiformats/cid').CID} cid
    * @returns {AsyncIterable<{ node: PBNode, cid: CID }>}

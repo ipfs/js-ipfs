@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getTopic } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('delay')
+import { getTopic } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import delay from 'delay'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -13,7 +13,7 @@ const delay = require('delay')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testLs (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

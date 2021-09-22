@@ -124,7 +124,7 @@ Alternatively it can be an object which may have the following keys:
 #### Example
 
 ```JavaScript
-const { create } = require('ipfs-http-client')
+import { create } from 'ipfs-http-client'
 
 // connect to the default API address http://localhost:5001
 const client = create()
@@ -195,7 +195,7 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ##### Example
 
 ```js
-const { create, globSource } = require('ipfs-http-client')
+import { create, globSource } from 'ipfs-http-client'
 const ipfs = create()
 
 const file = await ipfs.add(globSource('./docs', { recursive: true }))
@@ -229,7 +229,7 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ##### Example
 
 ```js
-const { create, urlSource } = require('ipfs-http-client')
+import { create, urlSource } from 'ipfs-http-client'
 const ipfs = create()
 
 const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
@@ -263,7 +263,7 @@ To interact with the API, you need to have a local daemon running. It needs to b
 ### Importing the module and usage
 
 ```javascript
-const { create } = require('ipfs-http-client')
+import { create } from 'ipfs-http-client'
 
 // connect to ipfs daemon API server
 const ipfs = create('http://localhost:5001') // (the default in Node.js)

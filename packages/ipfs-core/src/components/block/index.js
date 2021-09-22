@@ -1,19 +1,18 @@
-'use strict'
 
-const createGet = require('./get')
-const createPut = require('./put')
-const createRm = require('./rm')
-const createStat = require('./stat')
+import { createGet } from './get.js'
+import { createPut } from './put.js'
+import { createRm } from './rm.js'
+import { createStat } from './stat.js'
 
 /**
  * @typedef {import('../../types').Preload} Preload
  */
 
-class BlockAPI {
+export class BlockAPI {
   /**
    * @param {Object} config
-   * @param {import('ipfs-core-utils/src/multihashes')} config.hashers
-   * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+   * @param {import('ipfs-core-utils/src/multihashes').Multihashes} config.hashers
+   * @param {import('ipfs-core-utils/src/multicodecs').Multicodecs} config.codecs
    * @param {Preload} config.preload
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
@@ -24,5 +23,3 @@ class BlockAPI {
     this.stat = createStat({ preload, repo })
   }
 }
-
-module.exports = BlockAPI

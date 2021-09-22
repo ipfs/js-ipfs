@@ -1,15 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const all = require('it-all')
-const drain = require('it-drain')
-const { CID } = require('multiformats/cid')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { CarWriter, CarReader } = require('@ipld/car')
-const raw = require('multiformats/codecs/raw')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const loadFixture = require('aegir/utils/fixtures')
+import all from 'it-all'
+import drain from 'it-drain'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { CarWriter, CarReader } from '@ipld/car'
+import * as raw from 'multiformats/codecs/raw'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import loadFixture from 'aegir/utils/fixtures.js'
 
 /**
  *
@@ -57,7 +57,7 @@ async function createCar (blocks) {
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testImport (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

@@ -1,15 +1,13 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const { UnixFS } = require('ipfs-unixfs')
-const dagPb = require('@ipld/dag-pb')
-const { sha256 } = require('multiformats/hashes/sha2')
-const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
-const errCode = require('err-code')
+import { CID } from 'multiformats/cid'
+import { UnixFS } from 'ipfs-unixfs'
+import * as dagPB from '@ipld/dag-pb'
+import { sha256 } from 'multiformats/hashes/sha2'
+import debug from 'debug'
+import errCode from 'err-code'
+import { MFS_ROOT_KEY } from '../../../utils.js'
 
-const {
-  MFS_ROOT_KEY
-} = require('../../../utils')
+const log = debug('ipfs:mfs:utils:with-mfs-root')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext
@@ -19,7 +17,7 @@ const {
  * @param {MfsContext} context
  * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-const loadMfsRoot = async (context, options) => {
+export async function loadMfsRoot (context, options) {
   if (options && options.signal && options.signal.aborted) {
     throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
   }
@@ -34,13 +32,13 @@ const loadMfsRoot = async (context, options) => {
     const buf = await context.repo.datastore.get(MFS_ROOT_KEY)
 
     cid = CID.decode(buf)
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.code !== 'ERR_NOT_FOUND') {
       throw err
     }
 
     log('Creating new MFS root')
-    const buf = dagPb.encode({
+    const buf = dagPB.encode({
       Data: new UnixFS({ type: 'directory' }).marshal(),
       Links: []
     })
@@ -59,5 +57,3 @@ const loadMfsRoot = async (context, options) => {
 
   return cid
 }
-
-module.exports = loadMfsRoot

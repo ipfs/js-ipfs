@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
  * @typedef {import('./types').LoadHasherFn} LoadHasherFn
@@ -11,7 +9,7 @@
  */
 const LOAD_HASHER = (codeOrName) => Promise.reject(new Error(`No hasher found for "${codeOrName}"`))
 
-class Multihashes {
+export class Multihashes {
   /**
    * @param {object} options
    * @param {LoadHasherFn} [options.loadHasher]
@@ -82,5 +80,3 @@ class Multihashes {
     return Object.values(this._hashersByName)
   }
 }
-
-module.exports = Multihashes

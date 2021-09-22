@@ -1,15 +1,14 @@
-'use strict'
 
-const createAddLink = require('./add-link')
-const createAppendData = require('./append-data')
-const createRmLink = require('./rm-link')
-const createSetData = require('./set-data')
+import { createAddLink } from './add-link.js'
+import { createAppendData } from './append-data.js'
+import { createRmLink } from './rm-link.js'
+import { createSetData } from './set-data.js'
 
 /**
  * @typedef {import('../../../types').Preload} Preload
  */
 
-class ObjectPatchAPI {
+export class ObjectPatchAPI {
   /**
    * @param {Object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
@@ -22,5 +21,3 @@ class ObjectPatchAPI {
     this.setData = createSetData({ repo, preload })
   }
 }
-
-module.exports = ObjectPatchAPI

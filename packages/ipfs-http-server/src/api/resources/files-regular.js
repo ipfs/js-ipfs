@@ -1,16 +1,15 @@
-'use strict'
 
-const multipart = require('../../utils/multipart-request-parser')
-const Joi = require('../../utils/joi')
-const Boom = require('@hapi/boom')
-const { pipe } = require('it-pipe')
-const all = require('it-all')
-const streamResponse = require('../../utils/stream-response')
-const merge = require('it-merge')
-const { PassThrough } = require('stream')
-const map = require('it-map')
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import Joi from '../../utils/joi.js'
+import Boom from '@hapi/boom'
+import { pipe } from 'it-pipe'
+import all from 'it-all'
+import { streamResponse } from '../../utils/stream-response.js'
+import merge from 'it-merge'
+import map from 'it-map'
+import { PassThrough } from 'stream'
 
-exports.cat = {
+export const catResource = {
   options: {
     validate: {
       options: {
@@ -68,7 +67,7 @@ exports.cat = {
   }
 }
 
-exports.get = {
+export const getResource = {
   options: {
     validate: {
       options: {
@@ -127,7 +126,7 @@ exports.get = {
   }
 }
 
-exports.add = {
+export const addResource = {
   options: {
     payload: {
       parse: false,
@@ -234,7 +233,7 @@ exports.add = {
     let filesParsed = false
 
     return streamResponse(request, h, () => pipe(
-      multipart(request.raw.req),
+      multipartRequestParser(request.raw.req),
       /**
        * @param {AsyncIterable<import('../../types').MultipartEntry>} source
        */
@@ -331,7 +330,7 @@ exports.add = {
   }
 }
 
-exports.ls = {
+export const lsResource = {
   options: {
     validate: {
       options: {
@@ -423,7 +422,7 @@ exports.ls = {
         }))
 
         return h.response({ Objects: [{ Hash: path, Links: links.map(mapLink) }] })
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         throw Boom.boomify(err, { message: 'Failed to list dir' })
       }
     }
@@ -453,7 +452,7 @@ function toTypeCode (type) {
   }
 }
 
-exports.refs = {
+export const refsResource = {
   options: {
     validate: {
       options: {
@@ -522,7 +521,7 @@ exports.refs = {
   }
 }
 
-exports.refsLocal = {
+export const refsLocalResource = {
   options: {
     validate: {
       options: {

@@ -1,26 +1,30 @@
-'use strict'
 
-const resources = require('../resources')
+import {
+  getResource,
+  putResource,
+  rmResource,
+  statResource
+} from '../resources/block.js'
 
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/block/get',
-    ...resources.block.get
+    ...getResource
   },
   {
     method: 'POST',
     path: '/api/v0/block/put',
-    ...resources.block.put
+    ...putResource
   },
   {
     method: 'POST',
     path: '/api/v0/block/rm',
-    ...resources.block.rm
+    ...rmResource
   },
   {
     method: 'POST',
     path: '/api/v0/block/stat',
-    ...resources.block.stat
+    ...statResource
   }
 ]

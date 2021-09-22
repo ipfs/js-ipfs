@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { AbortController } = require('native-abort-controller')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const defer = require('p-defer')
+import { expect } from 'aegir/utils/chai.js'
+import { AbortController } from 'native-abort-controller'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import defer from 'p-defer'
+import { factory } from './utils/factory.js'
 
-const f = require('./utils/factory')()
+const f = factory()
 
 describe('.pubsub', function () {
   this.timeout(20 * 1000)

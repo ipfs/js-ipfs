@@ -1,7 +1,6 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { CID } from 'multiformats/cid'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -9,13 +8,13 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
 
 /**
  * @param {Object} config
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
- * @param {import('ipfs-core-utils/src/multihashes')} config.hashers
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
+ * @param {import('ipfs-core-utils/multihashes').Multihashes} config.hashers
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  *
  */
-module.exports = ({ codecs, hashers, repo, preload }) => {
+export function createPut ({ codecs, hashers, repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/block').API["put"]}
    */

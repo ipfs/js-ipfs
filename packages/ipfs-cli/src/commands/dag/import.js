@@ -1,13 +1,8 @@
-'use strict'
 
-const fs = require('fs')
-const { default: parseDuration } = require('parse-duration')
+import fs from 'fs'
+import parseDuration from 'parse-duration'
 
-/**
- * @typedef {import('ipfs-core-types/src/dag').ImportResult} ImportResult
- */
-
-module.exports = {
+export default {
   command: 'import [path...]',
 
   describe: 'Import the contents of one or more CARs from files or stdin',
@@ -38,7 +33,7 @@ module.exports = {
    * @param {string} argv.cidBase
    */
   async handler ({ ctx: { ipfs, print, getStdin }, path, pinRoots, timeout, cidBase }) {
-    const handleResult = async (/** @type {ImportResult} */ { root }) => {
+    const handleResult = async (/** @type {import('ipfs-core-types/src/dag').ImportResult} */ { root }) => {
       const base = await ipfs.bases.getBase(cidBase)
       print(`pinned root\t${root.cid.toString(base.encoder)}\t${root.pinErrorMsg || 'success'}`)
     }

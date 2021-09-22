@@ -1,21 +1,23 @@
-'use strict'
+import {
+  bitswapResource,
+  repoResource,
+  bwResource
+} from '../resources/stats.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/stats/bitswap',
-    ...resources.stats.bitswap
+    ...bitswapResource
   },
   {
     method: 'POST',
     path: '/api/v0/stats/repo',
-    ...resources.stats.repo
+    ...repoResource
   },
   {
     method: 'POST',
     path: '/api/v0/stats/bw',
-    ...resources.stats.bw
+    ...bwResource
   }
 ]

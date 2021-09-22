@@ -1,8 +1,7 @@
-'use strict'
 
-const Joi = require('../../../utils/joi')
+import Joi from '../../../utils/joi.js'
 
-const mfsStat = {
+export const statResource = {
   options: {
     validate: {
       options: {
@@ -64,5 +63,3 @@ const mfsStat = {
     return h.response(output)
   }
 }
-
-module.exports = mfsStat

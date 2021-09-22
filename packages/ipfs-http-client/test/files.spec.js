@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 
-'use strict'
-
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { expect } = require('aegir/utils/chai')
-const f = require('./utils/factory')()
-const dagPb = require('@ipld/dag-pb')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import * as dagPB from '@ipld/dag-pb'
+import { factory } from './utils/factory.js'
+const f = factory()
 
 describe('.add', function () {
   this.timeout(20 * 1000)
@@ -33,7 +32,7 @@ describe('.add', function () {
     expect(result).to.have.property('cid')
 
     const { cid } = result
-    expect(cid).to.have.property('code', dagPb.code)
+    expect(cid).to.have.property('code', dagPB.code)
     expect(cid.toString()).to.equal('QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS')
   })
 })

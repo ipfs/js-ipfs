@@ -1,9 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../utils')
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'data <key>',
 
   describe: 'Outputs the raw bytes in an IPFS object',

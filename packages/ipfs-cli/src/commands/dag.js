@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './dag/index.js'
 
-module.exports = {
+export default {
   command: 'dag <command>',
 
   description: 'Interact with ipld dag objects.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('dag')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

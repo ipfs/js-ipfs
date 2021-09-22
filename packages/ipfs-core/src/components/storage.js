@@ -1,16 +1,20 @@
-'use strict'
 
-const log = require('debug')('ipfs:components:peer:storage')
-const createRepo = require('../runtime/repo-nodejs')
-const getDefaultConfig = require('../runtime/config-nodejs')
-const { ERR_REPO_NOT_INITIALIZED } = require('ipfs-repo').errors
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const PeerId = require('peer-id')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const configService = require('./config')
-const { NotEnabledError, NotInitializedError } = require('../errors')
-const createLibP2P = require('./libp2p')
+import debug from 'debug'
+import { createRepo } from 'ipfs-core-config/repo'
+import getDefaultConfig from 'ipfs-core-config/config'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import PeerId from 'peer-id'
+import mergeOpts from 'merge-options'
+import { profiles as configProfiles } from './config/profiles.js'
+import { NotEnabledError, NotInitializedError } from '../errors.js'
+import { createLibp2p } from './libp2p.js'
+import IpfsRepo from 'ipfs-repo'
+
+const { errors } = IpfsRepo
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:components:peer:storage')
 
 /**
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
@@ -22,7 +26,7 @@ const createLibP2P = require('./libp2p')
  * @typedef {import('libp2p/src/keychain')} Keychain
  */
 
-class Storage {
+export class Storage {
   /**
    * @private
    * @param {PeerId} peerId
@@ -42,7 +46,7 @@ class Storage {
 
   /**
    * @param {Print} print
-   * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+   * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
    * @param {IPFSOptions} options
    */
   static async start (print, codecs, options) {
@@ -63,7 +67,6 @@ class Storage {
     return new Storage(peerId, keychain, repo, print, isNew)
   }
 }
-module.exports = Storage
 
 /**
  * @param {Print} print
@@ -79,8 +82,8 @@ const loadRepo = async (print, repo, options) => {
     await repo.open()
 
     return { ...await configureRepo(repo, options), isNew: false }
-  } catch (err) {
-    if (err.code !== ERR_REPO_NOT_INITIALIZED) {
+  } catch (/** @type {any} */ err) {
+    if (err.code !== errors.ERR_REPO_NOT_INITIALIZED) {
       throw err
     }
 
@@ -137,14 +140,14 @@ const initRepo = async (print, repo, options) => {
 
   try {
     keychainConfig.dek = await repo.config.get('Keychain.DEK')
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.code !== 'ERR_NOT_FOUND') {
       throw err
     }
   }
 
   // Create libp2p for Keychain creation
-  const libp2p = await createLibP2P({
+  const libp2p = await createLibp2p({
     options: undefined,
     multiaddrs: undefined,
     peerId,
@@ -225,7 +228,7 @@ const configureRepo = async (repo, options) => {
   }
 
   const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
-  const libp2p = await createLibP2P({
+  const libp2p = await createLibp2p({
     options: undefined,
     multiaddrs: undefined,
     peerId,
@@ -259,7 +262,7 @@ const mergeConfigs = (config, changes) =>
  */
 const applyProfiles = (config, profiles) => {
   return (profiles || []).reduce((config, name) => {
-    const profile = configService.profiles[name]
+    const profile = configProfiles[name]
     if (!profile) {
       throw new Error(`Could not find profile with name '${name}'`)
     }

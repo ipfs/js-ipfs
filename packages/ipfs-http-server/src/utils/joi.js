@@ -1,10 +1,9 @@
-'use strict'
 
-const Joi = require('joi')
-const { CID } = require('multiformats/cid')
-const { default: parseDuration } = require('parse-duration')
-const { Multiaddr } = require('multiaddr')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+import { CID } from 'multiformats/cid'
+import parseDuration from 'parse-duration'
+import { Multiaddr } from 'multiaddr'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
+import Joi from 'joi'
 
 /**
  * @param {*} value
@@ -52,7 +51,7 @@ const requireIfRequired = (value, helpers) => {
   }
 }
 
-module.exports = Joi
+export default Joi
   .extend(
     // @ts-ignore - according to typedefs coerce should always return
     // { errors?: ErrorReport[], value?: any }

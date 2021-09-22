@@ -1,8 +1,7 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'wantlist [peer]',
 
   describe: 'Print out all blocks currently on the bitswap wantlist for the local peer.',
@@ -34,6 +33,8 @@ module.exports = {
   async handler ({ ctx, peer, cidBase, timeout }) {
     const { ipfs, print } = ctx
     const base = await ipfs.bases.getBase(cidBase)
+
+    /** @type {import('multiformats/cid').CID[]} */
     let list
 
     if (peer) {

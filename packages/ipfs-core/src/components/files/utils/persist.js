@@ -1,8 +1,7 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const dagPb = require('@ipld/dag-pb')
-const { sha256 } = require('multiformats/hashes/sha2')
+import { CID } from 'multiformats/cid'
+import * as dagPB from '@ipld/dag-pb'
+import { sha256 } from 'multiformats/hashes/sha2'
 
 /**
  * @typedef {object} PersistOptions
@@ -18,9 +17,9 @@ const { sha256 } = require('multiformats/hashes/sha2')
  * @param {import('interface-blockstore').Blockstore} blockstore
  * @param {PersistOptions} options
  */
-const persist = async (buffer, blockstore, options) => {
+export const persist = async (buffer, blockstore, options) => {
   if (!options.codec) {
-    options.codec = dagPb
+    options.codec = dagPB
   }
 
   if (!options.hasher) {
@@ -31,7 +30,7 @@ const persist = async (buffer, blockstore, options) => {
     options.cidVersion = 1
   }
 
-  if (options.codec === dagPb && options.hasher !== sha256) {
+  if (options.codec === dagPB && options.hasher !== sha256) {
     options.cidVersion = 1
   }
 
@@ -46,5 +45,3 @@ const persist = async (buffer, blockstore, options) => {
 
   return cid
 }
-
-module.exports = persist

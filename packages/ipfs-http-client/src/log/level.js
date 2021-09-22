@@ -1,15 +1,14 @@
-'use strict'
 
-const toCamel = require('../lib/object-to-camel')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { objectToCamel } from '../lib/object-to-camel.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/log').API<HTTPClientExtraOptions>} LogAPI
  */
 
-module.exports = configure(api => {
+export const createLevel = configure(api => {
   /**
    * @type {LogAPI["level"]}
    */
@@ -26,7 +25,7 @@ module.exports = configure(api => {
       headers: options.headers
     })
 
-    return toCamel(await res.json())
+    return objectToCamel(await res.json())
   }
   return level
 })

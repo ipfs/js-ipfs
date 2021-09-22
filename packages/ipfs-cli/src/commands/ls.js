@@ -1,11 +1,10 @@
-'use strict'
 
-const { rightpad, stripControlCharacters } = require('../utils')
-const formatMode = require('ipfs-core-utils/src/files/format-mode')
-const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
-const { default: parseDuration } = require('parse-duration')
+import { rightpad, stripControlCharacters } from '../utils.js'
+import { formatMode } from 'ipfs-core-utils/files/format-mode'
+import { formatMtime } from 'ipfs-core-utils/files/format-mtime'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'ls <key>',
 
   describe: 'List files for the given directory',

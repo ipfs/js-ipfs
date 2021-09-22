@@ -1,17 +1,15 @@
-'use strict'
-
-const last = require('it-last')
-const { CID } = require('multiformats/cid')
+import last from 'it-last'
+import { CID } from 'multiformats/cid'
 
 /**
  * @param {Object} config
- * @param {ReturnType<typeof import('./add-all')>} config.addAll
+ * @param {ReturnType<typeof import('./add-all').createAddAll>} config.addAll
  */
-module.exports = ({ addAll }) =>
+export function createAdd ({ addAll }) {
   /**
    * @type {import('ipfs-core-types/src/pin').API["add"]}
    */
-  (path, options = {}) => {
+  return (path, options = {}) => {
     let iter
 
     const cid = CID.asCID(path)
@@ -31,3 +29,4 @@ module.exports = ({ addAll }) =>
     // @ts-ignore return value of last can be undefined
     return last(iter)
   }
+}

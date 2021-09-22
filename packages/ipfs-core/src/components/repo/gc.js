@@ -1,8 +1,9 @@
-'use strict'
 
-const log = require('debug')('ipfs:repo:gc')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const loadMfsRoot = require('../files/utils/with-mfs-root')
+import debug from 'debug'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { loadMfsRoot } from '../files/utils/with-mfs-root.js'
+
+const log = debug('ipfs:repo:gc')
 
 /**
  * @typedef {import('ipfs-core-types/src/pin').API} PinAPI
@@ -10,7 +11,7 @@ const loadMfsRoot = require('../files/utils/with-mfs-root')
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  * @typedef {import('interface-datastore').Key} Key
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
- * @typedef {import('ipfs-core-utils/src/multihashes')} Multihashes
+ * @typedef {import('ipfs-core-utils/multihashes').Multihashes} Multihashes
  */
 
 /**
@@ -20,7 +21,7 @@ const loadMfsRoot = require('../files/utils/with-mfs-root')
  * @param {IPFSRepo} config.repo
  * @param {Multihashes} config.hashers
  */
-module.exports = ({ repo, hashers }) => {
+export function createGc ({ repo, hashers }) {
   /**
    * @type {import('ipfs-core-types/src/repo').API["gc"]}
    */

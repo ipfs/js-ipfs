@@ -1,31 +1,35 @@
-'use strict'
+import {
+  resolveResource,
+  publishResource,
+  stateResource,
+  pubsubSubsResource,
+  pubsubCancelResource
+} from '../resources/name.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/name/resolve',
-    ...resources.name.resolve
+    ...resolveResource
   },
   {
     method: 'POST',
     path: '/api/v0/name/publish',
-    ...resources.name.publish
+    ...publishResource
   },
   {
     method: 'POST',
     path: '/api/v0/name/pubsub/state',
-    ...resources.name.pubsub.state
+    ...stateResource
   },
   {
     method: 'POST',
     path: '/api/v0/name/pubsub/subs',
-    ...resources.name.pubsub.subs
+    ...pubsubSubsResource
   },
   {
     method: 'POST',
     path: '/api/v0/name/pubsub/cancel',
-    ...resources.name.pubsub.cancel
+    ...pubsubCancelResource
   }
 ]

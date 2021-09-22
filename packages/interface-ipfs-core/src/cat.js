@@ -1,17 +1,17 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
-const { fixtures } = require('./utils')
-const { CID } = require('multiformats/cid')
-const all = require('it-all')
-const drain = require('it-drain')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const testTimeout = require('./utils/test-timeout')
-const { importer } = require('ipfs-unixfs-importer')
-const blockstore = require('./utils/blockstore-adapter')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import { fixtures } from './utils/index.js'
+import { CID } from 'multiformats/cid'
+import all from 'it-all'
+import drain from 'it-drain'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import testTimeout from './utils/test-timeout.js'
+import { importer } from 'ipfs-unixfs-importer'
+import blockstore from './utils/blockstore-adapter.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -21,7 +21,7 @@ const blockstore = require('./utils/blockstore-adapter')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testCat (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

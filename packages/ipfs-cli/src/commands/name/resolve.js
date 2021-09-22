@@ -1,9 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
+import parseDuration from 'parse-duration'
 
-module.exports = {
-  command: 'resolve [<name>]',
+export default {
+  command: 'resolve <name>',
 
   describe: 'Resolve IPNS names.',
 

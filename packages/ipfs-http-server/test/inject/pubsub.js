@@ -1,15 +1,14 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const FormData = require('form-data')
-const sinon = require('sinon')
-const { AbortSignal } = require('native-abort-controller')
-const { randomBytes } = require('iso-random-stream')
-const streamToPromise = require('stream-to-promise')
+import { expect } from 'aegir/utils/chai.js'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import FormData from 'form-data'
+import sinon from 'sinon'
+import { AbortSignal } from 'native-abort-controller'
+import { randomBytes } from 'iso-random-stream'
+import streamToPromise from 'stream-to-promise'
 
 const sendData = async (data) => {
   const form = new FormData()

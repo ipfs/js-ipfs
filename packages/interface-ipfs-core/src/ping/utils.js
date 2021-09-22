@@ -1,11 +1,9 @@
-'use strict'
-
-const { expect } = require('../utils/mocha')
+import { expect } from 'aegir/utils/chai.js'
 
 /**
  * @param {*} obj
  */
-function expectIsPingResponse (obj) {
+export function expectIsPingResponse (obj) {
   expect(obj).to.have.a.property('success')
   expect(obj).to.have.a.property('time')
   expect(obj).to.have.a.property('text')
@@ -14,15 +12,11 @@ function expectIsPingResponse (obj) {
   expect(obj.text).to.be.a('string')
 }
 
-exports.expectIsPingResponse = expectIsPingResponse
-
 /**
  * Determine if a ping response object is a pong, or something else, like a status message
  *
  * @param {*} pingResponse
  */
-function isPong (pingResponse) {
+export function isPong (pingResponse) {
   return Boolean(pingResponse && pingResponse.success && !pingResponse.text)
 }
-
-exports.isPong = isPong

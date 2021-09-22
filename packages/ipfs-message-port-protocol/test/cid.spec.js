@@ -1,10 +1,9 @@
-'use strict'
 
 /* eslint-env mocha */
 
-const { CID } = require('multiformats/cid')
-const { encodeCID, decodeCID } = require('../src/cid')
-const { expect } = require('aegir/utils/chai')
+import { CID } from 'multiformats/cid'
+import { encodeCID, decodeCID } from '../src/cid.js'
+import { expect } from 'aegir/utils/chai.js'
 
 describe('cid', function () {
   this.timeout(10 * 1000)

@@ -1,15 +1,15 @@
-'use strict'
 
-const dagPb = require('@ipld/dag-pb')
-const { Errors } = require('interface-datastore')
-const ERR_NOT_FOUND = Errors.notFoundError().code
-const toCIDAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const { CID } = require('multiformats/cid')
+import * as dagPB from '@ipld/dag-pb'
+import { Errors } from 'interface-datastore'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
+import { CID } from 'multiformats/cid'
 // @ts-expect-error no types
-const TimeoutController = require('timeout-abort-controller')
-const { anySignal } = require('any-signal')
+import TimeoutController from 'timeout-abort-controller'
+import { anySignal } from 'any-signal'
 
-const Format = {
+const ERR_NOT_FOUND = Errors.notFoundError().code
+
+export const Format = {
   default: '<dst>',
   edges: '<src> -> <dst>'
 }
@@ -30,11 +30,11 @@ const Format = {
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-core-types/src/root').API["resolve"]} config.resolve
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = function ({ repo, codecs, resolve, preload }) {
+export function createRefs ({ repo, codecs, resolve, preload }) {
   /**
    * @type {import('ipfs-core-types/src/refs').API["refs"]}
    */
@@ -67,7 +67,7 @@ module.exports = function ({ repo, codecs, resolve, preload }) {
     for (const path of paths) {
       try {
         yield * refsStream(resolve, repo, codecs, path, options)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         yield {
           ref: '',
           err: err.message
@@ -79,8 +79,6 @@ module.exports = function ({ repo, codecs, resolve, preload }) {
   return refs
 }
 
-module.exports.Format = Format
-
 /**
  * @param {import('../../types').Preload} preload
  * @param {string | CID} ipfsPath
@@ -90,7 +88,7 @@ function getFullPath (preload, ipfsPath, options) {
   const {
     cid,
     path
-  } = toCIDAndPath(ipfsPath)
+  } = toCidAndPath(ipfsPath)
 
   if (options.preload !== false) {
     preload(cid)
@@ -104,7 +102,7 @@ function getFullPath (preload, ipfsPath, options) {
  *
  * @param {import('ipfs-core-types/src/root').API["resolve"]} resolve
  * @param {import('ipfs-repo').IPFSRepo} repo
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {string} path
  * @param {import('ipfs-core-types/src/refs').RefsOptions} options
  */
@@ -113,7 +111,7 @@ async function * refsStream (resolve, repo, codecs, path, options) {
   const resPath = await resolve(path, options)
   const {
     cid
-  } = toCIDAndPath(resPath)
+  } = toCidAndPath(resPath)
 
   const maxDepth = options.maxDepth != null ? options.maxDepth : Infinity
   const unique = options.unique || false
@@ -157,7 +155,7 @@ function formatLink (srcCid, dstCid, linkName = '', format = Format.default) {
  * Do a depth first search of the DAG, starting from the given root cid
  *
  * @param {import('ipfs-repo').IPFSRepo} repo
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {CID} rootCid
  * @param {number} maxDepth
  * @param {boolean} uniqueOnly
@@ -195,7 +193,7 @@ async function * objectStream (repo, codecs, rootCid, maxDepth, uniqueOnly, opti
 
         yield * traverseLevel(link, nextLevelDepth)
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === ERR_NOT_FOUND) {
         err.message = `Could not find object with CID: ${parent.cid}`
       }
@@ -211,7 +209,7 @@ async function * objectStream (repo, codecs, rootCid, maxDepth, uniqueOnly, opti
  * Fetch a node and then get all its links
  *
  * @param {import('ipfs-repo').IPFSRepo} repo
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {CID} cid
  * @param {AbortOptions} options
  * @returns {AsyncGenerator<{ name: string, cid: CID }, void, undefined>}
@@ -220,7 +218,7 @@ async function * getLinks (repo, codecs, cid, options) {
   const block = await repo.blocks.get(cid, options)
   const codec = await codecs.getCodec(cid.code)
   const value = codec.decode(block)
-  const isDagPb = cid.code === dagPb.code
+  const isDagPb = cid.code === dagPB.code
   /** @type {Array<string|number>} */
   const base = []
 

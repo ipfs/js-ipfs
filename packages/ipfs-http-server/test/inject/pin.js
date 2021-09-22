@@ -1,16 +1,15 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const { CID } = require('multiformats/cid')
-const allNdjson = require('../utils/all-ndjson')
-const { AbortSignal } = require('native-abort-controller')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
+import { expect } from 'aegir/utils/chai.js'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { allNdjson } from '../utils/all-ndjson.js'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
 
 describe('/pin', () => {
   const cid = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')

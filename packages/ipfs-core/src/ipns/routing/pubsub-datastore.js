@@ -1,19 +1,17 @@
-'use strict'
 
-const ipns = require('ipns')
-const { base58btc } = require('multiformats/bases/base58')
-const PubsubDatastore = require('datastore-pubsub')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-
-const errcode = require('err-code')
-const debug = require('debug')
+import ipns from 'ipns'
+import { base58btc } from 'multiformats/bases/base58'
+import PubsubDatastore from 'datastore-pubsub'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import errcode from 'err-code'
+import debug from 'debug'
 const log = Object.assign(debug('ipfs:ipns:pubsub'), {
   error: debug('ipfs:ipns:pubsub:error')
 })
 
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
-class IpnsPubsubDatastore {
+export class IpnsPubsubDatastore {
   /**
    * @param {import('libp2p-interfaces/src/pubsub')} pubsub
    * @param {import('interface-datastore').Datastore} localDatastore
@@ -98,7 +96,7 @@ class IpnsPubsubDatastore {
     let keys
     try {
       keys = ipns.getIdKeys(uint8ArrayFromString(subscriber, 'base58btc'))
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
       throw err
     }
@@ -152,5 +150,3 @@ class IpnsPubsubDatastore {
     }
   }
 }
-
-module.exports = IpnsPubsubDatastore

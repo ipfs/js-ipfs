@@ -1,18 +1,19 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const { fixtures } = require('./utils')
-const { Readable } = require('readable-stream')
-const { supportsFileReader } = require('ipfs-utils/src/supports')
-const urlSource = require('ipfs-utils/src/files/url-source')
-const { isNode } = require('ipfs-utils/src/env')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
+import { fixtures } from './utils/index.js'
+import { Readable } from 'readable-stream'
+import { supportsFileReader } from 'ipfs-utils/src/supports.js'
+import urlSource from 'ipfs-utils/src/files/url-source.js'
+import { isNode } from 'ipfs-utils/src/env.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import last from 'it-last'
+import * as raw from 'multiformats/codecs/raw'
+import * as dagPB from '@ipld/dag-pb'
+
 const echoUrl = (/** @type {string} */ text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (/** @type {string} */ url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const last = require('it-last')
-const raw = require('multiformats/codecs/raw')
-const dagPb = require('@ipld/dag-pb')
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -23,7 +24,7 @@ const dagPb = require('@ipld/dag-pb')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testAdd (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -75,7 +76,7 @@ module.exports = (factory, options) => {
         return this.skip('skip in node')
       }
 
-      const fileAdded = await ipfs.add(new self.File(['should add a File'], 'filename.txt', { type: 'text/plain' }))
+      const fileAdded = await ipfs.add(new File(['should add a File'], 'filename.txt', { type: 'text/plain' }))
       expect(fileAdded.cid.toString()).to.be.eq('QmTVfLxf3qXiJgr4KwG6UBckcNvTqBp93Rwy5f7h3mHsVC')
     })
 
@@ -413,7 +414,7 @@ module.exports = (factory, options) => {
       })
 
       expect(file.cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
-      expect(file.cid.code).to.equal(dagPb.code)
+      expect(file.cid.code).to.equal(dagPB.code)
       expect(file.size).to.equal(18)
     })
 

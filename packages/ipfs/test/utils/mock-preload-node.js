@@ -1,20 +1,18 @@
 /* eslint-env browser */
-'use strict'
 
-const http = require('http')
-const { URL } = require('iso-url')
-const getPort = require('aegir/utils/get-port')
+import http from 'http'
+import { URL } from 'iso-url'
+import getPort from 'aegir/utils/get-port.js'
 
-const defaultPort = 1138
-const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
-
-module.exports.defaultAddr = defaultAddr
+export const defaultPort = 1138
+export const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
 
 // Create a mock preload IPFS node with a gateway that'll respond 200 to a
 // request for /api/v0/refs?arg=*. It remembers the preload CIDs it has been
 // called with, and you can ask it for them and also clear them by issuing a
 // GET/DELETE request to /cids.
-module.exports.createNode = () => {
+export function createNode () {
+  /** @type {string[]} */
   let cids = []
 
   const server = http.createServer((req, res) => {
@@ -29,9 +27,12 @@ module.exports.createNode = () => {
       return
     }
 
-    if (req.url.startsWith('/api/v0/refs')) {
+    if (`${req.url}`.startsWith('/api/v0/refs')) {
       const arg = new URL(`https://ipfs.io${req.url}`).searchParams.get('arg')
-      cids = cids.concat(arg)
+
+      if (arg) {
+        cids.push(arg)
+      }
     } else if (req.method === 'DELETE' && req.url === '/cids') {
       res.statusCode = 204
       cids = []
@@ -45,17 +46,19 @@ module.exports.createNode = () => {
     res.end()
   })
 
-  server.start = async (opts = {}) => {
+  // @ts-ignore
+  server.start = async () => {
     const port = await getPort(defaultPort)
     return new Promise((resolve, reject) => {
-      server.listen(port, '127.0.0.1', err => {
+      server.listen(port, '127.0.0.1', (/** @type {any} */ err) => {
         if (err) {
           return reject(err)
         }
-        resolve()
+        resolve(null)
       })
     })
   }
+  // @ts-ignore
   server.stop = () => new Promise(resolve => server.close(resolve))
 
   return server

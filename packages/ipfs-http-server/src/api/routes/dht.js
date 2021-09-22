@@ -1,36 +1,41 @@
-'use strict'
+import {
+  findPeerResource,
+  findProvsResource,
+  getResource,
+  provideResource,
+  putResource,
+  queryResource
+} from '../resources/dht.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/dht/findpeer',
-    ...resources.dht.findPeer
+    ...findPeerResource
   },
   {
     method: 'POST',
     path: '/api/v0/dht/findprovs',
-    ...resources.dht.findProvs
+    ...findProvsResource
   },
   {
     method: 'POST',
     path: '/api/v0/dht/get',
-    ...resources.dht.get
+    ...getResource
   },
   {
     method: 'POST',
     path: '/api/v0/dht/provide',
-    ...resources.dht.provide
+    ...provideResource
   },
   {
     method: 'POST',
     path: '/api/v0/dht/put',
-    ...resources.dht.put
+    ...putResource
   },
   {
     method: 'POST',
     path: '/api/v0/dht/query',
-    ...resources.dht.query
+    ...queryResource
   }
 ]

@@ -1,12 +1,18 @@
-'use strict'
+import { createProfiles } from './profiles/index.js'
+import { createGet } from './get.js'
+import { createGetAll } from './get-all.js'
+import { createReplace } from './replace.js'
+import { createSet } from './set.js'
 
 /**
  * @param {import('../types').Options} config
  */
-module.exports = config => ({
-  getAll: require('./getAll')(config),
-  get: require('./get')(config),
-  set: require('./set')(config),
-  replace: require('./replace')(config),
-  profiles: require('./profiles')(config)
-})
+export function createConfig (config) {
+  return {
+    getAll: createGetAll(config),
+    get: createGet(config),
+    set: createSet(config),
+    replace: createReplace(config),
+    profiles: createProfiles(config)
+  }
+}

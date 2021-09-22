@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { CID } = require('multiformats/cid')
-const all = require('it-all')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { CID } from 'multiformats/cid'
+import all from 'it-all'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +14,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testProvide (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

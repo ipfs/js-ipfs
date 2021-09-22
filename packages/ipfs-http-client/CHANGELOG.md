@@ -664,7 +664,7 @@ There are significant and breaking API changes in this release. Please see the [
 * `name.resolve` now returns an async iterable. It yields increasingly more accurate resolved values as they are discovered until the best value is selected from the quorum of 16. The "best" resolved value is the last item yielded from the iterator. If you are interested only in this best value you could use `it-last` to extract it like so:
 
     ```js
-    const last = require('it-last')
+    import last from 'it-last'
     await last(ipfs.name.resolve('/ipns/QmHash'))
     ```
 

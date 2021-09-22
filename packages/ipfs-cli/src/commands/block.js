@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './block/index.js'
 
-module.exports = {
+export default {
   command: 'block <command>',
 
   description: 'Manipulate raw IPFS blocks.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('block')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

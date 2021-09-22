@@ -1,7 +1,6 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const errCode = require('err-code')
+import { CID } from 'multiformats/cid'
+import errCode from 'err-code'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
@@ -12,11 +11,11 @@ const errCode = require('err-code')
  *
  * @param {CID} cid - the CID where the resolving starts
  * @param {string} path - the path that should be resolved
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {(cid: CID, options?: AbortOptions) => Promise<Uint8Array>} getBlock
  * @param {AbortOptions} [options]
  */
-const resolve = async function * (cid, path, codecs, getBlock, options) {
+export async function * resolve (cid, path, codecs, getBlock, options) {
   /**
    * @param {CID} cid
    */
@@ -65,5 +64,3 @@ const resolve = async function * (cid, path, codecs, getBlock, options) {
     }
   }
 }
-
-module.exports = resolve

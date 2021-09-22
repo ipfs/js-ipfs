@@ -1,9 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../../utils')
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../../utils.js'
 
-module.exports = {
+export default {
   command: 'rm-link <root> <link>',
 
   describe: 'Remove a link from an object',

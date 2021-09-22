@@ -1,8 +1,7 @@
-'use strict'
+import { commands } from './addrs/index.js'
+import parseDuration from 'parse-duration'
 
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'addrs',
 
   describe: '',
@@ -12,7 +11,8 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('addrs')
+      // @ts-expect-error types are wrong
+      .command(commands)
       .option('timeout', {
         type: 'string',
         coerce: parseDuration

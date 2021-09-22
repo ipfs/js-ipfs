@@ -1,11 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const sinon = require('sinon')
-const http = require('../utils/http')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import { http } from '../utils/http.js'
 
-module.exports = () => {
+export default () => {
   describe('browser headers', () => {
     let ipfs
 

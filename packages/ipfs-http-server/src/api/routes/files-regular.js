@@ -1,36 +1,41 @@
-'use strict'
+import {
+  catResource,
+  getResource,
+  addResource,
+  lsResource,
+  refsResource,
+  refsLocalResource
+} from '../resources/files-regular.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/cat',
-    ...resources.filesRegular.cat
+    ...catResource
   },
   {
     method: 'POST',
     path: '/api/v0/get',
-    ...resources.filesRegular.get
+    ...getResource
   },
   {
     method: 'POST',
     path: '/api/v0/add',
-    ...resources.filesRegular.add
+    ...addResource
   },
   {
     method: 'POST',
     path: '/api/v0/ls',
-    ...resources.filesRegular.ls
+    ...lsResource
   },
   {
     method: 'POST',
     path: '/api/v0/refs',
-    ...resources.filesRegular.refs
+    ...refsResource
   },
   {
     method: 'POST',
     path: '/api/v0/refs/local',
-    ...resources.filesRegular.refsLocal
+    ...refsLocalResource
   }
 ]

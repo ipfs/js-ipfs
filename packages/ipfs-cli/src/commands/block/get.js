@@ -1,10 +1,9 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { coerceCID } = require('../../utils')
+import parseDuration from 'parse-duration'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { coerceCID } from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'get <key>',
 
   describe: 'Get a raw IPFS block',

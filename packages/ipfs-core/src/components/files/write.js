@@ -1,33 +1,34 @@
-'use strict'
 
-const log = require('debug')('ipfs:mfs:write')
-const { importer } = require('ipfs-unixfs-importer')
-const {
+import debug from 'debug'
+import { importer } from 'ipfs-unixfs-importer'
+import {
   decode
-// @ts-ignore - TODO vmx 2021-03-31
-} = require('@ipld/dag-pb')
-const { sha256, sha512 } = require('multiformats/hashes/sha2')
-const stat = require('./stat')
-const mkdir = require('./mkdir')
-const addLink = require('./utils/add-link')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const createLock = require('./utils/create-lock')
-const toAsyncIterator = require('./utils/to-async-iterator')
-const toMfsPath = require('./utils/to-mfs-path')
-const toPathComponents = require('./utils/to-path-components')
-const toTrail = require('./utils/to-trail')
-const updateTree = require('./utils/update-tree')
-const updateMfsRoot = require('./utils/update-mfs-root')
-const errCode = require('err-code')
-const {
+} from '@ipld/dag-pb'
+import { sha256, sha512 } from 'multiformats/hashes/sha2'
+import { createStat } from './stat.js'
+import { createMkdir } from './mkdir.js'
+import { addLink } from './utils/add-link.js'
+import mergeOpts from 'merge-options'
+import { createLock } from './utils/create-lock.js'
+import { toAsyncIterator } from './utils/to-async-iterator.js'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import { toPathComponents } from './utils/to-path-components.js'
+import { toTrail } from './utils/to-trail.js'
+import { updateTree } from './utils/update-tree.js'
+import { updateMfsRoot } from './utils/update-mfs-root.js'
+import errCode from 'err-code'
+import {
   MFS_MAX_CHUNK_SIZE
-} = require('../../utils')
-const last = require('it-last')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const {
+} from '../../utils.js'
+import last from 'it-last'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import {
   parseMode,
   parseMtime
-} = require('ipfs-unixfs')
+} from 'ipfs-unixfs'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:mfs:write')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -81,7 +82,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createWrite (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["write"]}
    */
@@ -154,16 +155,16 @@ const updateOrImport = async (context, path, source, destination, options) => {
     let parentExists = false
 
     try {
-      await stat(context)(`/${pathComponents.join('/')}`, options)
+      await createStat(context)(`/${pathComponents.join('/')}`, options)
       parentExists = true
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code !== 'ERR_NOT_FOUND') {
         throw err
       }
     }
 
     if (!parentExists) {
-      await mkdir(context)(`/${pathComponents.join('/')}`, options)
+      await createMkdir(context)(`/${pathComponents.join('/')}`, options)
     }
 
     // get an updated mfs path in case the root changed while we were writing

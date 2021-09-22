@@ -1,39 +1,40 @@
-'use strict'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import debug from 'debug'
+import Progress from 'progress'
+// @ts-expect-error no types
+import byteman from 'byteman'
+import { create } from 'ipfs-core'
+import { CID } from 'multiformats/cid'
+import { Multiaddr } from 'multiaddr'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { create as httpClient } from 'ipfs-http-client'
 
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const log = require('debug')('ipfs:cli:utils')
-const Progress = require('progress')
-// @ts-ignore no types
-const byteman = require('byteman')
-const IPFS = require('ipfs-core')
-const { CID } = require('multiformats/cid')
-const { Multiaddr } = require('multiaddr')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+const log = debug('ipfs:cli:utils')
 
-const getRepoPath = () => {
+export const getRepoPath = () => {
   return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')
 }
 
-const isDaemonOn = () => {
+export const isDaemonOn = () => {
   try {
     fs.readFileSync(path.join(getRepoPath(), 'api'))
     log('daemon is on')
     return true
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     log('daemon is off')
     return false
   }
 }
 
 let visible = true
-const disablePrinting = () => { visible = false }
+export const disablePrinting = () => { visible = false }
 
 /**
  * @type {import('./types').Print}
  */
-const print = (msg, includeNewline = true, isError = false) => {
+export const print = (msg, includeNewline = true, isError = false) => {
   if (visible) {
     if (msg === undefined) {
       msg = ''
@@ -82,9 +83,9 @@ print.columns = process.stdout.columns
 
 /**
  * @param {number} totalBytes
- * @param {*} output
+ * @param {*} [output]
  */
-const createProgressBar = (totalBytes, output) => {
+export const createProgressBar = (totalBytes, output) => {
   const total = byteman(totalBytes, 2, 'MB')
   const barFormat = `:progress / ${total} [:bar] :percent :etas`
 
@@ -101,7 +102,7 @@ const createProgressBar = (totalBytes, output) => {
  * @param {*} val
  * @param {number} n
  */
-const rightpad = (val, n) => {
+export const rightpad = (val, n) => {
   let result = String(val)
   for (let i = result.length; i < n; ++i) {
     result += ' '
@@ -109,16 +110,17 @@ const rightpad = (val, n) => {
   return result
 }
 
-const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
+export const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
   'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
   'export IPFS_PATH=/path/to/ipfsrepo\n'
 
 /**
  * @param {{ api?: string, silent?: boolean, migrate?: boolean, pass?: string }} argv
  */
-async function getIpfs (argv) {
+export async function getIpfs (argv) {
   if (!argv.api && !isDaemonOn()) {
-    const ipfs = await IPFS.create({
+    /** @type {import('ipfs-core-types').IPFS} */
+    const ipfs = await create({
       silent: argv.silent,
       repoAutoMigrate: argv.migrate,
       repo: getRepoPath(),
@@ -143,11 +145,13 @@ async function getIpfs (argv) {
   } else {
     endpoint = argv.api
   }
-  // Required inline to reduce startup time
-  const { create } = require('ipfs-http-client')
+
+  /** @type {import('ipfs-core-types').IPFS} */
+  const ipfs = httpClient({ url: endpoint })
+
   return {
     isDaemon: true,
-    ipfs: create({ url: endpoint }),
+    ipfs,
     cleanup: async () => { }
   }
 }
@@ -155,7 +159,7 @@ async function getIpfs (argv) {
 /**
  * @param {boolean} [value]
  */
-const asBoolean = (value) => {
+export const asBoolean = (value) => {
   if (value === false || value === true) {
     return value
   }
@@ -170,7 +174,7 @@ const asBoolean = (value) => {
 /**
  * @param {any} value
  */
-const asOctal = (value) => {
+export const asOctal = (value) => {
   return parseInt(value, 8)
 }
 
@@ -178,7 +182,7 @@ const asOctal = (value) => {
  * @param {number} [secs]
  * @param {number} [nsecs]
  */
-const asMtimeFromSeconds = (secs, nsecs) => {
+export const asMtimeFromSeconds = (secs, nsecs) => {
   if (secs == null) {
     return undefined
   }
@@ -192,7 +196,7 @@ const asMtimeFromSeconds = (secs, nsecs) => {
 /**
  * @param {*} value
  */
-const coerceMtime = (value) => {
+export const coerceMtime = (value) => {
   value = parseInt(value)
 
   if (isNaN(value)) {
@@ -205,7 +209,7 @@ const coerceMtime = (value) => {
 /**
  * @param {*} value
  */
-const coerceMtimeNsecs = (value) => {
+export const coerceMtimeNsecs = (value) => {
   value = parseInt(value)
 
   if (isNaN(value)) {
@@ -222,7 +226,7 @@ const coerceMtimeNsecs = (value) => {
 /**
  * @param {*} value
  */
-const coerceCID = (value) => {
+export const coerceCID = (value) => {
   if (!value) {
     return undefined
   }
@@ -237,7 +241,7 @@ const coerceCID = (value) => {
 /**
  * @param {string[]} values
  */
-const coerceCIDs = (values) => {
+export const coerceCIDs = (values) => {
   if (values == null) {
     return []
   }
@@ -248,7 +252,7 @@ const coerceCIDs = (values) => {
 /**
  * @param {string} value
  */
-const coerceMultiaddr = (value) => {
+export const coerceMultiaddr = (value) => {
   if (value == null) {
     return undefined
   }
@@ -259,7 +263,7 @@ const coerceMultiaddr = (value) => {
 /**
  * @param {string[]} values
  */
-const coerceMultiaddrs = (values) => {
+export const coerceMultiaddrs = (values) => {
   if (values == null) {
     return undefined
   }
@@ -270,7 +274,7 @@ const coerceMultiaddrs = (values) => {
 /**
  * @param {string} value
  */
-const coerceUint8Array = (value) => {
+export const coerceUint8Array = (value) => {
   if (value == null) {
     return undefined
   }
@@ -285,7 +289,7 @@ const DEL = 127
  *
  * @param {string} [str] - a string to strip control characters from
  */
-const stripControlCharacters = (str) => {
+export const stripControlCharacters = (str) => {
   return (str || '')
     .split('')
     .filter((c) => {
@@ -301,7 +305,7 @@ const stripControlCharacters = (str) => {
  *
  * @param {string} str - a string to escape control characters in
  */
-const escapeControlCharacters = (str) => {
+export const escapeControlCharacters = (str) => {
   /** @type {Record<string, string>} */
   const escapes = {
     '00': '\\0',
@@ -337,7 +341,7 @@ const escapeControlCharacters = (str) => {
  * @param {import('multiformats/bases/interface').MultibaseCodec<any>} cidBase - any encountered CIDs will be stringified using this base
  * @returns {any}
  */
-const makeEntriesPrintable = (obj, cidBase) => {
+export const makeEntriesPrintable = (obj, cidBase) => {
   const cid = CID.asCID(obj)
 
   if (cid) {
@@ -373,28 +377,4 @@ const makeEntriesPrintable = (obj, cidBase) => {
     })
 
   return output
-}
-
-module.exports = {
-  getIpfs,
-  isDaemonOn,
-  getRepoPath,
-  disablePrinting,
-  print,
-  createProgressBar,
-  rightpad,
-  ipfsPathHelp,
-  asBoolean,
-  asOctal,
-  asMtimeFromSeconds,
-  coerceMtime,
-  coerceMtimeNsecs,
-  coerceCID,
-  coerceCIDs,
-  coerceMultiaddr,
-  coerceMultiaddrs,
-  coerceUint8Array,
-  stripControlCharacters,
-  escapeControlCharacters,
-  makeEntriesPrintable
 }

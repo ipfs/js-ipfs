@@ -1,20 +1,19 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const dagPB = require('@ipld/dag-pb')
-const dagCBOR = require('@ipld/dag-cbor')
-const { importer } = require('ipfs-unixfs-importer')
-const { UnixFS } = require('ipfs-unixfs')
-const all = require('it-all')
-const { CID } = require('multiformats/cid')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { base32 } = require('multiformats/bases/base32')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
-const { identity } = require('multiformats/hashes/identity')
-const dagCbor = require('@ipld/dag-cbor')
-const blockstore = require('../utils/blockstore-adapter')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import { importer } from 'ipfs-unixfs-importer'
+import { UnixFS } from 'ipfs-unixfs'
+import all from 'it-all'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { base32 } from 'multiformats/bases/base32'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import testTimeout from '../utils/test-timeout.js'
+import { identity } from 'multiformats/hashes/identity'
+import blockstore from '../utils/blockstore-adapter.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -24,7 +23,7 @@ const blockstore = require('../utils/blockstore-adapter')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testGet (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -228,7 +227,7 @@ module.exports = (factory, options) => {
       }
 
       const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
-      expect(cid.code).to.equal(dagCbor.code)
+      expect(cid.code).to.equal(dagCBOR.code)
       expect(cid.toString(base32)).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
       const result = await ipfs.dag.get(cid, {

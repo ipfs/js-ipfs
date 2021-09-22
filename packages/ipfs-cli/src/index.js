@@ -1,14 +1,12 @@
-'use strict'
-
-const parser = require('./parser')
-const commandAlias = require('./command-alias')
-const errCode = require('err-code')
+import parser from './parser.js'
+import commandAlias from './command-alias.js'
+import errCode from 'err-code'
 
 /**
  * @param {string[]} command
  * @param {import('yargs').MiddlewareFunction} ctxMiddleware
  */
-module.exports = (command, ctxMiddleware) => {
+export function cli (command, ctxMiddleware) {
   // Apply command aliasing (eg `refs local` -> `refs-local`)
   command = commandAlias(command)
 
@@ -35,7 +33,7 @@ module.exports = (command, ctxMiddleware) => {
           reject(err)
         })
         .parse(command)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       return reject(err)
     }
   })

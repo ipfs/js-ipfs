@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
  * @typedef {object} Skip
@@ -17,7 +15,7 @@ const isSkip = (o) => Object.prototype.toString.call(o) === '[object Object]' &&
  * @param {*} tests
  * @param {*} [parent]
  */
-function createSuite (tests, parent) {
+export function createSuite (tests, parent) {
   /**
    * @param {Factory} factory
    * @param {object} [options]
@@ -51,5 +49,3 @@ function createSuite (tests, parent) {
 
   return Object.assign(suite, tests)
 }
-
-exports.createSuite = createSuite

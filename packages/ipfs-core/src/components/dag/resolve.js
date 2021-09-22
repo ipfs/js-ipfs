@@ -1,16 +1,15 @@
-'use strict'
 
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const { resolvePath } = require('../../utils')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
+import { resolvePath } from '../../utils.js'
 
 /**
  * @param {Object} config
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = ({ repo, codecs, preload }) => {
+export function createResolve ({ repo, codecs, preload }) {
   /**
    * @type {import('ipfs-core-types/src/dag').API["resolve"]}
    */

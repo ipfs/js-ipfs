@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './repo/index.js'
 
-module.exports = {
+export default {
   command: 'repo <command>',
 
   description: 'Manipulate the IPFS repo.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('repo')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

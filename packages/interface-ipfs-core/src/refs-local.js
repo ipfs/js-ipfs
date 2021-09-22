@@ -1,14 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fixtures } = require('./utils')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const all = require('it-all')
-const { importer } = require('ipfs-unixfs-importer')
-const drain = require('it-drain')
-const { CID } = require('multiformats/cid')
-const { equals: uint8ArrayEquals } = require('uint8arrays/equals')
-const blockstore = require('./utils/blockstore-adapter')
+import { fixtures } from './utils/index.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import all from 'it-all'
+import { importer } from 'ipfs-unixfs-importer'
+import drain from 'it-drain'
+import { CID } from 'multiformats/cid'
+import { equals as uint8ArrayEquals } from 'uint8arrays/equals'
+import blockstore from './utils/blockstore-adapter.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -18,7 +18,7 @@ const blockstore = require('./utils/blockstore-adapter')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testRefsLocal (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

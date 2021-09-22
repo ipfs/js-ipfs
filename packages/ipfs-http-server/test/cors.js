@@ -1,10 +1,9 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const http = require('./utils/http')
-const sinon = require('sinon')
+import { expect } from 'aegir/utils/chai.js'
+import { http } from './utils/http.js'
+import sinon from 'sinon'
 
 describe('cors', () => {
   let ipfs

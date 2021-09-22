@@ -1,8 +1,7 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'add <ipfsPath...>',
 
   describe: 'Pins object to local storage, preventing it from being garbage collected',

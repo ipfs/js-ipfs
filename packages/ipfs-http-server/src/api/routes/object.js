@@ -1,56 +1,65 @@
-'use strict'
+import {
+  newResource,
+  getResource,
+  putResource,
+  statResource,
+  dataResource,
+  linksResource,
+  patchAppendDataResource,
+  patchSetDataResource,
+  patchAddLinkResource,
+  patchRmLinkResource
+} from '../resources/object.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/object/new',
-    ...resources.object.new
+    ...newResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/get',
-    ...resources.object.get
+    ...getResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/put',
-    ...resources.object.put
+    ...putResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/stat',
-    ...resources.object.stat
+    ...statResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/data',
-    ...resources.object.data
+    ...dataResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/links',
-    ...resources.object.links
+    ...linksResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/patch/append-data',
-    ...resources.object.patchAppendData
+    ...patchAppendDataResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/patch/set-data',
-    ...resources.object.patchSetData
+    ...patchSetDataResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/patch/add-link',
-    ...resources.object.patchAddLink
+    ...patchAddLinkResource
   },
   {
     method: 'POST',
     path: '/api/v0/object/patch/rm-link',
-    ...resources.object.patchRmLink
+    ...patchRmLinkResource
   }
 ]

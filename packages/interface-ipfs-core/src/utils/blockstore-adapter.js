@@ -1,19 +1,17 @@
-'use strict'
-
-const { BlockstoreAdapter } = require('interface-blockstore')
-const raw = require('multiformats/codecs/raw')
-const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import { BlockstoreAdapter } from 'interface-blockstore'
+import * as raw from 'multiformats/codecs/raw'
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 /**
  * @type {Record<number, string>}
  */
 const formats = {
   [raw.code]: raw.name,
-  [dagPb.code]: dagPb.name,
-  [dagCbor.code]: dagCbor.name
+  [dagPB.code]: dagPB.name,
+  [dagCBOR.code]: dagCBOR.name
 }
 
 /**
@@ -53,6 +51,6 @@ class IPFSBlockstore extends BlockstoreAdapter {
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  */
-module.exports = (ipfs) => {
+export default function createBlockstore (ipfs) {
   return new IPFSBlockstore(ipfs)
 }

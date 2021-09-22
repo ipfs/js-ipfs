@@ -1,31 +1,35 @@
-'use strict'
+import {
+  peersResource,
+  addrsResource,
+  localAddrsResource,
+  connectResource,
+  disconnectResource
+} from '../resources/swarm.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/swarm/peers',
-    ...resources.swarm.peers
+    ...peersResource
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/addrs',
-    ...resources.swarm.addrs
+    ...addrsResource
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/addrs/local',
-    ...resources.swarm.localAddrs
+    ...localAddrsResource
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/connect',
-    ...resources.swarm.connect
+    ...connectResource
   },
   {
     method: 'POST',
     path: '/api/v0/swarm/disconnect',
-    ...resources.swarm.disconnect
+    ...disconnectResource
   }
 ]

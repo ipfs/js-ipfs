@@ -1,9 +1,8 @@
-'use strict'
 
-const Joi = require('../../../utils/joi')
-const parseMtime = require('./utils/parse-mtime')
+import Joi from '../../../utils/joi.js'
+import { parseMtime } from './utils/parse-mtime.js'
 
-const mfsMkdir = {
+export const mkdirResource = {
   options: {
     validate: {
       options: {
@@ -85,5 +84,3 @@ const mfsMkdir = {
     return h.response()
   }
 }
-
-module.exports = mfsMkdir

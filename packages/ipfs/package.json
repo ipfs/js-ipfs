@@ -9,13 +9,27 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
-  ],
+  "type": "module",
   "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "types/src/index.d.ts",
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
   "bin": {
     "jsipfs": "src/cli.js"
   },
@@ -24,16 +38,19 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "build": "aegir build",
+    "build": "run-s build:*",
+    "build:update-version": "node scripts/update-version.js",
+    "build:aegir": "aegir build",
+    "build:copy-cli": "copyfiles ./src/cli.js ./src/package.js ./dist",
     "lint": "aegir ts -p check && aegir lint",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
-    "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD IPFS_JS_HTTP_MODULE=$PWD/../ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
+    "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
+    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -45,8 +62,9 @@
   "devDependencies": {
     "@types/semver": "^7.3.4",
     "@types/update-notifier": "^5.0.0",
-    "aegir": "^35.0.3",
+    "aegir": "^35.1.0",
     "assert": "^2.0.0",
+    "copyfiles": "^2.4.1",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.9.1",
@@ -61,6 +79,7 @@
     "libp2p-webrtc-star": "^0.23.0",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.1.2",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "url": "^0.11.0",
     "wrtc": "^0.4.6"

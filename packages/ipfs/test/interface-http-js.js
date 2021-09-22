@@ -1,9 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const tests = require('interface-ipfs-core')
-const { isNode, isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const factory = require('./utils/factory')
+import * as tests from 'interface-ipfs-core'
+import { isNode, isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
+import { factory } from './utils/factory.js'
 const isFirefox = globalThis.navigator?.userAgent?.toLowerCase().includes('firefox')
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
@@ -148,6 +147,21 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     }, {
       name: 'should throw an error on missing link for a specific path',
       reason: 'FIXME: fetch does not yet support HTTP trailers https://github.com/ipfs/js-ipfs/issues/2519'
+    }, {
+      name: '.pin.remote.service',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.add',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.ls',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.rm',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.rmAll',
+      reason: 'Not implemented'
     }]
   })
 

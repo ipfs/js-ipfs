@@ -1,22 +1,20 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const { fixtures } = require('./utils')
-const { Readable } = require('readable-stream')
-const all = require('it-all')
-const last = require('it-last')
-const drain = require('it-drain')
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const { supportsFileReader } = require('ipfs-utils/src/supports')
-const globSource = require('ipfs-utils/src/files/glob-source')
-const { isNode } = require('ipfs-utils/src/env')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const bufferStream = require('it-buffer-stream')
-const raw = require('multiformats/codecs/raw')
-const dagPb = require('@ipld/dag-pb')
+import { fixtures } from './utils/index.js'
+import { Readable } from 'readable-stream'
+import all from 'it-all'
+import last from 'it-last'
+import drain from 'it-drain'
+import { supportsFileReader } from 'ipfs-utils/src/supports.js'
+import globSource from 'ipfs-utils/src/files/glob-source.js'
+import { isNode } from 'ipfs-utils/src/env.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import bufferStream from 'it-buffer-stream'
+import * as raw from 'multiformats/codecs/raw'
+import * as dagPB from '@ipld/dag-pb'
+import resolve from 'aegir/utils/resolve.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -27,7 +25,7 @@ const dagPb = require('@ipld/dag-pb')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testAddAll (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -397,7 +395,7 @@ module.exports = (factory, options) => {
     it('should add a directory from the file system', async function () {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'test-folder')
+      const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
       expect(result.length).to.be.above(8)
@@ -407,7 +405,7 @@ module.exports = (factory, options) => {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'weird name folder [v0]')
+      const filesPath = resolve('test/fixtures/weird name folder [v0]', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
       expect(result.length).to.be.above(8)
@@ -417,7 +415,7 @@ module.exports = (factory, options) => {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'test-folder')
+      const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, ignore: ['files/**'] })))
       expect(result.length).to.be.below(9)
@@ -427,18 +425,18 @@ module.exports = (factory, options) => {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filePath = path.join(__dirname, 'add-all.js')
+      const filePath = resolve('test/fixtures/test-folder/ipfs-add.js', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filePath)))
       expect(result.length).to.equal(1)
-      expect(result[0].path).to.equal('add-all.js')
+      expect(result[0].path).to.equal('ipfs-add.js')
     })
 
     it('should add a hidden file in a directory from the file system', async function () {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'hidden-files-folder')
+      const filesPath = resolve('test/fixtures/hidden-files-folder', 'interface-ipfs-core')
 
       const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, hidden: true })))
       expect(result.length).to.be.above(10)
@@ -446,20 +444,16 @@ module.exports = (factory, options) => {
       expect(result.map(object => object.cid.toString())).to.include('QmdbAjVmLRdpFyi8FFvjPfhTGB2cVXvWLuK7Sbt38HXrtt')
     })
 
-    it('should add a file from the file system with only-hash=true', async function () {
+    it('should add a file with only-hash=true', async function () {
       // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
       // @ts-ignore this is mocha
       this.slow(10 * 1000)
 
-      const content = String(Math.random() + Date.now())
-      const filepath = path.join(os.tmpdir(), `${content}.txt`)
-      fs.writeFileSync(filepath, content)
-
-      const out = await all(ipfs.addAll(globSource(filepath), { onlyHash: true }))
-
-      fs.unlinkSync(filepath)
+      const out = await all(ipfs.addAll([{
+        content: uint8ArrayFromString('hello world')
+      }], { onlyHash: true }))
 
       await expect(ipfs.object.get(out[0].cid, { timeout: 500 }))
         .to.eventually.be.rejected()
@@ -493,7 +487,7 @@ module.exports = (factory, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
-      expect(files[0].cid.code).to.equal(dagPb.code)
+      expect(files[0].cid.code).to.equal(dagPB.code)
       expect(files[0].size).to.equal(18)
     })
 
@@ -509,7 +503,7 @@ module.exports = (factory, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('QmaZTosBmPwo9LQ48ESPCEcNuX2kFxkpXYy8i3rxqBdzRG')
-      expect(files[0].cid.code).to.equal(dagPb.code)
+      expect(files[0].cid.code).to.equal(dagPB.code)
       expect(files[0].size).to.equal(11)
     })
 

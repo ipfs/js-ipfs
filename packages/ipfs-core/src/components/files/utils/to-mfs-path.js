@@ -1,10 +1,9 @@
-'use strict'
 
-const loadMfsRoot = require('./with-mfs-root')
-const toPathComponents = require('./to-path-components')
-const { exporter } = require('ipfs-unixfs-exporter')
-const errCode = require('err-code')
-const { CID } = require('multiformats/cid')
+import { loadMfsRoot } from './with-mfs-root.js'
+import { toPathComponents } from './to-path-components.js'
+import { exporter } from 'ipfs-unixfs-exporter'
+import errCode from 'err-code'
+import { CID } from 'multiformats/cid'
 
 const IPFS_PREFIX = 'ipfs'
 
@@ -88,7 +87,7 @@ const IPFS_PREFIX = 'ipfs'
  * @param {string | CID} path
  * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-const toMfsPath = async (context, path, options) => {
+export const toMfsPath = async (context, path, options) => {
   const root = await loadMfsRoot(context, options)
 
   /** @type {MfsPath} */
@@ -179,7 +178,7 @@ const toMfsPath = async (context, path, options) => {
     if ((output.entryType === 'file' || output.entryType === 'directory') && (res.type === 'file' || res.type === 'directory')) {
       output.unixfs = res.unixfs
     }
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.code !== 'ERR_NOT_FOUND') {
       throw err
     }
@@ -189,5 +188,3 @@ const toMfsPath = async (context, path, options) => {
 
   return output
 }
-
-module.exports = toMfsPath

@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { isWebWorker } = require('ipfs-utils/src/env')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { isWebWorker } from 'ipfs-utils/src/env.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -12,7 +12,7 @@ const { isWebWorker } = require('ipfs-utils/src/env')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testLocalAddrs (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

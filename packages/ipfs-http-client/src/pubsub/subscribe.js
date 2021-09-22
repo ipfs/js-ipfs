@@ -1,10 +1,10 @@
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const log = require('debug')('ipfs-http-client:pubsub:subscribe')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import debug from 'debug'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+const log = debug('ipfs-http-client:pubsub:subscribe')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -16,9 +16,9 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
 
 /**
  * @param {Options} options
- * @param {import('./subscription-tracker')} subsTracker
+ * @param {import('./subscription-tracker').SubscriptionTracker} subsTracker
  */
-module.exports = (options, subsTracker) => {
+export const createSubscribe = (options, subsTracker) => {
   return configure((api) => {
     /**
      * @type {PubsubAPI["subscribe"]}
@@ -101,12 +101,12 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
           seqno: uint8ArrayFromString(msg.seqno, 'base64pad'),
           topicIDs: msg.topicIDs
         })
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         err.message = `Failed to parse pubsub message: ${err.message}`
         onError(err, false, msg) // Not fatal
       }
     }
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (!isAbortError(err)) {
       onError(err, true) // Fatal
     }

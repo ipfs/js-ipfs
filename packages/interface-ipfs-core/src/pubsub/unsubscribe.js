@@ -1,10 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
-const { getTopic } = require('./utils')
-const { getDescribe, getIt } = require('../utils/mocha')
-const waitFor = require('../utils/wait-for')
+import { isBrowser, isWebWorker, isElectronRenderer } from 'ipfs-utils/src/env.js'
+import { getTopic } from './utils.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import waitFor from '../utils/wait-for.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +13,7 @@ const waitFor = require('../utils/wait-for')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testUnsubscribe (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

@@ -1,8 +1,7 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'state',
 
   describe: 'Query the state of IPNS pubsub.',

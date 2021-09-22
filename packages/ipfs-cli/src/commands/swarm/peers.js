@@ -1,10 +1,9 @@
-'use strict'
 
-const mafmt = require('mafmt')
-const { Multiaddr } = require('multiaddr')
-const { default: parseDuration } = require('parse-duration')
+import mafmt from 'mafmt'
+import { Multiaddr } from 'multiaddr'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'peers',
 
   describe: 'List peers with open connections',

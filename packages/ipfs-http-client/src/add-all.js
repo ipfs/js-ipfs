@@ -1,12 +1,11 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const toCamel = require('./lib/object-to-camel')
-const configure = require('./lib/configure')
-const multipartRequest = require('./lib/multipart-request')
-const toUrlSearchParams = require('./lib/to-url-search-params')
-const abortSignal = require('./lib/abort-signal')
-const { AbortController } = require('native-abort-controller')
+import { CID } from 'multiformats/cid'
+import { objectToCamel } from './lib/object-to-camel.js'
+import { configure } from './lib/configure.js'
+import { multipartRequest } from 'ipfs-core-utils/multipart-request'
+import { toUrlSearchParams } from './lib/to-url-search-params.js'
+import { abortSignal } from './lib/abort-signal.js'
+import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('ipfs-utils/src/types').ProgressFn} IPFSUtilsHttpUploadProgressFn
@@ -16,7 +15,7 @@ const { AbortController } = require('native-abort-controller')
  * @typedef {import('ipfs-core-types/src/root').AddResult} AddResult
  */
 
-module.exports = configure((api) => {
+export const createAddAll = configure((api) => {
   /**
    * @type {RootAPI["addAll"]}
    */
@@ -50,7 +49,7 @@ module.exports = configure((api) => {
     })
 
     for await (let file of res.ndjson()) {
-      file = toCamel(file)
+      file = objectToCamel(file)
 
       if (file.hash !== undefined) {
         yield toCoreInterface(file)

@@ -1,9 +1,9 @@
-'use strict'
+import {
+  pingResource
+} from '../resources/ping.js'
 
-const resources = require('../resources')
-
-module.exports = {
+export default [{
   method: 'POST',
   path: '/api/v0/ping',
-  ...resources.ping
-}
+  ...pingResource
+}]

@@ -334,10 +334,9 @@ See the [multihash](https://github.com/multiformats/js-multihash/blob/master/src
 Both js-ipfs and js-ipfs-http-client export a utility to make importing files from the file system easier (Note: it not available in the browser).
 
 ```js
-const IPFS = require('ipfs')
-const { globSource } = IPFS
+import { create, globSource } from 'ipfs'
 
-const ipfs = await IPFS.create()
+const ipfs = await create()
 
 //options specific to globSource
 const globSourceOptions = {
@@ -375,10 +374,9 @@ for await (const file of ipfs.addAll(globSource('./docs', globSourceOptions), ad
 Both js-ipfs and js-ipfs-http-client export a utility to make importing a file from a URL easier.
 
 ```js
-const IPFS = require('ipfs')
-const { urlSource } = IPFS
+import { create, urlSource } from 'ipfs'
 
-const ipfs = await IPFS.create()
+const ipfs = await create()
 
 const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
 console.log(file)

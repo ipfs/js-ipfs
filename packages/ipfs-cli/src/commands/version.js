@@ -1,9 +1,8 @@
-'use strict'
 
-const os = require('os')
-const { default: parseDuration } = require('parse-duration')
+import os from 'os'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'version',
 
   describe: 'Shows IPFS version information',

@@ -1,11 +1,10 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
+import { CID } from 'multiformats/cid'
 
 /**
  * @param {string|Uint8Array|CID} cid
  */
-exports.cleanCid = cid => {
+export function cleanCid (cid) {
   if (cid instanceof Uint8Array) {
     return CID.decode(cid)
   }

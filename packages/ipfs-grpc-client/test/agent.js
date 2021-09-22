@@ -1,8 +1,7 @@
 /* eslint-env mocha */
-'use strict'
 
-const { create } = require('../src')
-const WebSocket = require('ws')
+import { create } from '../src/index.js'
+import WebSocket from 'ws'
 
 function startServer () {
   return new Promise((resolve) => {

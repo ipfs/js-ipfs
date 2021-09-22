@@ -99,7 +99,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 - `privateKey` (string/PeerId) A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
     ```js
     // Generating a Peer ID:
-    const PeerId = require('peer-id')
+    import PeerId from 'peer-id'
     // Generates a new Peer ID, complete with public/private keypair
     // See https://github.com/libp2p/js-peer-id
     const peerId = await PeerId.create({ bits: 2048 })
@@ -179,7 +179,7 @@ Enable and configure experimental features.
 
 | Type | Default |
 |------|---------|
-| object | [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-browser.js) in browsers |
+| object | [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config-browser.js) in browsers |
 
 Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](./CONFIG.md).
 
@@ -187,7 +187,7 @@ Modify the default IPFS node config. This object will be *merged* with the defau
 
 | Type | Default |
 |------|---------|
-| object | [`ipld.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/ipld.js) |
+| object | [`ipld.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/ipld.js) |
 
 Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
 
@@ -202,10 +202,14 @@ Examples for the sync option:
 ```js
 import ipldGit from 'ipld-git'
 import ipldBitcoin from 'ipld-bitcoin'
+import { convert } from 'ipld-format-to-blockcodec'
 
 const node = await IPFS.create({
   ipld: {
-    formats: [ipldGit, ipldBitcoin]
+    codecs: [
+      convert(ipldGit),
+      convert(ipldBitcoin)
+    ]
   }
 })
 ```
@@ -214,9 +218,17 @@ const node = await IPFS.create({
 <details><summary>Commonjs Environments</summary>
 
 ```js
+const IPFS = require('ipfs')
+const ipldGit = require('ipld-git')
+const ipldBitcoin = require('ipld-bitcoin')
+const { convert } = require('ipld-format-to-blockcodec')
+
 const node = await IPFS.create({
   ipld: {
-    formats: [require('ipld-git'), require('ipld-bitcoin')]
+    codecs: [
+      convert(ipldGit),
+      convert(ipldBitcoin)
+    ]
   }
 })
 ```
@@ -228,11 +240,15 @@ const node = await IPFS.create({
 <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipld-git/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipld-bitcoin/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipld-format-to-blockcodec/dist/index.min.js"></script>
 <script>
   async function main() {
     const node = await self.IPFS.create({
       ipld: {
-        formats: [self.IpldGit, self.IpldBitcoin],
+        codecs: [
+          convert(self.ipldGit),
+          convert(self.ipldBitcoin)
+        ]
       },
     });
   }
@@ -249,9 +265,9 @@ Examples for the async option:
 ```js
 const node = await IPFS.create({
   ipld: {
-    async loadFormat (codec) {
+    async loadCodec (codec) {
       if (codec === multicodec.GIT_RAW) {
-        return import('ipld-git') // This is a dynamic import
+        return convert(await import('ipld-git')) // This is a dynamic import
       } else {
         throw new Error('unable to load format ' + multicodec.print[codec])
       }
@@ -322,7 +338,7 @@ const node = await self.IPFS.create({
 
 | Type | Default |
 |------|---------|
-| object   | [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in browsers |
+| object   | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src)/libp2p-browser.js) in browsers |
 | function | [`libp2p bundle`](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/custom-libp2p)                                         |
 
 The libp2p option allows you to build your libp2p node by configuration, or via a bundle function. If you are looking to just modify the below options, using the object format is the quickest way to get the default features of libp2p. If you need to create a more customized libp2p node, such as with custom transports or peer/content routers that need some of the ipfs data on startup, a custom bundle is a great way to achieve this.
@@ -346,7 +362,7 @@ console.log('Node is ready to use but not started!')
 try {
   await node.start()
   console.log('Node started!')
-} catch (error) {
+} catch (/** @type {any} */ error) {
   console.error('Node failed to start!', error)
 }
 ```
@@ -392,9 +408,10 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ###### Example
 
 ```js
-const IPFS = require('ipfs')
-const { globSource } = IPFS
-const ipfs = await IPFS.create()
+import { create, globSource } from 'ipfs'
+
+const ipfs = await create()
+
 for await (const file of ipfs.addAll(globSource('./docs', { recursive: true }))) {
   console.log(file)
 }
@@ -426,9 +443,9 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ###### Example
 
 ```js
-const IPFS = require('ipfs')
-const { urlSource } = IPFS
-const ipfs = await IPFS.create()
+import { create, urlSource } from 'ipfs'
+
+const ipfs = await create()
 
 const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
 console.log(file)

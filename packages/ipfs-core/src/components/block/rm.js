@@ -1,10 +1,9 @@
-'use strict'
 
-const errCode = require('err-code')
-const { parallelMap, filter } = require('streaming-iterables')
-const { pipe } = require('it-pipe')
-const { cleanCid } = require('./utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import errCode from 'err-code'
+import { parallelMap, filter } from 'streaming-iterables'
+import { pipe } from 'it-pipe'
+import { cleanCid } from './utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 const BLOCK_RM_CONCURRENCY = 8
 
@@ -12,7 +11,7 @@ const BLOCK_RM_CONCURRENCY = 8
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ repo }) => {
+export function createRm ({ repo }) {
   /**
    * @type {import('ipfs-core-types/src/block').API["rm"]}
    */
@@ -42,7 +41,7 @@ module.exports = ({ repo }) => {
             }
 
             await repo.blocks.delete(cid)
-          } catch (err) {
+          } catch (/** @type {any} */ err) {
             if (!options.force) {
               err.message = `cannot remove ${cid}: ${err.message}`
               result.error = err

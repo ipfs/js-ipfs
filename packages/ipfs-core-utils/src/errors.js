@@ -1,6 +1,5 @@
-'use strict'
 
-class TimeoutError extends Error {
+export class TimeoutError extends Error {
   constructor (message = 'request timed out') {
     super(message)
     this.name = 'TimeoutError'
@@ -9,4 +8,3 @@ class TimeoutError extends Error {
 }
 
 TimeoutError.code = 'ERR_TIMEOUT'
-exports.TimeoutError = TimeoutError

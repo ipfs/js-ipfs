@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const ipfsClient = require('../../src').create
-const delay = require('delay')
+import { expect } from 'aegir/utils/chai.js'
+import delay from 'delay'
+import { create as httpClient } from '../../src/index.js'
+import http, { Agent } from 'http'
 
 /**
  * @typedef {import('http').IncomingMessage} IncomingMessage
@@ -13,7 +13,7 @@ const delay = require('delay')
 function startServer (handler) {
   return new Promise((resolve) => {
     // spin up a test http server to inspect the requests made by the library
-    const server = require('http').createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       req.on('data', () => {})
       req.on('end', async () => {
         const out = await handler(req)
@@ -40,8 +40,6 @@ describe('agent', function () {
   let agent
 
   before(() => {
-    const { Agent } = require('http')
-
     agent = new Agent({
       maxSockets: 2
     })
@@ -59,7 +57,7 @@ describe('agent', function () {
       return p
     })
 
-    const ipfs = ipfsClient({
+    const ipfs = httpClient({
       url: `http://localhost:${server.port}`,
       agent
     })

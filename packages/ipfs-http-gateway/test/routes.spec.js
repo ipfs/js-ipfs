@@ -1,15 +1,14 @@
 /* eslint-env mocha */
 /* eslint dot-notation: 0, dot-notation: 0, quote-props: 0 */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const FileType = require('file-type')
-const { CID } = require('multiformats/cid')
-const { base32 } = require('multiformats/bases/base32')
-const http = require('./utils/http')
-const sinon = require('sinon')
-const fs = require('fs')
+import { expect } from 'aegir/utils/chai.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import FileType from 'file-type'
+import { CID } from 'multiformats/cid'
+import { base32 } from 'multiformats/bases/base32'
+import { http } from './utils/http.js'
+import sinon from 'sinon'
+import fs from 'fs'
 
 describe('HTTP Gateway', function () {
   this.timeout(80 * 1000)

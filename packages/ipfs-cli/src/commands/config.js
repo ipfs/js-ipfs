@@ -1,8 +1,7 @@
-'use strict'
+import { commands } from './config/index.js'
+import parseDuration from 'parse-duration'
 
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'config <key> [value]',
 
   description: 'Get and set IPFS config values.',
@@ -12,7 +11,8 @@ module.exports = {
    */
   builder: (yargs) => {
     return yargs
-      .commandDir('config')
+      // @ts-expect-error types are wrong
+      .command(commands)
       .option('bool', {
         type: 'boolean',
         describe: 'Set a boolean value.',
@@ -58,7 +58,7 @@ module.exports = {
       } else if (json) {
         try {
           value = JSON.parse(value)
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           throw new Error('invalid JSON provided')
         }
       }
