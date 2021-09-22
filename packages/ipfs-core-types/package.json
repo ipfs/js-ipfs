@@ -3,31 +3,34 @@
   "version": "0.7.3",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "types": "dist/src/index.d.ts",
+  "types": "types/src/index.d.ts",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
     "clean": "rimraf ./dist",
-    "lint": "aegir ts -p check && aegir lint"
+    "lint": "aegir ts -p check && aegir lint",
+    "build": "aegir build && copyfiles src/* src/**/* package.json README.md CHANGELOG.md COPYRIGHT LICENSE-APACHE LICENSE-MIT dist"
   },
   "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
+    "*",
+    "!**/*.tsbuildinfo"
   ],
   "typesVersions": {
     "*": {
       "src/*": [
-        "dist/src/*",
-        "dist/src/*/index"
+        "types/src/*",
+        "types/src/*/index"
       ],
       "src/": [
-        "dist/src/index"
+        "types/src/index"
       ]
     }
   },
   "eslintConfig": {
     "extends": "ipfs"
+  },
+  "publishConfig": {
+    "directory": "dist"
   },
   "repository": {
     "type": "git",
@@ -47,6 +50,7 @@
   },
   "devDependencies": {
     "aegir": "^35.1.0",
+    "copyfiles": "^2.4.1",
     "rimraf": "^3.0.2"
   },
   "contributors": [
