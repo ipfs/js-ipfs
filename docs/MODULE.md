@@ -202,10 +202,14 @@ Examples for the sync option:
 ```js
 import ipldGit from 'ipld-git'
 import ipldBitcoin from 'ipld-bitcoin'
+import { convert } from 'ipld-format-to-blockcodec'
 
 const node = await IPFS.create({
   ipld: {
-    formats: [ipldGit, ipldBitcoin]
+    codecs: [
+      convert(ipldGit),
+      convert(ipldBitcoin)
+    ]
   }
 })
 ```
@@ -214,9 +218,17 @@ const node = await IPFS.create({
 <details><summary>Commonjs Environments</summary>
 
 ```js
+const IPFS = require('ipfs')
+const ipldGit = require('ipld-git')
+const ipldBitcoin = require('ipld-bitcoin')
+const { convert } = require('ipld-format-to-blockcodec')
+
 const node = await IPFS.create({
   ipld: {
-    formats: [require('ipld-git'), require('ipld-bitcoin')]
+    codecs: [
+      convert(ipldGit),
+      convert(ipldBitcoin)
+    ]
   }
 })
 ```
@@ -228,11 +240,15 @@ const node = await IPFS.create({
 <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipld-git/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipld-bitcoin/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipld-format-to-blockcodec/dist/index.min.js"></script>
 <script>
   async function main() {
     const node = await self.IPFS.create({
       ipld: {
-        formats: [self.IpldGit, self.IpldBitcoin],
+        codecs: [
+          convert(self.ipldGit),
+          convert(self.ipldBitcoin)
+        ]
       },
     });
   }
@@ -249,9 +265,9 @@ Examples for the async option:
 ```js
 const node = await IPFS.create({
   ipld: {
-    async loadFormat (codec) {
+    async loadCodec (codec) {
       if (codec === multicodec.GIT_RAW) {
-        return import('ipld-git') // This is a dynamic import
+        return convert(await import('ipld-git')) // This is a dynamic import
       } else {
         throw new Error('unable to load format ' + multicodec.print[codec])
       }
@@ -392,9 +408,10 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ###### Example
 
 ```js
-const IPFS = require('ipfs')
-const { globSource } = IPFS
-const ipfs = await IPFS.create()
+import { create, globSource } from 'ipfs'
+
+const ipfs = await create()
+
 for await (const file of ipfs.addAll(globSource('./docs', { recursive: true }))) {
   console.log(file)
 }
@@ -426,9 +443,9 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ###### Example
 
 ```js
-const IPFS = require('ipfs')
-const { urlSource } = IPFS
-const ipfs = await IPFS.create()
+import { create, urlSource } from 'ipfs'
+
+const ipfs = await create()
 
 const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
 console.log(file)

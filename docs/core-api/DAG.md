@@ -64,7 +64,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const { Readable } = require('stream')
+import { Readable } from 'stream'
 
 const out = await ipfs.dag.export(cid)
 

@@ -45,7 +45,7 @@ All encoders take an optional `transfer` array. If provided, the encoder will ad
 Codecs for [CID][] implementation in JavaScript.
 
 ```js
-const { CID, encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
+import { CID, encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
 
 const cid = CID.parse('bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu')
 
@@ -71,7 +71,6 @@ Codec for DAGNodes accepted by `ipfs.dag.put` API.
 
 ```js
 import { encodeNode, decodeNode } from 'ipfs-message-port-protocol/dag'
-
 
 const cid = CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
 const dagNode = { hi: 'hello', link: cid }
@@ -104,7 +103,7 @@ iterable is encoded to a [MessagePort][] that can only be transferred).
 
 
 ```js
-const { encodeIterable, decodeIterable } = require('ipfs-message-port-protocol/src/core')
+import { encodeIterable, decodeIterable } from 'ipfs-message-port-protocol/core')
 
 const data = ipfs.cat('/ipfs/QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
 
@@ -150,7 +149,7 @@ port2.onmessage = async ({data}) => {
 Primitive callbacks that take single parameter supported by [structured cloning algorithm][] like progress callback used across IPFS APIs can be encoded / decoded. Unilke most encoders `transfer` argument is required (because value is encoded to a [MessagePort][] that can only be transferred)
 
 ```js
-const { encodeCallback, decodeCallback } = require('ipfs-message-port-protocol/src/core')
+import { encodeCallback, decodeCallback } from 'ipfs-message-port-protocol/core'
 
 const { port1, port2 } = new MessageChannel()
 

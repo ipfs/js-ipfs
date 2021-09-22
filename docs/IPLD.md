@@ -49,38 +49,41 @@ If your application requires support for extra codecs, you can configure them as
 1. Configure the [IPLD layer](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/MODULE.md#optionsipld) of your IPFS daemon to support the codec. This step is necessary so the node knows how to prepare data received over HTTP to be passed to IPLD for serialization:
 
     ```javascript
-    const ipfs = require('ipfs')
+    import { create } from 'ipfs'
+    import customBlockCodec from 'custom-blockcodec'
+    import customMultibase from 'custom-multibase'
+    import customMultihasher from 'custom-multihasher'
 
-    const node = await ipfs({
+    const node = await create({
       ipld: {
         // either specify BlockCodecs as part of the `codecs` list
         codecs: [
-          require('custom-blockcodec')
+          customBlockCodec
         ],
 
         // and/or supply a function to load them dynamically
         loadCodec: async (codecNameOrCode) => {
-          return require(codecNameOrCode)
+          return import(codecNameOrCode)
         },
 
         // either specify Multibase codecs as part of the `bases` list
         bases: [
-          require('custom-multibase')
+          customMultibase
         ],
 
         // and/or supply a function to load them dynamically
         loadBase: async (baseNameOrCode) => {
-          return require(baseNameOrCode)
+          return import(baseNameOrCode)
         },
 
         // either specify Multihash hashers as part of the `hashers` list
         hashers: [
-          require('custom-multibase')
+          customMultihasher
         ],
 
         // and/or supply a function to load them dynamically
         loadHasher: async (hashNameOrCode) => {
-          return require(hashNameOrCode)
+          return import(hashNameOrCode)
         }
       }
     })
@@ -89,39 +92,42 @@ If your application requires support for extra codecs, you can configure them as
 2. Configure your IPFS HTTP API Client to support the codec. This is necessary so that the client can send the data to the IPFS node over HTTP:
 
     ```javascript
-    const ipfsHttpClient = require('ipfs-http-client')
+    import { create } from 'ipfs-http-client'
+    import customBlockCodec from 'custom-blockcodec'
+    import customMultibase from 'custom-multibase'
+    import customMultihasher from 'custom-multihasher'
 
-    const client = ipfsHttpClient({
+    const client = create({
       url: 'http://127.0.0.1:5002',
       ipld: {
         // either specify BlockCodecs as part of the `codecs` list
         codecs: [
-          require('custom-blockcodec')
+          customBlockCodec
         ],
 
         // and/or supply a function to load them dynamically
         loadCodec: async (codecNameOrCode) => {
-          return require(codecNameOrCode)
+          return import(codecNameOrCode)
         },
 
         // either specify Multibase codecs as part of the `bases` list
         bases: [
-          require('custom-multibase')
+          customMultibase
         ],
 
         // and/or supply a function to load them dynamically
         loadBase: async (baseNameOrCode) => {
-          return require(baseNameOrCode)
+          return import(baseNameOrCode)
         },
 
         // either specify Multihash hashers as part of the `hashers` list
         hashers: [
-          require('custom-multibase')
+          customMultihasher
         ],
 
         // and/or supply a function to load them dynamically
         loadHasher: async (hashNameOrCode) => {
-          return require(hashNameOrCode)
+          return import(hashNameOrCode)
         }
       }
     })
