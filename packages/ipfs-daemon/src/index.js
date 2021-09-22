@@ -86,7 +86,7 @@ async function getLibp2p ({ libp2pOptions }) {
 
   if (isElectron) {
     try {
-      // @ts-ignore - cant find type info
+      // @ts-expect-error - cant find type info
       electronWebRTC = await import('electron-webrtc')()
     } catch (/** @type {any} */ err) {
       log('failed to load optional electron-webrtc dependency')
@@ -95,8 +95,8 @@ async function getLibp2p ({ libp2pOptions }) {
 
   if (!electronWebRTC) {
     try {
-      // @ts-ignore - cant find type info
-      wrtc = await import('wrtc')
+      // @ts-expect-error - cant find type info
+      wrtc = (await import('wrtc')).default
     } catch (/** @type {any} */ err) {
       log('failed to load optional webrtc dependency')
     }
