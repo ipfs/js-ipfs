@@ -1,11 +1,10 @@
-'use strict'
 
-const fs = require('fs')
-const concat = require('it-concat')
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../../utils')
+import fs from 'fs'
+import concat from 'it-concat'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../../utils.js'
 
-module.exports = {
+export default {
   command: 'set-data <root> [data]',
 
   describe: 'Set data field of an ipfs object',

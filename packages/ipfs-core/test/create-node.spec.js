@@ -1,17 +1,18 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const sinon = require('sinon')
-const { isNode } = require('ipfs-utils/src/env')
-const tmpDir = require('ipfs-utils/src/temp-dir')
-const PeerId = require('peer-id')
-const { keys: { supportedKeys } } = require('libp2p-crypto')
-const IPFS = require('../src')
-const defer = require('p-defer')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const createTempRepo = require('./utils/create-repo')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import { isNode } from 'ipfs-utils/src/env.js'
+import tmpDir from 'ipfs-utils/src/temp-dir.js'
+import PeerId from 'peer-id'
+import { keys } from 'libp2p-crypto'
+import * as IPFS from '../src/index.js'
+import defer from 'p-defer'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { createTempRepo } from './utils/create-repo.js'
+
+const { supportedKeys } = keys
 
 describe('create node', function () {
   /** @type {import('ipfs-repo').IPFSRepo} */

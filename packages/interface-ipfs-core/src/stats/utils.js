@@ -1,6 +1,4 @@
-'use strict'
-
-const { expect } = require('../utils/mocha')
+import { expect } from 'aegir/utils/chai.js'
 
 /**
  * @param {any} n
@@ -13,7 +11,7 @@ const isBigInt = (n) => {
  * @param {Error | null} err
  * @param {import('ipfs-core-types/src/bitswap').Stats} stats
  */
-exports.expectIsBitswap = (err, stats) => {
+export function expectIsBitswap (err, stats) {
   expect(err).to.not.exist()
   expect(stats).to.exist()
   expect(stats).to.have.a.property('provideBufLen')
@@ -41,7 +39,7 @@ exports.expectIsBitswap = (err, stats) => {
  * @param {Error | null} err
  * @param {import('ipfs-core-types/src/stats').BWResult} stats
  */
-exports.expectIsBandwidth = (err, stats) => {
+export function expectIsBandwidth (err, stats) {
   expect(err).to.not.exist()
   expect(stats).to.exist()
   expect(stats).to.have.a.property('totalIn')
@@ -58,7 +56,7 @@ exports.expectIsBandwidth = (err, stats) => {
  * @param {Error | null} err
  * @param {import('ipfs-core-types/src/repo').StatResult} res
  */
-exports.expectIsRepo = (err, res) => {
+export function expectIsRepo (err, res) {
   expect(err).to.not.exist()
   expect(res).to.exist()
   expect(res).to.have.a.property('numObjects')

@@ -1,0 +1,112 @@
+{
+  "name": "ipfs-core-config",
+  "version": "0.0.1",
+  "description": "Package to store node and browser specific config for ipfs-core",
+  "author": "Alex Potsides <alex@achingbrain.net>",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config#readme",
+  "bugs": "https://github.com/ipfs/js-ipfs/issues",
+  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "types/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./config": {
+      "browser": "./src/config.browser.js",
+      "import": "./src/config.js"
+    },
+    "./dns": {
+      "browser": "./src/dns.browser.js",
+      "import": "./src/dns.js"
+    },
+    "./init-assets": {
+      "browser": "./src/init-assets.browser.js",
+      "import": "./src/init-assets.js"
+    },
+    "./libp2p": {
+      "browser": "./src/libp2p.browser.js",
+      "import": "./src/libp2p.js"
+    },
+    "./libp2p-pubsub-routers": {
+      "browser": "./src/libp2p-pubsub-routers.browser.js",
+      "import": "./src/libp2p-pubsub-routers.js"
+    },
+    "./preload": {
+      "browser": "./src/preload.browser.js",
+      "import": "./src/preload.js"
+    },
+    "./repo": {
+      "browser": "./src/repo.browser.js",
+      "import": "./src/repo.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "scripts": {
+    "lint": "aegir ts -p check && aegir lint",
+    "clean": "rimraf ./dist",
+    "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-core-utils",
+    "build": "aegir build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@chainsafe/libp2p-noise": "^4.0.0",
+    "blockstore-datastore-adapter": "^1.0.2",
+    "datastore-core": "^5.0.1",
+    "datastore-fs": "^5.0.2",
+    "datastore-level": "^6.0.2",
+    "debug": "^4.1.1",
+    "err-code": "^3.0.1",
+    "hashlru": "^2.3.0",
+    "ipfs-repo": "^12.0.0",
+    "ipfs-utils": "^8.1.4",
+    "ipns": "^0.14.0",
+    "is-ipfs": "^6.0.1",
+    "it-all": "^1.0.4",
+    "it-drain": "^1.0.3",
+    "libp2p-floodsub": "^0.27.0",
+    "libp2p-gossipsub": "^0.11.1",
+    "libp2p-kad-dht": "^0.24.2",
+    "libp2p-mdns": "^0.17.0",
+    "libp2p-mplex": "^0.10.2",
+    "libp2p-tcp": "^0.17.1",
+    "libp2p-webrtc-star": "^0.23.0",
+    "libp2p-websockets": "^0.16.1",
+    "p-queue": "^6.6.1",
+    "uint8arrays": "^3.0.0"
+  },
+  "devDependencies": {
+    "aegir": "^35.1.0",
+    "rimraf": "^3.0.2",
+    "ipfs-core-utils": "^0.10.5"
+  }
+}

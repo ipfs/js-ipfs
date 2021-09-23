@@ -1,15 +1,13 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const { multiaddr } = require('multiaddr')
-const { expect } = require('aegir/utils/chai')
-
-const IpfsHttpClient = require('../')
+import { CID } from 'multiformats/cid'
+import { Multiaddr } from 'multiaddr'
+import { expect } from 'aegir/utils/chai.js'
+import * as IpfsHttpClient from '../src/index.js'
 
 describe('exports', () => {
   it('should export the expected types and utilities', () => {
     expect(IpfsHttpClient.CID).to.equal(CID)
-    expect(IpfsHttpClient.multiaddr).to.equal(multiaddr)
+    expect(IpfsHttpClient.multiaddr).to.equal(Multiaddr)
   })
 })

@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { Multiaddr } = require('multiaddr')
-const PeerId = require('peer-id')
-const delay = require('delay')
-const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+import { Multiaddr } from 'multiaddr'
+import PeerId from 'peer-id'
+import delay from 'delay'
+import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -16,8 +16,8 @@ const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
-  const ipfsOptions = getIpfsOptions()
+export function testPeers (factory, options) {
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 

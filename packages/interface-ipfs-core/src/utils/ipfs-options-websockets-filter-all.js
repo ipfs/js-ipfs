@@ -1,19 +1,20 @@
-'use strict'
+// @ts-expect-error no types
+import WS from 'libp2p-websockets'
+// @ts-expect-error no types
+import filters from 'libp2p-websockets/src/filters.js'
 
-// @ts-ignore no types
-const WS = require('libp2p-websockets')
-// @ts-ignore no types
-const filters = require('libp2p-websockets/src/filters')
 const transportKey = WS.prototype[Symbol.toStringTag]
 
-module.exports = () => ({
-  libp2p: {
-    config: {
-      transport: {
-        [transportKey]: {
-          filter: filters.all
+export function ipfsOptionsWebsocketsFilterAll () {
+  return {
+    libp2p: {
+      config: {
+        transport: {
+          [transportKey]: {
+            filter: filters.all
+          }
         }
       }
     }
   }
-})
+}

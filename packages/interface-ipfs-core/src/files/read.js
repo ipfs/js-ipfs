@@ -1,13 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
-const drain = require('it-drain')
-const all = require('it-all')
-const { fixtures } = require('../utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const { randomBytes } = require('iso-random-stream')
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import drain from 'it-drain'
+import all from 'it-all'
+import { fixtures } from '../utils/index.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { createShardedDirectory } from '../utils/create-sharded-directory.js'
+import { randomBytes } from 'iso-random-stream'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -17,7 +17,7 @@ const { randomBytes } = require('iso-random-stream')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testRead (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
   const smallFile = randomBytes(13)

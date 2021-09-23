@@ -1,11 +1,10 @@
-'use strict'
 
-const errCode = require('err-code')
+import errCode from 'err-code'
 
 /**
  * @param {any} input
  */
-function parseMtime (input) {
+export function parseMtime (input) {
   if (input == null) {
     return undefined
   }
@@ -73,5 +72,3 @@ function parseMtime (input) {
 
   return mtime
 }
-
-module.exports = parseMtime

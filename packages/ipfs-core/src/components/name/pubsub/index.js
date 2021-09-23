@@ -1,19 +1,17 @@
-'use strict'
 
-const createCancelAPI = require('./cancel')
-const createStateAPI = require('./state')
-const createSubsAPI = require('./subs')
+import { createCancel } from './cancel.js'
+import { createState } from './state.js'
+import { createSubs } from './subs.js'
 
-class PubSubAPI {
+export class PubSubAPI {
   /**
    * @param {Object} config
-   * @param {import('../../ipns')} config.ipns
+   * @param {import('../../ipns').IPNSAPI} config.ipns
    * @param {import('../../../types').Options} config.options
    */
   constructor ({ ipns, options }) {
-    this.cancel = createCancelAPI({ ipns, options })
-    this.state = createStateAPI({ ipns, options })
-    this.subs = createSubsAPI({ ipns, options })
+    this.cancel = createCancel({ ipns, options })
+    this.state = createState({ ipns, options })
+    this.subs = createSubs({ ipns, options })
   }
 }
-module.exports = PubSubAPI

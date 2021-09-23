@@ -1,20 +1,18 @@
-'use strict'
+import { expect } from 'aegir/utils/chai.js'
+import loadFixture from 'aegir/utils/fixtures.js'
+import { CID } from 'multiformats/cid'
+import drain from 'it-drain'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import first from 'it-first'
 
-const { expect } = require('../utils/mocha')
-const loadFixture = require('aegir/utils/fixtures')
-const { CID } = require('multiformats/cid')
-const drain = require('it-drain')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const first = require('it-first')
-
-const pinTypes = {
+export const pinTypes = {
   direct: 'direct',
   recursive: 'recursive',
   indirect: 'indirect',
   all: 'all'
 }
 
-const fixtures = Object.freeze({
+export const fixtures = Object.freeze({
   // NOTE: files under 'directory' need to be different than standalone ones in 'files'
   directory: Object.freeze({
     cid: CID.parse('QmY8KdYQSYKFU5hM7F5ioZ5yYSgV5VZ1kDEdqfRL3rFgcd'),
@@ -40,7 +38,7 @@ const fixtures = Object.freeze({
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  */
-const clearPins = async (ipfs) => {
+export const clearPins = async (ipfs) => {
   await drain(ipfs.pin.rmAll(ipfs.pin.ls({ type: pinTypes.recursive })))
   await drain(ipfs.pin.rmAll(ipfs.pin.ls({ type: pinTypes.direct })))
 }
@@ -48,7 +46,7 @@ const clearPins = async (ipfs) => {
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  */
-const clearRemotePins = async (ipfs) => {
+export const clearRemotePins = async (ipfs) => {
   for (const { service } of await ipfs.pin.remote.service.ls()) {
     const cids = []
     const status = ['queued', 'pinning', 'pinned', 'failed']
@@ -71,7 +69,7 @@ const clearRemotePins = async (ipfs) => {
  * @param {string} service
  * @param {Record<string, CID>} pins
  */
-const addRemotePins = async (ipfs, service, pins) => {
+export const addRemotePins = async (ipfs, service, pins) => {
   const requests = []
   for (const [name, cid] of Object.entries(pins)) {
     requests.push(ipfs.pin.remote.add(cid, {
@@ -86,7 +84,7 @@ const addRemotePins = async (ipfs, service, pins) => {
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  */
-const clearServices = async (ipfs) => {
+export const clearServices = async (ipfs) => {
   const services = await ipfs.pin.remote.service.ls()
   await Promise.all(services.map(({ service }) => ipfs.pin.remote.service.rm(service)))
 }
@@ -97,7 +95,7 @@ const clearServices = async (ipfs) => {
  * @param {string} type
  * @param {boolean} pinned
  */
-const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
+export const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
   if (typeof type === 'boolean') {
     pinned = type
     type = pinTypes.all
@@ -112,7 +110,7 @@ const expectPinned = async (ipfs, cid, type = pinTypes.all, pinned = true) => {
  * @param {CID} cid
  * @param {string} type
  */
-const expectNotPinned = (ipfs, cid, type = pinTypes.all) => {
+export const expectNotPinned = (ipfs, cid, type = pinTypes.all) => {
   return expectPinned(ipfs, cid, type, false)
 }
 
@@ -121,24 +119,12 @@ const expectNotPinned = (ipfs, cid, type = pinTypes.all) => {
  * @param {CID} cid
  * @param {string} type
  */
-async function isPinnedWithType (ipfs, cid, type) {
+export async function isPinnedWithType (ipfs, cid, type) {
   try {
     const res = await first(ipfs.pin.ls({ paths: cid, type }))
 
     return Boolean(res)
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     return false
   }
-}
-
-module.exports = {
-  fixtures,
-  clearPins,
-  clearServices,
-  clearRemotePins,
-  addRemotePins,
-  expectPinned,
-  expectNotPinned,
-  isPinnedWithType,
-  pinTypes
 }

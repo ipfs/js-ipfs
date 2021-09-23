@@ -1,18 +1,14 @@
 /* eslint-env browser */
 
-'use strict'
+import { IPFSClient } from '../../src/index.js'
 
-const IPFSClient = require('../../src/index')
-
-const activate = () => {
+export const activate = () => {
   const worker = new SharedWorker(process.env.IPFS_WORKER_URL, 'IPFSService')
   const client = IPFSClient.from(worker.port)
   return client
 }
-exports.activate = activate
 
-const detached = () => {
+export const detached = () => {
   const client = IPFSClient.detached()
   return client
 }
-exports.detached = detached

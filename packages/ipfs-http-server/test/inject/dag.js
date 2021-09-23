@@ -1,20 +1,19 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const Readable = require('stream').Readable
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
-const { CID } = require('multiformats/cid')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const matchIterable = require('../utils/match-iterable')
-const sinon = require('sinon')
-const { AbortSignal } = require('native-abort-controller')
-const { base58btc } = require('multiformats/bases/base58')
-const { base32 } = require('multiformats/bases/base32')
-const drain = require('it-drain')
+import { expect } from 'aegir/utils/chai.js'
+import { Readable } from 'stream'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
+import { CID } from 'multiformats/cid'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import { matchIterable } from '../utils/match-iterable.js'
+import sinon from 'sinon'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base32 } from 'multiformats/bases/base32'
+import drain from 'it-drain'
 
 const toHeadersAndPayload = async (thing) => {
   const stream = new Readable()

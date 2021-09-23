@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @typedef {import('./error').EncodedError} EncodedError
  * @typedef {import('./cid').EncodedCID} EncodedCID
@@ -19,10 +17,9 @@
  * @param {Uint8Array} data
  * @param {Transferable[]} [transfer]
  */
-const encodeBlock = (data, transfer) => {
+export const encodeBlock = (data, transfer) => {
   if (transfer) {
     transfer.push(data.buffer)
   }
   return data
 }
-exports.encodeBlock = encodeBlock

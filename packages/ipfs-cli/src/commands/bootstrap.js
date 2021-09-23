@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './bootstrap/index.js'
 
-module.exports = {
+export default {
   command: 'bootstrap <command>',
 
   description: 'Show or edit the list of bootstrap peers.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('bootstrap')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

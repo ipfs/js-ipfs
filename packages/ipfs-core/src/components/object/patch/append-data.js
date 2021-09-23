@@ -1,16 +1,17 @@
-'use strict'
 
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import { createGet } from '../get.js'
+import { createPut } from '../put.js'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../../types').Preload} config.preload
  */
-module.exports = ({ repo, preload }) => {
-  const get = require('../get')({ repo, preload })
-  const put = require('../put')({ repo, preload })
+export function createAppendData ({ repo, preload }) {
+  const get = createGet({ repo, preload })
+  const put = createPut({ repo, preload })
 
   /**
    * @type {import('ipfs-core-types/src/object/patch').API["appendData"]}

@@ -1,12 +1,10 @@
-'use strict'
-
-const drain = require('it-drain')
+import drain from 'it-drain'
 
 /**
  * @param {*} fn
  * @returns {Promise<void>}
  */
-module.exports = (fn) => {
+export default function testTimeout (fn) {
   return new Promise((resolve, reject) => {
     // some operations are either synchronous so cannot time out, or complete during
     // processing of the microtask queue so the timeout timer doesn't fire.  If this

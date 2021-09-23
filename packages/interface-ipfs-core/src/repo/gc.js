@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
-const drain = require('it-drain')
-const { CID } = require('multiformats/cid')
-const { base64 } = require('multiformats/bases/base64')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import all from 'it-all'
+import drain from 'it-drain'
+import { CID } from 'multiformats/cid'
+import { base64 } from 'multiformats/bases/base64'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
@@ -41,7 +41,7 @@ async function shouldNotHaveRef (ipfs, cid) {
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testGc (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

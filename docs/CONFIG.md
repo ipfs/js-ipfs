@@ -200,7 +200,7 @@ Options for Multicast DNS peer discovery:
 
 ### `webRTCStar`
 
-WebRTCStar is a discovery mechanism prvided by a signalling-star that allows peer-to-peer communications in the browser.
+WebRTCStar is a discovery mechanism provided by a signalling-star that allows peer-to-peer communications in the browser.
 
 Options for webRTCstar peer discovery:
 

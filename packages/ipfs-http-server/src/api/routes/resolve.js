@@ -1,9 +1,9 @@
-'use strict'
+import {
+  resolveResource
+} from '../resources/resolve.js'
 
-const resources = require('../resources')
-
-module.exports = {
+export default [{
   method: 'POST',
   path: '/api/v0/resolve',
-  ...resources.resolve
-}
+  ...resolveResource
+}]

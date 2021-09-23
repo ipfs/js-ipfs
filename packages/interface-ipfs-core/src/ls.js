@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fixtures } = require('./utils')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const all = require('it-all')
-const { CID } = require('multiformats/cid')
-const testTimeout = require('./utils/test-timeout')
+import { fixtures } from './utils/index.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import all from 'it-all'
+import { CID } from 'multiformats/cid'
+import testTimeout from './utils/test-timeout.js'
 
 /**
  * @param {string} prefix
@@ -20,7 +20,7 @@ const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testLs (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

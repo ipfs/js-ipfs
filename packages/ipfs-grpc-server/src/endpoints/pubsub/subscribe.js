@@ -1,13 +1,12 @@
-'use strict'
 
-const subscriptions = require('./subscriptions')
-const { nanoid } = require('nanoid')
+import { subscriptions } from './subscriptions.js'
+import { nanoid } from 'nanoid'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('../../types').Options} options
  */
-module.exports = function grpcPubsubSubscribe (ipfs, options = {}) {
+export function grpcPubsubSubscribe (ipfs, options = {}) {
   /**
    * TODO: Fill out input/output types after https://github.com/ipfs/js-ipfs/issues/3594
    *

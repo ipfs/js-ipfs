@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const f = require('./utils/factory')()
+import { expect } from 'aegir/utils/chai.js'
+import { factory } from './utils/factory.js'
+const f = factory()
 
 describe('.diag', function () {
   this.timeout(50 * 1000)

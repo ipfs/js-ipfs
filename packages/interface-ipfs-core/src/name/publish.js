@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { nanoid } = require('nanoid')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { fixture } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const last = require('it-last')
-const PeerId = require('peer-id')
+import { nanoid } from 'nanoid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { fixture } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import last from 'it-last'
+import PeerId from 'peer-id'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -16,7 +16,7 @@ const PeerId = require('peer-id')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testPublish (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

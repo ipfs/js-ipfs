@@ -1,14 +1,22 @@
-'use strict'
+import { createExport } from './export.js'
+import { createGen } from './gen.js'
+import { createImport } from './import.js'
+import { createInfo } from './info.js'
+import { createList } from './list.js'
+import { createRename } from './rename.js'
+import { createRm } from './rm.js'
 
 /**
  * @param {import('../types').Options} config
  */
-module.exports = config => ({
-  gen: require('./gen')(config),
-  list: require('./list')(config),
-  rename: require('./rename')(config),
-  rm: require('./rm')(config),
-  import: require('./import')(config),
-  export: require('./export')(config),
-  info: require('./info')(config)
-})
+export function createKey (config) {
+  return {
+    export: createExport(config),
+    gen: createGen(config),
+    import: createImport(config),
+    info: createInfo(config),
+    list: createList(config),
+    rename: createRename(config),
+    rm: createRm(config)
+  }
+}

@@ -1,10 +1,9 @@
-'use strict'
 
-const fs = require('fs')
-const concat = require('it-concat')
-const { default: parseDuration } = require('parse-duration')
+import fs from 'fs'
+import concat from 'it-concat'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'put [block]',
 
   describe: 'Stores input as an IPFS block',

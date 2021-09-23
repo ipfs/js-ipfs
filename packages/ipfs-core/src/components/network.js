@@ -1,10 +1,9 @@
-'use strict'
 
-const { createBitswap } = require('ipfs-bitswap')
-const createLibP2P = require('./libp2p')
-const { Multiaddr } = require('multiaddr')
-const errCode = require('err-code')
-const BlockStorage = require('../block-storage')
+import { createBitswap } from 'ipfs-bitswap'
+import { createLibp2p } from './libp2p.js'
+import { Multiaddr } from 'multiaddr'
+import errCode from 'err-code'
+import { BlockStorage } from '../block-storage.js'
 
 /**
  * @typedef {Object} Online
@@ -27,7 +26,7 @@ const BlockStorage = require('../block-storage')
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
-class Network {
+export class Network {
   /**
    * @param {PeerId} peerId
    * @param {libp2p} libp2p
@@ -56,7 +55,7 @@ class Network {
     /** @type {IPFSConfig} */
     const config = await repo.config.getAll()
 
-    const libp2p = await createLibP2P({
+    const libp2p = await createLibp2p({
       options,
       repo,
       peerId,
@@ -100,7 +99,6 @@ class Network {
     ])
   }
 }
-module.exports = Network
 
 /**
  * @param {PeerId} peerId

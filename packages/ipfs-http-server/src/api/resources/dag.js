@@ -1,12 +1,11 @@
-'use strict'
 
-const multipart = require('../../utils/multipart-request-parser')
-const streamResponse = require('../../utils/stream-response')
-const Joi = require('../../utils/joi')
-const Boom = require('@hapi/boom')
-const all = require('it-all')
-const { pipe } = require('it-pipe')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import { streamResponse } from '../../utils/stream-response.js'
+import Joi from '../../utils/joi.js'
+import Boom from '@hapi/boom'
+import all from 'it-all'
+import { pipe } from 'it-pipe'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 /**
  * @param {undefined | Uint8Array | Record<string, any>} obj
@@ -36,7 +35,7 @@ const encodeBufferKeys = (obj, encoding) => {
   return obj
 }
 
-exports.get = {
+export const getResource = {
   options: {
     validate: {
       options: {
@@ -92,7 +91,7 @@ exports.get = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.badRequest(err)
     }
 
@@ -104,7 +103,7 @@ exports.get = {
 
     try {
       result.value = encodeBufferKeys(value, dataEncoding)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err)
     }
 
@@ -112,7 +111,7 @@ exports.get = {
   }
 }
 
-exports.put = {
+export const putResource = {
   options: {
     payload: {
       parse: false,
@@ -137,7 +136,7 @@ exports.put = {
 
         let data
 
-        for await (const part of multipart(request.raw.req)) {
+        for await (const part of multipartRequestParser(request.raw.req)) {
           if (part.type !== 'file') {
             continue
           }
@@ -162,7 +161,7 @@ exports.put = {
         } else if (enc === 'json') {
           try {
             node = JSON.parse(data.toString())
-          } catch (err) {
+          } catch (/** @type {any} */ err) {
             throw Boom.badRequest('Failed to parse the JSON: ' + err)
           }
         } else {
@@ -256,7 +255,7 @@ exports.put = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to put node' })
     }
 
@@ -270,7 +269,7 @@ exports.put = {
   }
 }
 
-exports.resolve = {
+export const resolveResource = {
   options: {
     validate: {
       options: {
@@ -332,13 +331,13 @@ exports.resolve = {
         },
         RemPath: result.remainderPath
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err)
     }
   }
 }
 
-exports.export = {
+export const exportResource = {
   options: {
     validate: {
       options: {
@@ -387,7 +386,7 @@ exports.export = {
   }
 }
 
-exports.import = {
+export const importResource = {
   options: {
     payload: {
       parse: false,
@@ -433,7 +432,7 @@ exports.import = {
     let filesParsed = false
 
     return streamResponse(request, h, () => pipe(
-      multipart(request.raw.req),
+      multipartRequestParser(request.raw.req),
       /**
        * @param {AsyncIterable<import('../../types').MultipartEntry>} source
        */

@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './bitswap/index.js'
 
-module.exports = {
+export default {
   command: 'bitswap <command>',
 
   description: 'Interact with the bitswap agent.',
@@ -9,6 +9,7 @@ module.exports = {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('bitswap')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

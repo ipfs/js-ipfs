@@ -1,9 +1,9 @@
-'use strict'
+import {
+  idResource
+} from '../resources/id.js'
 
-const resources = require('../resources')
-
-module.exports = {
+export default [{
   method: 'POST',
   path: '/api/v0/id',
-  ...resources.id
-}
+  ...idResource
+}]

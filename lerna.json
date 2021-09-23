@@ -14,10 +14,13 @@
       "message": "chore: publish",
       "createRelease": "github",
       "conventionalCommits": true,
-      "verifyAccess": false
+      "verifyAccess": false,
+      "contents": "dist"
     },
     "version": {
-      "private": false
+      "allowBranch": ["master", "release/*"],
+      "forcePublish": true,
+      "ignore-changes": [".github/**", "docs/**"]
     }
   }
 }

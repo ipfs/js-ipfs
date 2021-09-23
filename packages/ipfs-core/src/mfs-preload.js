@@ -1,6 +1,5 @@
-'use strict'
 
-const debug = require('debug')
+import debug from 'debug'
 const log = Object.assign(debug('ipfs:mfs-preload'), {
   error: debug('ipfs:mfs-preload:error')
 })
@@ -18,7 +17,7 @@ const log = Object.assign(debug('ipfs:mfs-preload'), {
  * @param {import('ipfs-core-types/src/files').API} config.files
  * @param {Options} [config.options]
  */
-module.exports = ({ preload, files, options = {} }) => {
+export function createMfsPreloader ({ preload, files, options = {} }) {
   options.interval = options.interval || 30 * 1000
 
   if (!options.enabled) {
@@ -41,7 +40,7 @@ module.exports = ({ preload, files, options = {} }) => {
         await preload(stats.cid)
         rootCid = nextRootCid
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error('failed to preload MFS root', err)
     } finally {
       timeoutId = setTimeout(preloadMfs, options.interval)

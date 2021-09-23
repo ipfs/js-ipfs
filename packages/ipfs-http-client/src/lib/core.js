@@ -1,14 +1,17 @@
-'use strict'
+
 /* eslint-env browser */
-const { Multiaddr } = require('multiaddr')
-const { isBrowser, isWebWorker, isNode } = require('ipfs-utils/src/env')
-const { default: parseDuration } = require('parse-duration')
-const log = require('debug')('ipfs-http-client:lib:error-handler')
-const HTTP = require('ipfs-utils/src/http')
-const merge = require('merge-options').bind({ ignoreUndefined: true })
-const toUrlString = require('ipfs-core-utils/src/to-url-string')
-const http = require('http')
-const https = require('https')
+
+import { Multiaddr } from 'multiaddr'
+import { isBrowser, isWebWorker, isNode } from 'ipfs-utils/src/env.js'
+import parseDuration from 'parse-duration'
+import debug from 'debug'
+import HTTP from 'ipfs-utils/src/http.js'
+import mergeOpts from 'merge-options'
+import { toUrlString } from 'ipfs-core-utils/to-url-string'
+import getAgent from 'ipfs-core-utils/agent'
+
+const log = debug('ipfs-http-client:lib:error-handler')
+const merge = mergeOpts.bind({ ignoreUndefined: true })
 
 const DEFAULT_PROTOCOL = isBrowser || isWebWorker ? location.protocol : 'http'
 const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
@@ -56,7 +59,7 @@ const normalizeOptions = (options = {}) => {
   }
 
   if (isNode) {
-    const Agent = url.protocol.startsWith('https') ? https.Agent : http.Agent
+    const Agent = getAgent(url)
 
     agent = opts.agent || new Agent({
       keepAlive: true,
@@ -79,7 +82,7 @@ const normalizeOptions = (options = {}) => {
 /**
  * @param {Response} response
  */
-const errorHandler = async (response) => {
+export const errorHandler = async (response) => {
   let msg
 
   try {
@@ -90,7 +93,7 @@ const errorHandler = async (response) => {
     } else {
       msg = await response.text()
     }
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     log('Failed to parse error response', err)
     // Failed to extract/parse error message from response
     msg = err.message
@@ -142,7 +145,7 @@ const parseTimeout = (value) => {
   return typeof value === 'string' ? parseDuration(value) : value
 }
 
-class Client extends HTTP {
+export class Client extends HTTP {
   /**
    * @param {Options|URL|Multiaddr|string} [options]
    */
@@ -206,6 +209,4 @@ class Client extends HTTP {
   }
 }
 
-Client.errorHandler = errorHandler
-
-module.exports = Client
+export const HTTPError = HTTP.HTTPError

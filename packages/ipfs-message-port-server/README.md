@@ -49,15 +49,15 @@ run it in the other JS contexts). The example below illustrates running a js-ipf
 node in a [SharedWorker][] and exposing it to all connected ports
 
 ```js
-const IPFS = require('ipfs')
-const { IPFSService, Server } = require('ipfs-message-port-server')
+import { create } from 'ipfs'
+import { IPFSService, Server } from 'ipfs-message-port-server'
 
 const main = async () => {
   const connections = []
   // queue connections that occur while node was starting.
   self.onconnect = ({ports}) => connections.push(...ports)
 
-  const ipfs = await IPFS.create()
+  const ipfs = await create()
   const service = new IPFSService(ipfs)
   const server = new Server(service)
 

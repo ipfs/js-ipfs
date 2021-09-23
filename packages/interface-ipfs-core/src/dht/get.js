@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import testTimeout from '../utils/test-timeout.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -14,7 +14,7 @@ const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testGet (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

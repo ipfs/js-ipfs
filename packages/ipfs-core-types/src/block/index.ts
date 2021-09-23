@@ -18,7 +18,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * const dagPb = require('@ipld/dag-pb')
+   * import * as dagPB from '@ipld/dag-pb'
    * // Defaults
    * const encoder = new TextEncoder()
    * const decoder = new TextDecoder()
@@ -34,9 +34,9 @@ export interface API<OptionExtension = {}> {
    * // the CID of the object
    *
    * // With custom format and hashtype through CID
-   * const { CID } = require('multiformats/cid')
+   * import { CID } from 'multiformats/cid'
    * const another = encoder.encode('another serialized object')
-   * const cid = CID.createV1(dagPb.code, multihash)
+   * const cid = CID.createV1(dagPB.code, multihash)
    * const block = await ipfs.block.put(another, cid)
    * console.log(decoder.decode(block.data))
    *

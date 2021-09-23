@@ -1,14 +1,13 @@
-'use strict'
 
-const configure = require('../lib/configure')
-const errCode = require('err-code')
+import { configure } from '../lib/configure.js'
+import errCode from 'err-code'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/key').API<HTTPClientExtraOptions>} KeyAPI
  */
 
-module.exports = configure(api => {
+export const createInfo = configure(api => {
   /**
    * @type {KeyAPI["info"]}
    */

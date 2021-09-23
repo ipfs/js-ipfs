@@ -1,9 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { MemoryBlockstore } = require('interface-blockstore')
-const suite = require('interface-blockstore-tests')
-const BlockStorage = require('../src/block-storage')
+import { MemoryBlockstore } from 'interface-blockstore'
+import suite from 'interface-blockstore-tests'
+import { BlockStorage } from '../src/block-storage.js'
 
 /**
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo

@@ -1,11 +1,12 @@
 /* eslint max-nested-callbacks: ["error", 8] */
-'use strict'
 
-const { PinTypes } = require('ipfs-repo')
-const { normaliseInput } = require('ipfs-core-utils/src/pins/normalise-input')
-const { resolvePath } = require('../../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const errCode = require('err-code')
+import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
+import { resolvePath } from '../../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import errCode from 'err-code'
+import IpfsRepo from 'ipfs-repo'
+
+const { PinTypes } = IpfsRepo
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -33,9 +34,9 @@ function toPin (type, cid, metadata) {
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  */
-module.exports = ({ repo, codecs }) => {
+export function createLs ({ repo, codecs }) {
   /**
    * @type {import('ipfs-core-types/src/pin').API["ls"]}
    */

@@ -105,10 +105,10 @@ console.log(block.cid.toString())
 // the CID of the object
 
 // With custom format and hashtype through CID
-const { CID } = require('multiformats/cid')
-const dagPb = require('@ipld/dag-pb')
+import { CID } from 'multiformats/cid'
+import * as dagPB from '@ipld/dag-pb'
 const buf = new TextEncoder().encode('another serialized object')
-const cid = CID.createV1(dagPb.code, multihash)
+const cid = CID.createV1(dagPB.code, multihash)
 
 const block = await ipfs.block.put(blob, cid)
 

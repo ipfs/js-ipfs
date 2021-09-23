@@ -1,11 +1,11 @@
-'use strict'
 
-const { importer } = require('ipfs-unixfs-importer')
-const { normaliseInput } = require('ipfs-core-utils/src/files/normalise-input/index')
-const { parseChunkerString } = require('./utils')
-const { pipe } = require('it-pipe')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
+import { importer } from 'ipfs-unixfs-importer'
+import { normaliseInput } from 'ipfs-core-utils/files/normalise-input'
+import { parseChunkerString } from './utils.js'
+import { pipe } from 'it-pipe'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import mergeOpts from 'merge-options'
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -20,7 +20,7 @@ const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
  *
  * @param {Context} context
  */
-module.exports = ({ repo, preload, options }) => {
+export function createAddAll ({ repo, preload, options }) {
   const isShardingEnabled = options && options.sharding
 
   /**

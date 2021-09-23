@@ -1,17 +1,16 @@
-'use strict'
 
-const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const { decodeNode, encodeNode } = require('ipfs-message-port-protocol/src/dag')
+import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
+import { decodeNode, encodeNode } from 'ipfs-message-port-protocol/dag'
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('multiformats/cid').CID} CID
- * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
- * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedDAGNode} EncodedDAGNode
+ * @typedef {import('ipfs-message-port-protocol/cid').EncodedCID} EncodedCID
+ * @typedef {import('ipfs-message-port-protocol/dag').EncodedDAGNode} EncodedDAGNode
  * @typedef {import('ipfs-core-types/src/dag').PutOptions} PutOptions
  */
 
-exports.DAGService = class DAGService {
+export class DAGService {
   /**
    * @param {IPFS} ipfs
    */

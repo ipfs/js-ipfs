@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './patch/index.js'
 
-module.exports = {
+export default {
   command: 'patch',
 
   description: 'Create a new merkledag object based on an existing one.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('patch')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

@@ -1,16 +1,14 @@
-'use strict'
+import PeerId from 'peer-id'
+import { Key, Errors } from 'interface-datastore'
+import errcode from 'err-code'
+import debug from 'debug'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { equals as uint8ArrayEquals } from 'uint8arrays/equals'
+import ipns from 'ipns'
 
-const PeerId = require('peer-id')
-const { Key, Errors } = require('interface-datastore')
-const errcode = require('err-code')
-const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:publisher'), {
   error: debug('ipfs:ipns:publisher:error')
 })
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { equals: uint8ArrayEquals } = require('uint8arrays/equals')
-
-const ipns = require('ipns')
 
 /**
  * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
@@ -22,7 +20,7 @@ const ERR_NOT_FOUND = Errors.notFoundError().code
 const defaultRecordLifetime = 60 * 60 * 1000
 
 // IpnsPublisher is capable of publishing and resolving names to the IPFS routing system.
-class IpnsPublisher {
+export class IpnsPublisher {
   /**
    * @param {import('ipfs-core-types/src/utils').BufferStore} routing
    * @param {import('interface-datastore').Datastore} datastore
@@ -106,7 +104,7 @@ class IpnsPublisher {
     try {
       // Marshal record
       entryData = ipns.marshal(entry)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
 
       throw err
@@ -118,7 +116,7 @@ class IpnsPublisher {
       log(`ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
 
       return res
-    } catch (err) {
+    } catch (/** @type {any} */err) {
       const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} could not be stored in the routing`
       log.error(errMsg)
       log.error(err)
@@ -154,7 +152,7 @@ class IpnsPublisher {
       log(`public key for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
 
       return res
-    } catch (err) {
+    } catch (/** @type {any} */err) {
       const errMsg = `public key for ${uint8ArrayToString(k.uint8Array(), 'base64')} could not be stored in the routing`
       log.error(errMsg)
       log.error(err)
@@ -188,7 +186,7 @@ class IpnsPublisher {
 
       // unmarshal data
       return this._unmarshalData(dsVal)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code !== ERR_NOT_FOUND) {
         const errMsg = `unexpected error getting the ipns record ${peerId.id} from datastore`
         log.error(errMsg)
@@ -207,7 +205,7 @@ class IpnsPublisher {
 
         // unmarshal data
         return this._unmarshalData(res)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         log.error(err)
 
         throw err
@@ -221,7 +219,7 @@ class IpnsPublisher {
   _unmarshalData (data) {
     try {
       return ipns.unmarshal(data)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw errcode(err, 'ERR_INVALID_RECORD_DATA')
     }
   }
@@ -248,7 +246,7 @@ class IpnsPublisher {
 
     try {
       record = await this._getPublished(peerId, getPublishedOptions)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code !== ERR_NOT_FOUND) {
         const errMsg = `unexpected error when determining the last published IPNS record for ${peerId.id} ${err.stack}`
         log.error(errMsg)
@@ -261,7 +259,7 @@ class IpnsPublisher {
     let seqNumber = 0n
 
     if (record && record.sequence !== undefined) {
-      seqNumber = !uint8ArrayEquals(record.value, value) ? BigInt(record.sequence) + 1n : BigInt(record.sequence)
+      seqNumber = !uint8ArrayEquals(record.value, value) ? BigInt(record.sequence) + BigInt(1) : BigInt(record.sequence)
     }
 
     let entryData
@@ -269,7 +267,7 @@ class IpnsPublisher {
     try {
       // Create record
       entryData = await ipns.create(privKey, value, seqNumber, lifetime)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       const errMsg = `ipns record for ${value} could not be created`
 
       log.error(err)
@@ -288,7 +286,7 @@ class IpnsPublisher {
       log(`ipns record for ${uint8ArrayToString(value, 'base32')} was stored in the datastore`)
 
       return entryData
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       const errMsg = `ipns record for ${value} could not be stored in the datastore`
       log.error(errMsg)
 
@@ -296,6 +294,4 @@ class IpnsPublisher {
     }
   }
 }
-
 IpnsPublisher.defaultRecordLifetime = defaultRecordLifetime
-exports = module.exports = IpnsPublisher

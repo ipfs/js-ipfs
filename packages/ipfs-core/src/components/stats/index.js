@@ -1,10 +1,9 @@
-'use strict'
 
-const createBW = require('./bw')
-const createRepo = require('../repo/stat')
-const createBitswap = require('../bitswap/stat')
+import { createBw } from './bw.js'
+import { createStat as createRepo } from '../repo/stat.js'
+import { createStat as createBitswap } from '../bitswap/stat.js'
 
-class StatsAPI {
+export class StatsAPI {
   /**
    * @param {Object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
@@ -12,9 +11,7 @@ class StatsAPI {
    */
   constructor ({ repo, network }) {
     this.repo = createRepo({ repo })
-    this.bw = createBW({ network })
+    this.bw = createBw({ network })
     this.bitswap = createBitswap({ network })
   }
 }
-
-module.exports = StatsAPI

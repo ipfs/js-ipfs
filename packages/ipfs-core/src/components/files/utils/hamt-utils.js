@@ -1,20 +1,21 @@
-'use strict'
 
-const dagPb = require('@ipld/dag-pb')
-const {
+import * as dagPB from '@ipld/dag-pb'
+import {
   Bucket,
   createHAMT
-} = require('hamt-sharding')
-const DirSharded = require('./dir-sharded')
-const log = require('debug')('ipfs:mfs:core:utils:hamt-utils')
-const { UnixFS } = require('ipfs-unixfs')
-const last = require('it-last')
-const { CID } = require('multiformats/cid')
-const {
+} from 'hamt-sharding'
+import { DirSharded } from './dir-sharded.js'
+import debug from 'debug'
+import { UnixFS } from 'ipfs-unixfs'
+import last from 'it-last'
+import { CID } from 'multiformats/cid'
+import {
   hamtHashCode,
   hamtHashFn,
   hamtBucketBits
-} = require('./hamt-constants')
+} from './hamt-constants.js'
+
+const log = debug('ipfs:mfs:core:utils:hamt-utils')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -34,7 +35,7 @@ const {
  * @param {boolean} options.flush
  * @param {string} options.hashAlg
  */
-const updateHamtDirectory = async (context, links, bucket, options) => {
+export const updateHamtDirectory = async (context, links, bucket, options) => {
   if (!options.parent.Data) {
     throw new Error('Could not update HAMT directory because parent had no data')
   }
@@ -56,9 +57,9 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
     Data: dir.marshal(),
     Links: links.sort((a, b) => (a.Name || '').localeCompare(b.Name || ''))
   }
-  const buf = dagPb.encode(parent)
+  const buf = dagPB.encode(parent)
   const hash = await hasher.digest(buf)
-  const cid = CID.create(options.cidVersion, dagPb.code, hash)
+  const cid = CID.create(options.cidVersion, dagPB.code, hash)
 
   if (options.flush) {
     await context.repo.blocks.put(cid, buf)
@@ -77,7 +78,7 @@ const updateHamtDirectory = async (context, links, bucket, options) => {
  * @param {Bucket<any>} parentBucket
  * @param {number} positionAtParent
  */
-const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtParent) => {
+export const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtParent) => {
   // recreate this level of the HAMT
   const bucket = new Bucket({
     hash: rootBucket._options.hash,
@@ -93,7 +94,7 @@ const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtPare
 /**
  * @param {PBLink[]} links
  */
-const recreateInitialHamtLevel = async (links) => {
+export const recreateInitialHamtLevel = async (links) => {
   const bucket = createHAMT({
     hashFn: hamtHashFn,
     bits: hamtBucketBits
@@ -109,7 +110,7 @@ const recreateInitialHamtLevel = async (links) => {
  * @param {Bucket<any>} bucket
  * @param {Bucket<any>} rootBucket
  */
-const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
+export const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
   await Promise.all(
     links.map(link => {
       const linkName = (link.Name || '')
@@ -136,7 +137,7 @@ const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
 /**
  * @param {number} position
  */
-const toPrefix = (position) => {
+export const toPrefix = (position) => {
   return position
     .toString(16)
     .toUpperCase()
@@ -149,7 +150,7 @@ const toPrefix = (position) => {
  * @param {string} fileName
  * @param {PBNode} rootNode
  */
-const generatePath = async (context, fileName, rootNode) => {
+export const generatePath = async (context, fileName, rootNode) => {
   // start at the root bucket and descend, loading nodes as we go
   const rootBucket = await recreateInitialHamtLevel(rootNode.Links)
   const position = await rootBucket._findNewBucketAndPos(fileName)
@@ -207,7 +208,7 @@ const generatePath = async (context, fileName, rootNode) => {
     // found subshard
     log(`Found subshard ${segment.prefix}`)
     const block = await context.repo.blocks.get(link.Hash)
-    const node = dagPb.decode(block)
+    const node = dagPB.decode(block)
 
     // subshard hasn't been loaded, descend to the next level of the HAMT
     if (!path[i + 1]) {
@@ -251,7 +252,7 @@ const generatePath = async (context, fileName, rootNode) => {
  * @param {Mtime} [options.mtime]
  * @param {number} [options.mode]
  */
-const createShard = async (context, contents, options = {}) => {
+export const createShard = async (context, contents, options = {}) => {
   const shard = new DirSharded({
     root: true,
     dir: true,
@@ -278,14 +279,4 @@ const createShard = async (context, contents, options = {}) => {
   }
 
   return res
-}
-
-module.exports = {
-  generatePath,
-  updateHamtDirectory,
-  recreateHamtLevel,
-  recreateInitialHamtLevel,
-  addLinksToHamtBucket,
-  toPrefix,
-  createShard
 }

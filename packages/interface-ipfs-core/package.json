@@ -3,7 +3,42 @@
   "version": "0.150.4",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "type": "module",
   "main": "src/index.js",
+  "types": "types/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "test/fixtures/*"
+    ]
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "browser": {
@@ -14,14 +49,10 @@
   },
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "aegir build",
+    "build": "aegir build && copyfiles ./test/fixtures/**/*, ./dist/cjs && copyfiles ./test/fixtures/**/*, ./dist/esm",
     "lint": "aegir ts -p check && aegir lint",
-    "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf"
+    "dep-check": "aegir dep-check -i abort-controller -i ipfs-core-types -i rimraf -i copyfiles"
   },
-  "files": [
-    "src/",
-    "test/"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -30,13 +61,6 @@
     "IPFS"
   ],
   "license": "MIT",
-  "eslintConfig": {
-    "extends": "ipfs",
-    "ignorePatterns": [
-      "test/fixtures/*"
-    ]
-  },
-  "types": "dist/src/index.d.ts",
   "dependencies": {
     "@ipld/car": "^3.1.6",
     "@ipld/dag-cbor": "^6.0.5",
@@ -44,7 +68,8 @@
     "@types/pako": "^1.0.2",
     "@types/readable-stream": "^2.3.11",
     "abort-controller": "^3.0.0",
-    "aegir": "^35.0.3",
+    "aegir": "^35.1.0",
+    "copyfiles": "^2.4.1",
     "delay": "^5.0.0",
     "err-code": "^3.0.1",
     "interface-blockstore": "^1.0.0",
@@ -70,7 +95,7 @@
     "libp2p-websockets": "^0.16.1",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.4.1",
-    "nanoid": "^3.1.12",
+    "nanoid": "^3.1.23",
     "native-abort-controller": "^1.0.3",
     "p-map": "^4.0.0",
     "p-retry": "^4.5.0",

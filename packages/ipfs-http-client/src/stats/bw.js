@@ -1,14 +1,13 @@
-'use strict'
 
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/stats').API<HTTPClientExtraOptions>} StatsAPI
  */
 
-module.exports = configure(api => {
+export const createBw = configure(api => {
   /**
    * @type {StatsAPI["bw"]}
    */

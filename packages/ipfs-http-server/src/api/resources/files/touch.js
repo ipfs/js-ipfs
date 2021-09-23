@@ -1,9 +1,8 @@
-'use strict'
 
-const Joi = require('../../../utils/joi')
-const parseMtime = require('./utils/parse-mtime')
+import Joi from '../../../utils/joi.js'
+import { parseMtime } from './utils/parse-mtime.js'
 
-const mfsTouch = {
+export const touchResource = {
   options: {
     validate: {
       options: {
@@ -75,5 +74,3 @@ const mfsTouch = {
     return h.response()
   }
 }
-
-module.exports = mfsTouch

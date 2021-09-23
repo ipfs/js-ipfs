@@ -1,10 +1,11 @@
-'use strict'
 
-const { exporter } = require('ipfs-unixfs-exporter')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const toMfsPath = require('./utils/to-mfs-path')
-const errCode = require('err-code')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { exporter } from 'ipfs-unixfs-exporter'
+import mergeOpts from 'merge-options'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import errCode from 'err-code'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -26,7 +27,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createRead (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["read"]}
    */

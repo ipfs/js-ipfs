@@ -1,7 +1,7 @@
-'use strict'
+
 /* eslint-env browser */
 
-const Client = require('./core')
+import { Client } from './core.js'
 
 // Set default configuration and call create function with them
 /**
@@ -23,9 +23,8 @@ const Client = require('./core')
  * @param {Fn<T>} fn
  * @returns {Factory<T>}
  */
-const configure = (fn) => {
+export const configure = (fn) => {
   return (options) => {
     return fn(new Client(options), options)
   }
 }
-module.exports = configure

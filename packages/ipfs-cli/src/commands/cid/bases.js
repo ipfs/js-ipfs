@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'bases',
 
   describe: 'List available multibase encoding names.',

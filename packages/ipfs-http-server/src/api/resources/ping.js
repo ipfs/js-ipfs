@@ -1,11 +1,10 @@
-'use strict'
 
-const Joi = require('../../utils/joi')
-const { pipe } = require('it-pipe')
-const map = require('it-map')
-const streamResponse = require('../../utils/stream-response')
+import Joi from '../../utils/joi.js'
+import { pipe } from 'it-pipe'
+import map from 'it-map'
+import { streamResponse } from '../../utils/stream-response.js'
 
-module.exports = {
+export const pingResource = {
   options: {
     validate: {
       options: {

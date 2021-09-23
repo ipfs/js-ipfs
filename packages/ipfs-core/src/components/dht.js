@@ -1,17 +1,16 @@
-'use strict'
 
-const PeerId = require('peer-id')
-const errCode = require('err-code')
-const { NotEnabledError } = require('../errors')
-const get = require('dlv')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import PeerId from 'peer-id'
+import errCode from 'err-code'
+import { NotEnabledError } from '../errors.js'
+import get from 'dlv'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
  * @param {import('../types').NetworkService} config.network
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ network, repo }) => {
+export function createDht ({ network, repo }) {
   const { get, put, findProvs, findPeer, provide, query } = {
     /**
      * @type {import('ipfs-core-types/src/dht').API["get"]}

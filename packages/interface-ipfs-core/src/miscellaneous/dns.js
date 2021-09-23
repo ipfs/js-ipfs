@@ -1,7 +1,7 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -11,7 +11,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testDns (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -34,7 +34,7 @@ module.exports = (factory, options) => {
 
         // matches pattern /ipns/<ipnsaddress>
         expect(res).to.match(/\/ipns\/.+$/)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
           // @ts-ignore this is mocha
           return this.skip()
@@ -50,7 +50,7 @@ module.exports = (factory, options) => {
 
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
           // @ts-ignore this is mocha
           return this.skip()
@@ -66,7 +66,7 @@ module.exports = (factory, options) => {
 
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
           // @ts-ignore this is mocha
           return this.skip()

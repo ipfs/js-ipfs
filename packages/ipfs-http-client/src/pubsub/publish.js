@@ -1,17 +1,16 @@
-'use strict'
 
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const multipartRequest = require('../lib/multipart-request')
-const abortSignal = require('../lib/abort-signal')
-const { AbortController } = require('native-abort-controller')
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { multipartRequest } from 'ipfs-core-utils/multipart-request'
+import { abortSignal } from '../lib/abort-signal.js'
+import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions>} PubsubAPI
  */
 
-module.exports = configure(api => {
+export const createPublish = configure(api => {
   /**
    * @type {PubsubAPI["publish"]}
    */

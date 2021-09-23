@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { identity } = require('multiformats/hashes/identity')
-const { CID } = require('multiformats/cid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const testTimeout = require('../utils/test-timeout')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { identity } from 'multiformats/hashes/identity'
+import { CID } from 'multiformats/cid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import testTimeout from '../utils/test-timeout.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -15,7 +15,7 @@ const testTimeout = require('../utils/test-timeout')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testGet (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

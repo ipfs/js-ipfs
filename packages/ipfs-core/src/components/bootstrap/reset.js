@@ -1,14 +1,13 @@
-'use strict'
 
-const defaultConfig = require('../../runtime/config-nodejs.js')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { Multiaddr } = require('multiaddr')
+import defaultConfig from 'ipfs-core-config/config'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { Multiaddr } from 'multiaddr'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ repo }) => {
+export function createReset ({ repo }) {
   /**
    * @type {import('ipfs-core-types/src/bootstrap').API["reset"]}
    */

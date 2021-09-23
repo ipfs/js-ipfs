@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './object/index.js'
 
-module.exports = {
+export default {
   command: 'object <command>',
 
   description: 'Interact with ipfs objects.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('object')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

@@ -1,12 +1,18 @@
-'use strict'
+import { createAddrs } from './addrs.js'
+import { createConnect } from './connect.js'
+import { createDisconnect } from './disconnect.js'
+import { createLocalAddrs } from './local-addrs.js'
+import { createPeers } from './peers.js'
 
 /**
  * @param {import('../types').Options} config
  */
-module.exports = config => ({
-  addrs: require('./addrs')(config),
-  connect: require('./connect')(config),
-  disconnect: require('./disconnect')(config),
-  localAddrs: require('./localAddrs')(config),
-  peers: require('./peers')(config)
-})
+export function createSwarm (config) {
+  return {
+    addrs: createAddrs(config),
+    connect: createConnect(config),
+    disconnect: createDisconnect(config),
+    localAddrs: createLocalAddrs(config),
+    peers: createPeers(config)
+  }
+}

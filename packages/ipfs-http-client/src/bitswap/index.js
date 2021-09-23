@@ -1,11 +1,16 @@
-'use strict'
+import { createWantlist } from './wantlist.js'
+import { createWantlistForPeer } from './wantlist-for-peer.js'
+import { createStat } from './stat.js'
+import { createUnwant } from './unwant.js'
 
 /**
  * @param {import('../types').Options} config
  */
-module.exports = config => ({
-  wantlist: require('./wantlist')(config),
-  wantlistForPeer: require('./wantlist-for-peer')(config),
-  stat: require('./stat')(config),
-  unwant: require('./unwant')(config)
-})
+export function createBitswap (config) {
+  return {
+    wantlist: createWantlist(config),
+    wantlistForPeer: createWantlistForPeer(config),
+    unwant: createUnwant(config),
+    stat: createStat(config)
+  }
+}

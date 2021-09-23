@@ -1,21 +1,20 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const fs = require('fs')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const { CID } = require('multiformats/cid')
-const { UnixFS } = require('ipfs-unixfs')
-const { AbortSignal } = require('native-abort-controller')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64, base64pad } = require('multiformats/bases/base64')
+import { expect } from 'aegir/utils/chai.js'
+import fs from 'fs'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { UnixFS } from 'ipfs-unixfs'
+import { AbortSignal } from 'native-abort-controller'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64, base64pad } from 'multiformats/bases/base64'
 
 describe('/object', () => {
   const cid = CID.parse('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')

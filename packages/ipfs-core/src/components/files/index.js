@@ -1,11 +1,21 @@
-'use strict'
 
-const createLock = require('./utils/create-lock')
-const isIpfs = require('is-ipfs')
+import { createLock } from './utils/create-lock.js'
+import isIpfs from 'is-ipfs'
+import { createStat } from './stat.js'
+import { createChmod } from './chmod.js'
+import { createCp } from './cp.js'
+import { createFlush } from './flush.js'
+import { createMkdir } from './mkdir.js'
+import { createMv } from './mv.js'
+import { createRm } from './rm.js'
+import { createTouch } from './touch.js'
+import { createRead } from './read.js'
+import { createWrite } from './write.js'
+import { createLs } from './ls.js'
 
 /**
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
- * @typedef {import('ipfs-core-utils/src/multihashes')} Multihashes
+ * @typedef {import('ipfs-core-utils/multihashes').Multihashes} Multihashes
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  *
  * @typedef {object} MfsContext
@@ -19,7 +29,7 @@ const isIpfs = require('is-ipfs')
  * @type {Record<string, any>}
  */
 const readOperations = {
-  stat: require('./stat')
+  stat: createStat
 }
 
 /**
@@ -28,13 +38,13 @@ const readOperations = {
  * @type {Record<string, any>}
  */
 const writeOperations = {
-  chmod: require('./chmod'),
-  cp: require('./cp'),
-  flush: require('./flush'),
-  mkdir: require('./mkdir'),
-  mv: require('./mv'),
-  rm: require('./rm'),
-  touch: require('./touch')
+  chmod: createChmod,
+  cp: createCp,
+  flush: createFlush,
+  mkdir: createMkdir,
+  mv: createMv,
+  rm: createRm,
+  touch: createTouch
 }
 
 /**
@@ -43,9 +53,9 @@ const writeOperations = {
  * @type {Record<string, any>}
  */
 const unwrappedOperations = {
-  write: require('./write'),
-  read: require('./read'),
-  ls: require('./ls')
+  write: createWrite,
+  read: createRead,
+  ls: createLs
 }
 
 /**
@@ -120,7 +130,7 @@ function createMfs (options) {
  * @param {Multihashes} context.hashers
  * @returns {import('ipfs-core-types/src/files').API}
  */
-module.exports = ({ repo, preload, hashers, options: constructorOptions }) => {
+export function createFiles ({ repo, preload, hashers, options: constructorOptions }) {
   const methods = createMfs({
     repo,
     repoOwner: Boolean(constructorOptions.repoOwner),

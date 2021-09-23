@@ -1,16 +1,15 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { objectToCamelWithMetadata } from '../lib/object-to-camel-with-metadata.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
-module.exports = configure(api => {
+export const createStat = configure(api => {
   /**
    * @type {FilesAPI["stat"]}
    */
@@ -26,7 +25,7 @@ module.exports = configure(api => {
     const data = await res.json()
 
     data.WithLocality = data.WithLocality || false
-    return toCoreInterface(toCamelWithMetadata(data))
+    return toCoreInterface(objectToCamelWithMetadata(data))
   }
   return stat
 })

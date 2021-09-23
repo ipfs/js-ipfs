@@ -1,13 +1,14 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const Block = require('multiformats/block')
-const { base58btc } = require('multiformats/bases/base58')
-const { CarWriter } = require('@ipld/car/writer')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const log = require('debug')('ipfs:components:dag:import')
-const raw = require('multiformats/codecs/raw')
-const json = require('multiformats/codecs/json')
+import { CID } from 'multiformats/cid'
+import { createUnsafe } from 'multiformats/block'
+import { base58btc } from 'multiformats/bases/base58'
+import { CarWriter } from '@ipld/car/writer'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import debug from 'debug'
+import * as raw from 'multiformats/codecs/raw'
+import * as json from 'multiformats/codecs/json'
+
+const log = debug('ipfs:components:dag:import')
 
 // blocks that we're OK with not inspecting for links
 /** @type {number[]} */
@@ -27,9 +28,9 @@ const NO_LINKS_CODECS = [
  * @param {Object} config
  * @param {IPFSRepo} config.repo
  * @param {Preload} config.preload
- * @param {import('ipfs-core-utils/src/multicodecs')} config.codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  */
-module.exports = ({ repo, preload, codecs }) => {
+export function createExport ({ repo, preload, codecs }) {
   /**
    * @type {import('ipfs-core-types/src/dag').API["export"]}
    */
@@ -84,7 +85,7 @@ module.exports = ({ repo, preload, codecs }) => {
  * @param {AbortOptions} options
  * @param {CID} cid
  * @param {BlockWriter} writer
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {Set<string>} seen
  * @returns {Promise<void>}
  */
@@ -110,7 +111,7 @@ async function traverseWrite (repo, options, cid, writer, codecs, seen = new Set
  * @param {IPFSRepo} repo
  * @param {AbortOptions} options
  * @param {CID} cid
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @returns {Promise<{cid:CID, bytes:Uint8Array, links:CID[]}>}
  */
 async function getBlock (repo, options, cid, codecs) {
@@ -121,7 +122,7 @@ async function getBlock (repo, options, cid, codecs) {
   const codec = await codecs.getCodec(cid.code)
 
   if (codec) {
-    const block = Block.createUnsafe({ bytes, cid, codec })
+    const block = createUnsafe({ bytes, cid, codec })
     links = [...block.links()].map((l) => l[1])
   } else if (!NO_LINKS_CODECS.includes(cid.code)) {
     throw new Error(`Can't decode links in block with codec 0x${cid.code.toString(16)} to form complete DAG`)

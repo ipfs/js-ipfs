@@ -1,15 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const http = require('../../utils/http')
-const sinon = require('sinon')
-const { CID } = require('multiformats/cid')
+import { expect } from 'aegir/utils/chai.js'
+import { http } from '../../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { testHttpMethod } from '../../utils/test-http-method.js'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+
 const fileCid = CID.parse('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
-const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('native-abort-controller')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
 
 const defaultOptions = {
   withLocal: false,

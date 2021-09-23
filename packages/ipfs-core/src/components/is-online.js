@@ -1,14 +1,14 @@
-'use strict'
 
 /**
  * @param {Object} config
  * @param {import('../types').NetworkService} config.network
  */
-module.exports = ({ network }) =>
+export function createIsOnline ({ network }) {
   /**
    * @returns {boolean}
    */
-  () => {
+  return () => {
     const net = network.try()
     return net != null && Boolean(net.libp2p.isStarted())
   }
+}

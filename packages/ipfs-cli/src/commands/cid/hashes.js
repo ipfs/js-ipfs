@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = {
+export default {
   command: 'hashes',
 
   describe: 'List available multihash hashing algorithm names.',

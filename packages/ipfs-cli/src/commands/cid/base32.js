@@ -1,10 +1,9 @@
-'use strict'
 
-const split = require('it-split')
-const { CID } = require('multiformats/cid')
-const { base32 } = require('multiformats/bases/base32')
+import split from 'it-split'
+import { CID } from 'multiformats/cid'
+import { base32 } from 'multiformats/bases/base32'
 
-module.exports = {
+export default {
   command: 'base32 [cids...]',
 
   describe: 'Convert CIDs to base 32 CID version 1.',

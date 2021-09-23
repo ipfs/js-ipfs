@@ -1,8 +1,7 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -28,7 +27,7 @@ function toPin (type, cid, metadata) {
   return pin
 }
 
-module.exports = configure(api => {
+export const createLs = configure(api => {
   /**
    * @type {PinAPI["ls"]}
    */

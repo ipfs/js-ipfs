@@ -1,8 +1,7 @@
-'use strict'
 
-const Joi = require('../../utils/joi')
+import Joi from '../../utils/joi.js'
 
-module.exports = {
+export const dnsResource = {
   options: {
     validate: {
       options: {

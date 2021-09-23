@@ -1,11 +1,11 @@
-'use strict'
 
-const { CarBlockIterator } = require('@ipld/car/iterator')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const itPeekable = require('it-peekable')
-const drain = require('it-drain')
-const map = require('it-map')
-const log = require('debug')('ipfs:components:dag:import')
+import { CarBlockIterator } from '@ipld/car/iterator'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import itPeekable from 'it-peekable'
+import drain from 'it-drain'
+import map from 'it-map'
+import debug from 'debug'
+const log = debug('ipfs:components:dag:import')
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -18,7 +18,7 @@ const log = require('debug')('ipfs:components:dag:import')
  * @param {Object} config
  * @param {IPFSRepo} config.repo
  */
-module.exports = ({ repo }) => {
+export function createImport ({ repo }) {
   /**
    * @type {import('ipfs-core-types/src/dag').API["import"]}
    */
@@ -67,7 +67,7 @@ module.exports = ({ repo }) => {
               } else {
                 pinErrorMsg = 'blockstore: block not found'
               }
-            } catch (err) {
+            } catch (/** @type {any} */ err) {
               pinErrorMsg = err.message
             }
 

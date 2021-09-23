@@ -73,8 +73,8 @@ Yes, however, bear in mind that there isn't a 100% stable solution to use WebRTC
 To add WebRTC support in a IPFS node instance, do:
 
 ```JavaScript
-const wrtc = require('wrtc') // or require('electron-webrtc')()
-const WebRTCStar = require('libp2p-webrtc-star')
+import wrtc from 'wrtc' // or 'electron-webrtc'
+import WebRTCStar from 'libp2p-webrtc-star'
 
 const node = await IPFS.create({
   repo: 'your-repo-path',

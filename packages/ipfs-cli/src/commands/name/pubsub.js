@@ -1,10 +1,10 @@
-'use strict'
+import { commands } from './pubsub/index.js'
 
 /*
 Manage and inspect the state of the IPNS pubsub resolver.
 Note: this command is experimental and subject to change as the system is refined.
 */
-module.exports = {
+export default {
   command: 'pubsub',
 
   description: 'IPNS pubsub management.',
@@ -13,6 +13,7 @@ module.exports = {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('pubsub')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

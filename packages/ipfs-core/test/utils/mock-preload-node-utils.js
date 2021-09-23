@@ -1,20 +1,17 @@
 /* eslint-env browser */
-'use strict'
 
-// @ts-ignore no types
-const toUri = require('multiaddr-to-uri')
-const errCode = require('err-code')
-const HTTP = require('ipfs-utils/src/http')
-const waitFor = require('./wait-for')
+// @ts-expect-error no types
+import toUri from 'multiaddr-to-uri'
+import errCode from 'err-code'
+import HTTP from 'ipfs-utils/src/http.js'
+import { waitFor } from './wait-for.js'
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
  */
 
-const defaultPort = 1138
-const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
-
-module.exports.defaultAddr = defaultAddr
+export const defaultPort = 1138
+export const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
 
 /**
  * Get the stored preload CIDs for the server at `addr`
@@ -22,19 +19,17 @@ module.exports.defaultAddr = defaultAddr
  * @param {string} [addr]
  * @returns {Promise<string[]>}
  */
-const getPreloadCids = async (addr) => {
+export async function getPreloadCids (addr) {
   const res = await HTTP.get(`${toUri(addr || defaultAddr)}/cids`)
   return res.json()
 }
-
-module.exports.getPreloadCids = getPreloadCids
 
 /**
  * Clear the stored preload URLs for the server at `addr`
  *
  * @param {string} [addr]
  */
-module.exports.clearPreloadCids = addr => {
+export function clearPreloadCids (addr) {
   return HTTP.delete(`${toUri(addr || defaultAddr)}/cids`)
 }
 
@@ -46,7 +41,7 @@ module.exports.clearPreloadCids = addr => {
  * @param {number} [opts.timeout]
  * @param {string} [opts.addr]
  */
-module.exports.waitForCids = async (cids, opts) => {
+export async function waitForCids (cids, opts) {
   const options = opts || {}
   options.timeout = options.timeout || 1000
 

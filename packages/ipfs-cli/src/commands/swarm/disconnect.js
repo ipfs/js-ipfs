@@ -1,11 +1,10 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const {
+import parseDuration from 'parse-duration'
+import {
   coerceMultiaddr
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'disconnect <address>',
 
   describe: 'Close connection to a given address',

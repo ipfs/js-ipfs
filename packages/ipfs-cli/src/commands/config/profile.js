@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './profile/index.js'
 
-module.exports = {
+export default {
   command: 'profile <command>',
 
   description: 'Interact with config profiles.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('profile')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

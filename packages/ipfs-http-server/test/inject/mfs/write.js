@@ -1,13 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const http = require('../../utils/http')
-const matchIterable = require('../../utils/match-iterable')
-const sinon = require('sinon')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
-const { AbortSignal } = require('native-abort-controller')
+import { expect } from 'aegir/utils/chai.js'
+import { http } from '../../utils/http.js'
+import { matchIterable } from '../../utils/match-iterable.js'
+import sinon from 'sinon'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
+import { AbortSignal } from 'native-abort-controller'
 
 const defaultOptions = {
   offset: undefined,

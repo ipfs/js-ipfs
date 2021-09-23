@@ -1,18 +1,17 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const {
+import parseDuration from 'parse-duration'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import {
   stripControlCharacters,
   makeEntriesPrintable,
   escapeControlCharacters
-} = require('../../utils')
-const dagPB = require('@ipld/dag-pb')
-const dagCBOR = require('@ipld/dag-cbor')
-const raw = require('multiformats/codecs/raw')
+} from '../../utils.js'
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import * as raw from 'multiformats/codecs/raw'
 
-module.exports = {
+export default {
   command: 'get <cid path>',
 
   describe: 'Get a dag node or value from ipfs.',
@@ -65,7 +64,7 @@ module.exports = {
         ...options,
         path
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       return print(`dag get failed: ${err}`)
     }
 

@@ -1,21 +1,23 @@
-'use strict'
+import {
+  addResource,
+  rmResource,
+  lsResource
+} from '../resources/pin.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/pin/add',
-    ...resources.pin.add
+    ...addResource
   },
   {
     method: 'POST',
     path: '/api/v0/pin/rm',
-    ...resources.pin.rm
+    ...rmResource
   },
   {
     method: 'POST',
     path: '/api/v0/pin/ls',
-    ...resources.pin.ls
+    ...lsResource
   }
 ]

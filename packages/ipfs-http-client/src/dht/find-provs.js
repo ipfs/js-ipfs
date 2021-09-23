@@ -1,16 +1,15 @@
-'use strict'
 
-const { Multiaddr } = require('multiaddr')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const { Provider } = require('./response-types')
+import { Multiaddr } from 'multiaddr'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { Provider } from './response-types.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
  */
 
-module.exports = configure(api => {
+export const createFindProvs = configure(api => {
   /**
    * @type {DHTAPI["findProvs"]}
    */

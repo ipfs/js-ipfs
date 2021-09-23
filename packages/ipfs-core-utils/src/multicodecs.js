@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
  * @typedef {import('./types').LoadCodecFn} LoadCodecFn
@@ -11,7 +9,7 @@
  */
 const LOAD_CODEC = (codeOrName) => Promise.reject(new Error(`No codec found for "${codeOrName}"`))
 
-class Multicodecs {
+export class Multicodecs {
   /**
    * @param {object} options
    * @param {LoadCodecFn} [options.loadCodec]
@@ -82,5 +80,3 @@ class Multicodecs {
     return Object.values(this._codecsByName)
   }
 }
-
-module.exports = Multicodecs

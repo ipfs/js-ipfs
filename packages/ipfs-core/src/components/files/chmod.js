@@ -1,24 +1,26 @@
-'use strict'
 
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const toMfsPath = require('./utils/to-mfs-path')
-const log = require('debug')('ipfs:mfs:touch')
-const errCode = require('err-code')
-const { UnixFS } = require('ipfs-unixfs')
-const toTrail = require('./utils/to-trail')
-const addLink = require('./utils/add-link')
-const updateTree = require('./utils/update-tree')
-const updateMfsRoot = require('./utils/update-mfs-root')
-const dagPb = require('@ipld/dag-pb')
-const { CID } = require('multiformats/cid')
-const { pipe } = require('it-pipe')
-const { importer } = require('ipfs-unixfs-importer')
-const { recursive } = require('ipfs-unixfs-exporter')
-const last = require('it-last')
-const cp = require('./cp')
-const rm = require('./rm')
-const persist = require('./utils/persist')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import mergeOpts from 'merge-options'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import debug from 'debug'
+import errCode from 'err-code'
+import { UnixFS } from 'ipfs-unixfs'
+import { toTrail } from './utils/to-trail.js'
+import { addLink } from './utils/add-link.js'
+import { updateTree } from './utils/update-tree.js'
+import { updateMfsRoot } from './utils/update-mfs-root.js'
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
+import { pipe } from 'it-pipe'
+import { importer } from 'ipfs-unixfs-importer'
+import { recursive } from 'ipfs-unixfs-exporter'
+import last from 'it-last'
+import { createCp } from './cp.js'
+import { createRm } from './rm.js'
+import { persist } from './utils/persist.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:mfs:touch')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -211,7 +213,7 @@ function calculateMode (mode, metadata) {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createChmod (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["chmod"]}
    */
@@ -227,7 +229,7 @@ module.exports = (context) => {
       name
     } = await toMfsPath(context, path, opts)
 
-    if (cid.code !== dagPb.code) {
+    if (cid.code !== dagPB.code) {
       throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
     }
 
@@ -243,7 +245,7 @@ module.exports = (context) => {
 
             entry.unixfs.mode = calculateMode(mode, entry.unixfs)
 
-            const node = dagPb.prepare({
+            const node = dagPB.prepare({
               Data: entry.unixfs.marshal(),
               Links: entry.node.Links
             })
@@ -265,7 +267,7 @@ module.exports = (context) => {
                 // @ts-ignore - cannot derive type
                 const node = entry.content
 
-                const buf = dagPb.encode(node)
+                const buf = dagPB.encode(node)
                 const cid = await persist(buf, block, opts)
 
                 if (!node.Data) {
@@ -292,16 +294,16 @@ module.exports = (context) => {
       }
 
       // remove old path from mfs
-      await rm(context)(path, opts)
+      await createRm(context)(path, opts)
 
       // add newly created tree to mfs at path
-      await cp(context)(`/ipfs/${root.cid}`, path, opts)
+      await createCp(context)(`/ipfs/${root.cid}`, path, opts)
 
       return
     }
 
     const block = await context.repo.blocks.get(cid)
-    const node = dagPb.decode(block)
+    const node = dagPB.decode(block)
 
     if (!node.Data) {
       throw errCode(new Error(`${cid} had no data`), 'ERR_INVALID_NODE')
@@ -309,7 +311,7 @@ module.exports = (context) => {
 
     const metadata = UnixFS.unmarshal(node.Data)
     metadata.mode = calculateMode(mode, metadata)
-    const updatedBlock = dagPb.encode({
+    const updatedBlock = dagPB.encode({
       Data: metadata.marshal(),
       Links: node.Links
     })
@@ -317,7 +319,7 @@ module.exports = (context) => {
     const hashAlg = opts.hashAlg || defaultOptions.hashAlg
     const hasher = await context.hashers.getHasher(hashAlg)
     const hash = await hasher.digest(updatedBlock)
-    const updatedCid = CID.create(opts.cidVersion, dagPb.code, hash)
+    const updatedCid = CID.create(opts.cidVersion, dagPB.code, hash)
 
     if (opts.flush) {
       await context.repo.blocks.put(updatedCid, updatedBlock)
@@ -327,7 +329,7 @@ module.exports = (context) => {
     const parent = trail[trail.length - 1]
     const parentCid = CID.decode(parent.cid.bytes)
     const parentBlock = await context.repo.blocks.get(parentCid)
-    const parentNode = dagPb.decode(parentBlock)
+    const parentNode = dagPB.decode(parentBlock)
 
     const result = await addLink(context, {
       parent: parentNode,

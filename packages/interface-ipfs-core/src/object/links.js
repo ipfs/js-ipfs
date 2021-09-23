@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const dagPB = require('@ipld/dag-pb')
-const { nanoid } = require('nanoid')
-const { CID } = require('multiformats/cid')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as dagPB from '@ipld/dag-pb'
+import { nanoid } from 'nanoid'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -16,7 +16,7 @@ const { getDescribe, getIt, expect } = require('../utils/mocha')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testLinks (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 

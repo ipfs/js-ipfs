@@ -1,17 +1,16 @@
-'use strict'
 
-const dagPb = require('@ipld/dag-pb')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { UnixFS } = require('ipfs-unixfs')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { CID } = require('multiformats/cid')
+import * as dagPB from '@ipld/dag-pb'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { UnixFS } from 'ipfs-unixfs'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { CID } from 'multiformats/cid'
 
 /**
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = ({ repo, preload }) => {
+export function createNew ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/object').API["new"]}
    */
@@ -26,7 +25,7 @@ module.exports = ({ repo, preload }) => {
       }
     }
 
-    const buf = dagPb.encode({
+    const buf = dagPB.encode({
       Data: data,
       Links: []
     })

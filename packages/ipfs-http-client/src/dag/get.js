@@ -1,10 +1,10 @@
-'use strict'
 
-const configure = require('../lib/configure')
-const resolve = require('../lib/resolve')
-const first = require('it-first')
-const last = require('it-last')
-const errCode = require('err-code')
+import { configure } from '../lib/configure.js'
+import { resolve } from '../lib/resolve.js'
+import first from 'it-first'
+import last from 'it-last'
+import errCode from 'err-code'
+import { createGet as createBlockGet } from '../block/get.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -12,12 +12,12 @@ const errCode = require('err-code')
  */
 
 /**
- * @param {import('ipfs-core-utils/src/multicodecs')} codecs
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {import('../types').Options} options
  */
-module.exports = (codecs, options) => {
+export const createGet = (codecs, options) => {
   const fn = configure((api, opts) => {
-    const getBlock = require('../block/get')(opts)
+    const getBlock = createBlockGet(opts)
 
     /**
      * @type {DAGAPI["get"]}

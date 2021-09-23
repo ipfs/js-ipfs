@@ -1,9 +1,9 @@
-'use strict'
 
 /* eslint-env mocha */
-const { Server } = require('../src/server')
-const { IPFSService } = require('../src/index')
-const { expect } = require('aegir/utils/chai')
+
+import { Server } from '../src/server.js'
+import { IPFSService } from '../src/index.js'
+import { expect } from 'aegir/utils/chai.js'
 
 describe('dag', function () {
   this.timeout(10 * 1000)

@@ -1,14 +1,13 @@
-'use strict'
 
-const {
+import {
   asBoolean,
   asMtimeFromSeconds,
   coerceMtime,
   coerceMtimeNsecs
-} = require('../../utils')
-const { default: parseDuration } = require('parse-duration')
+} from '../../utils.js'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'touch [path]',
 
   describe: 'change file modification times',

@@ -23,7 +23,7 @@ The IPFS Daemon exposes the API defined in the [HTTP API spec](https://docs.ipfs
 If you want a programmatic way to spawn a IPFS Daemon using JavaScript, check out the [ipfsd-ctl](https://github.com/ipfs/js-ipfsd-ctl) module.
 
 ```javascript
-const { createFactory } = require('ipfsd-ctl')
+import { createFactory } from 'ipfsd-ctl'
 const factory = createFactory({
   type: 'proc' // or 'js' to run in a separate process
 })

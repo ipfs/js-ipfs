@@ -1,12 +1,11 @@
-'use strict'
 
-const Joi = require('../../utils/joi')
-const Boom = require('@hapi/boom')
-const { pipe } = require('it-pipe')
-const map = require('it-map')
-const streamResponse = require('../../utils/stream-response')
+import Joi from '../../utils/joi.js'
+import Boom from '@hapi/boom'
+import { pipe } from 'it-pipe'
+import map from 'it-map'
+import { streamResponse } from '../../utils/stream-response.js'
 
-exports.findPeer = {
+export const findPeerResource = {
   options: {
     validate: {
       options: {
@@ -51,7 +50,7 @@ exports.findPeer = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_LOOKUP_FAILED') {
         throw Boom.notFound(err.toString())
       } else {
@@ -69,7 +68,7 @@ exports.findPeer = {
   }
 }
 
-exports.findProvs = {
+export const findProvsResource = {
   options: {
     validate: {
       options: {
@@ -136,7 +135,7 @@ exports.findProvs = {
   }
 }
 
-exports.get = {
+export const getResource = {
   options: {
     validate: {
       options: {
@@ -186,7 +185,7 @@ exports.get = {
   }
 }
 
-exports.provide = {
+export const provideResource = {
   options: {
     validate: {
       options: {
@@ -233,7 +232,7 @@ exports.provide = {
   }
 }
 
-exports.put = {
+export const putResource = {
   options: {
     validate: {
       options: {
@@ -279,7 +278,7 @@ exports.put = {
   }
 }
 
-exports.query = {
+export const queryResource = {
   options: {
     validate: {
       options: {

@@ -1,13 +1,11 @@
-'use strict'
-
-const globSource = require('ipfs-utils/src/files/glob-source')
-const urlSource = require('ipfs-utils/src/files/url-source')
-const PeerId = require('peer-id')
-const crypto = require('libp2p-crypto')
-const isIPFS = require('is-ipfs')
-const { multiaddr } = require('multiaddr')
-const { CID } = require('multiformats/cid')
-const { create } = require('./components')
+import { create as createImport } from './components/index.js'
+import cryptoImport from 'libp2p-crypto'
+import isIPFSImport from 'is-ipfs'
+import { CID as CIDImport } from 'multiformats/cid'
+import { Multiaddr } from 'multiaddr'
+import PeerIdImport from 'peer-id'
+import globSourceImport from 'ipfs-utils/src/files/glob-source.js'
+import urlSourceImport from 'ipfs-utils/src/files/url-source.js'
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
@@ -26,13 +24,11 @@ const { create } = require('./components')
  * @typedef {import('./types').IPLDOptions} IPLDOptions
  */
 
-module.exports = {
-  create,
-  crypto,
-  isIPFS,
-  CID,
-  multiaddr,
-  PeerId,
-  globSource,
-  urlSource
-}
+export const create = createImport
+export const crypto = cryptoImport
+export const isIPFS = isIPFSImport
+export const CID = CIDImport
+export const multiaddr = Multiaddr
+export const PeerId = PeerIdImport
+export const globSource = globSourceImport
+export const urlSource = urlSourceImport

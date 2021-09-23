@@ -1,14 +1,13 @@
-'use strict'
 
-const { encode, prepare } = require('@ipld/dag-pb')
-const { UnixFS } = require('ipfs-unixfs')
-const persist = require('./persist')
-const { createHAMT, Bucket } = require('hamt-sharding')
-const {
+import { encode, prepare } from '@ipld/dag-pb'
+import { UnixFS } from 'ipfs-unixfs'
+import { persist } from './persist.js'
+import { createHAMT, Bucket } from 'hamt-sharding'
+import {
   hamtHashCode,
   hamtHashFn,
   hamtBucketBits
-} = require('./hamt-constants')
+} from './hamt-constants.js'
 
 /**
  * @typedef {import('ipfs-unixfs-importer').ImporterOptions} ImporterOptions
@@ -47,7 +46,7 @@ const {
  * @property {number} [mode]
  * @property {import('ipfs-unixfs').Mtime} [mtime]
  */
-class Dir {
+export class Dir {
   /**
    * @param {DirProps} props
    * @param {DirOptions} options
@@ -94,7 +93,7 @@ class Dir {
   async * flush (blockstore) { }
 }
 
-class DirSharded extends Dir {
+export class DirSharded extends Dir {
   /**
    * @param {DirProps} props
    * @param {DirOptions} options
@@ -153,8 +152,6 @@ class DirSharded extends Dir {
     yield * flush(this._bucket, blockstore, this, this.options)
   }
 }
-
-module.exports = DirSharded
 
 /**
  * @param {Bucket<?>} bucket

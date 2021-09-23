@@ -1,7 +1,5 @@
-'use strict'
-
-const { CID } = require('multiformats/cid')
-const errCode = require('err-code')
+import { CID } from 'multiformats/cid'
+import errCode from 'err-code'
 
 const IPFS_PREFIX = '/ipfs/'
 
@@ -9,11 +7,11 @@ const IPFS_PREFIX = '/ipfs/'
  * @param {string|Uint8Array|CID} string
  * @returns {{cid:CID, path?:string}}
  */
-const toCidAndPath = (string) => {
+export function toCidAndPath (string) {
   if (string instanceof Uint8Array) {
     try {
       string = CID.decode(string)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw errCode(err, 'ERR_INVALID_CID')
     }
   }
@@ -38,7 +36,7 @@ const toCidAndPath = (string) => {
 
   try {
     cid = CID.parse(parts.shift() || '')
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     throw errCode(err, 'ERR_INVALID_CID')
   }
 
@@ -51,5 +49,3 @@ const toCidAndPath = (string) => {
     path
   }
 }
-
-module.exports = toCidAndPath

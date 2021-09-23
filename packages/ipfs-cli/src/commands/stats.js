@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './stats/index.js'
 
-module.exports = {
+export default {
   command: 'stats <command>',
 
   description: 'Query IPFS statistics.',
@@ -9,6 +9,7 @@ module.exports = {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('stats')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

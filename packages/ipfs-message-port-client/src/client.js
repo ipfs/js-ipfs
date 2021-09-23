@@ -1,8 +1,7 @@
-'use strict'
 
 /* eslint-env browser */
 
-const Service = require('./client/service')
+import { Service } from './client/service.js'
 
 /**
  * @template T
@@ -25,6 +24,10 @@ const Service = require('./client/service')
  */
 
 /**
+ * @typedef {import('./client/transport').MessageTransport} MessageTransport
+ */
+
+/**
  * Client represents the client to remote `T` service. It is a base clase that
  * specific API clients will subclass to provide a higher level API for end
  * user. Client implementations take care of encoding arguments into quries
@@ -33,7 +36,7 @@ const Service = require('./client/service')
  * @class
  * @template T
  */
-module.exports = class Client {
+export class Client {
   /**
    * @param {string} namespace
    * @param {ProcedureNames<T>} methods
@@ -44,7 +47,3 @@ module.exports = class Client {
     this.remote = (new Service(namespace, methods, transport))
   }
 }
-
-/**
- * @typedef {import('./client/transport')} MessageTransport
- */

@@ -1,8 +1,7 @@
-'use strict'
 
-const configure = require('./lib/configure')
+import { configure } from './lib/configure.js'
 
-module.exports = configure(api => {
+export const createGetEndpointConfig = configure(api => {
   return () => {
     const url = new URL(api.opts.base || '')
     return {

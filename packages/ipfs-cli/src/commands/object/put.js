@@ -1,12 +1,11 @@
-'use strict'
 
-const concat = require('it-concat')
-const dagPB = require('@ipld/dag-pb')
-const { default: parseDuration } = require('parse-duration')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import concat from 'it-concat'
+import * as dagPB from '@ipld/dag-pb'
+import parseDuration from 'parse-duration'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-module.exports = {
+export default {
   command: 'put [data]',
 
   describe: 'Stores input as a DAG object, outputs its key',

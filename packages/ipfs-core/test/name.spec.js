@@ -1,19 +1,18 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const sinon = require('sinon')
-const delay = require('delay')
-const PeerId = require('peer-id')
-const errCode = require('err-code')
-const ipns = require('ipns')
-const getIpnsRoutingConfig = require('../src/ipns/routing/config')
-const IpnsPublisher = require('../src/ipns/publisher')
-const IpnsRepublisher = require('../src/ipns/republisher')
-const IpnsResolver = require('../src/ipns/resolver')
-const OfflineDatastore = require('../src/ipns/routing/offline-datastore')
-const PubsubDatastore = require('../src/ipns/routing/pubsub-datastore')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import delay from 'delay'
+import PeerId from 'peer-id'
+import errCode from 'err-code'
+import ipns from 'ipns'
+import { createRouting } from '../src/ipns/routing/config.js'
+import { IpnsPublisher } from '../src/ipns/publisher.js'
+import { IpnsRepublisher } from '../src/ipns/republisher.js'
+import { IpnsResolver } from '../src/ipns/resolver.js'
+import { OfflineDatastore } from '../src/ipns/routing/offline-datastore.js'
+import { IpnsPubsubDatastore } from '../src/ipns/routing/pubsub-datastore.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
 
@@ -237,7 +236,7 @@ describe('name', function () {
 
   describe('routing config', function () {
     it('should use only the offline datastore by default', () => {
-      const config = getIpnsRoutingConfig({
+      const config = createRouting({
         // @ts-expect-error sinon.stub() is not complete implementation
         libp2p: sinon.stub(),
         // @ts-expect-error sinon.stub() is not complete implementation
@@ -252,7 +251,7 @@ describe('name', function () {
     })
 
     it('should use only the offline datastore if offline', () => {
-      const config = getIpnsRoutingConfig({
+      const config = createRouting({
         // @ts-expect-error sinon.stub() is not complete implementation
         libp2p: sinon.stub(),
         // @ts-expect-error sinon.stub() is not complete implementation
@@ -271,7 +270,7 @@ describe('name', function () {
     it('should use the pubsub datastore if enabled', async () => {
       const peerId = await PeerId.create()
 
-      const config = getIpnsRoutingConfig({
+      const config = createRouting({
         // @ts-expect-error sinon.stub() is not complete implementation
         libp2p: { pubsub: sinon.stub() },
         // @ts-expect-error sinon.stub() is not complete implementation
@@ -285,14 +284,14 @@ describe('name', function () {
       })
 
       expect(config.stores).to.have.lengthOf(2)
-      expect(config.stores[0] instanceof PubsubDatastore).to.eql(true)
+      expect(config.stores[0] instanceof IpnsPubsubDatastore).to.eql(true)
       expect(config.stores[1] instanceof OfflineDatastore).to.eql(true)
     })
 
     it('should use the dht if enabled', () => {
       const dht = sinon.stub()
 
-      const config = getIpnsRoutingConfig({
+      const config = createRouting({
         // @ts-expect-error sinon.stub() is not complete implementation
         libp2p: { _dht: dht },
         // @ts-expect-error sinon.stub() is not complete implementation

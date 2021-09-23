@@ -1,13 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('delay')
-const PeerId = require('peer-id')
-const last = require('it-last')
-const { CID } = require('multiformats/cid')
-const Digest = require('multiformats/hashes/digest')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import delay from 'delay'
+import PeerId from 'peer-id'
+import last from 'it-last'
+import { CID } from 'multiformats/cid'
+import * as Digest from 'multiformats/hashes/digest'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -17,7 +17,7 @@ const Digest = require('multiformats/hashes/digest')
  * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (factory, options) => {
+export function testResolve (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -135,7 +135,7 @@ module.exports = (factory, options) => {
       // so here we just expect an Error and don't match the error type to expiration
       try {
         await last(ipfs.name.resolve(nodeId))
-      } catch (error) {
+      } catch (/** @type {any} */ error) {
         expect(error).to.exist()
       }
     })
@@ -185,7 +185,7 @@ module.exports = (factory, options) => {
     it('should fail to resolve /ipns/ipfs.a', async () => {
       try {
         await last(ipfs.name.resolve('ipfs.a'))
-      } catch (error) {
+      } catch (/** @type {any} */ error) {
         expect(error).to.exist()
       }
     })

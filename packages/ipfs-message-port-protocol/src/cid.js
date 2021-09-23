@@ -1,6 +1,4 @@
-'use strict'
-
-const { CID } = require('multiformats/cid')
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {Object} EncodedCID
@@ -19,13 +17,12 @@ const { CID } = require('multiformats/cid')
  * @param {Transferable[]} [transfer]
  * @returns {EncodedCID}
  */
-const encodeCID = (cid, transfer) => {
+export const encodeCID = (cid, transfer) => {
   if (transfer) {
     transfer.push(cid.multihash.bytes.buffer)
   }
   return cid
 }
-exports.encodeCID = encodeCID
 
 /**
  * Decodes encoded CID (well sort of instead it makes nasty mutations to turn
@@ -34,7 +31,7 @@ exports.encodeCID = encodeCID
  * @param {EncodedCID} encodedCID
  * @returns {CID}
  */
-const decodeCID = encodedCID => {
+export const decodeCID = encodedCID => {
   /** @type {CID} */
   const cid = (encodedCID)
 
@@ -63,4 +60,3 @@ const decodeCID = encodedCID => {
 
   return cid
 }
-exports.decodeCID = decodeCID

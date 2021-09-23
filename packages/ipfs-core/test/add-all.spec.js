@@ -1,9 +1,8 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const utils = require('../src/components/add-all/utils')
+import { expect } from 'aegir/utils/chai.js'
+import * as utils from '../src/components/add-all/utils.js'
 
 describe('add-all/utils', () => {
   describe('parseChunkerString', () => {

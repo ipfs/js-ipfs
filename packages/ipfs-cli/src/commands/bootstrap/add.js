@@ -1,9 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceMultiaddr } = require('../../utils')
+import parseDuration from 'parse-duration'
+import { coerceMultiaddr } from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'add [<peer>]',
 
   describe: 'Add peers to the bootstrap list',

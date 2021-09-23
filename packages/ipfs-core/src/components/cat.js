@@ -1,9 +1,8 @@
-'use strict'
 
-const { exporter } = require('ipfs-unixfs-exporter')
-const { normalizeCidPath } = require('../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { CID } = require('multiformats/cid')
+import { exporter } from 'ipfs-unixfs-exporter'
+import { normalizeCidPath } from '../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {Object} Context
@@ -12,7 +11,7 @@ const { CID } = require('multiformats/cid')
  *
  * @param {Context} context
  */
-module.exports = function ({ repo, preload }) {
+export function createCat ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["cat"]}
    */

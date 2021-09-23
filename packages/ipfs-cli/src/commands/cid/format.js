@@ -1,9 +1,8 @@
-'use strict'
 
-const split = require('it-split')
-const { CID } = require('multiformats/cid')
+import split from 'it-split'
+import { CID } from 'multiformats/cid'
 
-module.exports = {
+export default {
   command: 'format [cids...]',
 
   describe: 'Format and convert a CID in various useful ways.',

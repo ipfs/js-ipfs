@@ -1,14 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats/cid')
-const sinon = require('sinon')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const { AbortSignal } = require('native-abort-controller')
-const { base58btc } = require('multiformats/bases/base58')
-const { base64 } = require('multiformats/bases/base64')
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
+import sinon from 'sinon'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
 
 describe('/bitswap', () => {
   const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')

@@ -1,9 +1,8 @@
-'use strict'
 
-const { default: parseDuration } = require('parse-duration')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import parseDuration from 'parse-duration'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
-module.exports = {
+export default {
   command: 'put <key> <value>',
 
   describe: 'Write a key/value pair to the routing system.',

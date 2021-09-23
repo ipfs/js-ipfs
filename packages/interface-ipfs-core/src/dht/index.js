@@ -1,14 +1,20 @@
-'use strict'
-const { createSuite } = require('../utils/suite')
+import { createSuite } from '../utils/suite.js'
+import { testPut } from './put.js'
+import { testGet } from './get.js'
+import { testFindPeer } from './find-peer.js'
+import { testProvide } from './provide.js'
+import { testFindProvs } from './find-provs.js'
+import { testQuery } from './query.js'
+import { testDisabled } from './disabled.js'
 
 const tests = {
-  put: require('./put'),
-  get: require('./get'),
-  findPeer: require('./find-peer'),
-  provide: require('./provide'),
-  findProvs: require('./find-provs'),
-  query: require('./query'),
-  disabled: require('./disabled')
+  put: testPut,
+  get: testGet,
+  findPeer: testFindPeer,
+  provide: testProvide,
+  findProvs: testFindProvs,
+  query: testQuery,
+  disabled: testDisabled
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

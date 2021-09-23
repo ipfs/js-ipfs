@@ -1,14 +1,13 @@
-'use strict'
 
-const dagPB = require('@ipld/dag-pb')
-const { default: parseDuration } = require('parse-duration')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const {
+import * as dagPB from '@ipld/dag-pb'
+import parseDuration from 'parse-duration'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import {
   stripControlCharacters,
   coerceCID
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'get <key>',
 
   describe: 'Get and serialize the DAG node named by <key>',

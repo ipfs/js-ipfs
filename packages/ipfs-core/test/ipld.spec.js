@@ -1,11 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const createNode = require('./utils/create-node')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const Digest = require('multiformats/hashes/digest')
+import { expect } from 'aegir/utils/chai.js'
+import createNode from './utils/create-node.js'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as Digest from 'multiformats/hashes/digest'
 
 describe('ipld', function () {
   this.timeout(10 * 1000)

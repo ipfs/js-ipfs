@@ -1,19 +1,29 @@
-'use strict'
 
-const { createSuite } = require('../utils/suite')
+import { createSuite } from '../utils/suite.js'
+import { testChmod } from './chmod.js'
+import { testCp } from './cp.js'
+import { testFlush } from './flush.js'
+import { testLs } from './ls.js'
+import { testMkdir } from './mkdir.js'
+import { testMv } from './mv.js'
+import { testRead } from './read.js'
+import { testRm } from './rm.js'
+import { testStat } from './stat.js'
+import { testTouch } from './touch.js'
+import { testWrite } from './write.js'
 
 const tests = {
-  chmod: require('./chmod'),
-  cp: require('./cp'),
-  flush: require('./flush'),
-  ls: require('./ls'),
-  mkdir: require('./mkdir'),
-  mv: require('./mv'),
-  read: require('./read'),
-  rm: require('./rm'),
-  stat: require('./stat'),
-  touch: require('./touch'),
-  write: require('./write')
+  chmod: testChmod,
+  cp: testCp,
+  flush: testFlush,
+  ls: testLs,
+  mkdir: testMkdir,
+  mv: testMv,
+  read: testRead,
+  rm: testRm,
+  stat: testStat,
+  touch: testTouch,
+  write: testWrite
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

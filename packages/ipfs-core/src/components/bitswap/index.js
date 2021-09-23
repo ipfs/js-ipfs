@@ -1,9 +1,8 @@
-'use strict'
 
-const createWantlist = require('./wantlist')
-const createWantlistForPeer = require('./wantlist-for-peer')
-const createUnwant = require('./unwant')
-const createStat = require('./stat')
+import { createWantlist } from './wantlist.js'
+import { createWantlistForPeer } from './wantlist-for-peer.js'
+import { createUnwant } from './unwant.js'
+import { createStat } from './stat.js'
 
 /**
  * @typedef {import('../../types').NetworkService} NetworkService
@@ -12,7 +11,7 @@ const createStat = require('./stat')
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
-class BitswapAPI {
+export class BitswapAPI {
   /**
    * @param {Object} config
    * @param {NetworkService} config.network
@@ -24,4 +23,3 @@ class BitswapAPI {
     this.stat = createStat({ network })
   }
 }
-module.exports = BitswapAPI

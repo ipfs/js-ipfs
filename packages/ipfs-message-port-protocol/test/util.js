@@ -1,7 +1,7 @@
-'use strict'
+
 /* eslint-env browser */
 
-const ipc = () => {
+export const ipc = () => {
   const { port1: sender, port2: receiver } = new MessageChannel()
   let out = true
   const move = async (data, transfer) => {
@@ -25,12 +25,11 @@ const ipc = () => {
 
   return ipcMove
 }
-exports.ipc = ipc
 
 /**
  * @returns {[Promise<T>, function(T):void, function(any):void]}
  */
-const defer = () => {
+export const defer = () => {
   const result = []
   result.unshift(
     new Promise((resolve, reject) => {
@@ -39,4 +38,3 @@ const defer = () => {
   )
   return result
 }
-exports.defer = defer

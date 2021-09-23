@@ -1,15 +1,20 @@
-'use strict'
-
-const Remote = require('./remote')
+import { createAddAll } from './add-all.js'
+import { createAdd } from './add.js'
+import { createLs } from './ls.js'
+import { createRmAll } from './rm-all.js'
+import { createRm } from './rm.js'
+import { createRemote } from './remote/index.js'
 
 /**
  * @param {import('../types').Options} config
  */
-module.exports = config => ({
-  add: require('./add')(config),
-  addAll: require('./add-all')(config),
-  ls: require('./ls')(config),
-  rm: require('./rm')(config),
-  rmAll: require('./rm-all')(config),
-  remote: new Remote(config)
-})
+export function createPin (config) {
+  return {
+    addAll: createAddAll(config),
+    add: createAdd(config),
+    ls: createLs(config),
+    rmAll: createRmAll(config),
+    rm: createRm(config),
+    remote: createRemote(config)
+  }
+}

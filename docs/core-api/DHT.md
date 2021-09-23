@@ -210,11 +210,11 @@ https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b9
 */
 ```
 
-Alternatively you can simply "consume" the iterable:
+Alternatively you can simply "drain" the iterable:
 
 ```js
-const { consume } = require('streaming-iterables')
-await consume(ipfs.dht.provide('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR'))
+import drain from 'it-drain'
+await drain(ipfs.dht.provide('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR'))
 ```
 
 A great source of [examples][] can be found in the tests for this API.
@@ -277,11 +277,11 @@ https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b9
 */
 ```
 
-Alternatively you can simply "consume" the iterable:
+Alternatively you can simply "drain" the iterable:
 
 ```js
-const { consume } = require('streaming-iterables')
-await consume(ipfs.dht.put(key, value))
+import drain from 'it-drain'
+await drain(ipfs.dht.put(key, value))
 ```
 
 A great source of [examples][] can be found in the tests for this API.

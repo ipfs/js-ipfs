@@ -291,6 +291,7 @@ export interface VersionResult {
   repo?: string
   system?: string
   golang?: string
+  'ipfs-core'?: string
   'interface-ipfs-core'?: string
   'ipfs-http-client'?: string
 }

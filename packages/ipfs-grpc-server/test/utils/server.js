@@ -1,10 +1,9 @@
-'use strict'
 
-const createServer = require('../../src')
-const EventEmitter = require('events').EventEmitter
-const createChannel = require('./channel')
+import { createServer } from '../../src/index.js'
+import { EventEmitter } from 'events'
+import { createChannel } from './channel.js'
 
-module.exports = ({ ipfs, options }) => {
+export function server ({ ipfs, options }) {
   const socket = new EventEmitter()
 
   createServer(ipfs, {

@@ -1,9 +1,8 @@
-'use strict'
 
 /**
  * @param {string} path
  */
-function splitPath (path) {
+export function splitPath (path) {
   if (path[path.length - 1] === '/') {
     path = path.substring(0, path.length - 1)
   }
@@ -25,7 +24,7 @@ function removeLeadingSlash (url) {
 /**
  * @param {string} url
  */
-function removeTrailingSlash (url) {
+export function removeTrailingSlash (url) {
   if (url.endsWith('/')) {
     url = url.substring(0, url.length - 1)
   }
@@ -46,15 +45,9 @@ function removeSlashFromBothEnds (url) {
 /**
  * @param  {...string} urls
  */
-function joinURLParts (...urls) {
+export function joinURLParts (...urls) {
   urls = urls.filter((url) => url.length > 0)
   urls = [''].concat(urls.map((url) => removeSlashFromBothEnds(url)))
 
   return urls.join('/')
-}
-
-module.exports = {
-  splitPath: splitPath,
-  removeTrailingSlash: removeTrailingSlash,
-  joinURLParts: joinURLParts
 }

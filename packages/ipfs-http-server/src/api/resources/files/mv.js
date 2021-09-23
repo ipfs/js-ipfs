@@ -1,8 +1,7 @@
-'use strict'
 
-const Joi = require('../../../utils/joi')
+import Joi from '../../../utils/joi.js'
 
-const mfsMv = {
+export const mvResource = {
   options: {
     validate: {
       options: {
@@ -73,5 +72,3 @@ const mfsMv = {
     return h.response()
   }
 }
-
-module.exports = mfsMv

@@ -1,7 +1,5 @@
-'use strict'
 
-require('./cid.browser')
-require('./block.browser')
-
-require('./dag.browser')
-require('./core.browser')
+import './cid.browser.js'
+import './block.browser.js'
+import './dag.browser.js'
+import './core.browser.js'

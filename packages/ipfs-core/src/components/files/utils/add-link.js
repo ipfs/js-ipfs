@@ -1,20 +1,21 @@
-'use strict'
 
-const dagPb = require('@ipld/dag-pb')
-const { CID } = require('multiformats/cid')
-const log = require('debug')('ipfs:mfs:core:utils:add-link')
-const { UnixFS } = require('ipfs-unixfs')
-const DirSharded = require('./dir-sharded')
-const {
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
+import debug from 'debug'
+import { UnixFS } from 'ipfs-unixfs'
+import { DirSharded } from './dir-sharded.js'
+import {
   updateHamtDirectory,
   recreateHamtLevel,
   recreateInitialHamtLevel,
   createShard,
   toPrefix,
   addLinksToHamtBucket
-} = require('./hamt-utils')
-const errCode = require('err-code')
-const last = require('it-last')
+} from './hamt-utils.js'
+import errCode from 'err-code'
+import last from 'it-last'
+
+const log = debug('ipfs:mfs:core:utils:add-link')
 
 /**
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
@@ -38,7 +39,7 @@ const last = require('it-last')
  * @param {CID} [options.parentCid]
  * @param {PBNode} [options.parent]
  */
-const addLink = async (context, options) => {
+export async function addLink (context, options) {
   let parent = options.parent
 
   if (options.parentCid) {
@@ -47,13 +48,13 @@ const addLink = async (context, options) => {
       throw errCode(new Error('Invalid CID passed to addLink'), 'EINVALIDPARENTCID')
     }
 
-    if (parentCid.code !== dagPb.code) {
+    if (parentCid.code !== dagPB.code) {
       throw errCode(new Error('Unsupported codec. Only DAG-PB is supported'), 'EINVALIDPARENTCID')
     }
 
     log(`Loading parent node ${parentCid}`)
     const block = await context.repo.blocks.get(parentCid)
-    parent = dagPb.decode(block)
+    parent = dagPB.decode(block)
   }
 
   if (!parent) {
@@ -180,16 +181,16 @@ const addToDirectory = async (context, options) => {
   } else {
     data = options.parent.Data
   }
-  options.parent = dagPb.prepare({
+  options.parent = dagPB.prepare({
     Data: data,
     Links: parentLinks
   })
 
   // Persist the new parent PbNode
   const hasher = await context.hashers.getHasher(options.hashAlg)
-  const buf = dagPb.encode(options.parent)
+  const buf = dagPB.encode(options.parent)
   const hash = await hasher.digest(buf)
-  const cid = CID.create(options.cidVersion, dagPb.code, hash)
+  const cid = CID.create(options.cidVersion, dagPB.code, hash)
 
   if (options.flush) {
     await context.repo.blocks.put(cid, buf)
@@ -224,7 +225,7 @@ const addToShardedDirectory = async (context, options) => {
   }
 
   const block = await context.repo.blocks.get(result.cid)
-  const node = dagPb.decode(block)
+  const node = dagPB.decode(block)
 
   // we have written out the shard, but only one sub-shard will have been written so replace it in the original shard
   const parentLinks = options.parent.Links.filter((link) => {
@@ -334,7 +335,7 @@ const addFileToShardedDirectory = async (context, options) => {
     // load sub-shard
     log(`Found subshard ${segment.prefix}`)
     const block = await context.repo.blocks.get(link.Hash)
-    const subShard = dagPb.decode(block)
+    const subShard = dagPB.decode(block)
 
     // subshard hasn't been loaded, descend to the next level of the HAMT
     if (!path[index]) {
@@ -398,5 +399,3 @@ const toBucketPath = (position) => {
 
   return path
 }
-
-module.exports = addLink

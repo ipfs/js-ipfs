@@ -1,15 +1,14 @@
-'use strict'
 
-const { exporter, recursive } = require('ipfs-unixfs-exporter')
-const errCode = require('err-code')
-const { normalizeCidPath } = require('../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const { CID } = require('multiformats/cid')
-const { pack } = require('it-tar')
-const { pipe } = require('it-pipe')
-const { gzip } = require('pako')
-const map = require('it-map')
-const toBuffer = require('it-to-buffer')
+import { exporter, recursive } from 'ipfs-unixfs-exporter'
+import errCode from 'err-code'
+import { normalizeCidPath } from '../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { CID } from 'multiformats/cid'
+import { pack } from 'it-tar'
+import { pipe } from 'it-pipe'
+import Pako from 'pako'
+import map from 'it-map'
+import toBuffer from 'it-to-buffer'
 
 // https://www.gnu.org/software/gzip/manual/gzip.html
 const DEFAULT_COMPRESSION_LEVEL = 6
@@ -21,7 +20,7 @@ const DEFAULT_COMPRESSION_LEVEL = 6
  *
  * @param {Context} context
  */
-module.exports = function ({ repo, preload }) {
+export function createGet ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["get"]}
    */
@@ -35,7 +34,7 @@ module.exports = function ({ repo, preload }) {
 
       try {
         pathComponents = normalizeCidPath(ipfsPath).split('/')
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         throw errCode(err, 'ERR_INVALID_PATH')
       }
 
@@ -79,7 +78,7 @@ module.exports = function ({ repo, preload }) {
           async function * (source) {
             const buf = await toBuffer(source)
 
-            yield gzip(buf, {
+            yield Pako.gzip(buf, {
               level: options.compressionLevel || DEFAULT_COMPRESSION_LEVEL
             })
           }
@@ -148,7 +147,7 @@ module.exports = function ({ repo, preload }) {
             async function * (source) {
               const buf = await toBuffer(source)
 
-              yield gzip(buf, {
+              yield Pako.gzip(buf, {
                 level: options.compressionLevel || DEFAULT_COMPRESSION_LEVEL
               })
             }

@@ -1,16 +1,15 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const configure = require('./lib/configure')
-const toUrlSearchParams = require('./lib/to-url-search-params')
-const stat = require('./files/stat')
+import { CID } from 'multiformats/cid'
+import { configure } from './lib/configure.js'
+import { toUrlSearchParams } from './lib/to-url-search-params.js'
+import { createStat } from './files/stat.js'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
-module.exports = configure((api, opts) => {
+export const createLs = configure((api, opts) => {
   /**
    * @type {RootAPI["ls"]}
    */
@@ -26,7 +25,7 @@ module.exports = configure((api, opts) => {
       if (hash.includes('/')) {
         // the hash is a path, but we need the CID
         const ipfsPath = hash.startsWith('/ipfs/') ? hash : `/ipfs/${hash}`
-        const stats = await stat(opts)(ipfsPath)
+        const stats = await createStat(opts)(ipfsPath)
 
         hash = stats.cid
       } else {
