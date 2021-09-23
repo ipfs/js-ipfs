@@ -44,8 +44,7 @@
   "browser": {
     "fs": false,
     "os": false,
-    "path": false,
-    "ipfs-utils/src/files/glob-source": false
+    "path": false
   },
   "scripts": {
     "clean": "rimraf ./dist",
@@ -76,7 +75,7 @@
     "ipfs-core-types": "^0.7.3",
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
-    "ipfs-utils": "^8.1.4",
+    "ipfs-utils": "^9.0.1",
     "ipns": "^0.14.0",
     "is-ipfs": "^6.0.1",
     "iso-random-stream": "^2.0.0",

@@ -50,7 +50,7 @@
     "ipfs-grpc-server": "^0.6.6",
     "ipfs-http-gateway": "^0.6.5",
     "ipfs-http-server": "^0.7.6",
-    "ipfs-utils": "^8.1.4",
+    "ipfs-utils": "^9.0.1",
     "just-safe-set": "^2.2.1",
     "libp2p": "^0.32.0",
     "libp2p-webrtc-star": "^0.23.0"

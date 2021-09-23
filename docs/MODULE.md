@@ -23,7 +23,7 @@ Use the IPFS module as a dependency of your project to spawn in process instance
     - [`node.start()`](#nodestart)
 - [Static types and utils](#static-types-and-utils)
       - [Glob source](#glob-source)
-        - [`globSource(path, [options])`](#globsourcepath-options)
+        - [`globSource(path, pattern, [options])`](#globsourcepath-pattern-options)
         - [Example](#example)
       - [URL source](#url-source)
         - [`urlSource(url)`](#urlsourceurl)
@@ -398,12 +398,11 @@ import { CID } from 'ipfs'
 
 A utility to allow files on the file system to be easily added to IPFS.
 
-###### `globSource(path, [options])`
+###### `globSource(path, pattern, [options])`
 
 - `path`: A path to a single file or directory to glob from
+- `pattern`: A pattern to match files under `path`
 - `options`: Optional options
-- `options.recursive`: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-- `options.ignore`: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
 - `options.hidden`: Hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
 
 Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
@@ -415,7 +414,7 @@ import { create, globSource } from 'ipfs'
 
 const ipfs = await create()
 
-for await (const file of ipfs.addAll(globSource('./docs', { recursive: true }))) {
+for await (const file of ipfs.addAll(globSource('./docs', '**/*'))) {
   console.log(file)
 }
 /*
