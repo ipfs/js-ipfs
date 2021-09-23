@@ -24,7 +24,7 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "release": "run-s release:pre:* build release:publish docker:release",
+    "release": "run-s release:pre:* release:publish docker:release",
     "release:pre:non-dirty-repo": "git diff --quiet",
     "release:pre:update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false --types=false",
     "release:pre:reinstall": "npm run reset && npm i && rimraf package-lock.json packages/*/package-lock.json examples/*/package-lock.json",
@@ -35,14 +35,15 @@
     "docker:release:tag-version": "docker tag js-ipfs:latest docker.io/ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
     "docker:release:push-latest": "docker push ipfs/js-ipfs:latest",
     "docker:release:push-version": "docker push ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
-    "release:rc": "run-s release:pre:non-dirty-repo release:pre:reinstall build release:canary",
+    "release:rc": "run-s release:pre:non-dirty-repo release:pre:reinstall release:canary",
     "release:canary": "lerna publish --canary --preid rc --dist-tag next --force-publish --yes",
     "docker:rc": "run-s docker:rc:*",
     "docker:rc:build": "docker build . --no-cache --tag js-ipfs:next --file ./Dockerfile.next",
     "docker:rc:tag-next": "docker tag js-ipfs:next docker.io/ipfs/js-ipfs:next",
     "docker:rc:tag-rc": "docker tag js-ipfs:next docker.io/ipfs/js-ipfs:v`npm show ipfs@next version -q`",
     "docker:rc:push-next": "docker push ipfs/js-ipfs:next",
-    "docker:rc:push-rc": "docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`"
+    "docker:rc:push-rc": "docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`",
+    "prepublishOnly": "npm run build"
   },
   "eslintConfig": {
     "extends": "ipfs",
