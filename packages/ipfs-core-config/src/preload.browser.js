@@ -8,9 +8,12 @@ const log = Object.assign(debug('ipfs:preload'), {
   error: debug('ipfs:preload:error')
 })
 
+// @ts-expect-error PQueue@6 is broken
+const Queue = PQueue.default ? PQueue.default : PQueue
+
 // browsers limit concurrent connections per host,
 // we don't want preload calls to exhaust the limit (~6)
-const httpQueue = new PQueue({ concurrency: 4 })
+const httpQueue = new Queue({ concurrency: 4 })
 
 /**
  * @param {string} url

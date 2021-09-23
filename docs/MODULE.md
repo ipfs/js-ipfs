@@ -28,6 +28,9 @@ Use the IPFS module as a dependency of your project to spawn in process instance
       - [URL source](#url-source)
         - [`urlSource(url)`](#urlsourceurl)
         - [Example](#example-1)
+      - [Path](#path)
+        - [`path()`](#path-1)
+        - [Example](#example-2)
 
 ## Getting started
 
@@ -457,4 +460,22 @@ console.log(file)
   size: 3243
 }
 */
+```
+
+##### Path
+
+A function that returns the path to the js-ipfs CLI.
+
+This is analogous to the `.path()` function exported by the [go-ipfs](https://www.npmjs.com/package/go-ipfs) module.
+
+###### `path()`
+
+Returns the path to the js-ipfs CLI
+
+###### Example
+
+```js
+import { path } from 'ipfs'
+
+console.info(path()) // /foo/bar/node_modules/ipfs/src/cli.js
 ```

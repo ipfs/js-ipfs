@@ -12,6 +12,18 @@
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
   "files": [
     "*",
     "!**/*.tsbuildinfo"
@@ -28,6 +40,9 @@
   "exports": {
     ".": {
       "import": "./src/index.js"
+    },
+    "./path": {
+      "import": "./src/path.js"
     }
   },
   "bin": {
@@ -42,6 +57,7 @@
     "build:update-version": "node scripts/update-version.js",
     "build:aegir": "aegir build",
     "build:copy-cli": "copyfiles ./src/cli.js ./src/package.js ./dist",
+    "build:copy-package": "copyfiles ./dist/esm/package.json ./dist/src -u 2",
     "lint": "aegir ts -p check && aegir lint",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",

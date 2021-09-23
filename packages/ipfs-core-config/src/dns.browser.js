@@ -11,9 +11,12 @@ const cache = new TLRU(1000)
 // which acts a provisional default ttl: https://stackoverflow.com/a/36917902/11518426
 const ttl = 60 * 1000
 
+// @ts-expect-error PQueue@6 is broken
+const Queue = PQueue.default ? PQueue.default : PQueue
+
 // browsers limit concurrent connections per host,
 // we don't want preload calls to exhaust the limit (~6)
-const httpQueue = new PQueue({ concurrency: 4 })
+const httpQueue = new Queue({ concurrency: 4 })
 
 /**
  * @param {{ Path: string, Message: string }} response
