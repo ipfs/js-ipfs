@@ -1,6 +1,8 @@
 
 import errCode from 'err-code'
-import { parallelMap, filter } from 'streaming-iterables'
+import parallel from 'it-parallel'
+import map from 'it-map'
+import filter from 'it-filter'
 import { pipe } from 'it-pipe'
 import { cleanCid } from './utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
@@ -27,30 +29,33 @@ export function createRm ({ repo }) {
     try {
       yield * pipe(
         cids,
-        parallelMap(BLOCK_RM_CONCURRENCY, async cid => {
-          cid = cleanCid(cid)
+        source => map(source, cid => {
+          return async () => {
+            cid = cleanCid(cid)
 
-          /** @type {import('ipfs-core-types/src/block').RmResult} */
-          const result = { cid }
+            /** @type {import('ipfs-core-types/src/block').RmResult} */
+            const result = { cid }
 
-          try {
-            const has = await repo.blocks.has(cid)
+            try {
+              const has = await repo.blocks.has(cid)
 
-            if (!has) {
-              throw errCode(new Error('block not found'), 'ERR_BLOCK_NOT_FOUND')
+              if (!has) {
+                throw errCode(new Error('block not found'), 'ERR_BLOCK_NOT_FOUND')
+              }
+
+              await repo.blocks.delete(cid)
+            } catch (/** @type {any} */ err) {
+              if (!options.force) {
+                err.message = `cannot remove ${cid}: ${err.message}`
+                result.error = err
+              }
             }
 
-            await repo.blocks.delete(cid)
-          } catch (/** @type {any} */ err) {
-            if (!options.force) {
-              err.message = `cannot remove ${cid}: ${err.message}`
-              result.error = err
-            }
+            return result
           }
-
-          return result
         }),
-        filter(() => !options.quiet)
+        source => parallel(source, BLOCK_RM_CONCURRENCY),
+        source => filter(source, () => !options.quiet)
       )
     } finally {
       release()
