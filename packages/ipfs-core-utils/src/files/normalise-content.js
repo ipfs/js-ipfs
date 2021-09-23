@@ -14,7 +14,14 @@ import {
 /**
  * @param {import('./normalise').ToContent} input
  */
-export async function * normaliseContent (input) {
+export async function normaliseContent (input) {
+  return toAsyncGenerator(input)
+}
+
+/**
+ * @param {import('./normalise').ToContent} input
+ */
+async function * toAsyncGenerator (input) {
   // Bytes | String
   if (isBytes(input)) {
     yield toBytes(input)

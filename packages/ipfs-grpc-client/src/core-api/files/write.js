@@ -12,7 +12,7 @@ import {
  * @param {*} content
  */
 async function * stream (path, content) {
-  for await (const buf of normaliseContent(content)) {
+  for await (const buf of await normaliseContent(content)) {
     yield { path, content: buf }
   }
 }

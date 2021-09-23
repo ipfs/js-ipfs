@@ -22,7 +22,7 @@ import {
 
 /**
  * @param {ImportCandidate | ImportCandidateStream} input
- * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
+ * @param {(content:ToContent) => Promise<AsyncIterable<Uint8Array>>} normaliseContent
  */
 // eslint-disable-next-line complexity
 export async function * normalise (input, normaliseContent) {
@@ -72,6 +72,13 @@ export async function * normalise (input, normaliseContent) {
       return
     }
 
+    // Node ReadableStream<Node ReadableStream>
+    if (value._readableState) {
+      // @ts-ignore Node readable streams have a `.path` property so we need to pass it as the content
+      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject({ content: value }, normaliseContent))
+      return
+    }
+
     // (Async)Iterable<Blob>
     // (Async)Iterable<String>
     // (Async)Iterable<{ path, content }>
@@ -103,7 +110,7 @@ export async function * normalise (input, normaliseContent) {
 
 /**
  * @param {ImportCandidate} input
- * @param {(content:ToContent) => AsyncIterable<Uint8Array>} normaliseContent
+ * @param {(content:ToContent) => Promise<AsyncIterable<Uint8Array>>} normaliseContent
  */
 async function toFileObject (input, normaliseContent) {
   // @ts-ignore - Those properties don't exist on most input types
@@ -117,7 +124,6 @@ async function toFileObject (input, normaliseContent) {
   }
 
   if (content) {
-  // @ts-ignore TODO vmx 2021-03-30 enable again
     file.content = await normaliseContent(content)
   } else if (!path) { // Not already a file object with path or content prop
     // @ts-ignore - input still can be different ToContent
