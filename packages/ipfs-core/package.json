@@ -45,9 +45,6 @@
       "import": "./src/components/config/profiles.js"
     }
   },
-  "browser": {
-    "ipfs-utils/src/files/glob-source": false
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -94,7 +91,7 @@
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-exporter": "^7.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
-    "ipfs-utils": "^8.1.4",
+    "ipfs-utils": "^9.0.1",
     "ipns": "^0.14.0",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^6.0.1",

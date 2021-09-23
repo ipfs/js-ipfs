@@ -49,7 +49,7 @@
   - [Instance Utils](#instance-utils)
   - [Static Types and Utils](#static-types-and-utils)
     - [Glob source](#glob-source)
-      - [`globSource(path, [options])`](#globsourcepath-options)
+      - [`globSource(path, pattern, [options])`](#globsourcepath-pattern-options)
       - [Example](#example-1)
     - [URL source](#url-source)
       - [`urlSource(url)`](#urlsourceurl)
@@ -182,12 +182,11 @@ import { CID } from 'ipfs-http-client'
 
 A utility to allow files on the file system to be easily added to IPFS.
 
-##### `globSource(path, [options])`
+##### `globSource(path, pattern, [options])`
 
 - `path`: A path to a single file or directory to glob from
+- `pattern`: A pattern to match files under `path`
 - `options`: Optional options
-- `options.recursive`: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-- `options.ignore`: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
 - `options.hidden`: Hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
 
 Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
@@ -195,12 +194,13 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ##### Example
 
 ```js
-import { create, globSource } from 'ipfs-http-client'
-const ipfs = create()
+import { create, globSource } from 'ipfs'
 
-const file = await ipfs.add(globSource('./docs', { recursive: true }))
-console.log(file)
+const ipfs = await create()
 
+for await (const file of ipfs.addAll(globSource('./docs', '**/*'))) {
+  console.log(file)
+}
 /*
 {
   path: 'docs/assets/anchor.js',

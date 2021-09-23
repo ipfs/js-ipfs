@@ -71,7 +71,7 @@
     "ipfs-daemon": "^0.9.8",
     "ipfs-http-client": "^52.0.5",
     "ipfs-repo": "^12.0.0",
-    "ipfs-utils": "^8.1.4",
+    "ipfs-utils": "^9.0.1",
     "it-all": "^1.0.4",
     "it-concat": "^2.0.0",
     "it-first": "^1.0.4",
