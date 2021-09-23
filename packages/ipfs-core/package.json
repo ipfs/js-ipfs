@@ -105,6 +105,7 @@
     "it-last": "^1.0.4",
     "it-map": "^1.0.4",
     "it-merge": "^1.0.2",
+    "it-parallel": "^1.0.0",
     "it-peekable": "^1.0.2",
     "it-pipe": "^1.1.0",
     "it-pushable": "^1.4.2",
@@ -128,7 +129,6 @@
     "pako": "^1.0.2",
     "parse-duration": "^1.0.0",
     "peer-id": "^0.15.1",
-    "streaming-iterables": "^6.0.0",
     "timeout-abort-controller": "^1.1.1",
     "uint8arrays": "^3.0.0"
   },
