@@ -417,8 +417,8 @@ export function testAddAll (factory, options) {
 
       const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
-      const result = await all(ipfs.addAll(globSource(filesPath, '/!(files)/**/*')))
-      expect(result.length).to.be.below(9)
+      const result = await all(ipfs.addAll(globSource(filesPath, '@(!(files*))')))
+      expect(result.length).to.equal(6)
     })
 
     it('should add a file from the file system', async function () {
