@@ -72,7 +72,7 @@ export async function * normalise (input, normaliseContent) {
       return
     }
 
-    // Node ReadableStream<Node ReadableStream>
+    // fs.ReadStream<Bytes>
     if (value._readableState) {
       // @ts-ignore Node readable streams have a `.path` property so we need to pass it as the content
       yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject({ content: value }, normaliseContent))

@@ -86,12 +86,6 @@ function browserReadableStreamOf (thing) {
   })
 }
 
-function nodeReadStreamOf (thing) {
-  return (async function * () { // eslint-disable-line require-await
-    yield thing
-  }())
-}
-
 describe('normalise-input', function () {
   /**
    * @param {() => any} content
@@ -234,14 +228,13 @@ describe('normalise-input', function () {
 
       testInputType(NODEFSREADSTREAM, 'Node fs.ReadStream', false)
 
-      it(`Iterable<Node fs.ReadStream>`, async function () {
+      it('Iterable<Node fs.ReadStream>', async function () {
         await testContent(iterableOf(NODEFSREADSTREAM()))
       })
 
-      it(`AsyncIterable<Node fs.ReadStream>`, async function () {
+      it('AsyncIterable<Node fs.ReadStream>', async function () {
         await testContent(asyncIterableOf(NODEFSREADSTREAM()))
       })
-
     })
   }
 })
