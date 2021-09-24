@@ -6,6 +6,8 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import all from 'it-all'
 import { File } from '@web-std/file'
 import { normaliseInput } from '../../src/files/normalise-input.js'
+import { isNode } from 'ipfs-utils/src/env.js'
+import resolve from 'aegir/utils/resolve.js'
 
 const { Blob, ReadableStream } = globalThis
 
@@ -208,4 +210,31 @@ describe('normalise-input', function () {
   describe('TypedArray', () => {
     testInputType(TYPEDARRAY, 'TypedArray', true)
   })
+
+  if (isNode) {
+    /** @type {import('fs')} */
+    let fs
+
+    before(async () => {
+      fs = await import('fs')
+    })
+
+    describe('Node fs.ReadStream', () => {
+      const NODEFSREADSTREAM = () => {
+        const path = resolve('test/fixtures/file.txt', 'ipfs-core-utils')
+
+        return fs.createReadStream(path)
+      }
+
+      testInputType(NODEFSREADSTREAM, 'Node fs.ReadStream', false)
+
+      it('Iterable<Node fs.ReadStream>', async function () {
+        await testContent(iterableOf(NODEFSREADSTREAM()))
+      })
+
+      it('AsyncIterable<Node fs.ReadStream>', async function () {
+        await testContent(asyncIterableOf(NODEFSREADSTREAM()))
+      })
+    })
+  }
 })
