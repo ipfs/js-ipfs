@@ -4,7 +4,7 @@
   "description": "Creates an HTTP response from an IPFS Hash",
   "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
   "main": "src/index.js",
-  "types": "./types/src/index.d.ts",
+  "types": "types/src/index.d.ts",
   "type": "module",
   "eslintConfig": {
     "extends": "ipfs",
