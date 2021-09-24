@@ -9,14 +9,13 @@ import { promisify } from 'util'
 import { fail } from './utils/cli.js'
 import sinon from 'sinon'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-import IPFSRepo from 'ipfs-repo'
+import { repoVersion } from 'ipfs-repo/constants'
 import ncpCb from 'ncp'
 import { ipfsExec } from './utils/ipfs-exec.js'
 import { clean } from './utils/clean.js'
 import { isWindows } from './utils/platforms.js'
 import { fileURLToPath } from 'url'
 
-const { repoVersion } = IPFSRepo
 const ncp = promisify(ncpCb)
 
 // @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
