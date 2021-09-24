@@ -4,7 +4,7 @@ import loadFixture from 'aegir/utils/fixtures.js'
 import { createFactory } from 'ipfsd-ctl'
 import all from 'it-all'
 import * as ipfsResolver from '../src/resolver.js'
-import ipfsModule from 'ipfs-core'
+import * as ipfsModule from 'ipfs-core'
 
 const factory = createFactory({
   test: true,

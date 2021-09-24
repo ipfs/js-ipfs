@@ -7,7 +7,7 @@ import all from 'it-all'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { getResponse } from '../src/index.js'
 import makeWebResponseEnv from './utils/web-response-env.js'
-import ipfsModule from 'ipfs-core'
+import * as ipfsModule from 'ipfs-core'
 
 const factory = createFactory({
   test: true,
