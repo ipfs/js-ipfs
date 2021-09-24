@@ -1,4 +1,3 @@
-
 import { paramCase } from 'change-case'
 
 /**

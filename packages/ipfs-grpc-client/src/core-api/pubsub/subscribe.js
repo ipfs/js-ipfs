@@ -1,4 +1,3 @@
-
 import { serverStreamToIterator } from '../../utils/server-stream-to-iterator.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { subscriptions } from './subscriptions.js'

@@ -1,4 +1,3 @@
-
 import last from 'it-last'
 
 /**

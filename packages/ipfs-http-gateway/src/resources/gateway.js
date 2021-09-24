@@ -1,4 +1,3 @@
-
 import debug from 'debug'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import Boom from '@hapi/boom'

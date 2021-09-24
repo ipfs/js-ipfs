@@ -1,4 +1,3 @@
-
 import { normaliseInput } from './files/normalise-input.js'
 import { nanoid } from 'nanoid'
 import { modeToString } from './mode-to-string.js'

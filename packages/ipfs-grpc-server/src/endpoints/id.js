@@ -1,4 +1,3 @@
-
 import { callbackify } from 'util'
 
 /**

@@ -1,4 +1,3 @@
-
 import { murmur3128 } from '@multiformats/murmur3'
 
 export const hamtHashCode = murmur3128.code

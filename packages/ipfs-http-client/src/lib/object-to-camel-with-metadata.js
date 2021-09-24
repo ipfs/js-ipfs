@@ -1,4 +1,3 @@
-
 import { objectToCamel } from './object-to-camel.js'
 
 /**

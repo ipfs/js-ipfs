@@ -1,4 +1,3 @@
-
 import map from 'it-map'
 import { pipe } from 'it-pipe'
 import { streamResponse } from '../../utils/stream-response.js'

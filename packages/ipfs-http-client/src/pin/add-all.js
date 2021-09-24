@@ -1,4 +1,3 @@
-
 import { CID } from 'multiformats/cid'
 import { configure } from '../lib/configure.js'
 import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'

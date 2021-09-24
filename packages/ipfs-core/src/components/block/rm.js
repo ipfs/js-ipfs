@@ -1,4 +1,3 @@
-
 import errCode from 'err-code'
 import parallel from 'it-parallel'
 import map from 'it-map'

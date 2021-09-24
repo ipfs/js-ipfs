@@ -1,4 +1,3 @@
-
 import { rightpad, stripControlCharacters } from '../utils.js'
 import { formatMode } from 'ipfs-core-utils/files/format-mode'
 import { formatMtime } from 'ipfs-core-utils/files/format-mtime'

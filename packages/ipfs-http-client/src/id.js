@@ -1,4 +1,3 @@
-
 import { objectToCamel } from './lib/object-to-camel.js'
 import { Multiaddr } from 'multiaddr'
 import { configure } from './lib/configure.js'

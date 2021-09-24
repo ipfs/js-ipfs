@@ -1,4 +1,3 @@
-
 import { toUrlString } from 'ipfs-core-utils/to-url-string'
 import { loadServices } from './utils/load-services.js'
 import grpcWeb from '@improbable-eng/grpc-web'

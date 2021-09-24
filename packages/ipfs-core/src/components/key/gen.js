@@ -1,4 +1,3 @@
-
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 const DEFAULT_KEY_TYPE = 'ed25519'

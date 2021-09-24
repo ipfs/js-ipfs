@@ -1,4 +1,3 @@
-
 import errCode from 'err-code'
 
 /**

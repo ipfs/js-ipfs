@@ -1,4 +1,3 @@
-
 import { configure } from '../lib/configure.js'
 import errCode from 'err-code'
 

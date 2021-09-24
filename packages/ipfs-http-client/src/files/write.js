@@ -1,4 +1,3 @@
-
 import { modeToString } from '../lib/mode-to-string.js'
 import { parseMtime } from '../lib/parse-mtime.js'
 import { configure } from '../lib/configure.js'

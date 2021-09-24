@@ -1,4 +1,3 @@
-
 import { bidiToDuplex } from './bidi-to-duplex.js'
 
 /**

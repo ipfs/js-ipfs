@@ -1,4 +1,3 @@
-
 import os from 'os'
 import fs from 'fs'
 // @ts-expect-error no types

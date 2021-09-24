@@ -1,4 +1,3 @@
-
 import {
   wantlistResource,
   statResource,

@@ -1,4 +1,3 @@
-
 import bitswapStat from '../bitswap/stat.js'
 
 // This is an alias for `bitswap stat`.

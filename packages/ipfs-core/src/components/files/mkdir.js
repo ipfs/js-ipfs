@@ -1,4 +1,3 @@
-
 import errCode from 'err-code'
 import debug from 'debug'
 import { exporter } from 'ipfs-unixfs-exporter'

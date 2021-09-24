@@ -1,4 +1,3 @@
-
 import { createAddAll } from './add-all.js'
 import last from 'it-last'
 import { configure } from './lib/configure.js'

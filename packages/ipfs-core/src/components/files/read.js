@@ -1,4 +1,3 @@
-
 import { exporter } from 'ipfs-unixfs-exporter'
 import mergeOpts from 'merge-options'
 import { toMfsPath } from './utils/to-mfs-path.js'

@@ -1,4 +1,3 @@
-
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import drain from 'it-drain'

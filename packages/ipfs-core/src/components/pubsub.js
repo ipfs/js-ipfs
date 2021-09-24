@@ -1,4 +1,3 @@
-
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import errCode from 'err-code'
 import { NotEnabledError } from '../errors.js'

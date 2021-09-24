@@ -1,4 +1,3 @@
-
 import { createStat } from './stat.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import mergeOpts from 'merge-options'

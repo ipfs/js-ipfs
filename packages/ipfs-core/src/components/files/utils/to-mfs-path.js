@@ -1,4 +1,3 @@
-
 import { loadMfsRoot } from './with-mfs-root.js'
 import { toPathComponents } from './to-path-components.js'
 import { exporter } from 'ipfs-unixfs-exporter'

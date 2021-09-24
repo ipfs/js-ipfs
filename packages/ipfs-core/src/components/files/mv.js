@@ -1,4 +1,3 @@
-
 import { createCp } from './cp.js'
 import { createRm } from './rm.js'
 import mergeOpts from 'merge-options'

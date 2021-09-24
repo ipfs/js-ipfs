@@ -1,4 +1,3 @@
-
 import Boom from '@hapi/boom'
 
 /**

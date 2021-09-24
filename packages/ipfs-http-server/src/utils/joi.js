@@ -1,4 +1,3 @@
-
 import { CID } from 'multiformats/cid'
 import parseDuration from 'parse-duration'
 import { Multiaddr } from 'multiaddr'

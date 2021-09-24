@@ -1,4 +1,3 @@
-
 import { versionResource } from '../resources/version.js'
 
 export default [{

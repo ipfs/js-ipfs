@@ -1,4 +1,3 @@
-
 import errCode from 'err-code'
 import { updateTree } from './utils/update-tree.js'
 import { updateMfsRoot } from './utils/update-mfs-root.js'

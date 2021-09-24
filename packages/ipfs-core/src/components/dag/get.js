@@ -1,4 +1,3 @@
-
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import first from 'it-first'
 import last from 'it-last'

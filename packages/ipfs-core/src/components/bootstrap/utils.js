@@ -1,4 +1,3 @@
-
 import mafmt from 'mafmt'
 
 /**

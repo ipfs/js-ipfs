@@ -1,4 +1,3 @@
-
 import split from 'it-split'
 import { CID } from 'multiformats/cid'
 import { base32 } from 'multiformats/bases/base32'

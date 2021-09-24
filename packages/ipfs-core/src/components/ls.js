@@ -1,4 +1,3 @@
-
 import { exporter } from 'ipfs-unixfs-exporter'
 import errCode from 'err-code'
 import { normalizeCidPath, mapFile } from '../utils.js'

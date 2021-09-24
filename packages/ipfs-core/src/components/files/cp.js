@@ -1,4 +1,3 @@
-
 import { createMkdir } from './mkdir.js'
 import { createStat } from './stat.js'
 import debug from 'debug'
