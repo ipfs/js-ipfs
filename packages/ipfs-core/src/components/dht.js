@@ -1,4 +1,3 @@
-
 import PeerId from 'peer-id'
 import errCode from 'err-code'
 import { NotEnabledError } from '../errors.js'

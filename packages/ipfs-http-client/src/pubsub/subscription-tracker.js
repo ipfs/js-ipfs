@@ -1,4 +1,3 @@
-
 import { AbortController } from 'native-abort-controller'
 
 /**

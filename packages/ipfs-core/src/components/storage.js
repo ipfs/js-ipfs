@@ -1,4 +1,3 @@
-
 import debug from 'debug'
 import { createRepo } from 'ipfs-core-config/repo'
 import getDefaultConfig from 'ipfs-core-config/config'
@@ -9,9 +8,7 @@ import mergeOpts from 'merge-options'
 import { profiles as configProfiles } from './config/profiles.js'
 import { NotEnabledError, NotInitializedError } from '../errors.js'
 import { createLibp2p } from './libp2p.js'
-import IpfsRepo from 'ipfs-repo'
-
-const { errors } = IpfsRepo
+import { ERR_REPO_NOT_INITIALIZED } from 'ipfs-repo/errors'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = debug('ipfs:components:peer:storage')
@@ -83,7 +80,7 @@ const loadRepo = async (print, repo, options) => {
 
     return { ...await configureRepo(repo, options), isNew: false }
   } catch (/** @type {any} */ err) {
-    if (err.code !== errors.ERR_REPO_NOT_INITIALIZED) {
+    if (err.code !== ERR_REPO_NOT_INITIALIZED) {
       throw err
     }
 

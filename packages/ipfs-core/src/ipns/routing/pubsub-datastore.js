@@ -1,11 +1,11 @@
-
-import ipns from 'ipns'
+import * as ipns from 'ipns'
 import { base58btc } from 'multiformats/bases/base58'
-import PubsubDatastore from 'datastore-pubsub'
+import { PubsubDatastore } from 'datastore-pubsub'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import errcode from 'err-code'
 import debug from 'debug'
+
 const log = Object.assign(debug('ipfs:ipns:pubsub'), {
   error: debug('ipfs:ipns:pubsub:error')
 })

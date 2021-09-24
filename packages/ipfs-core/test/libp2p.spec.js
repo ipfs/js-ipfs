@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/utils/chai.js'
-import { MemoryDatastore } from 'interface-datastore'
+import { MemoryDatastore } from 'datastore-core/memory'
 import PeerId from 'peer-id'
 import Libp2p from 'libp2p'
 import { EventEmitter } from 'events'

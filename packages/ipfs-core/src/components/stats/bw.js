@@ -1,4 +1,3 @@
-
 import parseDuration from 'parse-duration'
 import errCode from 'err-code'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

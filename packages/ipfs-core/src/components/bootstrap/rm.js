@@ -1,4 +1,3 @@
-
 import { isValidMultiaddr } from './utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 

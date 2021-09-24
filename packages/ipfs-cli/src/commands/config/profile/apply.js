@@ -1,4 +1,3 @@
-
 import JSONDiff from 'jsondiffpatch'
 import parseDuration from 'parse-duration'
 

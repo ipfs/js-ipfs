@@ -1,4 +1,3 @@
-
 import { configure } from '../lib/configure.js'
 import { resolve } from '../lib/resolve.js'
 import first from 'it-first'

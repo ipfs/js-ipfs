@@ -1,4 +1,3 @@
-
 import { objectToCamel } from './lib/object-to-camel.js'
 import { configure } from './lib/configure.js'
 import { toUrlSearchParams } from './lib/to-url-search-params.js'

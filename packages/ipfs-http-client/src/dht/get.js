@@ -1,4 +1,3 @@
-
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { Value } from './response-types.js'

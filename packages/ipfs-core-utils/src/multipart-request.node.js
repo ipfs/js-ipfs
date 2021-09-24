@@ -1,12 +1,13 @@
-
 import { normaliseInput } from './files/normalise-input.js'
 import { nanoid } from 'nanoid'
 import { modeToString } from './mode-to-string.js'
 import mergeOpts from 'merge-options'
 // @ts-expect-error no types
 import toStream from 'it-to-stream'
+import debug from 'debug'
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:core-utils:multipart-request')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
@@ -70,7 +71,8 @@ export async function multipartRequest (source, abortController, headers = {}, b
 
         index++
       }
-    } catch {
+    } catch (err) {
+      log(err)
       // workaround for https://github.com/node-fetch/node-fetch/issues/753
       abortController.abort()
     } finally {

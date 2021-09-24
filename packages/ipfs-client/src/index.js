@@ -1,4 +1,3 @@
-
 import { create as httpClient } from 'ipfs-http-client'
 import { create as grpcClient } from 'ipfs-grpc-client'
 import mergeOpts from 'merge-options'

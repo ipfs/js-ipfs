@@ -1,4 +1,3 @@
-
 import Hapi from '@hapi/hapi'
 import Pino from 'hapi-pino'
 import debug from 'debug'

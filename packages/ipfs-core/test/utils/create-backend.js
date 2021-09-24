@@ -1,6 +1,5 @@
-
-import { MemoryDatastore } from 'interface-datastore'
-import BlockstoreDatastoreAdapter from 'blockstore-datastore-adapter'
+import { MemoryDatastore } from 'datastore-core/memory'
+import { BlockstoreDatastoreAdapter } from 'blockstore-datastore-adapter'
 
 export function createBackend (overrides = {}) {
   return {

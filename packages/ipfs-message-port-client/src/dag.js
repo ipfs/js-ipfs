@@ -1,4 +1,3 @@
-
 import { Client } from './client.js'
 import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
 import { encodeNode, decodeNode } from 'ipfs-message-port-protocol/dag'

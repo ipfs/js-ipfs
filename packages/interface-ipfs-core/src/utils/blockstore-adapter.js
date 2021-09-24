@@ -1,4 +1,4 @@
-import { BlockstoreAdapter } from 'interface-blockstore'
+import { BaseBlockstore } from 'blockstore-core/base'
 import * as raw from 'multiformats/codecs/raw'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
@@ -21,7 +21,7 @@ const hashes = {
   [sha256.code]: sha256.name
 }
 
-class IPFSBlockstore extends BlockstoreAdapter {
+class IPFSBlockstore extends BaseBlockstore {
   /**
    * @param {import('ipfs-core-types').IPFS} ipfs
    */

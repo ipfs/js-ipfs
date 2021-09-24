@@ -1,4 +1,3 @@
-
 import path, { dirname } from 'path'
 import glob from 'it-glob'
 import all from 'it-all'

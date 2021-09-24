@@ -1,4 +1,3 @@
-
 import debug from 'debug'
 const log = Object.assign(debug('ipfs:mfs-preload'), {
   error: debug('ipfs:mfs-preload:error')

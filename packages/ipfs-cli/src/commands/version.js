@@ -1,4 +1,3 @@
-
 import os from 'os'
 import parseDuration from 'parse-duration'
 

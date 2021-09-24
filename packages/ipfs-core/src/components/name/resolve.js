@@ -1,4 +1,3 @@
-
 import debug from 'debug'
 import errcode from 'err-code'
 import mergeOpts from 'merge-options'

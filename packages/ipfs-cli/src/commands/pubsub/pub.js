@@ -1,4 +1,3 @@
-
 import parseDuration from 'parse-duration'
 import { coerceUint8Array } from '../../utils.js'
 

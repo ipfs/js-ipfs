@@ -1,4 +1,3 @@
-
 import { ipfsCore as pkgversion } from '../version.js'
 import { Multiaddr } from 'multiaddr'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

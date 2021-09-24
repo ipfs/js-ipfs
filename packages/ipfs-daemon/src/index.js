@@ -1,4 +1,3 @@
-
 import debug from 'debug'
 import set from 'just-safe-set'
 // @ts-expect-error - no types

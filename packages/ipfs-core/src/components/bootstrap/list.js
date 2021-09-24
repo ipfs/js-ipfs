@@ -1,4 +1,3 @@
-
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { Multiaddr } from 'multiaddr'
 

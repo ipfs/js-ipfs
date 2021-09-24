@@ -1,4 +1,3 @@
-
 import { anySignal } from 'any-signal'
 
 /**

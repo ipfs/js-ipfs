@@ -1,4 +1,3 @@
-
 import { CID } from 'multiformats/cid'
 import { serverStreamToIterator } from '../../utils/server-stream-to-iterator.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

@@ -1,4 +1,3 @@
-
 import TCP from 'libp2p-tcp'
 // @ts-expect-error - no types
 import MulticastDNS from 'libp2p-mdns'

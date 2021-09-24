@@ -1,4 +1,3 @@
-
 import { CID } from 'multiformats/cid'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../../lib/configure.js'

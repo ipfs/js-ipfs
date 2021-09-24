@@ -1,4 +1,3 @@
-
 import first from 'it-first'
 import { bidiToDuplex } from './bidi-to-duplex.js'
 

@@ -1,4 +1,3 @@
-
 import { CID } from 'multiformats/cid'
 import { objectToCamelWithMetadata } from '../lib/object-to-camel-with-metadata.js'
 import { configure } from '../lib/configure.js'
