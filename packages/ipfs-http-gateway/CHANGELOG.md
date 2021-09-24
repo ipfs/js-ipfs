@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.6.5...ipfs-http-gateway@0.7.0) (2021-09-24)
+
+
+### Features
+
+* switch to esm ([#3879](https://github.com/ipfs/js-ipfs/issues/3879)) ([9a40109](https://github.com/ipfs/js-ipfs/commit/9a40109632e5b4837eb77a2f57dbc77fbf1fe099))
+
+
+### BREAKING CHANGES
+
+* There are no default exports and everything is now dual published as ESM/CJS
+
+
+
+
+
 ## [0.6.5](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.6.4...ipfs-http-gateway@0.6.5) (2021-09-17)
 
 **Note:** Version bump only for package ipfs-http-gateway

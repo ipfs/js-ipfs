@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-config@0.0.1...ipfs-core-config@0.1.0) (2021-09-24)
+
+
+### Features
+
+* pull in new globSource ([#3889](https://github.com/ipfs/js-ipfs/issues/3889)) ([be4a542](https://github.com/ipfs/js-ipfs/commit/be4a5428ebc4b05a2edd9a91bf9df6416c1a8c2b))
+
+
+### BREAKING CHANGES
+
+* the globSource api has changed from `globSource(dir, opts)` to `globSource(dir, pattern, opts)`
+
+
+
+
+
 ## [0.10.5](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.10.4...ipfs-core-utils@0.10.5) (2021-09-17)
 
 **Note:** Version bump only for package ipfs-core-utils
