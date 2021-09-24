@@ -72,7 +72,6 @@
     "copyfiles": "^2.4.1",
     "delay": "^5.0.0",
     "err-code": "^3.0.1",
-    "interface-blockstore": "^1.0.0",
     "ipfs-core-types": "^0.7.3",
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
