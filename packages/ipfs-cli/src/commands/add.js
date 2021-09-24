@@ -13,6 +13,7 @@ import {
 } from '../utils.js'
 import globSource from 'ipfs-utils/src/files/glob-source.js'
 import parseDuration from 'parse-duration'
+import merge from 'it-merge'
 
 const getFolderSize = promisify(getFolderSizeCb)
 
@@ -286,15 +287,20 @@ export default {
       date = { secs: mtime, nsecs: mtimeNsecs }
     }
 
+    let pattern = '*'
+
+    if (recursive) {
+      pattern = '**/*'
+    }
+
     const source = file
-      ? globSource(file, {
-        recursive,
+      ? merge(...file.map(file => globSource(file, pattern, {
         hidden,
         preserveMode,
         preserveMtime,
         mode,
         mtime: date
-      })
+      })))
       : [{
           content: getStdin(),
           mode,

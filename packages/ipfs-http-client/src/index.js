@@ -1,4 +1,3 @@
-
 /* eslint-env browser */
 
 import { Multibases } from 'ipfs-core-utils/multibases'
@@ -42,6 +41,7 @@ import { createResolve } from './resolve.js'
 import { createStart } from './start.js'
 import { createStop } from './stop.js'
 import { createVersion } from './version.js'
+import globSourceImport from 'ipfs-utils/src/files/glob-source.js'
 
 /**
  * @typedef {import('./types').EndpointConfig} EndpointConfig
@@ -142,5 +142,5 @@ export function create (options = {}) {
 
 export { CID } from 'multiformats/cid'
 export { Multiaddr as multiaddr } from 'multiaddr'
-export { default as globSource } from 'ipfs-utils/src/files/glob-source.js'
 export { default as urlSource } from 'ipfs-utils/src/files/url-source.js'
+export const globSource = globSourceImport
