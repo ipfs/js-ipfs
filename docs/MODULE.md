@@ -141,7 +141,7 @@ Prevents all logging output from the IPFS node.
 |------|---------|
 | object | `{ enabled: true, hop: { enabled: false, active: false } }` |
 
-Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examplescircuit-relaying) to learn more).
+Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/circuit-relaying) to learn more).
 
 - `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `true`)
 - `hop` (object)
