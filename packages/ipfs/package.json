@@ -89,7 +89,7 @@
     "ipfs-client": "^0.7.0",
     "ipfs-core-types": "^0.8.0",
     "ipfs-http-client": "^53.0.0",
-    "ipfs-interop": "ipfs/interop#chore/update-globsource",
+    "ipfs-interop": "^7.0.0",
     "ipfs-utils": "^9.0.1",
     "ipfsd-ctl": "^10.0.3",
     "iso-url": "^1.0.0",
