@@ -27,7 +27,7 @@ export const createPublish = configure(api => {
       signal,
       searchParams,
       ...(
-        await multipartRequest(data, controller, options.headers)
+        await multipartRequest([data], controller, options.headers)
       )
     })
 

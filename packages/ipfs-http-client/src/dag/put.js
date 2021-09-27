@@ -39,7 +39,7 @@ export const createPut = (codecs, options) => {
         signal,
         searchParams: toUrlSearchParams(settings),
         ...(
-          await multipartRequest(serialized, controller, settings.headers)
+          await multipartRequest([serialized], controller, settings.headers)
         )
       })
       const data = await res.json()

@@ -29,12 +29,12 @@ export const createWrite = configure(api => {
         ...options
       }),
       ...(
-        await multipartRequest({
+        await multipartRequest([{
           content: input,
           path: 'arg',
           mode: modeToString(options.mode),
           mtime: parseMtime(options.mtime)
-        }, controller, options.headers)
+        }], controller, options.headers)
       )
     })
 

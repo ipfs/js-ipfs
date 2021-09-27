@@ -301,6 +301,26 @@ export function testAddAll (factory, options) {
       await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejected()
     })
 
+    it('should fail when passed single file objects', async () => {
+      const nonValid = { content: 'hello world' }
+
+      // @ts-expect-error nonValid is non valid
+      await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejectedWith(/single item passed/)
+    })
+
+    it('should fail when passed single strings', async () => {
+      const nonValid = 'hello world'
+
+      await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejectedWith(/single item passed/)
+    })
+
+    it('should fail when passed single buffers', async () => {
+      const nonValid = uint8ArrayFromString('hello world')
+
+      // @ts-expect-error nonValid is non valid
+      await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejectedWith(/single item passed/)
+    })
+
     it('should wrap content in a directory', async () => {
       const data = { path: 'testfile.txt', content: fixtures.smallFile.data }
 

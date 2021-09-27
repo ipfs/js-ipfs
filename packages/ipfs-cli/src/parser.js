@@ -1,4 +1,3 @@
-
 import yargs from 'yargs'
 import { ipfsPathHelp, disablePrinting } from './utils.js'
 import { commandList } from './commands/index.js'

@@ -9,7 +9,7 @@ import {
 } from './utils.js'
 
 /**
- * @param {import('./normalise').ToContent} input
+ * @param {import('ipfs-core-types/src/utils').ToContent} input
  */
 export async function normaliseContent (input) {
   // Bytes

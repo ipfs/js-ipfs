@@ -28,7 +28,7 @@ export const createPut = configure(api => {
         ...options
       }),
       ...(
-        await multipartRequest(value, controller, options.headers)
+        await multipartRequest([value], controller, options.headers)
       )
     })
 

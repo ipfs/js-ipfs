@@ -1,8 +1,7 @@
 import { normaliseContent } from './normalise-content.js'
-import { normalise } from './normalise.js'
+import { normaliseCandidateSingle } from './normalise-candidate-single.js'
 
 /**
- * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  */
 
@@ -15,8 +14,8 @@ import { normalise } from './normalise.js'
  *
  * See https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsadddata-options
  *
- * @param {ImportCandidate | ImportCandidateStream} input
+ * @param {ImportCandidate} input
  */
 export function normaliseInput (input) {
-  return normalise(input, normaliseContent)
+  return normaliseCandidateSingle(input, normaliseContent)
 }

@@ -1,8 +1,7 @@
 import { normaliseContent } from './normalise-content.browser.js'
-import { normalise } from './normalise.js'
+import { normaliseCandidateSingle } from './normalise-candidate-single.js'
 
 /**
- * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').BrowserImportCandidate} BrowserImportCandidate
  */
@@ -16,10 +15,10 @@ import { normalise } from './normalise.js'
  *
  * See https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/FILES.md#ipfsadddata-options
  *
- * @param {ImportCandidate | ImportCandidateStream} input
- * @returns {AsyncGenerator<BrowserImportCandidate, void, undefined>}
+ * @param {ImportCandidate} input
+ * @returns {BrowserImportCandidate}
  */
 export function normaliseInput (input) {
-  // @ts-ignore normaliseContent returns Blob and not AsyncIterator
-  return normalise(input, normaliseContent)
+  // @ts-expect-error browser normaliseContent returns a Blob not an AsyncIterable<Uint8Array>
+  return normaliseCandidateSingle(input, normaliseContent)
 }

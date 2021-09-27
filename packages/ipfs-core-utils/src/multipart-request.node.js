@@ -1,4 +1,4 @@
-import { normaliseInput } from './files/normalise-input.js'
+import { normaliseInput } from './files/normalise-input-multiple.js'
 import { nanoid } from 'nanoid'
 import { modeToString } from './mode-to-string.js'
 import mergeOpts from 'merge-options'
@@ -11,18 +11,17 @@ const log = debug('ipfs:core-utils:multipart-request')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
- * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  */
 
 /**
- * @param {ImportCandidateStream|ImportCandidate} source
+ * @param {ImportCandidateStream} source
  * @param {AbortController} abortController
  * @param {Headers|Record<string, string>} [headers]
  * @param {string} [boundary]
  */
 export async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   /**
-   * @param {ImportCandidateStream|ImportCandidate} source
+   * @param {ImportCandidateStream} source
    */
   async function * streamFiles (source) {
     try {

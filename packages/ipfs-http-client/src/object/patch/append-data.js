@@ -26,7 +26,7 @@ export const createAppendData = configure(api => {
         ...options
       }),
       ...(
-        await multipartRequest(data, controller, options.headers)
+        await multipartRequest([data], controller, options.headers)
       )
     })
 

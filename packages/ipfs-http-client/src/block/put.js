@@ -25,7 +25,7 @@ export const createPut = configure(api => {
         signal: signal,
         searchParams: toUrlSearchParams(options),
         ...(
-          await multipartRequest(data, controller, options.headers)
+          await multipartRequest([data], controller, options.headers)
         )
       })
       res = await response.json()

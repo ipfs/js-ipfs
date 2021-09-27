@@ -1,16 +1,15 @@
 
 // Import browser version otherwise electron-renderer will end up with node
 // version and fail.
-import { normaliseInput } from './files/normalise-input.browser.js'
+import { normaliseInput } from './files/normalise-input-multiple.browser.js'
 import { modeToString } from './mode-to-string.js'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
- * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  */
 
 /**
- * @param {ImportCandidateStream|ImportCandidate} source
+ * @param {ImportCandidateStream} source
  * @param {AbortController} abortController
  * @param {Headers|Record<string, string>} [headers]
  */
