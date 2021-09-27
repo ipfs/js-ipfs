@@ -5,6 +5,18 @@
   "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
   "type": "module",
   "eslintConfig": {
     "extends": "ipfs",
@@ -17,8 +29,10 @@
       "import": "./src/index.js"
     }
   },
+  "publishConfig": {
+    "directory": "dist"
+  },
   "scripts": {
-    "prepare": "aegir build --no-bundle && cp -R types dist",
     "lint": "aegir ts -p check && aegir lint",
     "build": "aegir build",
     "release": "aegir release --target node",
