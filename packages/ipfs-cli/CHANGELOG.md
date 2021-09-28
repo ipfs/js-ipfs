@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.9.0...ipfs-cli@0.9.1) (2021-09-28)
+
+**Note:** Version bump only for package ipfs-cli
+
+
+
+
+
 # [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-cli@0.8.8...ipfs-cli@0.9.0) (2021-09-24)
 
 

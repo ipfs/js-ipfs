@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-protocol",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "IPFS client/server protocol over message port",
   "keywords": [
     "ipfs"
@@ -73,7 +73,7 @@
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.8.0",
+    "ipfs-core-types": "^0.8.1",
     "multiformats": "^9.4.1"
   },
   "devDependencies": {

@@ -1,3 +1,19 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 1.0.2 (2021-09-28)
+
+
+### Bug Fixes
+
+* add types versions to http-response ([f8cc058](https://github.com/ipfs/js-ipfs-http-response/commit/f8cc058b1d7fa1f116b58ad7a7ebd332c3150714))
+
+
+
+
+
 ## [1.0.1](https://github.com/ipfs/js-ipfs-http-response/compare/v1.0.0...v1.0.1) (2021-09-08)
 
 
@@ -198,6 +214,3 @@ case of some property names that are used by this module.
 
 * export resolver ([d9e56b8](https://github.com/ipfs/js-ipfs-http-response/commit/d9e56b8))
 * initial implementation ([d9d0c08](https://github.com/ipfs/js-ipfs-http-response/commit/d9d0c08))
-
-
-
