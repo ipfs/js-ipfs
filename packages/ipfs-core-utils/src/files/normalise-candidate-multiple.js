@@ -29,8 +29,10 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
   // String
   // Uint8Array|ArrayBuffer|TypedArray
   // Blob|File
-  if (typeof input === 'string' || input instanceof String || isBytes(input) || isBlob(input)) {
-    throw errCode(new Error('Unexpected input: single item passed'), 'ERR_UNEXPECTED_INPUT')
+  // fs.ReadStream
+  // @ts-expect-error _readableState is a property of a node fs.ReadStream
+  if (typeof input === 'string' || input instanceof String || isBytes(input) || isBlob(input) || input._readableState) {
+    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
   }
 
   // Browser ReadableStream
@@ -57,8 +59,8 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
 
     // (Async)Iterable<Number>
     // (Async)Iterable<Bytes>
-    if (Number.isInteger(value) || isBytes(value)) {
-      throw errCode(new Error('Unexpected input: single item passed'), 'ERR_UNEXPECTED_INPUT')
+    if (Number.isInteger(value)) {
+      throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
     }
 
     // (Async)Iterable<fs.ReadStream>
@@ -68,11 +70,16 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
       return
     }
 
+    if (isBytes(value)) {
+      yield toFileObject({ content: peekable }, normaliseContent)
+      return
+    }
+
     // (Async)Iterable<(Async)Iterable<?>>
     // (Async)Iterable<ReadableStream<?>>
     // ReadableStream<(Async)Iterable<?>>
     // ReadableStream<ReadableStream<?>>
-    if (isFileObject(value) || value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value)) {
+    if (isFileObject(value) || value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value) || isBlob(value)) {
       yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
@@ -82,7 +89,7 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
   // Note: Detected _after_ (Async)Iterable<?> because Node.js fs.ReadStreams have a
   // `path` property that passes this check.
   if (isFileObject(input)) {
-    throw errCode(new Error('Unexpected input: single item passed'), 'ERR_UNEXPECTED_INPUT')
+    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
   }
 
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')

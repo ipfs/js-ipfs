@@ -16,6 +16,7 @@ const NEWSTRING = () => new String('hello world') // eslint-disable-line no-new-
 const BUFFER = () => uint8ArrayFromString(STRING())
 const ARRAY = () => Array.from(BUFFER())
 const TYPEDARRAY = () => Uint8Array.from(ARRAY())
+const FILE = () => new File([BUFFER()], 'test-file.txt')
 /** @type {() => Blob} */
 let BLOB
 
@@ -55,6 +56,14 @@ async function testContent (input) {
 }
 
 /**
+ * @param {*} input
+ * @param {RegExp} message
+ */
+async function testFailure (input, message) {
+  await expect(all(normaliseInput(input))).to.eventually.be.rejectedWith(message)
+}
+
+/**
  * @template T
  * @param {T} thing
  * @returns {T[]}
@@ -90,14 +99,14 @@ describe('normalise-input-single', function () {
   /**
    * @param {() => any} content
    * @param {string} name
-   * @param {boolean} isBytes
+   * @param {{ acceptStream: boolean }} options
    */
-  function testInputType (content, name, isBytes) {
+  function testInputType (content, name, { acceptStream }) {
     it(name, async function () {
       await testContent(content())
     })
 
-    if (isBytes) {
+    if (acceptStream) {
       if (ReadableStream) {
         it(`ReadableStream<${name}>`, async function () {
           await testContent(browserReadableStreamOf(content()))
@@ -111,13 +120,27 @@ describe('normalise-input-single', function () {
       it(`AsyncIterable<${name}>`, async function () {
         await testContent(asyncIterableOf(content()))
       })
+    } else {
+      if (ReadableStream) {
+        it(`Failure ReadableStream<${name}>`, async function () {
+          await testFailure(browserReadableStreamOf(content()), /Unexpected input/)
+        })
+      }
+
+      it(`Failure Iterable<${name}>`, async function () {
+        await testFailure(iterableOf(content()), /Unexpected input/)
+      })
+
+      it(`Failure AsyncIterable<${name}>`, async function () {
+        await testFailure(asyncIterableOf(content()), /Unexpected input/)
+      })
     }
 
     it(`{ path: '', content: ${name} }`, async function () {
       await testContent({ path: '', content: content() })
     })
 
-    if (isBytes) {
+    if (acceptStream) {
       if (ReadableStream) {
         it(`{ path: '', content: ReadableStream<${name}> }`, async function () {
           await testContent({ path: '', content: browserReadableStreamOf(content()) })
@@ -134,57 +157,69 @@ describe('normalise-input-single', function () {
     }
 
     if (ReadableStream) {
-      it(`ReadableStream<${name}>`, async function () {
-        await testContent(browserReadableStreamOf(content()))
-      })
+      if (acceptStream) {
+        it(`ReadableStream<${name}>`, async function () {
+          await testContent(browserReadableStreamOf(content()))
+        })
+      } else {
+        it(`Failure ReadableStream<${name}>`, async function () {
+          await testFailure(browserReadableStreamOf(content()), /multiple items passed/)
+        })
+      }
     }
 
-    it(`Iterable<{ path: '', content: ${name} }`, async function () {
-      await testContent(iterableOf({ path: '', content: content() }))
+    it(`Failure Iterable<{ path: '', content: ${name} }>`, async function () {
+      await testFailure(iterableOf({ path: '', content: content() }), /multiple items passed/)
     })
 
-    it(`AsyncIterable<{ path: '', content: ${name} }`, async function () {
-      await testContent(asyncIterableOf({ path: '', content: content() }))
+    it(`Failure AsyncIterable<{ path: '', content: ${name} }>`, async function () {
+      await testFailure(asyncIterableOf({ path: '', content: content() }), /multiple items passed/)
     })
 
-    if (isBytes) {
+    if (acceptStream) {
       if (ReadableStream) {
-        it(`Iterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
-          await testContent(iterableOf({ path: '', content: browserReadableStreamOf(content()) }))
+        it(`Failure Iterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
+          await testFailure(iterableOf({ path: '', content: browserReadableStreamOf(content()) }), /multiple items passed/)
         })
       }
 
-      it(`Iterable<{ path: '', content: Iterable<${name}> }>`, async function () {
-        await testContent(iterableOf({ path: '', content: iterableOf(content()) }))
+      it(`Failure Iterable<{ path: '', content: Iterable<${name}> }>`, async function () {
+        await testFailure(iterableOf({ path: '', content: iterableOf(content()) }), /multiple items passed/)
       })
 
-      it(`Iterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
-        await testContent(iterableOf({ path: '', content: asyncIterableOf(content()) }))
+      it(`Failure Iterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
+        await testFailure(iterableOf({ path: '', content: asyncIterableOf(content()) }), /multiple items passed/)
       })
 
       if (ReadableStream) {
-        it(`AsyncIterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
-          await testContent(asyncIterableOf({ path: '', content: browserReadableStreamOf(content()) }))
+        it(`Failure AsyncIterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
+          await testFailure(asyncIterableOf({ path: '', content: browserReadableStreamOf(content()) }), /multiple items passed/)
         })
       }
 
-      it(`AsyncIterable<{ path: '', content: Iterable<${name}> }>`, async function () {
-        await testContent(asyncIterableOf({ path: '', content: iterableOf(content()) }))
+      it(`Failure AsyncIterable<{ path: '', content: Iterable<${name}> }>`, async function () {
+        await testFailure(asyncIterableOf({ path: '', content: iterableOf(content()) }), /multiple items passed/)
       })
 
-      it(`AsyncIterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
-        await testContent(asyncIterableOf({ path: '', content: asyncIterableOf(content()) }))
+      it(`Failure AsyncIterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
+        await testFailure(asyncIterableOf({ path: '', content: asyncIterableOf(content()) }), /multiple items passed/)
       })
     }
   }
 
   describe('String', () => {
-    testInputType(STRING, 'String', true)
-    testInputType(NEWSTRING, 'new String()', true)
+    testInputType(STRING, 'String', {
+      acceptStream: true
+    })
+    testInputType(NEWSTRING, 'new String()', {
+      acceptStream: true
+    })
   })
 
   describe('Buffer', () => {
-    testInputType(BUFFER, 'Buffer', true)
+    testInputType(BUFFER, 'Buffer', {
+      acceptStream: true
+    })
   })
 
   describe('Blob', () => {
@@ -192,23 +227,27 @@ describe('normalise-input-single', function () {
       return
     }
 
-    testInputType(BLOB, 'Blob', false)
+    testInputType(BLOB, 'Blob', {
+      acceptStream: false
+    })
   })
 
   describe('@web-std/file', () => {
-    it('normalizes File input', async () => {
-      const FILE = new File([BUFFER()], 'test-file.txt')
-
-      await testContent(FILE)
+    testInputType(FILE, 'File', {
+      acceptStream: false
     })
   })
 
   describe('Iterable<Number>', () => {
-    testInputType(ARRAY, 'Iterable<Number>', false)
+    testInputType(ARRAY, 'Iterable<Number>', {
+      acceptStream: false
+    })
   })
 
   describe('TypedArray', () => {
-    testInputType(TYPEDARRAY, 'TypedArray', true)
+    testInputType(TYPEDARRAY, 'TypedArray', {
+      acceptStream: true
+    })
   })
 
   if (isNode) {
@@ -226,14 +265,8 @@ describe('normalise-input-single', function () {
         return fs.createReadStream(path)
       }
 
-      testInputType(NODEFSREADSTREAM, 'Node fs.ReadStream', false)
-
-      it('Iterable<Node fs.ReadStream>', async function () {
-        await testContent(iterableOf(NODEFSREADSTREAM()))
-      })
-
-      it('AsyncIterable<Node fs.ReadStream>', async function () {
-        await testContent(asyncIterableOf(NODEFSREADSTREAM()))
+      testInputType(NODEFSREADSTREAM, 'Node fs.ReadStream', {
+        acceptStream: false
       })
     })
   }

@@ -1,7 +1,6 @@
 import errCode from 'err-code'
 import browserStreamToIt from 'browser-readablestream-to-it'
 import itPeekable from 'it-peekable'
-import map from 'it-map'
 import {
   isBytes,
   isBlob,
@@ -66,19 +65,13 @@ export async function * normaliseCandidateSingle (input, normaliseContent) {
 
     // (Async)Iterable<Number>
     // (Async)Iterable<Bytes>
-    if (Number.isInteger(value) || isBytes(value)) {
+    // (Async)Iterable<String>
+    if (Number.isInteger(value) || isBytes(value) || typeof value === 'string' || value instanceof String) {
       yield toFileObject(peekable, normaliseContent)
       return
     }
 
-    // (Async)Iterable<fs.ReadStream>
-    if (value._readableState) {
-      // @ts-ignore Node fs.ReadStreams have a `.path` property so we need to pass it as the content
-      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject({ content: value }, normaliseContent))
-      return
-    }
-
-    throw errCode(new Error('Unexpected input: multiple items passed'), 'ERR_UNEXPECTED_INPUT')
+    throw errCode(new Error('Unexpected input: multiple items passed - if you are using ipfs.add, please use ipfs.addAll instead'), 'ERR_UNEXPECTED_INPUT')
   }
 
   // { path, content: ? }
