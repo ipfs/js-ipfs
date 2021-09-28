@@ -99,7 +99,7 @@
     "libp2p-mdns": "^0.17.0",
     "libp2p-mplex": "^0.10.2",
     "libp2p-tcp": "^0.17.1",
-    "libp2p-webrtc-star": "^0.23.0",
+    "libp2p-webrtc-star": "^0.24.0",
     "libp2p-websockets": "^0.16.1",
     "p-queue": "^6.6.1",
     "uint8arrays": "^3.0.0"
