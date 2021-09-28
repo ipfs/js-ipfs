@@ -1,4 +1,4 @@
 
-export const ipfsCore = '0.10.8'
+export const ipfsCore = '0.11.0'
 export const commit = ''
-export const interfaceIpfsCore = '^0.150.4'
+export const interfaceIpfsCore = '^0.151.0'

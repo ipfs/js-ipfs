@@ -3,7 +3,7 @@
 const getPort = require('aegir/utils/get-port')
 const { createServer } = require('ipfsd-ctl')
 const EchoServer = require('aegir/utils/echo-server')
-const webRTCStarSigServer = require('libp2p-webrtc-star/src/sig-server')
+const webRTCStarSigServer = require('libp2p-webrtc-star-signalling-server')
 const path = require('path')
 
 /** @type {import('aegir').Options["build"]["config"]} */

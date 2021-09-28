@@ -82,7 +82,7 @@
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
     "@types/hapi__hapi": "^20.0.5",
-    "aegir": "^35.1.0",
+    "aegir": "^35.1.1",
     "form-data": "^4.0.0",
     "ipfs-http-client": "^53.0.0",
     "iso-random-stream": "^2.0.0",
