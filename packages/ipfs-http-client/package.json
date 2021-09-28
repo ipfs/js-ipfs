@@ -62,7 +62,7 @@
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.8.0",
     "ipfs-core-utils": "^0.11.0",
-    "ipfs-utils": "^9.0.1",
+    "ipfs-utils": "^9.0.2",
     "it-first": "^1.0.6",
     "it-last": "^1.0.4",
     "merge-options": "^3.0.4",
@@ -74,10 +74,10 @@
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
-    "aegir": "^35.1.0",
+    "aegir": "^35.1.1",
     "delay": "^5.0.0",
     "go-ipfs": "0.9.1",
-    "ipfsd-ctl": "^10.0.3",
+    "ipfsd-ctl": "^10.0.4",
     "it-all": "^1.0.4",
     "it-first": "^1.0.4",
     "nock": "^13.0.2",

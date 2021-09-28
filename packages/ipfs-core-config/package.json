@@ -88,7 +88,7 @@
     "err-code": "^3.0.1",
     "hashlru": "^2.3.0",
     "ipfs-repo": "^13.0.4",
-    "ipfs-utils": "^9.0.1",
+    "ipfs-utils": "^9.0.2",
     "ipns": "^0.15.0",
     "is-ipfs": "^6.0.1",
     "it-all": "^1.0.4",
@@ -99,13 +99,13 @@
     "libp2p-mdns": "^0.17.0",
     "libp2p-mplex": "^0.10.2",
     "libp2p-tcp": "^0.17.1",
-    "libp2p-webrtc-star": "^0.23.0",
-    "libp2p-websockets": "^0.16.1",
+    "libp2p-webrtc-star": "^0.24.0",
+    "libp2p-websockets": "^0.16.2",
     "p-queue": "^6.6.1",
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
-    "aegir": "^35.1.0",
+    "aegir": "^35.1.1",
     "ipfs-core-utils": "^0.11.0",
     "rimraf": "^3.0.2"
   }
