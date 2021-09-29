@@ -1,13 +1,11 @@
-'use strict'
-
-const {
+import {
   asBoolean
-} = require('../../utils')
-const formatMode = require('ipfs-core-utils/src/files/format-mode')
-const formatMtime = require('ipfs-core-utils/src/files/format-mtime')
-const { default: parseDuration } = require('parse-duration')
+} from '../../utils.js'
+import { formatMode } from 'ipfs-core-utils/files/format-mode'
+import { formatMtime } from 'ipfs-core-utils/files/format-mtime'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'stat [path]',
 
   describe: 'Display file/directory status',
@@ -47,7 +45,8 @@ Mtime: <mtime>`,
       describe: 'Compute the amount of the dag that is local, and if possible the total size'
     },
     'cid-base': {
-      describe: 'CID base to use.'
+      describe: 'CID base to use.',
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -63,10 +62,10 @@ Mtime: <mtime>`,
    * @param {boolean} argv.hash
    * @param {boolean} argv.size
    * @param {boolean} argv.withLocal
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
-  handler ({
+  async handler ({
     ctx: { ipfs, print },
     path,
     format,
@@ -76,28 +75,28 @@ Mtime: <mtime>`,
     cidBase,
     timeout
   }) {
-    return ipfs.files.stat(path, {
+    const stats = await ipfs.files.stat(path, {
       withLocal,
       timeout
     })
-      .then((stats) => {
-        if (hash) {
-          return print(stats.cid.toString(cidBase))
-        }
+    const base = await ipfs.bases.getBase(cidBase)
 
-        if (size) {
-          return print(`${stats.size}`)
-        }
+    if (hash) {
+      return print(stats.cid.toString(base.encoder))
+    }
 
-        print(format
-          .replace('<hash>', stats.cid.toString(cidBase))
-          .replace('<size>', `${stats.size}`)
-          .replace('<cumulsize>', `${stats.cumulativeSize}`)
-          .replace('<childs>', `${stats.blocks}`)
-          .replace('<type>', stats.type)
-          .replace('<mode>', stats.mode ? formatMode(stats.mode, stats.type === 'directory') : '')
-          .replace('<mtime>', stats.mtime ? formatMtime(stats.mtime) : '')
-        )
-      })
+    if (size) {
+      return print(`${stats.size}`)
+    }
+
+    print(format
+      .replace('<hash>', stats.cid.toString(base.encoder))
+      .replace('<size>', `${stats.size}`)
+      .replace('<cumulsize>', `${stats.cumulativeSize}`)
+      .replace('<childs>', `${stats.blocks}`)
+      .replace('<type>', stats.type)
+      .replace('<mode>', stats.mode ? formatMode(stats.mode, stats.type === 'directory') : '')
+      .replace('<mtime>', stats.mtime ? formatMtime(stats.mtime) : '')
+    )
   }
 }

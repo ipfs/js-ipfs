@@ -49,7 +49,7 @@
   - [Instance Utils](#instance-utils)
   - [Static Types and Utils](#static-types-and-utils)
     - [Glob source](#glob-source)
-      - [`globSource(path, [options])`](#globsourcepath-options)
+      - [`globSource(path, pattern, [options])`](#globsourcepath-pattern-options)
       - [Example](#example-1)
     - [URL source](#url-source)
       - [`urlSource(url)`](#urlsourceurl)
@@ -118,13 +118,13 @@ Alternatively it can be an object which may have the following keys:
 #### Returns
 
 | Type | Description |
-| -------- | -------- |
-| `Object` | An object that conforms to the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api)  |
+| ---- | ----------- |
+| `Object` | An object that conforms to the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) |
 
 #### Example
 
 ```JavaScript
-const { create } = require('ipfs-http-client')
+import { create } from 'ipfs-http-client'
 
 // connect to the default API address http://localhost:5001
 const client = create()
@@ -182,12 +182,11 @@ import { CID } from 'ipfs-http-client'
 
 A utility to allow files on the file system to be easily added to IPFS.
 
-##### `globSource(path, [options])`
+##### `globSource(path, pattern, [options])`
 
 - `path`: A path to a single file or directory to glob from
+- `pattern`: A pattern to match files under `path`
 - `options`: Optional options
-- `options.recursive`: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-- `options.ignore`: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
 - `options.hidden`: Hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
 
 Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
@@ -195,12 +194,13 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ##### Example
 
 ```js
-const { create, globSource } = require('ipfs-http-client')
-const ipfs = create()
+import { create, globSource } from 'ipfs'
 
-const file = await ipfs.add(globSource('./docs', { recursive: true }))
-console.log(file)
+const ipfs = await create()
 
+for await (const file of ipfs.addAll(globSource('./docs', '**/*'))) {
+  console.log(file)
+}
 /*
 {
   path: 'docs/assets/anchor.js',
@@ -229,7 +229,7 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ##### Example
 
 ```js
-const { create, urlSource } = require('ipfs-http-client')
+import { create, urlSource } from 'ipfs-http-client'
 const ipfs = create()
 
 const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
@@ -263,7 +263,7 @@ To interact with the API, you need to have a local daemon running. It needs to b
 ### Importing the module and usage
 
 ```javascript
-const { create } = require('ipfs-http-client')
+import { create } from 'ipfs-http-client'
 
 // connect to ipfs daemon API server
 const ipfs = create('http://localhost:5001') // (the default in Node.js)
@@ -284,11 +284,11 @@ const ipfs = create({ host: '1.1.1.1', port: '80', apiPath: '/ipfs/api/v0' })
 
 Same as in Node.js, you just have to [browserify](http://browserify.org) the code before serving it. See the browserify repo for how to do that.
 
-See the example in the [examples folder](/examples/http-client-browser-browserify) to get a boilerplate.
+See the example in the [examples folder](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples) to get a boilerplate.
 
 **through webpack**
 
-See the example in the [examples folder](/examples/http-client-bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
+See the example in the [examples folder](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/http-client-bundle-webpack) to get an idea on how to use `js-ipfs-http-client` with webpack.
 
 **from CDN**
 
@@ -310,9 +310,11 @@ For maximum security you may also decide to:
 Example:
 
 ```html
-<script src="https://www.jsdelivr.com/package/npm/ipfs-http-client"
-integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
-crossorigin="anonymous"></script>
+<script
+  src="https://www.jsdelivr.com/package/npm/ipfs-http-client"
+  integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+  crossorigin="anonymous"
+></script>
 ```
 
 CDN-based IPFS API provides the `IpfsHttpClient` constructor as a method of the global `window` object. Example:

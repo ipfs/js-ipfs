@@ -1,31 +1,35 @@
 /* eslint-env mocha */
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
-const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const { asDAGLink } = require('../utils')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testAddLink (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.object.patch.addLink', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should add a link to an existing node', async () => {
       const obj = {
@@ -33,15 +37,29 @@ module.exports = (common, options) => {
         Links: []
       }
       // link to add
-      const node2 = new DAGNode(uint8ArrayFromString('some other node'))
+      const node2 = {
+        Data: uint8ArrayFromString('some other node'),
+        Links: []
+      }
       // note: we need to put the linked obj, otherwise IPFS won't
       // timeout. Reason: it needs the node to get its size
       await ipfs.object.put(node2)
-      const link = await asDAGLink(node2, 'link-to-node')
+      const node2Buf = dagPB.encode(node2)
+      const link = {
+        Name: 'link-to-node',
+        Tsize: node2Buf.length,
+        Hash: CID.createV0(await sha256.digest(node2Buf))
+      }
 
       // manual create dag step by step
-      const node1a = new DAGNode(obj.Data, obj.Links)
-      const node1b = new DAGNode(node1a.Data, node1a.Links.concat(link))
+      const node1a = {
+        Data: obj.Data,
+        Links: obj.Links
+      }
+      const node1b = {
+        Data: node1a.Data,
+        Links: [link]
+      }
       const node1bCid = await ipfs.object.put(node1b)
 
       // add link with patch.addLink
@@ -73,10 +91,12 @@ module.exports = (common, options) => {
     })
 
     it('returns error for request without arguments', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.patch.addLink(null, null, null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
 
     it('returns error for request with only one invalid argument', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.object.patch.addLink('invalid', null, null)).to.eventually.be.rejected.and.be.an.instanceOf(Error)
     })
   })

@@ -1,11 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const Daemon = require('../')
-const fetch = require('node-fetch')
-const WebSocket = require('ws')
-const os = require('os')
+import { expect } from 'aegir/utils/chai.js'
+import { Daemon } from '../src/index.js'
+import fetch from 'node-fetch'
+import WebSocket from 'ws'
+import os from 'os'
 
 function createDaemon () {
   return new Daemon({

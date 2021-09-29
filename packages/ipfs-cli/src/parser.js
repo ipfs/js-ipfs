@@ -1,15 +1,14 @@
-'use strict'
+import yargs from 'yargs'
+import { ipfsPathHelp, disablePrinting } from './utils.js'
+import { commandList } from './commands/index.js'
 
-const yargs = require('yargs/yargs')(process.argv.slice(2))
-const utils = require('./utils')
-
-const parser = yargs
+const args = yargs(process.argv.slice(2))
   .option('silent', {
     desc: 'Write no output',
     type: 'boolean',
     default: false,
     coerce: silent => {
-      if (silent) utils.disablePrinting()
+      if (silent) disablePrinting()
       return silent
     }
   })
@@ -27,12 +26,13 @@ const parser = yargs
     desc: 'Remote API multiaddr to use',
     type: 'string'
   })
-  .epilog(utils.ipfsPathHelp)
+  .epilog(ipfsPathHelp)
   .demandCommand(1, 'Please specify a command')
   .showHelpOnFail(false)
-  .commandDir('commands')
+  // @ts-ignore types are wrong
+  .command(commandList)
   .help()
   .strict()
   .completion()
 
-module.exports = parser
+export default args

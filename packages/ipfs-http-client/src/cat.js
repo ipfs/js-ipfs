@@ -1,24 +1,20 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('./lib/configure')
-const toUrlSearchParams = require('./lib/to-url-search-params')
+import { configure } from './lib/configure.js'
+import { toUrlSearchParams } from './lib/to-url-search-params.js'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
-module.exports = configure(api => {
+export const createCat = configure(api => {
   /**
    * @type {RootAPI["cat"]}
    */
   async function * cat (path, options = {}) {
     const res = await api.post('cat', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: typeof path === 'string' ? path : new CID(path).toString(),
+        arg: path.toString(),
         ...options
       }),
       headers: options.headers

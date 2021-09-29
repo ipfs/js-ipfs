@@ -51,8 +51,8 @@ Each yielded object contains the following keys:
 
 - `totalIn` - is a [BigInt][bigNumber], in bytes.
 - `totalOut` - is a [BigInt][bigNumber], in bytes.
-- `rateIn` - is a [BigInt][bigNumber], in bytes.
-- `rateOut` - is a [BigInt][bigNumber], in bytes.
+- `rateIn` - is a `float`, in bytes.
+- `rateOut` - is a `float`, in bytes.
 
 ### Example
 
@@ -62,8 +62,8 @@ for await (const stats of ipfs.stats.bw()) {
 }
 // { totalIn: BigInt {...},
 //   totalOut: BigInt {...},
-//   rateIn: BigInt {...},
-//   rateOut: BigInt {...} }
+//   rateIn: number {...},
+//   rateOut: number {...} }
 ```
 
 A great source of [examples][] can be found in the tests for this API.

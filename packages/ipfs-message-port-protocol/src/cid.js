@@ -1,11 +1,10 @@
-'use strict'
-
-const CID = require('cids')
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {Object} EncodedCID
- * @property {string} codec
- * @property {Uint8Array} multihash
+ * @property {number} code
+ * @property {object} multihash
+ * @property {Uint8Array} multihash.digest
  * @property {number} version
  */
 
@@ -18,13 +17,12 @@ const CID = require('cids')
  * @param {Set<Transferable>} [transfer]
  * @returns {EncodedCID}
  */
-const encodeCID = (cid, transfer) => {
+export const encodeCID = (cid, transfer) => {
   if (transfer) {
-    transfer.add(cid.multihash.buffer)
+    transfer.add(cid.multihash.bytes.buffer)
   }
   return cid
 }
-exports.encodeCID = encodeCID
 
 /**
  * Decodes encoded CID (well sort of instead it makes nasty mutations to turn
@@ -33,10 +31,27 @@ exports.encodeCID = encodeCID
  * @param {EncodedCID} encodedCID
  * @returns {CID}
  */
-const decodeCID = encodedCID => {
+export const decodeCID = encodedCID => {
   /** @type {CID} */
   const cid = (encodedCID)
-  Object.setPrototypeOf(cid.multihash, Uint8Array.prototype)
+
+  // @ts-ignore non-enumerable field that doesn't always get transferred
+  if (!cid._baseCache) {
+    Object.defineProperty(cid, '_baseCache', {
+      value: new Map()
+    })
+  }
+
+  // @ts-ignore non-enumerable field that doesn't always get transferred
+  if (!cid.asCID) {
+    Object.defineProperty(cid, 'asCID', {
+      get: () => cid
+    })
+  }
+
+  Object.setPrototypeOf(cid.multihash.digest, Uint8Array.prototype)
+  Object.setPrototypeOf(cid.multihash.bytes, Uint8Array.prototype)
+  Object.setPrototypeOf(cid.bytes, Uint8Array.prototype)
   Object.setPrototypeOf(cid, CID.prototype)
   // TODO: Figure out a way to avoid `Symbol.for` here as it can get out of
   // sync with cids implementation.
@@ -45,4 +60,3 @@ const decodeCID = encodedCID => {
 
   return cid
 }
-exports.decodeCID = decodeCID

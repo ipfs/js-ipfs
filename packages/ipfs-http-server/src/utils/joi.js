@@ -1,11 +1,8 @@
-'use strict'
-
-const Joi = require('joi')
-const CID = require('cids')
-const { default: parseDuration } = require('parse-duration')
-const { Multiaddr } = require('multiaddr')
-const multibase = require('multibase')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
+import { CID } from 'multiformats/cid'
+import parseDuration from 'parse-duration'
+import { Multiaddr } from 'multiaddr'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
+import Joi from 'joi'
 
 /**
  * @param {*} value
@@ -27,7 +24,7 @@ const toIpfsPath = (value) => {
   const parts = value.split('/')
 
   // will throw if not valid
-  parts[0] = new CID(parts[0])
+  parts[0] = CID.parse(parts[0])
 
   // go-ipfs returns /ipfs/ prefix for ipfs paths when passed to the http api
   // and not when it isn't.  E.g.
@@ -40,7 +37,7 @@ const toIpfsPath = (value) => {
  * @param {*} value
  */
 const toCID = (value) => {
-  return new CID(value.toString().replace('/ipfs/', ''))
+  return CID.parse(value.toString().replace('/ipfs/', ''))
 }
 
 /**
@@ -53,9 +50,9 @@ const requireIfRequired = (value, helpers) => {
   }
 }
 
-module.exports = Joi
+export default Joi
   .extend(
-    // @ts-ignore - according to typedfs coerce should always return
+    // @ts-ignore - according to typedefs coerce should always return
     // { errors?: ErrorReport[], value?: any }
     (joi) => {
       return {
@@ -124,25 +121,6 @@ module.exports = Joi
           }
 
           return { value: toCidAndPath(value) }
-        }
-      }
-    },
-    (joi) => {
-      return {
-        type: 'cidBase',
-        base: joi.string(),
-        validate: requireIfRequired,
-        coerce (value, _helpers) {
-          if (!value) {
-            return
-          }
-
-          // @ts-ignore value is not a BaseName
-          if (!multibase.names[value]) {
-            throw new Error('Invalid base name')
-          }
-
-          return { value }
         }
       }
     },

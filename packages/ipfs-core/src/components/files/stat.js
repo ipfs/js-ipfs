@@ -1,11 +1,13 @@
-'use strict'
+import mergeOpts from 'merge-options'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import { exporter } from 'ipfs-unixfs-exporter'
+import debug from 'debug'
+import errCode from 'err-code'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import * as dagPB from '@ipld/dag-pb'
 
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const toMfsPath = require('./utils/to-mfs-path')
-const { exporter } = require('ipfs-unixfs-exporter')
-const log = require('debug')('ipfs:mfs:stat')
-const errCode = require('err-code')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:mfs:stat')
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -29,7 +31,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createStat (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["stat"]}
    */
@@ -49,8 +51,8 @@ module.exports = (context) => {
     let file
 
     try {
-      file = await exporter(exportPath, context.ipld)
-    } catch (err) {
+      file = await exporter(exportPath, context.repo.blocks)
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_NOT_FOUND') {
         throw errCode(new Error(`${path} does not exist`), 'ERR_NOT_FOUND')
       }
@@ -59,7 +61,7 @@ module.exports = (context) => {
     }
 
     if (!statters[file.type]) {
-      throw new Error(`Cannot stat codec ${file.cid.codec}`)
+      throw new Error(`Cannot stat codec ${file.cid.code}`)
     }
 
     return statters[file.type](file)
@@ -94,7 +96,7 @@ const statters = {
       cid: file.cid,
       type: 'file',
       size: file.unixfs.fileSize(),
-      cumulativeSize: file.node.size,
+      cumulativeSize: dagPB.encode(file.node).length + (file.node.Links || []).reduce((acc, curr) => acc + (curr.Tsize || 0), 0),
       blocks: file.unixfs.blockSizes.length,
       local: undefined,
       sizeLocal: undefined,
@@ -117,7 +119,7 @@ const statters = {
       cid: file.cid,
       type: 'directory',
       size: 0,
-      cumulativeSize: file.node.size,
+      cumulativeSize: dagPB.encode(file.node).length + (file.node.Links || []).reduce((acc, curr) => acc + (curr.Tsize || 0), 0),
       blocks: file.node.Links.length,
       local: undefined,
       sizeLocal: undefined,

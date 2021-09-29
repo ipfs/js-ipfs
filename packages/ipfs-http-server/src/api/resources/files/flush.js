@@ -1,9 +1,6 @@
-'use strict'
+import Joi from '../../../utils/joi.js'
 
-const Joi = require('../../../utils/joi')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-
-const mfsFlush = {
+export const flushResource = {
   options: {
     validate: {
       options: {
@@ -12,7 +9,7 @@ const mfsFlush = {
       },
       query: Joi.object().keys({
         path: Joi.string().default('/'),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'path', {
@@ -52,10 +49,10 @@ const mfsFlush = {
       timeout
     })
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     return h.response({
-      Cid: cidToString(cid, { base: cidBase, upgrade: false })
+      Cid: cid.toString(base.encoder)
     })
   }
 }
-
-module.exports = mfsFlush

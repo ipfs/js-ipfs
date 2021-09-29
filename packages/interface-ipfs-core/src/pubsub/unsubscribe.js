@@ -1,35 +1,40 @@
 /* eslint-env mocha */
-'use strict'
 
-const { isBrowser, isWebWorker, isElectronRenderer } = require('ipfs-utils/src/env')
-const { getTopic } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import { isBrowser, isWebWorker, isElectronRenderer } from 'ipfs-utils/src/env.js'
+import { getTopic } from './utils.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import waitFor from '../utils/wait-for.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testUnsubscribe (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pubsub.unsubscribe', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     // Browser/worker has max ~5 open HTTP requests to the same origin
     const count = isBrowser || isWebWorker || isElectronRenderer ? 5 : 10
 
     it(`should subscribe and unsubscribe ${count} times`, async () => {
       const someTopic = getTopic()
+      /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn[]} */
       const handlers = Array.from(Array(count), () => msg => {})
 
       for (let i = 0; i < count; i++) {
@@ -40,7 +45,18 @@ module.exports = (common, options) => {
         await ipfs.pubsub.unsubscribe(someTopic, handlers[i])
       }
 
-      return expect(ipfs.pubsub.ls()).to.eventually.eql([])
+      // Unsubscribing in the http client aborts the connection we hold open
+      // but does not wait for it to close so the subscription list sometimes
+      // takes a little time to empty
+      await waitFor(async () => {
+        const subs = await ipfs.pubsub.ls()
+
+        return subs.length === 0
+      }, {
+        interval: 1000,
+        timeout: 30000,
+        name: 'subscriptions to be empty'
+      })
     })
 
     it(`should subscribe ${count} handlers and unsubscribe once with no reference to the handlers`, async () => {
@@ -50,7 +66,18 @@ module.exports = (common, options) => {
       }
       await ipfs.pubsub.unsubscribe(someTopic)
 
-      return expect(ipfs.pubsub.ls()).to.eventually.eql([])
+      // Unsubscribing in the http client aborts the connection we hold open
+      // but does not wait for it to close so the subscription list sometimes
+      // takes a little time to empty
+      await waitFor(async () => {
+        const subs = await ipfs.pubsub.ls()
+
+        return subs.length === 0
+      }, {
+        interval: 1000,
+        timeout: 30000,
+        name: 'subscriptions to be empty'
+      })
     })
   })
 }

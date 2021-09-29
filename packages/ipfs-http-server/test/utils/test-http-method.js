@@ -1,7 +1,6 @@
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const http = require('./http')
+import { expect } from 'aegir/utils/chai.js'
+import { http } from './http.js'
 
 const METHODS = [
   'GET',
@@ -11,7 +10,7 @@ const METHODS = [
   'HEAD'
 ]
 
-module.exports = async (url, ipfs) => {
+export async function testHttpMethod (url, ipfs) {
   for (let i = 0; i < METHODS.length; i++) {
     const res = await http({
       method: METHODS[i],

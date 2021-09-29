@@ -1,17 +1,16 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const CID = require('cids')
-const { AbortSignal } = require('native-abort-controller')
-const allNdjson = require('../utils/all-ndjson')
+import { expect } from 'aegir/utils/chai.js'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { AbortSignal } from 'native-abort-controller'
+import { allNdjson } from '../utils/all-ndjson.js'
 
 describe('/repo', () => {
-  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
-  const cid2 = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgda')
+  const cid = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  const cid2 = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgda')
   let ipfs
 
   beforeEach(() => {

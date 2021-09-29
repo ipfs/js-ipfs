@@ -1,10 +1,8 @@
-'use strict'
-
-const loadMfsRoot = require('./with-mfs-root')
-const toPathComponents = require('./to-path-components')
-const { exporter } = require('ipfs-unixfs-exporter')
-const errCode = require('err-code')
-const CID = require('cids')
+import { loadMfsRoot } from './with-mfs-root.js'
+import { toPathComponents } from './to-path-components.js'
+import { exporter } from 'ipfs-unixfs-exporter'
+import errCode from 'err-code'
+import { CID } from 'multiformats/cid'
 
 const IPFS_PREFIX = 'ipfs'
 
@@ -88,7 +86,7 @@ const IPFS_PREFIX = 'ipfs'
  * @param {string | CID} path
  * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-const toMfsPath = async (context, path, options) => {
+export const toMfsPath = async (context, path, options) => {
   const root = await loadMfsRoot(context, options)
 
   /** @type {MfsPath} */
@@ -97,30 +95,34 @@ const toMfsPath = async (context, path, options) => {
     entryType: 'file'
   }
 
-  if (CID.isCID(path)) {
-    path = `/ipfs/${path}`
+  let ipfsPath = ''
+
+  if (CID.asCID(path)) {
+    ipfsPath = `/ipfs/${path}`
+  } else {
+    ipfsPath = path.toString()
   }
 
-  path = (path || '').trim()
-  path = path.replace(/(\/\/+)/g, '/')
+  ipfsPath = ipfsPath.trim()
+  ipfsPath = ipfsPath.replace(/(\/\/+)/g, '/')
 
-  if (path.endsWith('/') && path.length > 1) {
-    path = path.substring(0, path.length - 1)
+  if (ipfsPath.endsWith('/') && ipfsPath.length > 1) {
+    ipfsPath = ipfsPath.substring(0, ipfsPath.length - 1)
   }
 
-  if (!path) {
+  if (!ipfsPath) {
     throw errCode(new Error('paths must not be empty'), 'ERR_NO_PATH')
   }
 
-  if (path.substring(0, 1) !== '/') {
+  if (ipfsPath.substring(0, 1) !== '/') {
     throw errCode(new Error('paths must start with a leading slash'), 'ERR_INVALID_PATH')
   }
 
-  if (path.substring(path.length - 1) === '/') {
-    path = path.substring(0, path.length - 1)
+  if (ipfsPath.substring(ipfsPath.length - 1) === '/') {
+    ipfsPath = ipfsPath.substring(0, ipfsPath.length - 1)
   }
 
-  const pathComponents = toPathComponents(path)
+  const pathComponents = toPathComponents(ipfsPath)
 
   if (pathComponents[0] === IPFS_PREFIX) {
     // e.g. /ipfs/QMfoo or /ipfs/Qmfoo/sub/path
@@ -165,7 +167,7 @@ const toMfsPath = async (context, path, options) => {
   const cidPath = output.type === 'mfs' ? output.mfsPath : output.path
 
   try {
-    const res = await exporter(cidPath, context.ipld)
+    const res = await exporter(cidPath, context.repo.blocks, options)
 
     output.cid = res.cid
     output.mfsPath = `/ipfs/${res.path}`
@@ -175,7 +177,7 @@ const toMfsPath = async (context, path, options) => {
     if ((output.entryType === 'file' || output.entryType === 'directory') && (res.type === 'file' || res.type === 'directory')) {
       output.unixfs = res.unixfs
     }
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.code !== 'ERR_NOT_FOUND') {
       throw err
     }
@@ -185,5 +187,3 @@ const toMfsPath = async (context, path, options) => {
 
   return output
 }
-
-module.exports = toMfsPath

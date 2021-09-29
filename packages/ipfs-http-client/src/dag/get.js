@@ -1,35 +1,53 @@
-'use strict'
-
-const configure = require('../lib/configure')
-const multicodec = require('multicodec')
-const loadFormat = require('../lib/ipld-formats')
+import { configure } from '../lib/configure.js'
+import { resolve } from '../lib/resolve.js'
+import first from 'it-first'
+import last from 'it-last'
+import errCode from 'err-code'
+import { createGet as createBlockGet } from '../block/get.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/dag').API<HTTPClientExtraOptions>} DAGAPI
  */
 
-module.exports = configure((api, opts) => {
-  const getBlock = require('../block/get')(opts)
-  const dagResolve = require('./resolve')(opts)
-  const load = loadFormat(opts.ipld)
+/**
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
+ * @param {import('../types').Options} options
+ */
+export const createGet = (codecs, options) => {
+  const fn = configure((api, opts) => {
+    const getBlock = createBlockGet(opts)
 
-  /**
-   * @type {DAGAPI["get"]}
-   */
-  const get = async (cid, options = {}) => {
-    const resolved = await dagResolve(cid, options)
-    const block = await getBlock(resolved.cid, options)
+    /**
+     * @type {DAGAPI["get"]}
+     */
+    const get = async (cid, options = {}) => {
+      if (options.path) {
+        const entry = options.localResolve
+          ? await first(resolve(cid, options.path, codecs, getBlock, options))
+          : await last(resolve(cid, options.path, codecs, getBlock, options))
+        /** @type {import('ipfs-core-types/src/dag').GetResult} - first and last will return undefined when empty */
+        const result = (entry)
 
-    const codecName = multicodec.getName(resolved.cid.code)
-    const format = await load(codecName)
+        if (!result) {
+          throw errCode(new Error('Not found'), 'ERR_NOT_FOUND')
+        }
 
-    if (resolved.cid.code === multicodec.RAW && !resolved.remainderPath) {
-      resolved.remainderPath = '/'
+        return result
+      }
+
+      const codec = await codecs.getCodec(cid.code)
+      const block = await getBlock(cid, options)
+      const node = codec.decode(block)
+
+      return {
+        value: node,
+        remainderPath: ''
+      }
     }
 
-    return format.resolver.resolve(block.data, resolved.remainderPath || '')
-  }
+    return get
+  })
 
-  return get
-})
+  return fn(options)
+}

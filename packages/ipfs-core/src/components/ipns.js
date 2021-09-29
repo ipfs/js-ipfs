@@ -1,10 +1,9 @@
-'use strict'
-
-const IPNS = require('../ipns')
-const routingConfig = require('../ipns/routing/config')
-const OfflineDatastore = require('../ipns/routing/offline-datastore')
-const { NotInitializedError, AlreadyInitializedError } = require('../errors')
-const log = require('debug')('ipfs:components:ipns')
+import { IPNS } from '../ipns/index.js'
+import { createRouting } from '../ipns/routing/config.js'
+import { OfflineDatastore } from '../ipns/routing/offline-datastore.js'
+import { NotInitializedError, AlreadyInitializedError } from '../errors.js'
+import debug from 'debug'
+const log = debug('ipfs:components:ipns')
 
 /**
  * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
@@ -19,7 +18,7 @@ const log = require('debug')('ipfs:components:ipns')
  * @property {boolean} [enabled]
  */
 
-class IPNSAPI {
+export class IPNSAPI {
   /**
    * @param {Object} options
    * @param {string} options.pass
@@ -58,7 +57,7 @@ class IPNSAPI {
    * initializeKeyspace feature.
    *
    * @param {Object} config
-   * @param {import('ipfs-repo')} config.repo
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {import('peer-id')} config.peerId
    * @param {import('libp2p/src/keychain')} config.keychain
    */
@@ -78,7 +77,7 @@ class IPNSAPI {
   /**
    * @param {Object} config
    * @param {import('libp2p')} config.libp2p
-   * @param {import('ipfs-repo')} config.repo
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {import('peer-id')} config.peerId
    * @param {import('libp2p/src/keychain')} config.keychain
    */
@@ -86,7 +85,7 @@ class IPNSAPI {
     if (this.online != null) {
       throw new AlreadyInitializedError()
     }
-    const routing = routingConfig({ libp2p, repo, peerId, options: this.options })
+    const routing = createRouting({ libp2p, repo, peerId, options: this.options })
 
     // @ts-ignore routing is a TieredDatastore which wants keys to be Keys, IPNS needs keys to be Uint8Arrays
     const ipns = new IPNS(routing, repo.datastore, peerId, keychain, this.options)
@@ -128,4 +127,3 @@ class IPNSAPI {
     return this.getIPNS().initializeKeyspace(privKey, value)
   }
 }
-module.exports = IPNSAPI

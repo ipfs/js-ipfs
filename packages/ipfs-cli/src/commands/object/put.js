@@ -1,12 +1,10 @@
-'use strict'
+import concat from 'it-concat'
+import * as dagPB from '@ipld/dag-pb'
+import parseDuration from 'parse-duration'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-const fs = require('fs')
-const concat = require('it-concat')
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'put [data]',
 
   describe: 'Stores input as a DAG object, outputs its key',
@@ -14,12 +12,13 @@ module.exports = {
   builder: {
     'input-enc': {
       type: 'string',
+      choices: ['json', 'protobuf'],
       default: 'json'
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
+      describe: 'Number base to display CIDs in',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -31,20 +30,30 @@ module.exports = {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.data
-   * @param {import('ipfs-core-types/src/object').PutEncoding} argv.inputEnc
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {'json' | 'protobuf'} argv.inputEnc
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print, getStdin }, data, inputEnc, cidBase, timeout }) {
     let buf
 
     if (data) {
-      buf = fs.readFileSync(data)
+      buf = uint8ArrayFromString(data)
     } else {
       buf = (await concat(getStdin(), { type: 'buffer' })).slice()
     }
 
-    const cid = await ipfs.object.put(buf, { enc: inputEnc, timeout })
-    print(`added ${cidToString(cid, { base: cidBase, upgrade: false })}`)
+    let node
+
+    if (inputEnc === 'protobuf') {
+      node = dagPB.decode(buf)
+    } else {
+      node = JSON.parse(uint8ArrayToString(buf))
+    }
+
+    const base = await ipfs.bases.getBase(cidBase)
+
+    const cid = await ipfs.object.put(node, { timeout })
+    print(`added ${cid.toString(base.encoder)}`)
   }
 }

@@ -1,12 +1,18 @@
-'use strict'
-const { createSuite } = require('../utils/suite')
+import { createSuite } from '../utils/suite.js'
+import { testAdd } from './add.js'
+import { testAddAll } from './add-all.js'
+import { testLs } from './ls.js'
+import { testRm } from './rm.js'
+import { testRmAll } from './rm-all.js'
+import testRemote from './remote/index.js'
 
 const tests = {
-  add: require('./add'),
-  addAll: require('./add-all'),
-  ls: require('./ls'),
-  rm: require('./rm'),
-  rmAll: require('./rm-all')
+  add: testAdd,
+  addAll: testAddAll,
+  ls: testLs,
+  rm: testRm,
+  rmAll: testRmAll,
+  remote: testRemote
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

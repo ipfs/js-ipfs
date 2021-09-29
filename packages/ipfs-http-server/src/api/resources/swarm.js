@@ -1,8 +1,6 @@
-'use strict'
+import Joi from '../../utils/joi.js'
 
-const Joi = require('../../utils/joi')
-
-exports.peers = {
+export const peersResource = {
   options: {
     validate: {
       options: {
@@ -61,7 +59,7 @@ exports.peers = {
   }
 }
 
-exports.addrs = {
+export const addrsResource = {
   options: {
     validate: {
       options: {
@@ -106,7 +104,7 @@ exports.addrs = {
   }
 }
 
-exports.localAddrs = {
+export const localAddrsResource = {
   options: {
     validate: {
       options: {
@@ -148,7 +146,7 @@ exports.localAddrs = {
   }
 }
 
-exports.connect = {
+export const connectResource = {
   options: {
     validate: {
       options: {
@@ -196,7 +194,7 @@ exports.connect = {
   }
 }
 
-exports.disconnect = {
+export const disconnectResource = {
   options: {
     validate: {
       options: {

@@ -1,13 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const http = require('../../utils/http')
-const sinon = require('sinon')
-const CID = require('cids')
-const cid = new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
-const testHttpMethod = require('../../utils/test-http-method')
-const { AbortSignal } = require('native-abort-controller')
+import { expect } from 'aegir/utils/chai.js'
+import { http } from '../../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { testHttpMethod } from '../../utils/test-http-method.js'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+
+const cid = CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
 
 const defaultOptions = {
   timeout: undefined,
@@ -22,6 +24,9 @@ describe('/files/flush', () => {
     ipfs = {
       files: {
         flush: sinon.stub().resolves(cid)
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -31,6 +36,7 @@ describe('/files/flush', () => {
   })
 
   it('should flush a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: `/api/v0/files/flush?arg=${path}`
@@ -42,6 +48,7 @@ describe('/files/flush', () => {
   })
 
   it('should flush without a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: '/api/v0/files/flush'
@@ -53,6 +60,7 @@ describe('/files/flush', () => {
   })
 
   it('should flush with a different CID base', async () => {
+    ipfs.bases.getBase.withArgs('base64').returns(base64)
     ipfs.files.flush.resolves(cid.toV1())
 
     const response = await http({
@@ -62,10 +70,11 @@ describe('/files/flush', () => {
 
     expect(ipfs.files.flush.callCount).to.equal(1)
     expect(ipfs.files.flush.calledWith('/', defaultOptions)).to.be.true()
-    expect(response).to.have.nested.property('result.Cid', cid.toV1().toString('base64'))
+    expect(response).to.have.nested.property('result.Cid', cid.toV1().toString(base64))
   })
 
   it('accepts a timeout', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const response = await http({
       method: 'POST',
       url: '/api/v0/files/flush?timeout=1s'

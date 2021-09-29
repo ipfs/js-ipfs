@@ -1,18 +1,12 @@
-'use strict'
+import { CID } from 'multiformats/cid'
+import { UnixFS } from 'ipfs-unixfs'
+import * as dagPB from '@ipld/dag-pb'
+import { sha256 } from 'multiformats/hashes/sha2'
+import debug from 'debug'
+import errCode from 'err-code'
+import { MFS_ROOT_KEY } from '../../../utils.js'
 
-const CID = require('cids')
-const { UnixFS } = require('ipfs-unixfs')
-const {
-  DAGNode
-} = require('ipld-dag-pb')
-const log = require('debug')('ipfs:mfs:utils:with-mfs-root')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
-const errCode = require('err-code')
-
-const {
-  MFS_ROOT_KEY
-} = require('../../../utils')
+const log = debug('ipfs:mfs:utils:with-mfs-root')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext
@@ -22,7 +16,7 @@ const {
  * @param {MfsContext} context
  * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-const loadMfsRoot = async (context, options) => {
+export async function loadMfsRoot (context, options) {
   if (options && options.signal && options.signal.aborted) {
     throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
   }
@@ -36,18 +30,20 @@ const loadMfsRoot = async (context, options) => {
   try {
     const buf = await context.repo.datastore.get(MFS_ROOT_KEY)
 
-    cid = new CID(buf)
-  } catch (err) {
+    cid = CID.decode(buf)
+  } catch (/** @type {any} */ err) {
     if (err.code !== 'ERR_NOT_FOUND') {
       throw err
     }
 
     log('Creating new MFS root')
-    const node = new DAGNode(new UnixFS({ type: 'directory' }).marshal())
-    cid = await context.ipld.put(node, mc.DAG_PB, {
-      cidVersion: 0,
-      hashAlg: mh.names['sha2-256'] // why can't ipld look this up?
+    const buf = dagPB.encode({
+      Data: new UnixFS({ type: 'directory' }).marshal(),
+      Links: []
     })
+    const hash = await sha256.digest(buf)
+    cid = CID.createV0(hash)
+    await context.repo.blocks.put(cid, buf)
 
     if (options && options.signal && options.signal.aborted) {
       throw errCode(new Error('Request aborted'), 'ERR_ABORTED', { name: 'Aborted' })
@@ -60,5 +56,3 @@ const loadMfsRoot = async (context, options) => {
 
   return cid
 }
-
-module.exports = loadMfsRoot

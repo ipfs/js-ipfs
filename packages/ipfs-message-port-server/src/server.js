@@ -1,8 +1,7 @@
-'use strict'
 
 /* eslint-env browser */
 
-const { encodeError } = require('ipfs-message-port-protocol/src/error')
+import { encodeError } from 'ipfs-message-port-protocol/error'
 
 /**
  * @typedef {import('ipfs-message-port-protocol/src/data').EncodedError} EncodedError
@@ -96,7 +95,7 @@ const { encodeError } = require('ipfs-message-port-protocol/src/error')
  * @extends {ServiceQuery<T>}
  */
 
-const Query = class Query {
+export class Query {
   /**
    * @param {Namespace<T>} namespace
    * @param {Method<T>} method
@@ -124,7 +123,6 @@ const Query = class Query {
     this.fail(new AbortError())
   }
 }
-exports.Query = Query
 
 /**
  * @template T
@@ -137,7 +135,7 @@ exports.Query = Query
  * @template T
  */
 
-exports.Server = class Server {
+export class Server {
   /**
    * @param {MultiService<T>} services
    */
@@ -227,7 +225,7 @@ exports.Server = class Server {
           { type: 'result', id, result: { ok: true, value } },
           transfer
         )
-      } catch (error) {
+      } catch (/** @type {any} */ error) {
         port.postMessage({
           type: 'result',
           id,
@@ -251,7 +249,7 @@ exports.Server = class Server {
         try {
           const result = service[method]({ ...query.input, signal: query.signal })
           Promise.resolve(result).then(query.succeed, query.fail)
-        } catch (error) {
+        } catch (/** @type {any} */ error) {
           query.fail(error)
         }
       } else {
@@ -274,7 +272,7 @@ exports.Server = class Server {
   }
 }
 
-const UnsupportedMessageError = class UnsupportedMessageError extends RangeError {
+export class UnsupportedMessageError extends RangeError {
   /**
    * @param {MessageEvent} event
    */
@@ -287,11 +285,9 @@ const UnsupportedMessageError = class UnsupportedMessageError extends RangeError
     return this.constructor.name
   }
 }
-exports.UnsupportedMessageError = UnsupportedMessageError
 
-const AbortError = class AbortError extends Error {
+export const AbortError = class AbortError extends Error {
   get name () {
     return this.constructor.name
   }
 }
-exports.AbortError = AbortError

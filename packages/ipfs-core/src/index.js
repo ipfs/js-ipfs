@@ -1,34 +1,34 @@
-'use strict'
-
-const globSource = require('ipfs-utils/src/files/glob-source')
-const urlSource = require('ipfs-utils/src/files/url-source')
-const PeerId = require('peer-id')
-const crypto = require('libp2p-crypto')
-const isIPFS = require('is-ipfs')
-const { multiaddr } = require('multiaddr')
-const multibase = require('multibase')
-const multicodec = require('multicodec')
-const multihashing = require('multihashing-async')
-const multihash = multihashing.multihash
-const CID = require('cids')
-const { create } = require('./components')
+import { create as createImport } from './components/index.js'
+import cryptoImport from 'libp2p-crypto'
+import isIPFSImport from 'is-ipfs'
+import { CID as CIDImport } from 'multiformats/cid'
+import { Multiaddr } from 'multiaddr'
+import PeerIdImport from 'peer-id'
+import globSourceImport from 'ipfs-utils/src/files/glob-source.js'
+import urlSourceImport from 'ipfs-utils/src/files/url-source.js'
 
 /**
- * @typedef {import('./components')} IPFS
+ * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('./types').Options} Options
+ * @typedef {import('./types').Libp2pFactoryFn} Libp2pFactoryFn
+ * @typedef {import('./types').Libp2pFactoryFnArgs} Libp2pFactoryFnArgs
+ * @typedef {import('./types').InitOptions} InitOptions
+ * @typedef {import('./types').RelayOptions} RelayOptions
+ * @typedef {import('./types').PreloadOptions} PreloadOptions
+ * @typedef {import('./types').ExperimentalOptions} ExperimentalOptions
+ * @typedef {import('./types').Preload} Preload
+ * @typedef {import('./types').MfsPreload} MfsPreload
+ * @typedef {import('./types').LoadBaseFn} LoadBaseFn
+ * @typedef {import('./types').LoadCodecFn} LoadCodecFn
+ * @typedef {import('./types').LoadHasherFn} LoadHasherFn
+ * @typedef {import('./types').IPLDOptions} IPLDOptions
  */
 
-module.exports = {
-  create,
-  crypto,
-  isIPFS,
-  CID,
-  multiaddr,
-  multibase,
-  multihash,
-  multihashing,
-  multicodec,
-  PeerId,
-  globSource,
-  urlSource
-}
+export const create = createImport
+export const crypto = cryptoImport
+export const isIPFS = isIPFSImport
+export const CID = CIDImport
+export const multiaddr = Multiaddr
+export const PeerId = PeerIdImport
+export const globSource = globSourceImport
+export const urlSource = urlSourceImport

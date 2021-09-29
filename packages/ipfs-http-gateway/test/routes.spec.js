@@ -1,14 +1,14 @@
 /* eslint-env mocha */
 /* eslint dot-notation: 0, dot-notation: 0, quote-props: 0 */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const FileType = require('file-type')
-const CID = require('cids')
-const http = require('./utils/http')
-const sinon = require('sinon')
-const fs = require('fs')
+import { expect } from 'aegir/utils/chai.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import FileType from 'file-type'
+import { CID } from 'multiformats/cid'
+import { base32 } from 'multiformats/bases/base32'
+import { http } from './utils/http.js'
+import sinon from 'sinon'
+import fs from 'fs'
 
 describe('HTTP Gateway', function () {
   this.timeout(80 * 1000)
@@ -60,7 +60,7 @@ describe('HTTP Gateway', function () {
   })
 
   it('returns 400 for service worker registration outside of an IPFS content root', async () => {
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
       type: 'file'
@@ -78,7 +78,7 @@ describe('HTTP Gateway', function () {
   })
 
   it('valid CIDv0', async () => {
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString('hello world\n')
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -140,7 +140,7 @@ describe('HTTP Gateway', function () {
   */
 
   it('return 304 Not Modified if client announces cached CID in If-None-Match', async () => {
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString('hello world\n')
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -178,7 +178,7 @@ describe('HTTP Gateway', function () {
   })
 
   it('return 304 Not Modified if /ipfs/ was requested with any If-Modified-Since', async () => {
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString('hello world\n')
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -216,7 +216,7 @@ describe('HTTP Gateway', function () {
   })
 
   it('return proper Content-Disposition if ?filename=foo is included in URL', async () => {
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString('hello world\n')
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -238,7 +238,7 @@ describe('HTTP Gateway', function () {
   })
 
   it('load a big file (15MB)', async () => {
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString(new Array(15000000).fill('0').join(''))
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -268,7 +268,7 @@ describe('HTTP Gateway', function () {
     // use 12 byte text file to make it easier to debug ;-)
     const fileLength = 12
     const range = { from: 1, length: 11 }
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString(new Array(fileLength).fill('0').join(''))
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -328,7 +328,7 @@ describe('HTTP Gateway', function () {
     // use 12 byte text file to make it easier to debug ;-)
     const fileLength = 12
     const range = { from: 1, to: 3, length: 3 }
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString(new Array(fileLength).fill('0').join(''))
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -391,7 +391,7 @@ describe('HTTP Gateway', function () {
     // use 12 byte text file to make it easier to debug ;-)
     const fileLength = 12
     const range = { tail: 7, from: 5, to: 11, length: 7 }
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString(new Array(fileLength).fill('0').join(''))
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -453,7 +453,7 @@ describe('HTTP Gateway', function () {
 
     // use 12 byte text file to make it easier to debug ;-)
     const fileLength = 12
-    const cid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const cid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = uint8ArrayFromString(new Array(fileLength).fill('0').join(''))
     ipfs.files.stat.withArgs(`/ipfs/${cid}`).resolves({
       cid,
@@ -476,8 +476,8 @@ describe('HTTP Gateway', function () {
   })
 
   it('load a jpg file', async () => {
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = fs.readFileSync('test/fixtures/cat-folder/cat.jpg')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}/cat.jpg`).resolves({
       cid: fileCid,
@@ -506,7 +506,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['cache-control']).to.equal('public, max-age=29030400, immutable')
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
 
     const fileSignature = await FileType.fromBuffer(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
@@ -514,8 +514,8 @@ describe('HTTP Gateway', function () {
   })
 
   it('load a svg file (unsniffable)', async () => {
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = fs.readFileSync('test/fixtures/unsniffable-folder/hexagons.svg')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}/hexagons.svg`).resolves({
       cid: fileCid,
@@ -541,8 +541,8 @@ describe('HTTP Gateway', function () {
   })
 
   it('load a svg file with xml leading declaration (unsniffable)', async () => {
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     const content = fs.readFileSync('test/fixtures/unsniffable-folder/hexagons-xml.svg')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}/hexagons-xml.svg`).resolves({
       cid: fileCid,
@@ -568,7 +568,7 @@ describe('HTTP Gateway', function () {
   })
 
   it('load a directory', async () => {
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}/`).resolves({
       cid: dirCid,
       type: 'directory'
@@ -597,7 +597,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length)
     expect(res.headers.etag).to.equal(undefined)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
 
     // check if the cat picture is in the payload as a way to check
     // if this is an index of this directory
@@ -606,8 +606,8 @@ describe('HTTP Gateway', function () {
   })
 
   it('load a webpage index.html', async () => {
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
     const content = fs.readFileSync('test/fixtures/index.html')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}/index.html`).resolves({
       cid: fileCid,
@@ -635,13 +635,13 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
     expect(res.rawPayload).to.deep.equal(content)
   })
 
   it('load a webpage {hash}/nested-folder/nested.html', async () => {
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
     const content = fs.readFileSync('test/fixtures/index.html')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}/nested-folder/nested.html`).resolves({
       cid: fileCid,
@@ -669,12 +669,12 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
     expect(res.rawPayload).to.deep.equal(content)
   })
 
   it('redirects to generated index', async () => {
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}`).resolves({
       cid: dirCid,
       type: 'directory'
@@ -699,8 +699,8 @@ describe('HTTP Gateway', function () {
   })
 
   it('redirect to a directory with index.html', async () => {
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}`).resolves({
       cid: dirCid,
       type: 'directory'
@@ -722,8 +722,8 @@ describe('HTTP Gateway', function () {
   })
 
   it('load a directory with index.html', async () => {
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
     const content = fs.readFileSync('test/fixtures/index.html')
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}/`).resolves({
       cid: dirCid,
@@ -761,13 +761,13 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
     expect(res.rawPayload).to.deep.equal(content)
   })
 
   it('test(gateway): load from URI-encoded path', async () => {
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
     // non-ascii characters will be URI-encoded by the browser
     const utf8path = `/ipfs/${dirCid}/cat-with-óąśśł-and-أعظم._.jpg`
     const escapedPath = encodeURI(utf8path) // this is what will be actually requested
@@ -798,13 +798,13 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal('Thu, 01 Jan 1970 00:00:01 GMT')
     expect(res.headers['content-length']).to.equal(res.rawPayload.length.toString())
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
   })
 
   it('load a file from IPNS', async () => {
     const id = 'Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7A'
     const ipnsPath = `/ipns/${id}/cat.jpg`
-    const fileCid = new CID('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
+    const fileCid = CID.parse('Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u')
     const content = fs.readFileSync('test/fixtures/cat-folder/cat.jpg')
 
     ipfs.name.resolve.withArgs(ipnsPath).returns([`/ipfs/${fileCid}`])
@@ -835,7 +835,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['cache-control']).to.equal('no-cache') // TODO: should be record TTL
     expect(res.headers['last-modified']).to.equal(undefined)
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
-    expect(res.headers.suborigin).to.equal(`ipns000${new CID(id).toV1().toBaseEncodedString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipns000${CID.parse(id).toV1().toString()}`)
 
     const fileSignature = await FileType.fromBuffer(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
@@ -845,7 +845,7 @@ describe('HTTP Gateway', function () {
   it('load a directory from IPNS', async () => {
     const id = 'Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7A'
     const ipnsPath = `/ipns/${id}/`
-    const dirCid = new CID('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
+    const dirCid = CID.parse('QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o')
     ipfs.name.resolve.withArgs(ipnsPath).returns([`/ipfs/${dirCid}`])
     ipfs.files.stat.withArgs(`/ipfs/${dirCid}`).resolves({
       cid: dirCid,
@@ -875,7 +875,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers['last-modified']).to.equal(undefined)
     expect(res.headers['content-length']).to.equal(res.rawPayload.length)
     expect(res.headers.etag).to.equal(undefined)
-    expect(res.headers.suborigin).to.equal(`ipns000${new CID(id).toV1().toBaseEncodedString('base32')}`)
+    expect(res.headers.suborigin).to.equal(`ipns000${CID.parse(id).toV1().toString()}`)
 
     // check if the cat picture is in the payload as a way to check
     // if this is an index of this directory

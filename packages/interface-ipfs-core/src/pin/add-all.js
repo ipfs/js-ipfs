@@ -1,26 +1,30 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fixtures, clearPins } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
-const drain = require('it-drain')
+import { fixtures, clearPins } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import all from 'it-all'
+import drain from 'it-drain'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testAddAll (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pin.addAll', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
 
       await drain(
         ipfs.addAll(
@@ -42,12 +46,16 @@ module.exports = (common, options) => {
       )
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     beforeEach(() => {
       return clearPins(ipfs)
     })
 
+    /**
+     *
+     * @param {Iterable<import('ipfs-core-types/src/pin').AddInput> | AsyncIterable<import('ipfs-core-types/src/pin').AddInput>} source
+     */
     async function testAddPinInput (source) {
       const pinset = await all(ipfs.pin.addAll(source))
 

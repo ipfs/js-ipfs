@@ -105,9 +105,10 @@ console.log(block.cid.toString())
 // the CID of the object
 
 // With custom format and hashtype through CID
-const CID = require('cids')
+import { CID } from 'multiformats/cid'
+import * as dagPB from '@ipld/dag-pb'
 const buf = new TextEncoder().encode('another serialized object')
-const cid = new CID(1, 'dag-pb', multihash)
+const cid = CID.createV1(dagPB.code, multihash)
 
 const block = await ipfs.block.put(blob, cid)
 
@@ -211,7 +212,7 @@ the returned object has the following keys:
 
 ```JavaScript
 const multihashStr = 'QmQULBtTjNcMwMr4VMNknnVv3RpytrLSdgpvMcTnfNhrBJ'
-const cid = new CID(multihashStr)
+const cid = CID.parse(multihashStr)
 
 const stats = await ipfs.block.stat(cid)
 console.log(stats.cid.toString())

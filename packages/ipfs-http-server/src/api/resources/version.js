@@ -1,9 +1,7 @@
-'use strict'
+import Joi from '../../utils/joi.js'
+import { ipfsHttpClient } from '../../version.js'
 
-const Joi = require('../../utils/joi')
-const pkg = require('../../../package.json')
-
-module.exports = {
+export const versionResource = {
   options: {
     validate: {
       options: {
@@ -43,8 +41,9 @@ module.exports = {
       Version: version.version,
       Commit: version.commit,
       Repo: version.repo,
-      'ipfs-http-client': pkg.devDependencies['ipfs-http-client'],
-      'interface-ipfs-core': version['interface-ipfs-core']
+      'ipfs-core': version['ipfs-core'],
+      'interface-ipfs-core': version['interface-ipfs-core'],
+      'ipfs-http-client': ipfsHttpClient
     })
   }
 }

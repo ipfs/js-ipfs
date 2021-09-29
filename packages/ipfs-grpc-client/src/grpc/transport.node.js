@@ -1,11 +1,10 @@
-'use strict'
-
 // copied from https://github.com/improbable-eng/grpc-web/blob/master/client/grpc-web/src/transports/websocket/websocket.ts
 // but uses the ws implementation of WebSockets
 // see: https://github.com/improbable-eng/grpc-web/issues/796
+import WebSocket from 'ws'
+import debug from 'debug'
 
-const WebSocket = require('ws')
-const debug = require('debug')('ipfs:grpc-client:websocket-transport')
+const log = debug('ipfs:grpc-client:websocket-transport')
 
 /**
  * @typedef {import('http').Agent} HttpAgent
@@ -93,7 +92,7 @@ function websocketRequest (options) {
       ws = new WebSocket(webSocketAddress, ['grpc-websockets'], options)
       ws.binaryType = 'arraybuffer'
       ws.onopen = function () {
-        options.debug && debug('websocketRequest.onopen')
+        options.debug && log('websocketRequest.onopen')
         ws.send(headersToBytes(metadata))
 
         // send any messages that were passed to sendMessage before the connection was ready
@@ -108,7 +107,7 @@ function websocketRequest (options) {
       }
 
       ws.onerror = function (error) {
-        options.debug && debug('websocketRequest.onerror', error)
+        options.debug && log('websocketRequest.onerror', error)
       }
 
       ws.onmessage = function (e) {
@@ -181,4 +180,4 @@ function isValidHeaderAscii (val) {
   return isAllowedControlChars(val) || (val >= 0x20 && val <= 0x7e)
 }
 
-module.exports = WebsocketTransport
+export const transport = () => WebsocketTransport

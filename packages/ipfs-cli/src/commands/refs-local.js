@@ -1,10 +1,8 @@
-'use strict'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import parseDuration from 'parse-duration'
+import { base32 } from 'multiformats/bases/base32'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const { default: parseDuration } = require('parse-duration')
-const multibase = require('multibase')
-
-module.exports = {
+export default {
   command: 'refs-local',
 
   describe: 'List all local references.',
@@ -37,7 +35,7 @@ module.exports = {
         print(err.toString(), true, true)
       } else {
         if (multihash) {
-          print(multibase.encoding('base32upper').encode(uint8ArrayFromString(ref)))
+          print(base32.encode(uint8ArrayFromString(ref)).toUpperCase())
         } else {
           print(ref)
         }

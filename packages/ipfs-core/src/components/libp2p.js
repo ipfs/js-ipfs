@@ -1,22 +1,37 @@
-'use strict'
+import get from 'dlv'
+import mergeOpts from 'merge-options'
+import errCode from 'err-code'
+import { routers } from 'ipfs-core-config/libp2p-pubsub-routers'
+// @ts-expect-error - no types
+import DelegatedPeerRouter from 'libp2p-delegated-peer-routing'
+// @ts-expect-error - no types
+import DelegatedContentRouter from 'libp2p-delegated-content-routing'
+import { create as ipfsHttpClient } from 'ipfs-http-client'
+import { Multiaddr } from 'multiaddr'
+import { ipfsCore as pkgversion } from '../version.js'
+import { libp2pConfig as getEnvLibp2pOptions } from 'ipfs-core-config/libp2p'
+import bootstrap from 'libp2p-bootstrap'
+import Libp2p from 'libp2p'
 
-const get = require('dlv')
-const mergeOptions = require('merge-options')
-const errCode = require('err-code')
-const PubsubRouters = require('../runtime/libp2p-pubsub-routers-nodejs')
-const pkgversion = require('../../package.json').version
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
+ * @typedef {object} DekOptions
+ * @property {string} hash
+ * @property {string} salt
+ * @property {number} iterationCount
+ * @property {number} keyLength
+ *
  * @typedef {Object} KeychainConfig
  * @property {string} [pass]
+ * @property {DekOptions} [dek]
  *
- * @typedef {import('ipfs-repo')} Repo
+ * @typedef {import('ipfs-repo').IPFSRepo} Repo
  * @typedef {import('peer-id')} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
  * @typedef {import('libp2p').Libp2pOptions & import('libp2p').CreateOptions} Libp2pOptions
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
- * @typedef {import('multiaddr').Multiaddr} Multiaddr
  */
 
 /**
@@ -28,14 +43,14 @@ const pkgversion = require('../../package.json').version
  * @param {KeychainConfig|undefined} config.keychainConfig
  * @param {Partial<IPFSConfig>|undefined} config.config
  */
-module.exports = ({
+export function createLibp2p ({
   options = {},
   peerId,
   multiaddrs = [],
   repo,
   keychainConfig = {},
   config = {}
-}) => {
+}) {
   const { datastore, keys } = repo
 
   const libp2pOptions = getLibp2pOptions({
@@ -51,9 +66,6 @@ module.exports = ({
   if (typeof options.libp2p === 'function') {
     return options.libp2p({ libp2pOptions, options, config, datastore, peerId })
   }
-
-  // Required inline to reduce startup time
-  const Libp2p = require('libp2p')
 
   return Libp2p.create(libp2pOptions)
 }
@@ -73,13 +85,11 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
-    // @ts-ignore - `router` value is not constrained
-    if (!PubsubRouters[router]) {
+    if (!routers[router]) {
       throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
     }
 
-    // @ts-ignore - `router` value is not constrained
-    return PubsubRouters[router]
+    return routers[router]
   }
 
   const libp2pDefaults = {
@@ -89,8 +99,13 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   }
 
   const libp2pOptions = {
+    /**
+     * @type {Partial<Libp2pOptions["modules"]>}
+     */
     modules: {
-      pubsub: getPubsubRouter()
+      pubsub: getPubsubRouter(),
+      contentRouting: [],
+      peerRouting: []
     },
     config: {
       peerDiscovery: {
@@ -141,10 +156,6 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     }
   }
 
-  // Required inline to reduce startup time
-  // Note: libp2p-nodejs gets replaced by libp2p-browser when webpacked/browserified
-  const getEnvLibp2pOptions = require('../runtime/libp2p-nodejs')
-
   /** @type {import('libp2p').Libp2pOptions | undefined} */
   let constructorOptions = get(options, 'libp2p', undefined)
 
@@ -163,7 +174,33 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
   const bootstrapList = get(libp2pConfig, 'config.peerDiscovery.bootstrap.list', [])
 
   if (bootstrapList.length > 0) {
-    libp2pConfig.modules.peerDiscovery.push(require('libp2p-bootstrap'))
+    libp2pConfig.modules.peerDiscovery.push(bootstrap)
+  }
+
+  // Set up Delegate Routing based on the presence of Delegates in the config
+  const delegateHosts = get(options, 'config.Addresses.Delegates',
+    get(config, 'Addresses.Delegates', [])
+  )
+
+  if (delegateHosts.length > 0) {
+    // Pick a random delegate host
+    const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
+    const delegateAddr = new Multiaddr(delegateString).toOptions()
+    const delegateApiOptions = {
+      host: delegateAddr.host,
+      // port is a string atm, so we need to convert for the check
+      // @ts-ignore - parseInt(input:string) => number
+      protocol: parseInt(delegateAddr.port) === 443 ? 'https' : 'http',
+      port: delegateAddr.port
+    }
+
+    const delegateHttpClient = ipfsHttpClient(delegateApiOptions)
+
+    libp2pOptions.modules.contentRouting = libp2pOptions.modules.contentRouting || []
+    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerId, delegateHttpClient))
+
+    libp2pOptions.modules.peerRouting = libp2pOptions.modules.peerRouting || []
+    libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegateHttpClient))
   }
 
   return libp2pConfig

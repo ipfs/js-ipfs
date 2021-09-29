@@ -1,28 +1,25 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/repo').API<HTTPClientExtraOptions>} RepoAPI
  */
 
-module.exports = configure(api => {
+export const createGc = configure(api => {
   /**
    * @type {RepoAPI["gc"]}
    */
   async function * gc (options = {}) {
     const res = await api.post('repo/gc', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams(options),
       headers: options.headers,
       transform: (res) => {
         return {
           err: res.Error ? new Error(res.Error) : null,
-          cid: (res.Key || {})['/'] ? new CID(res.Key['/']) : null
+          cid: (res.Key || {})['/'] ? CID.parse(res.Key['/']) : null
         }
       }
     })

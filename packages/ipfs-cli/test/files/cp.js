@@ -1,9 +1,8 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const cli = require('../utils/cli')
-const sinon = require('sinon')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import { cli } from '../utils/cli.js'
 
 const defaultOptions = {
   parents: false,

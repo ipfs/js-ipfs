@@ -1,11 +1,9 @@
-'use strict'
-
-const {
+import {
   asBoolean
-} = require('../../utils')
-const { default: parseDuration } = require('parse-duration')
+} from '../../utils.js'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'rm <path>',
 
   describe: 'Remove an mfs file or directory',

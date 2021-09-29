@@ -1,20 +1,19 @@
-'use strict'
+import * as ipns from 'ipns'
+import PeerId from 'peer-id'
+import errcode from 'err-code'
+import debug from 'debug'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import * as Errors from 'datastore-core/errors'
 
-const ipns = require('ipns')
-const PeerId = require('peer-id')
-const errcode = require('err-code')
-const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:resolver'), {
   error: debug('ipfs:ipns:resolver:error')
 })
-const uint8ArrayToString = require('uint8arrays/to-string')
 
-const { Errors } = require('interface-datastore')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 
 const defaultMaximumRecursiveDepth = 32
 
-class IpnsResolver {
+export class IpnsResolver {
   /**
    * @param {import('ipfs-core-types/src/utils').BufferStore} routing
    */
@@ -89,13 +88,13 @@ class IpnsResolver {
    * @param {string} name
    */
   async _resolveName (name) {
-    const peerId = PeerId.createFromCID(name)
+    const peerId = PeerId.parse(name)
     const { routingKey } = ipns.getIdKeys(peerId.toBytes())
     let record
 
     try {
       record = await this._routing.get(routingKey.uint8Array())
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error('could not get record from routing', err)
 
       if (err.code === ERR_NOT_FOUND) {
@@ -109,7 +108,7 @@ class IpnsResolver {
     let ipnsEntry
     try {
       ipnsEntry = ipns.unmarshal(record)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error('could not unmarshal record', err)
 
       throw errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_RECORD_RECEIVED')
@@ -134,5 +133,3 @@ class IpnsResolver {
     return uint8ArrayToString(ipnsEntry.value)
   }
 }
-
-exports = module.exports = IpnsResolver

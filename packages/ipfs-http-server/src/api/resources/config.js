@@ -1,17 +1,15 @@
-'use strict'
-
-const debug = require('debug')
-const get = require('dlv')
-const set = require('just-safe-set')
+import debug from 'debug'
+import get from 'dlv'
+import set from 'just-safe-set'
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import Boom from '@hapi/boom'
+import Joi from '../../utils/joi.js'
+import all from 'it-all'
 const log = Object.assign(debug('ipfs:http-api:config'), {
   error: debug('ipfs:http-api:config:error')
 })
-const multipart = require('../../utils/multipart-request-parser')
-const Boom = require('@hapi/boom')
-const Joi = require('../../utils/joi')
-const all = require('it-all')
 
-exports.getOrSet = {
+export const getOrSetResource = {
   options: {
     payload: {
       parse: false,
@@ -33,7 +31,7 @@ exports.getOrSet = {
           } else if (request.query.json) {
             try {
               args.value = JSON.parse(args.value)
-            } catch (err) {
+            } catch (/** @type {any} */ err) {
               log.error(err)
               throw Boom.badRequest('failed to unmarshal json. ' + err)
             }
@@ -114,7 +112,7 @@ exports.getOrSet = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get config value' })
     }
 
@@ -143,7 +141,7 @@ exports.getOrSet = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to replace config value' })
     }
 
@@ -154,7 +152,7 @@ exports.getOrSet = {
   }
 }
 
-exports.get = {
+export const getResource = {
   options: {
     validate: {
       options: {
@@ -192,7 +190,7 @@ exports.get = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get config value' })
     }
 
@@ -202,7 +200,7 @@ exports.get = {
   }
 }
 
-exports.show = {
+export const showResource = {
   options: {
     validate: {
       options: {
@@ -240,7 +238,7 @@ exports.show = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get config value' })
     }
 
@@ -248,7 +246,7 @@ exports.show = {
   }
 }
 
-exports.replace = {
+export const replaceResource = {
   options: {
     payload: {
       parse: false,
@@ -267,7 +265,7 @@ exports.replace = {
 
         let file
 
-        for await (const part of multipart(request.raw.req)) {
+        for await (const part of multipartRequestParser(request.raw.req)) {
           if (part.type !== 'file') {
             continue
           }
@@ -281,7 +279,7 @@ exports.replace = {
 
         try {
           return { config: JSON.parse(file.toString('utf8')) }
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           throw Boom.boomify(err, { message: 'Failed to decode file as config' })
         }
       }
@@ -326,7 +324,7 @@ exports.replace = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to save config' })
     }
 
@@ -334,107 +332,106 @@ exports.replace = {
   }
 }
 
-exports.profiles = {
-  apply: {
-    options: {
-      validate: {
-        options: {
-          allowUnknown: true,
-          stripUnknown: true
-        },
-        query: Joi.object().keys({
-          profile: Joi.string().required(),
-          dryRun: Joi.boolean().default(false),
-          timeout: Joi.timeout()
+export const profilesApplyResource = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        profile: Joi.string().required(),
+        dryRun: Joi.boolean().default(false),
+        timeout: Joi.timeout()
+      })
+        .rename('dry-run', 'dryRun', {
+          override: true,
+          ignoreUndefined: true
         })
-          .rename('dry-run', 'dryRun', {
-            override: true,
-            ignoreUndefined: true
-          })
-          .rename('arg', 'profile', {
-            override: true,
-            ignoreUndefined: true
-          })
-      }
-    },
-
-    /**
-     * @param {import('../../types').Request} request
-     * @param {import('@hapi/hapi').ResponseToolkit} h
-     */
-    handler: async function (request, h) {
-      const {
-        app: {
-          signal
-        },
-        server: {
-          app: {
-            ipfs
-          }
-        },
-        query: {
-          profile,
-          dryRun,
-          timeout
-        }
-      } = request
-
-      try {
-        const diff = await ipfs.config.profiles.apply(profile, {
-          dryRun,
-          signal,
-          timeout
+        .rename('arg', 'profile', {
+          override: true,
+          ignoreUndefined: true
         })
-
-        return h.response({ OldCfg: diff.original, NewCfg: diff.updated })
-      } catch (err) {
-        throw Boom.boomify(err, { message: 'Failed to apply profile' })
-      }
     }
   },
-  list: {
-    options: {
-      validate: {
-        options: {
-          allowUnknown: true,
-          stripUnknown: true
-        },
-        query: Joi.object().keys({
-          timeout: Joi.timeout()
-        })
-      }
-    },
 
-    /**
-     * @param {import('../../types').Request} request
-     * @param {import('@hapi/hapi').ResponseToolkit} h
-     */
-    handler: async function (request, h) {
-      const {
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  handler: async function (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
         app: {
-          signal
-        },
-        server: {
-          app: {
-            ipfs
-          }
-        },
-        query: {
-          timeout
+          ipfs
         }
-      } = request
+      },
+      query: {
+        profile,
+        dryRun,
+        timeout
+      }
+    } = request
 
-      const list = await ipfs.config.profiles.list({
+    try {
+      const diff = await ipfs.config.profiles.apply(profile, {
+        dryRun,
         signal,
         timeout
       })
 
-      return h.response(
-        list.map(profile => ({
-          Name: profile.name,
-          Description: profile.description
-        }))
-      )
+      return h.response({ OldCfg: diff.original, NewCfg: diff.updated })
+    } catch (/** @type {any} */ err) {
+      throw Boom.boomify(err, { message: 'Failed to apply profile' })
     }
+  }
+}
+
+export const profilesListResource = {
+  options: {
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        timeout: Joi.timeout()
+      })
+    }
+  },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  handler: async function (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      query: {
+        timeout
+      }
+    } = request
+
+    const list = await ipfs.config.profiles.list({
+      signal,
+      timeout
+    })
+
+    return h.response(
+      list.map(profile => ({
+        Name: profile.name,
+        Description: profile.description
+      }))
+    )
   }
 }

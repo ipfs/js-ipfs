@@ -1,22 +1,22 @@
-'use strict'
+import { createMkdir } from './mkdir.js'
+import { createStat } from './stat.js'
+import debug from 'debug'
+import errCode from 'err-code'
+import { updateTree } from './utils/update-tree.js'
+import { updateMfsRoot } from './utils/update-mfs-root.js'
+import { addLink } from './utils/add-link.js'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import mergeOpts from 'merge-options'
+import { toTrail } from './utils/to-trail.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
-const mkdir = require('./mkdir')
-const stat = require('./stat')
-const log = require('debug')('ipfs:mfs:cp')
-const errCode = require('err-code')
-const updateTree = require('./utils/update-tree')
-const updateMfsRoot = require('./utils/update-mfs-root')
-const addLink = require('./utils/add-link')
-const toMfsPath = require('./utils/to-mfs-path')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const toTrail = require('./utils/to-trail')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:mfs:cp')
 
 /**
- * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids')} CID
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('@ipld/dag-pb').PBNode} DAGNode
+ * @typedef {import('multiformats/cid').CID} CID
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
  * @typedef {import('./utils/to-mfs-path').MfsPath} MfsPath
  * @typedef {import('./utils/to-trail').MfsTrail} MfsTrail
@@ -24,7 +24,7 @@ const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
  * @typedef {object} DefaultOptions
  * @property {boolean} parents
  * @property {boolean} flush
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {number} shardSplitThreshold
  * @property {AbortSignal} [signal]
@@ -45,7 +45,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createCp (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["cp"]}
    */
@@ -58,7 +58,7 @@ module.exports = (context) => {
     }
 
     const sources = await Promise.all(
-      from.map(path => toMfsPath(context, path, options))
+      from.map((/** @type {CID | string} */ path) => toMfsPath(context, path, options))
     )
     let destination = await toMfsPath(context, to, options)
 
@@ -78,6 +78,7 @@ module.exports = (context) => {
     if (destination.exists) {
       log('Destination exists')
 
+      // @ts-ignore ts seems to think `sources` will always have a length of 10
       if (sources.length === 1 && !destinationIsDirectory) {
         throw errCode(new Error('directory already has entry by that name'), 'ERR_ALREADY_EXISTS')
       }
@@ -90,15 +91,15 @@ module.exports = (context) => {
           throw errCode(new Error('destination did not exist, pass -p to create intermediate directories'), 'ERR_INVALID_PARAMS')
         }
 
-        await mkdir(context)(destination.path, options)
+        await createMkdir(context)(destination.path, options)
         destination = await toMfsPath(context, destination.path, options)
       } else if (destination.parts.length > 1) {
         // copying to a folder, create it if necessary
         const parentFolder = `/${destination.parts.slice(0, -1).join('/')}`
 
         try {
-          await stat(context)(parentFolder, options)
-        } catch (err) {
+          await createStat(context)(parentFolder, options)
+        } catch (/** @type {any} */ err) {
           if (err.code !== 'ERR_NOT_FOUND') {
             throw err
           }
@@ -107,7 +108,7 @@ module.exports = (context) => {
             throw errCode(new Error('destination did not exist, pass -p to create intermediate directories'), 'ERR_INVALID_PARAMS')
           }
 
-          await mkdir(context)(parentFolder, options)
+          await createMkdir(context)(parentFolder, options)
           destination = await toMfsPath(context, destination.path, options)
         }
       }
@@ -116,6 +117,7 @@ module.exports = (context) => {
     const destinationPath = isDirectory(destination) ? destination.mfsPath : destination.mfsDirectory
     const trail = await toTrail(context, destinationPath)
 
+    // @ts-ignore ts seems to think `sources` will always have a length of 10
     if (sources.length === 1) {
       const source = sources.pop()
 
@@ -205,13 +207,13 @@ const copyToDirectory = async (context, sources, destination, destinationTrail, 
  */
 const addSourceToParent = async (context, source, childName, parent, options) => {
   const sourceBlock = await context.repo.blocks.get(source.cid)
-
   const {
     node,
-    cid
+    cid,
+    size
   } = await addLink(context, {
     parentCid: parent.cid,
-    size: sourceBlock.data.length,
+    size: sourceBlock.length,
     cid: source.cid,
     name: childName,
     hashAlg: options.hashAlg,
@@ -222,7 +224,7 @@ const addSourceToParent = async (context, source, childName, parent, options) =>
 
   parent.node = node
   parent.cid = cid
-  parent.size = node.size
+  parent.size = size
 
   return parent
 }

@@ -1,31 +1,35 @@
-'use strict'
+import {
+  getOrSetResource,
+  showResource,
+  replaceResource,
+  profilesApplyResource,
+  profilesListResource
+} from '../resources/config.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/config/{key?}',
-    ...resources.config.getOrSet
+    ...getOrSetResource
   },
   {
     method: 'POST',
     path: '/api/v0/config/show',
-    ...resources.config.show
+    ...showResource
   },
   {
     method: 'POST',
     path: '/api/v0/config/replace',
-    ...resources.config.replace
+    ...replaceResource
   },
   {
     method: 'POST',
     path: '/api/v0/config/profile/apply',
-    ...resources.config.profiles.apply
+    ...profilesApplyResource
   },
   {
     method: 'POST',
     path: '/api/v0/config/profile/list',
-    ...resources.config.profiles.list
+    ...profilesListResource
   }
 ]

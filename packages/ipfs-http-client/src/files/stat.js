@@ -1,27 +1,19 @@
-'use strict'
-
-const CID = require('cids')
-const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { objectToCamelWithMetadata } from '../lib/object-to-camel-with-metadata.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
-module.exports = configure(api => {
+export const createStat = configure(api => {
   /**
    * @type {FilesAPI["stat"]}
    */
   async function stat (path, options = {}) {
-    if (path && !CID.isCID(path) && typeof path !== 'string') {
-      options = path || {}
-      path = '/'
-    }
-
     const res = await api.post('files/stat', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,
@@ -32,7 +24,7 @@ module.exports = configure(api => {
     const data = await res.json()
 
     data.WithLocality = data.WithLocality || false
-    return toCoreInterface(toCamelWithMetadata(data))
+    return toCoreInterface(objectToCamelWithMetadata(data))
   }
   return stat
 })
@@ -41,7 +33,7 @@ module.exports = configure(api => {
  * @param {*} entry
  */
 function toCoreInterface (entry) {
-  entry.cid = new CID(entry.hash)
+  entry.cid = CID.parse(entry.hash)
   delete entry.hash
   return entry
 }

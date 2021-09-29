@@ -1,4 +1,3 @@
-'use strict'
 
 /**
  * @type {Record<string, [src: string, target: string]>}
@@ -16,7 +15,7 @@ const aliases = {
  *
  * @param {string[]} args
  */
-module.exports = function (args) {
+export default function (args) {
   for (const [alias, original] of Object.entries(aliases)) {
     if (arrayMatch(args, original)) {
       return [alias, ...args.slice(original.length)]

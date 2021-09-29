@@ -1,34 +1,34 @@
-'use strict'
+import mergeOpts from 'merge-options'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import debug from 'debug'
+import errCode from 'err-code'
+import { UnixFS } from 'ipfs-unixfs'
+import { toTrail } from './utils/to-trail.js'
+import { addLink } from './utils/add-link.js'
+import { updateTree } from './utils/update-tree.js'
+import { updateMfsRoot } from './utils/update-mfs-root.js'
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
+import { pipe } from 'it-pipe'
+import { importer } from 'ipfs-unixfs-importer'
+import { recursive } from 'ipfs-unixfs-exporter'
+import last from 'it-last'
+import { createCp } from './cp.js'
+import { createRm } from './rm.js'
+import { persist } from './utils/persist.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const toMfsPath = require('./utils/to-mfs-path')
-const log = require('debug')('ipfs:mfs:touch')
-const errCode = require('err-code')
-const { UnixFS } = require('ipfs-unixfs')
-const toTrail = require('./utils/to-trail')
-const addLink = require('./utils/add-link')
-const updateTree = require('./utils/update-tree')
-const updateMfsRoot = require('./utils/update-mfs-root')
-const { DAGNode } = require('ipld-dag-pb')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
-const { pipe } = require('it-pipe')
-const { importer } = require('ipfs-unixfs-importer')
-const { recursive } = require('ipfs-unixfs-exporter')
-const last = require('it-last')
-const cp = require('./cp')
-const rm = require('./rm')
-// @ts-ignore - TODO: refactor this so it does not require a deep require
-const persist = require('ipfs-unixfs-importer/src/utils/persist')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:mfs:touch')
 
 /**
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  * @typedef {import('./').MfsContext} MfsContext
+ *
  * @typedef {object} DefaultOptions
  * @property {boolean} flush
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {number} shardSplitThreshold
  * @property {boolean} recursive
@@ -212,7 +212,7 @@ function calculateMode (mode, metadata) {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createChmod (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["chmod"]}
    */
@@ -228,7 +228,7 @@ module.exports = (context) => {
       name
     } = await toMfsPath(context, path, opts)
 
-    if (cid.codec !== 'dag-pb') {
+    if (cid.code !== dagPB.code) {
       throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
     }
 
@@ -237,14 +237,17 @@ module.exports = (context) => {
       // but do not reimport files, only manipulate dag-pb nodes
       const root = await pipe(
         async function * () {
-          for await (const entry of recursive(cid, context.ipld)) {
+          for await (const entry of recursive(cid, context.repo.blocks)) {
             if (entry.type !== 'file' && entry.type !== 'directory') {
               throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
             }
 
             entry.unixfs.mode = calculateMode(mode, entry.unixfs)
 
-            const node = new DAGNode(entry.unixfs.marshal(), entry.node.Links)
+            const node = dagPB.prepare({
+              Data: entry.unixfs.marshal(),
+              Links: entry.node.Links
+            })
 
             yield {
               path: entry.path,
@@ -252,19 +255,24 @@ module.exports = (context) => {
             }
           }
         },
-        // @ts-ignore source is not compatible because we are not importing files
-        (source) => importer(source, context.block, {
+        // @ts-ignore we account for the incompatible source type with our custom dag builder below
+        (source) => importer(source, context.repo.blocks, {
           ...opts,
           pin: false,
           dagBuilder: async function * (source, block, opts) {
             for await (const entry of source) {
               yield async function () {
-                /** @type {DAGNode} */
+                /** @type {PBNode} */
                 // @ts-ignore - cannot derive type
                 const node = entry.content
 
-                const buf = node.serialize()
+                const buf = dagPB.encode(node)
                 const cid = await persist(buf, block, opts)
+
+                if (!node.Data) {
+                  throw errCode(new Error(`${cid} had no data`), 'ERR_INVALID_NODE')
+                }
+
                 const unixfs = UnixFS.unmarshal(node.Data)
 
                 return {
@@ -285,39 +293,51 @@ module.exports = (context) => {
       }
 
       // remove old path from mfs
-      await rm(context)(path, opts)
+      await createRm(context)(path, opts)
 
       // add newly created tree to mfs at path
-      await cp(context)(`/ipfs/${root.cid}`, path, opts)
+      await createCp(context)(`/ipfs/${root.cid}`, path, opts)
 
       return
     }
 
-    let node = await context.ipld.get(cid)
+    const block = await context.repo.blocks.get(cid)
+    const node = dagPB.decode(block)
+
+    if (!node.Data) {
+      throw errCode(new Error(`${cid} had no data`), 'ERR_INVALID_NODE')
+    }
+
     const metadata = UnixFS.unmarshal(node.Data)
     metadata.mode = calculateMode(mode, metadata)
-    node = new DAGNode(metadata.marshal(), node.Links)
-
-    /** @type {HashName} */
-    const hashAlg = opts.hashAlg || defaultOptions.hashAlg
-
-    const updatedCid = await context.ipld.put(node, mc.DAG_PB, {
-      cidVersion: cid.version,
-      hashAlg: mh.names[hashAlg],
-      onlyHash: !opts.flush
+    const updatedBlock = dagPB.encode({
+      Data: metadata.marshal(),
+      Links: node.Links
     })
+
+    const hashAlg = opts.hashAlg || defaultOptions.hashAlg
+    const hasher = await context.hashers.getHasher(hashAlg)
+    const hash = await hasher.digest(updatedBlock)
+    const updatedCid = CID.create(opts.cidVersion, dagPB.code, hash)
+
+    if (opts.flush) {
+      await context.repo.blocks.put(updatedCid, updatedBlock)
+    }
 
     const trail = await toTrail(context, mfsDirectory)
     const parent = trail[trail.length - 1]
-    const parentNode = await context.ipld.get(parent.cid)
+    const parentCid = CID.decode(parent.cid.bytes)
+    const parentBlock = await context.repo.blocks.get(parentCid)
+    const parentNode = dagPB.decode(parentBlock)
 
     const result = await addLink(context, {
       parent: parentNode,
       name: name,
       cid: updatedCid,
-      size: node.serialize().length,
+      size: updatedBlock.length,
       flush: opts.flush,
-      hashAlg: hashAlg,
+      // TODO vmx 2021-03-29: decide on the API, whether it should be a `hashAlg` or `hasher`
+      hashAlg,
       cidVersion: cid.version,
       shardSplitThreshold: Infinity
     })

@@ -1,9 +1,9 @@
-'use strict'
 
 /* eslint-env browser */
-const Client = require('./client')
-const { decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const CID = require('cids')
+
+import { Client } from './client.js'
+import { decodeCID } from 'ipfs-message-port-protocol/cid'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {import('ipfs-message-port-server').FilesService} FilesService
@@ -17,7 +17,7 @@ const CID = require('cids')
  * @class
  * @extends {Client<FilesService>}
  */
-class FilesClient extends Client {
+export class FilesClient extends Client {
   /**
    * @param {MessageTransport} transport
    */
@@ -42,15 +42,16 @@ FilesClient.prototype.stat = async function stat (pathOrCID, options = {}) {
   return decodeStat(stat)
 }
 
-module.exports = FilesClient
-
 /**
  * Turns content address (path or CID) into path.
  *
  * @param {string|CID} pathOrCID
  */
-const encodeLocation = pathOrCID =>
-  CID.isCID(pathOrCID) ? `/ipfs/${pathOrCID.toString()}` : pathOrCID
+const encodeLocation = pathOrCID => {
+  const cid = CID.asCID(pathOrCID)
+
+  return cid ? `/ipfs/${pathOrCID.toString()}` : pathOrCID.toString()
+}
 
 /**
  * @param {EncodedStat} data

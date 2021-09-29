@@ -1,30 +1,22 @@
-'use strict'
-
-const createAddLink = require('./add-link')
-const createAppendData = require('./append-data')
-const createRmLink = require('./rm-link')
-const createSetData = require('./set-data')
+import { createAddLink } from './add-link.js'
+import { createAppendData } from './append-data.js'
+import { createRmLink } from './rm-link.js'
+import { createSetData } from './set-data.js'
 
 /**
- * @typedef {import('ipld')} IPLD
  * @typedef {import('../../../types').Preload} Preload
- * @typedef {import('..').GCLock} GCLock
- * @typedef {import('cids')} CID
- * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
-class ObjectPatchAPI {
+export class ObjectPatchAPI {
   /**
    * @param {Object} config
-   * @param {IPLD} config.ipld
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {Preload} config.preload
-   * @param {GCLock} config.gcLock
    */
-  constructor ({ ipld, preload, gcLock }) {
-    this.addLink = createAddLink({ ipld, preload, gcLock })
-    this.appendData = createAppendData({ ipld, preload, gcLock })
-    this.rmLink = createRmLink({ ipld, preload, gcLock })
-    this.setData = createSetData({ ipld, preload, gcLock })
+  constructor ({ repo, preload }) {
+    this.addLink = createAddLink({ repo, preload })
+    this.appendData = createAppendData({ repo, preload })
+    this.rmLink = createRmLink({ repo, preload })
+    this.setData = createSetData({ repo, preload })
   }
 }
-module.exports = ObjectPatchAPI

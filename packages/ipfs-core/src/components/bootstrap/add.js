@@ -1,13 +1,11 @@
-'use strict'
-
-const { isValidMultiaddr } = require('./utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { isValidMultiaddr } from './utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
- * @param {import('ipfs-repo')} config.repo
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ repo }) => {
+export function createAdd ({ repo }) {
   /**
    * @type {import('ipfs-core-types/src/bootstrap').API["add"]}
    */

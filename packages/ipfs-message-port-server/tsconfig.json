@@ -1,17 +1,18 @@
 {
   "extends": "aegir/src/config/tsconfig.aegir.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "types",
+    "module": "es2020"
   },
   "include": [
     "src"
   ],
   "references": [
     {
-      "path": "../ipfs-message-port-protocol"
+      "path": "../ipfs-core-types"
     },
     {
-      "path": "../ipfs-core-types"
+      "path": "../ipfs-message-port-protocol"
     }
   ]
 }

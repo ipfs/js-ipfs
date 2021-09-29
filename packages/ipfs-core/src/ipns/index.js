@@ -1,25 +1,24 @@
-'use strict'
+import { createFromPrivKey } from 'peer-id'
+import errcode from 'err-code'
+import debug from 'debug'
+import { IpnsPublisher } from './publisher.js'
+import { IpnsRepublisher } from './republisher.js'
+import { IpnsResolver } from './resolver.js'
+import { TLRU } from '../utils/tlru.js'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-const { createFromPrivKey } = require('peer-id')
-const errcode = require('err-code')
-const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns'), {
   error: debug('ipfs:ipns:error')
 })
 
-const IpnsPublisher = require('./publisher')
-const IpnsRepublisher = require('./republisher')
-const IpnsResolver = require('./resolver')
-const TLRU = require('../utils/tlru')
 const defaultRecordTtl = 60 * 1000
-const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
  * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
  * @typedef {import('peer-id')} PeerId
  */
 
-class IPNS {
+export class IPNS {
   /**
    * @param {import('ipfs-core-types/src/utils').BufferStore} routing
    * @param {import('interface-datastore').Datastore} datastore
@@ -66,7 +65,7 @@ class IPNS {
         name: id,
         value: value
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
 
       throw err
@@ -103,7 +102,7 @@ class IPNS {
       log(`IPNS record from ${name} was resolved correctly`)
 
       return result
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log.error(err)
 
       throw err
@@ -122,5 +121,3 @@ class IPNS {
     return this.publish(privKey, value, IpnsPublisher.defaultRecordLifetime)
   }
 }
-
-module.exports = IPNS

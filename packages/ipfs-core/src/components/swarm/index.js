@@ -1,23 +1,19 @@
-'use strict'
+import { createAddrs } from './addrs.js'
+import { createConnect } from './connect.js'
+import { createDisconnect } from './disconnect.js'
+import { createLocalAddrs } from './local-addrs.js'
+import { createPeers } from './peers.js'
 
-const createAddrsAPI = require('./addrs')
-const createConnectAPI = require('./connect')
-const createDisconnectAPI = require('./disconnect')
-const createLocalAddrsAPI = require('./local-addrs')
-const createPeersAPI = require('./peers')
-
-class SwarmAPI {
+export class SwarmAPI {
   /**
    * @param {Object} config
    * @param {import('../../types').NetworkService} config.network
    */
   constructor ({ network }) {
-    this.addrs = createAddrsAPI({ network })
-    this.connect = createConnectAPI({ network })
-    this.disconnect = createDisconnectAPI({ network })
-    this.localAddrs = createLocalAddrsAPI({ network })
-    this.peers = createPeersAPI({ network })
+    this.addrs = createAddrs({ network })
+    this.connect = createConnect({ network })
+    this.disconnect = createDisconnect({ network })
+    this.localAddrs = createLocalAddrs({ network })
+    this.peers = createPeers({ network })
   }
 }
-
-module.exports = SwarmAPI

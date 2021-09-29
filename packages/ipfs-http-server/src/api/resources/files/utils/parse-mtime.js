@@ -1,10 +1,9 @@
-'use strict'
 
 /**
  * @param {number | undefined} secs
  * @param {number | undefined} nsecs
  */
-module.exports = (secs, nsecs) => {
+export function parseMtime (secs, nsecs) {
   if (secs == null && nsecs == null) {
     return
   }

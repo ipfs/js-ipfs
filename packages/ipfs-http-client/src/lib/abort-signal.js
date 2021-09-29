@@ -1,6 +1,4 @@
-'use strict'
-
-const { anySignal } = require('any-signal')
+import { anySignal } from 'any-signal'
 
 /**
  * @param {any[]} signals
@@ -13,6 +11,6 @@ function filter (signals) {
 /**
  * @param  {...AbortSignal|undefined} signals
  */
-module.exports = (...signals) => {
+export function abortSignal (...signals) {
   return anySignal(filter(signals))
 }

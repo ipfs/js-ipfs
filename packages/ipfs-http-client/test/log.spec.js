@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const f = require('./utils/factory')()
-const first = require('it-first')
+import { expect } from 'aegir/utils/chai.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import first from 'it-first'
+import { factory } from './utils/factory.js'
+const f = factory()
 
 describe('.log', function () {
   this.timeout(100 * 1000)

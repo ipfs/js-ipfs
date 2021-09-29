@@ -1,44 +1,60 @@
 /* eslint-env browser */
-'use strict'
 
-// @ts-ignore no types
-const toUri = require('multiaddr-to-uri')
-const errCode = require('err-code')
-const HTTP = require('ipfs-utils/src/http')
-const waitFor = require('./wait-for')
+// @ts-expect-error no types
+import toUri from 'multiaddr-to-uri'
+import errCode from 'err-code'
+import HTTP from 'ipfs-utils/src/http.js'
+import { waitFor } from './wait-for.js'
 
-const defaultPort = 1138
-const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
+/**
+ * @typedef {import('multiformats/cid').CID} CID
+ */
 
-module.exports.defaultAddr = defaultAddr
+export const defaultPort = 1138
+export const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
 
-// Get the stored preload CIDs for the server at `addr`
-const getPreloadCids = async (addr) => {
+/**
+ * Get the stored preload CIDs for the server at `addr`
+ *
+ * @param {string} [addr]
+ * @returns {Promise<string[]>}
+ */
+export async function getPreloadCids (addr) {
   const res = await HTTP.get(`${toUri(addr || defaultAddr)}/cids`)
   return res.json()
 }
 
-module.exports.getPreloadCids = getPreloadCids
-
-// Clear the stored preload URLs for the server at `addr`
-
-module.exports.clearPreloadCids = addr => {
+/**
+ * Clear the stored preload URLs for the server at `addr`
+ *
+ * @param {string} [addr]
+ */
+export function clearPreloadCids (addr) {
   return HTTP.delete(`${toUri(addr || defaultAddr)}/cids`)
 }
 
-// Wait for the passed CIDs to appear in the CID list from the preload node
-module.exports.waitForCids = async (cids, opts) => {
-  opts = opts || {}
-  opts.timeout = opts.timeout || 1000
+/**
+ * Wait for the passed CIDs to appear in the CID list from the preload node
+ *
+ * @param {CID | CID[] | string | string[]} cids
+ * @param {object} [opts]
+ * @param {number} [opts.timeout]
+ * @param {string} [opts.addr]
+ */
+export async function waitForCids (cids, opts) {
+  const options = opts || {}
+  options.timeout = options.timeout || 1000
 
-  cids = Array.isArray(cids) ? cids : [cids]
-  cids = cids.map(cid => cid.toString()) // Allow passing CID instance
+  const cidArr = Array.isArray(cids) ? cids : [cids]
+  const cidStrs = cidArr.map(cid => cid.toString()) // Allow passing CID instance
 
   await waitFor(async () => {
-    const preloadCids = await getPreloadCids(opts.addr)
+    const preloadCids = await getPreloadCids(options.addr)
 
     // See if our cached preloadCids includes all the cids we're looking for.
-    const { missing, duplicates } = cids.reduce((results, cid) => {
+    /** @type {{ missing: string[], duplicates: string[] }} */
+    const results = { missing: [], duplicates: [] }
+    const { missing, duplicates } = cidStrs.reduce((results, cid) => {
       const count = preloadCids.filter(preloadedCid => preloadedCid === cid).length
       if (count === 0) {
         results.missing.push(cid)
@@ -46,16 +62,16 @@ module.exports.waitForCids = async (cids, opts) => {
         results.duplicates.push(cid)
       }
       return results
-    }, { missing: [], duplicates: [] })
+    }, results)
 
     if (duplicates.length) {
-      throw errCode(new Error(`Multiple occurances of ${duplicates} found`), 'ERR_DUPLICATE')
+      throw errCode(new Error(`Multiple occurrences of ${duplicates} found`), 'ERR_DUPLICATE')
     }
 
     return missing.length === 0
   }, {
     name: 'CIDs to be preloaded',
     interval: 5,
-    timeout: opts.timeout
+    timeout: options.timeout
   })
 }

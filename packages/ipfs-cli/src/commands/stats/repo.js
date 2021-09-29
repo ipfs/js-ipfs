@@ -1,9 +1,8 @@
-'use strict'
 
 // This is an alias for `repo stat`.
-const repoStats = require('../repo/stat.js')
+import repoStats from '../repo/stat.js'
 
-module.exports = {
+export default {
   ...repoStats,
 
   // The command needs to be renamed, else it would be `stats stat` instead of

@@ -3,6 +3,134 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.10.0...ipfs-daemon@0.10.1) (2021-09-28)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+# [0.10.0](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.8...ipfs-daemon@0.10.0) (2021-09-24)
+
+
+### Features
+
+* pull in new globSource ([#3889](https://github.com/ipfs/js-ipfs/issues/3889)) ([be4a542](https://github.com/ipfs/js-ipfs/commit/be4a5428ebc4b05a2edd9a91bf9df6416c1a8c2b))
+* switch to esm ([#3879](https://github.com/ipfs/js-ipfs/issues/3879)) ([9a40109](https://github.com/ipfs/js-ipfs/commit/9a40109632e5b4837eb77a2f57dbc77fbf1fe099))
+
+
+### BREAKING CHANGES
+
+* the globSource api has changed from `globSource(dir, opts)` to `globSource(dir, pattern, opts)`
+* There are no default exports and everything is now dual published as ESM/CJS
+
+
+
+
+
+## [0.9.8](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.7...ipfs-daemon@0.9.8) (2021-09-17)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+## [0.9.7](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.6...ipfs-daemon@0.9.7) (2021-09-17)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+## [0.9.6](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.5...ipfs-daemon@0.9.6) (2021-09-08)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+## [0.9.5](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.4...ipfs-daemon@0.9.5) (2021-09-02)
+
+
+### Bug Fixes
+
+* remove use of instanceof for CID class ([#3847](https://github.com/ipfs/js-ipfs/issues/3847)) ([ebbb12d](https://github.com/ipfs/js-ipfs/commit/ebbb12db523c53ce8e4ddae5266cd9acb3504431))
+
+
+
+
+
+## [0.9.4](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.3...ipfs-daemon@0.9.4) (2021-08-25)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+## [0.9.3](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.1...ipfs-daemon@0.9.3) (2021-08-17)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.9.0...ipfs-daemon@0.9.1) (2021-08-17)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+# [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.8.1...ipfs-daemon@0.9.0) (2021-08-11)
+
+
+### Features
+
+* make ipfs.get output tarballs ([#3785](https://github.com/ipfs/js-ipfs/issues/3785)) ([1ad6001](https://github.com/ipfs/js-ipfs/commit/1ad60018d39d5b46c484756631e30e1989fd8eba))
+
+
+### BREAKING CHANGES
+
+* the output type of `ipfs.get` has changed and the `recursive` option has been removed from `ipfs.ls` since it was not supported everywhere
+
+
+
+
+
+## [0.8.1](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.8.0...ipfs-daemon@0.8.1) (2021-07-30)
+
+**Note:** Version bump only for package ipfs-daemon
+
+
+
+
+
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.7.2...ipfs-daemon@0.8.0) (2021-07-27)
+
+
+### Features
+
+* upgrade to the new multiformats ([#3556](https://github.com/ipfs/js-ipfs/issues/3556)) ([d13d15f](https://github.com/ipfs/js-ipfs/commit/d13d15f022a87d04a35f0f7822142f9cb898479c))
+
+
+### BREAKING CHANGES
+
+* ipld-formats no longer supported, use multiformat BlockCodecs instead
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+
+
 ## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.7.1...ipfs-daemon@0.7.2) (2021-06-18)
 
 **Note:** Version bump only for package ipfs-daemon

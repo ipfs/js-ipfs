@@ -1,42 +1,47 @@
 /* eslint-env mocha */
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayConcat = require('uint8arrays/concat')
-const { fixtures } = require('./utils')
-const CID = require('cids')
-const all = require('it-all')
-const drain = require('it-drain')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const testTimeout = require('./utils/test-timeout')
-const { importer } = require('ipfs-unixfs-importer')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import { fixtures } from './utils/index.js'
+import { CID } from 'multiformats/cid'
+import all from 'it-all'
+import drain from 'it-drain'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import testTimeout from './utils/test-timeout.js'
+import { importer } from 'ipfs-unixfs-importer'
+import blockstore from './utils/blockstore-adapter.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testCat (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.cat', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     before(() => Promise.all([
-      all(importer([{ content: fixtures.smallFile.data }], ipfs.block)),
-      all(importer([{ content: fixtures.bigFile.data }], ipfs.block))
+      all(importer({ content: fixtures.smallFile.data }, blockstore(ipfs))),
+      all(importer({ content: fixtures.bigFile.data }, blockstore(ipfs)))
     ]))
 
     it('should respect timeout option when catting files', () => {
-      return testTimeout(() => drain(ipfs.cat(new CID('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
+      return testTimeout(() => drain(ipfs.cat(CID.parse('QmPDqvcuA4AkhBLBuh2y49yhUB98rCnxPxa3eVNC1kAbS1'), {
         timeout: 1
       })))
     })
@@ -47,14 +52,14 @@ module.exports = (common, options) => {
     })
 
     it('should cat with a Uint8Array multihash', async () => {
-      const cid = new CID(fixtures.smallFile.cid).multihash
+      const cid = fixtures.smallFile.cid
 
       const data = uint8ArrayConcat(await all(ipfs.cat(cid)))
       expect(uint8ArrayToString(data)).to.contain('Plz add me!')
     })
 
     it('should cat with a CID object', async () => {
-      const cid = new CID(fixtures.smallFile.cid)
+      const cid = fixtures.smallFile.cid
 
       const data = uint8ArrayConcat(await all(ipfs.cat(cid)))
       expect(uint8ArrayToString(data)).to.contain('Plz add me!')
@@ -63,12 +68,11 @@ module.exports = (common, options) => {
     it('should cat a file added as CIDv0 with a CIDv1', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.block))
+      const res = await all(importer([{ content: (async function * () { yield input }()) }], blockstore(ipfs)))
 
-      const cidv0 = res[0].cid
-      expect(cidv0.version).to.equal(0)
+      expect(res).to.have.nested.property('[0].cid.version', 0)
 
-      const cidv1 = cidv0.toV1()
+      const cidv1 = res[0].cid.toV1()
 
       const output = uint8ArrayConcat(await all(ipfs.cat(cidv1)))
       expect(output).to.eql(input)
@@ -77,12 +81,11 @@ module.exports = (common, options) => {
     it('should cat a file added as CIDv1 with a CIDv0', async () => {
       const input = uint8ArrayFromString(`TEST${Math.random()}`)
 
-      const res = await all(importer([{ content: input }], ipfs.block, { cidVersion: 1, rawLeaves: false }))
+      const res = await all(importer([{ content: (async function * () { yield input }()) }], blockstore(ipfs), { cidVersion: 1, rawLeaves: false }))
 
-      const cidv1 = res[0].cid
-      expect(cidv1.version).to.equal(1)
+      expect(res).to.have.nested.property('[0].cid.version', 1)
 
-      const cidv0 = cidv1.toV0()
+      const cidv0 = res[0].cid.toV0()
 
       const output = uint8ArrayConcat(await all(ipfs.cat(cidv0)))
       expect(output.slice()).to.eql(input)
@@ -104,10 +107,14 @@ module.exports = (common, options) => {
     it('should cat with IPFS path, nested value', async () => {
       const fileToAdd = { path: 'a/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([fileToAdd], ipfs.block))
+      const filesAdded = await all(importer(fileToAdd, blockstore(ipfs)))
 
       const file = await filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
+
+      if (!file) {
+        throw new Error('No file added')
+      }
 
       const data = uint8ArrayConcat(await all(ipfs.cat(`/ipfs/${file.cid}/testfile.txt`)))
 
@@ -117,10 +124,14 @@ module.exports = (common, options) => {
     it('should cat with IPFS path, deeply nested value', async () => {
       const fileToAdd = { path: 'a/b/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([fileToAdd], ipfs.block))
+      const filesAdded = await all(importer([fileToAdd], blockstore(ipfs)))
 
       const file = filesAdded.find((f) => f.path === 'a')
       expect(file).to.exist()
+
+      if (!file) {
+        throw new Error('No file added')
+      }
 
       const data = uint8ArrayConcat(await all(ipfs.cat(`/ipfs/${file.cid}/b/testfile.txt`)))
       expect(uint8ArrayToString(data)).to.contain('Plz add me!')
@@ -145,7 +156,7 @@ module.exports = (common, options) => {
     it('should error on dir path', async () => {
       const file = { path: 'dir/testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(importer([file], ipfs.block))
+      const filesAdded = await all(importer([file], blockstore(ipfs)))
       expect(filesAdded.length).to.equal(2)
 
       const files = filesAdded.filter((file) => file.path === 'dir')

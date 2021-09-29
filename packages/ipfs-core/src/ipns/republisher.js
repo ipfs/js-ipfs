@@ -1,11 +1,9 @@
-'use strict'
+import * as ipns from 'ipns'
+import crypto from 'libp2p-crypto'
+import PeerId from 'peer-id'
+import errcode from 'err-code'
+import debug from 'debug'
 
-const ipns = require('ipns')
-const crypto = require('libp2p-crypto')
-const PeerId = require('peer-id')
-const errcode = require('err-code')
-
-const debug = require('debug')
 const log = Object.assign(debug('ipfs:ipns:republisher'), {
   error: debug('ipfs:ipns:republisher:error')
 })
@@ -20,9 +18,9 @@ const hour = 60 * minute
 const defaultBroadcastInterval = 4 * hour
 const defaultRecordLifetime = 24 * hour
 
-class IpnsRepublisher {
+export class IpnsRepublisher {
   /**
-   * @param {import('./publisher')} publisher
+   * @param {import('./publisher').IpnsPublisher} publisher
    * @param {import('interface-datastore').Datastore} datastore
    * @param {PeerId} peerId
    * @param {import('libp2p/src/keychain')} keychain
@@ -69,7 +67,7 @@ class IpnsRepublisher {
             if (republishHandle._task) {
               republishHandle.runPeriodically(period)
             }
-          } catch (err) {
+          } catch (/** @type {any} */ err) {
             log.error(err)
           }
         }, period())
@@ -125,7 +123,7 @@ class IpnsRepublisher {
     // We can't currently *do* that because go uses this method for now.
     try {
       await this._republishEntry(privateKey)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       const errMsg = 'cannot republish entry for the node\'s private key'
 
       log.error(errMsg)
@@ -146,7 +144,7 @@ class IpnsRepublisher {
 
           await this._republishEntry(privKey)
         }
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         log.error(err)
       }
     }
@@ -164,7 +162,7 @@ class IpnsRepublisher {
       const peerId = await PeerId.createFromPrivKey(privateKey.bytes)
       const value = await this._getPreviousValue(peerId)
       await this._publisher.publishWithEOL(privateKey, value, defaultRecordLifetime)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_NO_ENTRY_FOUND') {
         return
       }
@@ -193,11 +191,11 @@ class IpnsRepublisher {
         const record = ipns.unmarshal(dsVal)
 
         return record.value
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         log.error(err)
         throw errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_IPNS_RECORD')
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       // error handling
       // no need to republish
       if (err && err.notFound) {
@@ -208,5 +206,3 @@ class IpnsRepublisher {
     }
   }
 }
-
-exports = module.exports = IpnsRepublisher

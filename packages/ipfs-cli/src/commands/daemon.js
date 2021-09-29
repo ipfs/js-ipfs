@@ -1,14 +1,15 @@
-'use strict'
+import os from 'os'
+import fs from 'fs'
+// @ts-expect-error no types
+import toUri from 'multiaddr-to-uri'
+import { ipfsPathHelp } from '../utils.js'
+import { isTest } from 'ipfs-utils/src/env.js'
+import debug from 'debug'
+import { Daemon } from 'ipfs-daemon'
 
-const os = require('os')
-const fs = require('fs')
-// @ts-ignore no types
-const toUri = require('multiaddr-to-uri')
-const { ipfsPathHelp } = require('../utils')
-const { isTest } = require('ipfs-utils/src/env')
-const debug = require('debug')('ipfs:cli:daemon')
+const log = debug('ipfs:cli:daemon')
 
-module.exports = {
+export default {
   command: 'daemon',
 
   describe: 'Start a long-running daemon process',
@@ -65,7 +66,6 @@ module.exports = {
   async handler (argv) {
     const { print, repoPath } = argv.ctx
     print('Initializing IPFS daemon...')
-    print(`js-ipfs version: ${require('../../package.json').version}`)
     print(`System version: ${os.arch()}/${os.platform()}`)
     print(`Node.js version: ${process.versions.node}`)
 
@@ -75,14 +75,12 @@ module.exports = {
       try {
         const raw = fs.readFileSync(argv.initConfig, { encoding: 'utf8' })
         config = JSON.parse(raw)
-      } catch (error) {
-        debug(error)
+      } catch (/** @type {any} */ error) {
+        log(error)
         throw new Error('Default config couldn\'t be found or content isn\'t valid JSON.')
       }
     }
 
-    // Required inline to reduce startup time
-    const Daemon = require('ipfs-daemon')
     const daemon = new Daemon({
       config,
       silent: argv.silent,
@@ -100,21 +98,34 @@ module.exports = {
 
     try {
       await daemon.start()
-      // @ts-ignore - _apiServers is possibly undefined
-      daemon._httpApi._apiServers.forEach(apiServer => {
-        print(`HTTP API listening on ${apiServer.info.ma}`)
-      })
-      // @ts-ignore - _grpcServer is possibly undefined
-      print(`gRPC listening on ${daemon._grpcServer.info.ma}`)
+
+      const version = await daemon._ipfs.version()
+
+      print(`js-ipfs version: ${version.version}`)
+
+      if (daemon._httpApi && daemon._httpApi._apiServers) {
+        daemon._httpApi._apiServers.forEach(apiServer => {
+          print(`HTTP API listening on ${apiServer.info.ma}`)
+        })
+      }
+
       // @ts-ignore - _httpGateway is possibly undefined
-      daemon._httpGateway._gatewayServers.forEach(gatewayServer => {
-        print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
-      })
-      // @ts-ignore - _apiServers is possibly undefined
-      daemon._httpApi._apiServers.forEach(apiServer => {
-        print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
-      })
-    } catch (err) {
+      if (daemon._grpcServer && daemon._grpcServer) {
+        print(`gRPC listening on ${daemon._grpcServer.info.ma}`)
+      }
+
+      if (daemon._httpGateway && daemon._httpGateway._gatewayServers) {
+        daemon._httpGateway._gatewayServers.forEach(gatewayServer => {
+          print(`Gateway (read only) listening on ${gatewayServer.info.ma}`)
+        })
+      }
+
+      if (daemon._httpApi && daemon._httpApi._apiServers) {
+        daemon._httpApi._apiServers.forEach(apiServer => {
+          print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
+        })
+      }
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_REPO_NOT_INITIALIZED' || err.message.match(/uninitialized/i)) {
         err.message = 'no initialized ipfs repo found in ' + repoPath + '\nplease run: jsipfs init'
       }

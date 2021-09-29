@@ -1,8 +1,7 @@
 /* eslint-env mocha */
-'use strict'
 
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
 
 describe('/shutdown', () => {
   let ipfs

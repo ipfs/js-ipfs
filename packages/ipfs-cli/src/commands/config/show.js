@@ -1,8 +1,6 @@
-'use strict'
+import parseDuration from 'parse-duration'
 
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'show',
 
   describe: 'Outputs the content of the config file',

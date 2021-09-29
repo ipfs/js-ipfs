@@ -1,7 +1,5 @@
-'use strict'
-
-const first = require('it-first')
-const bidiToDuplex = require('./bidi-to-duplex')
+import first from 'it-first'
+import { bidiToDuplex } from './bidi-to-duplex.js'
 
 /**
  * @typedef {import('http').Agent} HttpAgent
@@ -19,7 +17,7 @@ const bidiToDuplex = require('./bidi-to-duplex')
  * @param {import('../types').RPCOptions<any>} options
  * @returns {Promise<any>} - A promise that resolves to a response object
  */
-module.exports = async function clientStreamToPromise (grpc, service, source, options) {
+export async function clientStreamToPromise (grpc, service, source, options) {
   const {
     source: serverSource, sink
   } = bidiToDuplex(grpc, service, options)

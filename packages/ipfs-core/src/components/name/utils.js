@@ -1,19 +1,20 @@
-'use strict'
-
-const isIPFS = require('is-ipfs')
-const toCidAndPath = require('ipfs-core-utils/src/to-cid-and-path')
-const drain = require('it-drain')
+import isIPFS from 'is-ipfs'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
+import drain from 'it-drain'
+import { resolve } from '../../utils.js'
 
 /**
  * resolves the given path by parsing out protocol-specific entries
  * (e.g. /ipns/<node-key>) and then going through the /ipfs/ entries and returning the final node
  *
  * @param {Object} context
- * @param {import('../ipns')} context.ipns
- * @param {import('ipld')} context.ipld
+ * @param {import('../ipns').IPNSAPI} context.ipns
+ * @param {import('ipfs-repo').IPFSRepo} context.repo
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} context.codecs
  * @param {string} name
+ * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-exports.resolvePath = async ({ ipns, ipld }, name) => {
+export async function resolvePath ({ ipns, repo, codecs }, name, options) {
   // ipns path
   if (isIPFS.ipnsPath(name)) {
     return ipns.resolve(name)
@@ -25,5 +26,5 @@ exports.resolvePath = async ({ ipns, ipld }, name) => {
   } = toCidAndPath(name)
 
   // ipfs path
-  await drain(ipld.resolve(cid, path || ''))
+  await drain(resolve(cid, path || '', codecs, repo, options))
 }

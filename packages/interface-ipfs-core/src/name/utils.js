@@ -1,8 +1,6 @@
-'use strict'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
-const fromString = require('uint8arrays/from-string')
-
-exports.fixture = Object.freeze({
+export const fixture = Object.freeze({
   cid: 'Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP',
-  data: fromString('Plz add me!\n')
+  data: uint8ArrayFromString('Plz add me!\n')
 })

@@ -94,20 +94,20 @@ Libp2p `PeerId` instances are no longer returned from the API. If your applicati
 Peer ID strings are also CIDs so converting them is simple:
 
 ```js
-const peerId = PeerId.createFromCID(peerIdStr)
+const peerId = PeerId.createFromB58String(peerIdStr)
 ```
 
 You can get hold of the `PeerId` class using npm or in a script tag:
 
 ```js
-const PeerId = require('peer-id')
-const peerId = PeerId.createFromCID(peerIdStr)
+import PeerId from 'peer-id'
+const peerId = PeerId.createFromB58String(peerIdStr)
 ```
 
 ```html
 <script src="https://unpkg.com/peer-id/dist/index.min.js"></script>
 <script>
-  const peerId = window.PeerId.createFromCID(peerIdStr)
+  const peerId = window.PeerId.createFromB58String(peerIdStr)
 </script>
 ```
 
@@ -120,7 +120,7 @@ Libp2p `PeerInfo` instances are no longer returned from the API. Instead, plain 
 Instantiate a new `PeerInfo` and add addresses to it:
 
 ```js
-const peerInfo = new PeerInfo(PeerId.createFromCID(info.id))
+const peerInfo = new PeerInfo(PeerId.createFromB58String(info.id))
 info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 ```
 
@@ -128,8 +128,8 @@ You can get hold of the `PeerInfo` class using npm or in a script tag:
 
 ```js
 const PeerInfo = require('peer-info')
-const PeerId = require('peer-id')
-const peerInfo = new PeerInfo(PeerId.createFromCID(info.id))
+import PeerId from 'peer-id'
+const peerInfo = new PeerInfo(PeerId.createFromB58String(info.id))
 info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 ```
 
@@ -137,7 +137,7 @@ info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 <script src="https://unpkg.com/peer-info/dist/index.min.js"></script>
 <script src="https://unpkg.com/peer-id/dist/index.min.js"></script>
 <script>
-  const peerInfo = new window.PeerInfo(window.PeerId.createFromCID(info.id))
+  const peerInfo = new window.PeerInfo(window.PeerId.createFromB58String(info.id))
   info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 </script>
 ```
@@ -217,7 +217,7 @@ readable.on('end', () => {
 Becomes:
 
 ```js
-const toStream = require('it-to-stream')
+import toStream from 'it-to-stream'
 const readable = toStream.readable(ipfs.cat('QmHash'))
 const decoder = new TextDecoder()
 
@@ -285,7 +285,7 @@ console.log(decoder.decode(data))
 ...which, by the way, could more succinctly be written as:
 
 ```js
-const toBuffer = require('it-to-buffer')
+import toBuffer from 'it-to-buffer'
 const decoder = new TextDecoder()
 const data = await toBuffer(ipfs.cat('QmHash'))
 console.log(decoder.decode(data))
@@ -321,7 +321,7 @@ pipeline(
 Becomes:
 
 ```js
-const toStream = require('it-to-stream')
+import toStream from 'it-to-stream'
 const { pipeline, Writable } = require('stream')
 const decoder = new TextDecoder()
 
@@ -353,7 +353,7 @@ Use `it-pipe` and a [for/await](https://developer.mozilla.org/en-US/docs/Web/Jav
 e.g.
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const { pipeline } = require('stream')
 
 const items = []
@@ -378,7 +378,7 @@ pipeline(
 Becomes:
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const pipe = require('it-pipe')
 
 const items = []
@@ -400,9 +400,9 @@ console.log(items)
 ...which, by the way, could more succinctly be written as:
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const pipe = require('it-pipe')
-const all = require('it-all')
+import all from 'it-all'
 
 const items = await pipe(
   fs.createReadStream('/path/to/file'),
@@ -420,7 +420,7 @@ Convert the async iterable to a readable stream.
 e.g.
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const { pipeline } = require('stream')
 
 const items = []
@@ -445,8 +445,8 @@ pipeline(
 Becomes:
 
 ```js
-const toStream = require('it-to-stream')
-const fs = require('fs')
+import toStream from 'it-to-stream'
+import fs from 'fs'
 const { pipeline } = require('stream')
 
 const items = []
@@ -568,7 +568,7 @@ Becomes:
 
 ```js
 const pipe = require('it-pipe')
-const concat = require('it-concat')
+import concat from 'it-concat'
 const decoder = new TextDecoder()
 
 const data = await pipe(
@@ -590,7 +590,7 @@ Use `it-pipe` and `it-all` to collect all items from an async iterable.
 e.g.
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const toPull = require('stream-to-pull-stream')
 
 pull(
@@ -605,7 +605,7 @@ pull(
 Becomes:
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 
 const file = await ipfs.add(fs.createReadStream('/path/to/file'))
 
@@ -619,7 +619,7 @@ Convert the async iterable to a pull stream.
 e.g.
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const toPull = require('stream-to-pull-stream')
 
 pull(
@@ -634,7 +634,7 @@ pull(
 Becomes:
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const streamToPull = require('stream-to-pull-stream')
 const itToPull = require('async-iterator-to-pull-stream')
 
@@ -685,7 +685,7 @@ for await (const file of addSource) {
 Alternatively you can buffer up the results using the `it-all` utility:
 
 ```js
-const all = require('it-all')
+import all from 'it-all'
 
 const results = await all(ipfs.addAll([
   { path: 'root/1.txt', content: 'one' },
@@ -744,7 +744,7 @@ Reading files.
 e.g.
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 
 const data = await ipfs.cat('/ipfs/QmHash')
 
@@ -759,8 +759,8 @@ Becomes:
 
 ```js
 const pipe = require('it-pipe')
-const toIterable = require('stream-to-it')
-const fs = require('fs')
+import toIterable from 'stream-to-it'
+import fs from 'fs'
 
 // Note that as chunks arrive they are written to the file and memory can be freed and re-used
 await pipe(
@@ -774,8 +774,8 @@ console.log('done')
 Alternatively you can buffer up the chunks using the `it-concat` utility (not recommended!):
 
 ```js
-const fs = require('fs')
-const concat = require('it-concat')
+import fs from 'fs'
+import concat from 'it-concat'
 
 const data = await concat(ipfs.cat('/ipfs/QmHash'))
 
@@ -812,7 +812,7 @@ for await (const file of filesSource) {
 Alternatively you can buffer up the directory listing using the `it-all` utility:
 
 ```js
-const all = require('it-all')
+import all from 'it-all'
 
 const results = await all(ipfs.ls('/ipfs/QmHash'))
 
@@ -905,7 +905,7 @@ files.forEach(file => {
 Becomes:
 
 ```js
-const fs = require('fs')
+import fs from 'fs'
 const ipfs = IpfsHttpClient()
 
 const file = await ipfs.add(fs.createReadStream('/path/to/file.txt'))

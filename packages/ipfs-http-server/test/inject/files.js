@@ -1,27 +1,25 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { randomBytes } = require('iso-random-stream')
-const { expect } = require('aegir/utils/chai')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
-const multibase = require('multibase')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const CID = require('cids')
-const first = require('it-first')
-const toBuffer = require('it-to-buffer')
-const { AbortSignal } = require('native-abort-controller')
-
-function matchIterable () {
-  return sinon.match((thing) => Boolean(thing[Symbol.asyncIterator]) || Boolean(thing[Symbol.iterator]))
-}
+import { randomBytes } from 'iso-random-stream'
+import { expect } from 'aegir/utils/chai.js'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import first from 'it-first'
+import toBuffer from 'it-to-buffer'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+import { matchIterable } from '../utils/match-iterable.js'
+import drain from 'it-drain'
 
 describe('/files', () => {
-  const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
-  const cid2 = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA')
+  const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
+  const cid2 = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA')
   let ipfs
 
   beforeEach(() => {
@@ -33,6 +31,9 @@ describe('/files', () => {
       refs: sinon.stub(),
       files: {
         stat: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
 
@@ -40,6 +41,7 @@ describe('/files', () => {
   })
 
   async function assertAddArgs (url, fn) {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
     const content = Buffer.from('TEST\n')
 
     ipfs.addAll.callsFake(async function * (source, opts) {
@@ -100,6 +102,7 @@ describe('/files', () => {
     })
 
     it('should add buffer bigger than Hapi default max bytes (1024 * 1024)', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const payload = Buffer.from([
         '',
         '------------287032381131322',
@@ -110,16 +113,20 @@ describe('/files', () => {
         '------------287032381131322--'
       ].join('\r\n'))
 
-      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
-        path: cid.toString(),
-        cid,
-        size: 1024 * 1024 * 2,
-        mode: 0o420,
-        mtime: {
-          secs: 100,
-          nsecs: 0
-        }
-      }])
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions)
+        .callsFake(async function * (source) {
+          await drain(source)
+          yield {
+            path: cid.toString(),
+            cid,
+            size: 1024 * 1024 * 2,
+            mode: 0o420,
+            mtime: {
+              secs: 100,
+              nsecs: 0
+            }
+          }
+        })
 
       const res = await http({
         method: 'POST',
@@ -134,18 +141,23 @@ describe('/files', () => {
     })
 
     it('should add data and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       const content = Buffer.from('TEST' + Date.now())
 
-      ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
-        path: cid.toString(),
-        cid,
-        size: content.byteLength,
-        mode: 0o420,
-        mtime: {
-          secs: 100,
-          nsecs: 0
-        }
-      }])
+      ipfs.addAll.withArgs(matchIterable(), defaultOptions)
+        .callsFake(async function * (source) {
+          await drain(source)
+          yield {
+            path: cid.toString(),
+            cid: cid.toV1(),
+            size: content.byteLength,
+            mode: 0o420,
+            mtime: {
+              secs: 100,
+              nsecs: 0
+            }
+          }
+        })
 
       const form = new FormData()
       form.append('data', content)
@@ -160,10 +172,11 @@ describe('/files', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(JSON.parse(res.result).Hash)).to.deep.equal('base64')
+      expect(JSON.parse(res.result).Hash).to.equal(cid.toV1().toString(base64))
     })
 
     it('should add data without pinning and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       const content = Buffer.from('TEST' + Date.now())
 
       ipfs.addAll.callsFake(async function * (source, opts) {
@@ -174,7 +187,7 @@ describe('/files', () => {
 
         yield {
           path: cid.toString(),
-          cid,
+          cid: cid.toV1(),
           size: content.byteLength,
           mode: 0o420,
           mtime: {
@@ -197,7 +210,7 @@ describe('/files', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(JSON.parse(res.result).Hash)).to.deep.equal('base64')
+      expect(JSON.parse(res.result).Hash).to.equal(cid.toV1().toString(base64))
     })
 
     it('should specify the cid version', () => assertAddArgs('/api/v0/add?cid-version=1', (opts) => opts.cidVersion === 1))
@@ -316,7 +329,10 @@ describe('/files', () => {
   describe('/get', () => {
     const defaultOptions = {
       signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      timeout: undefined,
+      archive: undefined,
+      compress: undefined,
+      compressionLevel: undefined
     }
 
     it('only accepts POST', () => {
@@ -327,9 +343,7 @@ describe('/files', () => {
       ipfs.get.withArgs(`${cid}`, {
         ...defaultOptions,
         timeout: 1000
-      }).returns([{
-        path: 'path'
-      }])
+      }).returns(async function * () { yield { path: 'path' } }())
 
       const res = await http({
         method: 'POST',
@@ -342,7 +356,6 @@ describe('/files', () => {
 
   describe('/ls', () => {
     const defaultOptions = {
-      recursive: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -352,6 +365,7 @@ describe('/files', () => {
     })
 
     it('should list directory contents', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
         type: 'directory'
       })
@@ -386,6 +400,7 @@ describe('/files', () => {
     })
 
     it('should list a file', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.files.stat.withArgs(`/ipfs/${cid}/derp`).returns({
         cid,
         size: 10,
@@ -415,6 +430,7 @@ describe('/files', () => {
     })
 
     it('should list directory contents without unixfs v1.5 fields', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
         type: 'directory'
       })
@@ -447,45 +463,9 @@ describe('/files', () => {
       })
     })
 
-    it('should list directory contents recursively', async () => {
-      ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
-        type: 'directory'
-      })
-      ipfs.ls.withArgs(`${cid}`, {
-        ...defaultOptions,
-        recursive: true
-      }).returns([{
-        name: 'link',
-        cid,
-        size: 10,
-        type: 'file',
-        depth: 1,
-        mode: 0o420
-      }])
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/ls?arg=${cid}&recursive=true`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: `${cid}`,
-        Links: [{
-          Depth: 1,
-          Hash: cid.toString(),
-          Mode: '0420',
-          Mtime: undefined,
-          MtimeNsecs: undefined,
-          Name: 'link',
-          Size: 10,
-          Type: 2
-        }]
-      })
-    })
-
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('should return base64 encoded CIDs', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.ls.withArgs(`${cid}`, defaultOptions).returns([])
 
       const res = await http({
@@ -495,12 +475,13 @@ describe('/files', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Objects[0]', {
-        Hash: cid.toV1().toString('base64'),
+        Hash: cid.toV1().toString(base64),
         Links: []
       })
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
         type: 'directory'
       })
@@ -525,6 +506,7 @@ describe('/files', () => {
     })
 
     it('accepts a timeout when streaming', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.files.stat.withArgs(`/ipfs/${cid}`).returns({
         type: 'directory'
       })

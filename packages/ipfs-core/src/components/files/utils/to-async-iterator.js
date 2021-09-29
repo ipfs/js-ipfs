@@ -1,16 +1,16 @@
-'use strict'
-
-const errCode = require('err-code')
-const log = require('debug')('ipfs:mfs:utils:to-async-iterator')
-const {
+import errCode from 'err-code'
+import debug from 'debug'
+import {
   MFS_MAX_CHUNK_SIZE
-} = require('../../../utils')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+} from '../../../utils.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+
+const log = debug('ipfs:mfs:utils:to-async-iterator')
 
 /**
  * @param {*} content
  */
-const toAsyncIterator = (content) => {
+export function toAsyncIterator (content) {
   if (!content) {
     throw errCode(new Error('paths must start with a leading slash'), 'ERR_INVALID_PATH')
   }
@@ -94,5 +94,3 @@ const toAsyncIterator = (content) => {
 
   throw errCode(new Error(`Don't know how to convert ${content} into an async iterator`), 'ERR_INVALID_PARAMS')
 }
-
-module.exports = toAsyncIterator

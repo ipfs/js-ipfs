@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './files/index.js'
 
-module.exports = {
+export default {
   command: 'files <command>',
 
   description: 'Operations over mfs files (ls, mkdir, rm, etc)',
@@ -9,7 +9,8 @@ module.exports = {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs.commandDir('files')
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   },
 
   /**

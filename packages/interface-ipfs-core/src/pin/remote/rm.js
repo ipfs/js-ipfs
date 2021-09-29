@@ -1,35 +1,39 @@
 /* eslint-env mocha */
-'use strict'
 
-const { clearRemotePins, addRemotePins, clearServices } = require('../utils')
-const { getDescribe, getIt, expect } = require('../../utils/mocha')
-const CID = require('cids')
-const all = require('it-all')
+import { clearRemotePins, addRemotePins, clearServices } from '../utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../../utils/mocha.js'
+import { CID } from 'multiformats/cid'
+import all from 'it-all'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testRm (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   const ENDPOINT = new URL(process.env.PINNING_SERVICE_ENDPOINT || '')
-  const KEY = process.env.PINNING_SERVIEC_KEY
+  const KEY = `${process.env.PINNING_SERVICE_KEY}`
   const SERVICE = 'pinbot'
 
-  const cid1 = new CID('QmbKtKBrmeRHjNCwR4zAfCJdMVu6dgmwk9M9AE9pUM9RgG')
-  const cid2 = new CID('QmdFyxZXsFiP4csgfM5uPu99AvFiKH62CSPDw5TP92nr7w')
-  const cid3 = new CID('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
-  const cid4 = new CID('QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu')
+  const cid1 = CID.parse('QmbKtKBrmeRHjNCwR4zAfCJdMVu6dgmwk9M9AE9pUM9RgG')
+  const cid2 = CID.parse('QmdFyxZXsFiP4csgfM5uPu99AvFiKH62CSPDw5TP92nr7w')
+  const cid3 = CID.parse('Qma4hjFTnCasJ8PVp3mZbZK5g2vGDT4LByLJ7m8ciyRFZP')
+  const cid4 = CID.parse('QmY9cxiHqTFoWamkQVkpmmqzBrY3hCBEL2XNu3NtX74Fuu')
 
-  describe('.pin.remote.rm()', function () {
+  describe('.pin.remote.rm', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
       await ipfs.pin.remote.service.add(SERVICE, {
         endpoint: ENDPOINT,
         key: KEY
@@ -37,7 +41,7 @@ module.exports = (common, options) => {
     })
     after(async () => {
       await clearServices(ipfs)
-      await common.clean()
+      await factory.clean()
     })
 
     beforeEach(async () => {
@@ -171,4 +175,8 @@ module.exports = (common, options) => {
   })
 }
 
+/**
+ * @param {{ cid: CID }} a
+ * @param {{ cid: CID }} b
+ */
 const byCID = (a, b) => a.cid.toString() > b.cid.toString() ? 1 : -1

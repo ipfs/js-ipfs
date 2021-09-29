@@ -1,26 +1,30 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fixtures, clearPins } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const all = require('it-all')
-const drain = require('it-drain')
+import { fixtures, clearPins } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import all from 'it-all'
+import drain from 'it-drain'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testRmAll (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pin.rmAll', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     beforeEach(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
 
       const dir = fixtures.directory.files.map((file) => ({ path: file.path, content: file.data }))
       await all(ipfs.addAll(dir, { pin: false, cidVersion: 0 }))
@@ -29,7 +33,7 @@ module.exports = (common, options) => {
       await ipfs.add(fixtures.files[1].data, { pin: false })
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     beforeEach(() => {
       return clearPins(ipfs)

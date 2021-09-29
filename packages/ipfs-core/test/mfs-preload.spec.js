@@ -1,20 +1,22 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const delay = require('delay')
-const multihashing = require('multihashing-async')
-const { nanoid } = require('nanoid')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const CID = require('cids')
-const waitFor = require('./utils/wait-for')
-const mfsPreload = require('../src/mfs-preload')
+import { expect } from 'aegir/utils/chai.js'
+import delay from 'delay'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { nanoid } from 'nanoid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { CID } from 'multiformats/cid'
+import { waitFor } from './utils/wait-for.js'
+import { createMfsPreloader } from '../src/mfs-preload.js'
 
 const fakeCid = async () => {
-  const mh = await multihashing(uint8ArrayFromString(nanoid()), 'sha2-256')
-  return new CID(mh)
+  const mh = await sha256.digest(uint8ArrayFromString(nanoid()))
+  return CID.createV0(mh)
 }
 
+/**
+ * @param {CID[]} cids
+ */
 const createMockFilesStat = (cids = []) => {
   let n = 0
   return () => {
@@ -23,15 +25,22 @@ const createMockFilesStat = (cids = []) => {
 }
 
 const createMockPreload = () => {
+  /** @type {import('../src/types').Preload & { cids: CID[] }} */
   const preload = cid => preload.cids.push(cid)
+  preload.start = () => {}
+  preload.stop = () => {}
   preload.cids = []
+
   return preload
 }
 
 describe('MFS preload', () => {
   // CIDs returned from our mock files.stat function
+  /** @type {{ initial: CID, same: CID, updated: CID }} */
   let testCids
+  /** @type {ReturnType<createMockPreload>} */
   let mockPreload
+  /** @type {import('ipfs-core-types/src/files').API} */
   let mockFiles
 
   beforeEach(async () => {
@@ -43,6 +52,7 @@ describe('MFS preload', () => {
       updated: await fakeCid()
     }
 
+    // @ts-ignore not whole file api
     mockFiles = { stat: createMockFilesStat([testCids.initial, testCids.same, testCids.same, testCids.updated]) }
   })
 
@@ -51,7 +61,7 @@ describe('MFS preload', () => {
 
     // The CIDs we expect to have been preloaded
     const expectedPreloadCids = [testCids.same, testCids.updated]
-    const preloader = mfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: true, interval: 10 } })
+    const preloader = createMfsPreloader({ preload: mockPreload, files: mockFiles, options: { enabled: true, interval: 10 } })
 
     await preloader.start()
 
@@ -71,7 +81,7 @@ describe('MFS preload', () => {
   })
 
   it('should disable preloading MFS', async () => {
-    const preloader = mfsPreload({ preload: mockPreload, files: mockFiles, options: { enabled: false, interval: 10 } })
+    const preloader = createMfsPreloader({ preload: mockPreload, files: mockFiles, options: { enabled: false, interval: 10 } })
     await preloader.start()
     await delay(500)
     expect(mockPreload.cids).to.be.empty()

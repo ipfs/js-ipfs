@@ -1,33 +1,38 @@
 /* eslint-env mocha */
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { nanoid } = require('nanoid')
-const all = require('it-all')
-const last = require('it-last')
-const drain = require('it-drain')
-const CID = require('cids')
-const testTimeout = require('../utils/test-timeout')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { nanoid } from 'nanoid'
+import all from 'it-all'
+import last from 'it-last'
+import drain from 'it-drain'
+import { CID } from 'multiformats/cid'
+import * as raw from 'multiformats/codecs/raw'
+import testTimeout from '../utils/test-timeout.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testRm (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.block.rm', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when removing a block', () => {
-      return testTimeout(() => drain(ipfs.block.rm(new CID('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
+      return testTimeout(() => drain(ipfs.block.rm(CID.parse('QmVwdDCY4SPGVFnNCiZnX5CtzwWDn6kAM98JXzKxE3kCmn'), {
         timeout: 1
       })))
     })
@@ -41,7 +46,7 @@ module.exports = (common, options) => {
       // block should be present in the local store
       const localRefs = await all(ipfs.refs.local())
       expect(localRefs).to.have.property('length').that.is.greaterThan(0)
-      expect(localRefs.find(ref => ref.ref === new CID(1, 'raw', cid.multihash).toString())).to.be.ok()
+      expect(localRefs.find(ref => ref.ref === CID.createV1(raw.code, cid.multihash).toString())).to.be.ok()
 
       const result = await all(ipfs.block.rm(cid))
       expect(result).to.be.an('array').and.to.have.lengthOf(1)
@@ -50,52 +55,28 @@ module.exports = (common, options) => {
 
       // did we actually remove the block?
       const localRefsAfterRemove = await all(ipfs.refs.local())
-      expect(localRefsAfterRemove.find(ref => ref.ref === new CID(1, 'raw', cid.multihash).toString())).to.not.be.ok()
-    })
-
-    it('should remove by CID in string', async () => {
-      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
-        hashAlg: 'sha2-256'
-      })
-      const result = await all(ipfs.block.rm(cid.toString()))
-
-      expect(result).to.be.an('array').and.to.have.lengthOf(1)
-      expect(result[0].cid.toString()).to.equal(cid.toString())
-      expect(result[0]).to.not.have.property('error')
-    })
-
-    it('should remove by CID in buffer', async () => {
-      const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
-        hashAlg: 'sha2-256'
-      })
-      const result = await all(ipfs.block.rm(cid.bytes))
-
-      expect(result).to.be.an('array').and.to.have.lengthOf(1)
-      expect(result[0].cid.toString()).to.equal(cid.toString())
-      expect(result[0]).to.not.have.property('error')
+      expect(localRefsAfterRemove.find(ref => ref.ref === CID.createV1(raw.code, cid.multihash).toString())).to.not.be.ok()
     })
 
     it('should remove multiple CIDs', async () => {
-      const cids = [
-        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
+      const cids = await Promise.all([
+        ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
+        ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         }),
-        await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
+        ipfs.dag.put(uint8ArrayFromString(nanoid()), {
           format: 'raw',
           hashAlg: 'sha2-256'
         })
-      ]
+      ])
 
       const result = await all(ipfs.block.rm(cids))
 
-      expect(result).to.be.an('array').and.to.have.lengthOf(3)
+      expect(result).to.have.lengthOf(3)
 
       result.forEach((res, index) => {
         expect(res.cid.toString()).to.equal(cids[index].toString())
@@ -116,8 +97,7 @@ module.exports = (common, options) => {
       const result = await all(ipfs.block.rm(cid))
 
       expect(result).to.be.an('array').and.to.have.lengthOf(1)
-      expect(result[0]).to.have.property('error')
-      expect(result[0].error.message).to.include('block not found')
+      expect(result).to.have.nested.property('[0].error.message').that.includes('block not found')
     })
 
     it('should not error when force removing non-existent blocks', async () => {
@@ -161,6 +141,7 @@ module.exports = (common, options) => {
     })
 
     it('should throw error for invalid CID input', () => {
+      // @ts-expect-error invalid input
       return expect(all(ipfs.block.rm('INVALID CID')))
         .to.eventually.be.rejected()
     })

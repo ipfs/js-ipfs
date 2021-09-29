@@ -1,14 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const nock = require('nock')
-const ipfsClient = require('../../src').create
+import { expect } from 'aegir/utils/chai.js'
+import nock from 'nock'
+import { create as httpClient } from '../../src/index.js'
 
 describe('.swarm.peers', function () {
   this.timeout(50 * 1000) // slow CI
 
-  const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
+  const ipfs = httpClient('/ip4/127.0.0.1/tcp/5001')
   const apiUrl = 'http://127.0.0.1:5001'
 
   it('handles a peer response', async () => {

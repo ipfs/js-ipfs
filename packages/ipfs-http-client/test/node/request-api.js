@@ -1,15 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const ipfsClient = require('../../src').create
+import { expect } from 'aegir/utils/chai.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { create as httpClient } from '../../src/index.js'
+import http from 'http'
 
 describe('\'deal with HTTP weirdness\' tests', () => {
   it('does not crash if no content-type header is provided', async function () {
     // go-ipfs always (currently) adds a content-type header, even if no content is present,
     // the standard behaviour for an http-api is to omit this header if no content is present
-    const server = require('http').createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       // Consume the entire request, before responding.
       req.on('data', () => {})
       req.on('end', () => {
@@ -19,7 +19,7 @@ describe('\'deal with HTTP weirdness\' tests', () => {
     })
 
     await new Promise(resolve => server.listen(6001, resolve))
-    await ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json')
+    await httpClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json')
 
     server.close()
   })
@@ -28,7 +28,7 @@ describe('\'deal with HTTP weirdness\' tests', () => {
 describe('trailer headers', () => {
   // TODO: needs fixing https://github.com/ipfs/js-ipfs-http-client/pull/624#issuecomment-344181950
   it.skip('should deal with trailer x-stream-error correctly', (done) => {
-    const server = require('http').createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       res.setHeader('x-chunked-output', '1')
       res.setHeader('content-type', 'application/json')
       res.setHeader('Trailer', 'X-Stream-Error')
@@ -38,7 +38,7 @@ describe('trailer headers', () => {
     })
 
     server.listen(6001, () => {
-      const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/6001')
+      const ipfs = httpClient('/ip4/127.0.0.1/tcp/6001')
       /* eslint-disable */
       ipfs.add(uint8ArrayFromString('Hello there!'), (err, res) => {
         // TODO: error's are not being correctly
@@ -54,7 +54,7 @@ describe('trailer headers', () => {
 
 describe('error handling', () => {
   it('should handle plain text error response', async function () {
-    const server = require('http').createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       // Consume the entire request, before responding.
       req.on('data', () => {})
       req.on('end', () => {
@@ -67,7 +67,7 @@ describe('error handling', () => {
 
     await new Promise(resolve => server.listen(6001, resolve))
 
-    await expect(ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
+    await expect(httpClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
       .to.eventually.be.rejectedWith('ipfs method not allowed')
       .and.to.have.nested.property('response.status').that.equals(403)
 
@@ -75,7 +75,7 @@ describe('error handling', () => {
   })
 
   it('should handle JSON error response', async function () {
-    const server = require('http').createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       // Consume the entire request, before responding.
       req.on('data', () => {})
       req.on('end', () => {
@@ -88,7 +88,7 @@ describe('error handling', () => {
 
     await new Promise(resolve => server.listen(6001, resolve))
 
-    await expect(ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
+    await expect(httpClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
       .to.eventually.be.rejectedWith('client error')
       .and.to.have.nested.property('response.status').that.equals(400)
 
@@ -96,7 +96,7 @@ describe('error handling', () => {
   })
 
   it('should handle JSON error response with invalid JSON', async function () {
-    const server = require('http').createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       // Consume the entire request, before responding.
       req.on('data', () => {})
       req.on('end', () => {
@@ -109,7 +109,7 @@ describe('error handling', () => {
 
     await new Promise(resolve => server.listen(6001, resolve))
 
-    await expect(ipfsClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
+    await expect(httpClient('/ip4/127.0.0.1/tcp/6001').config.replace('test/fixtures/r-config.json'))
       .to.eventually.be.rejected()
       .and.to.have.property('message').that.includes('Unexpected token M in JSON at position 2')
 

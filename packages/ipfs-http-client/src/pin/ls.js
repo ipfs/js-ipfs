@@ -1,8 +1,6 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -18,7 +16,7 @@ function toPin (type, cid, metadata) {
   /** @type {import('ipfs-core-types/src/pin').LsResult} */
   const pin = {
     type,
-    cid: new CID(cid)
+    cid: CID.parse(cid)
   }
 
   if (metadata) {
@@ -28,7 +26,7 @@ function toPin (type, cid, metadata) {
   return pin
 }
 
-module.exports = configure(api => {
+export const createLs = configure(api => {
   /**
    * @type {PinAPI["ls"]}
    */
@@ -41,7 +39,6 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('pin/ls', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         ...options,

@@ -1,7 +1,5 @@
-'use strict'
-
-const pushable = require('it-pushable')
-const { paramCase } = require('change-case')
+import pushable from 'it-pushable'
+import { paramCase } from 'change-case'
 
 const WebsocketSignal = {
   START_SEND: 0,
@@ -35,7 +33,7 @@ const objectToHeaders = (object) => {
   )
 }
 
-class WebsocketMessageChannel {
+export class WebSocketMessageChannel {
   /**
    * @param {import('ws')} ws
    */
@@ -157,5 +155,3 @@ class WebsocketMessageChannel {
     this._ws.close()
   }
 }
-
-module.exports = WebsocketMessageChannel

@@ -1,11 +1,9 @@
-'use strict'
-
-const { default: parseDuration } = require('parse-duration')
-const {
+import parseDuration from 'parse-duration'
+import {
   stripControlCharacters
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'publish <ipfsPath>',
 
   describe: 'Publish IPNS names.',
@@ -46,7 +44,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.ipfsPath
+   * @param {import('multiformats/cid').CID} argv.ipfsPath
    * @param {boolean} argv.resolve
    * @param {string} argv.lifetime
    * @param {string} argv.key

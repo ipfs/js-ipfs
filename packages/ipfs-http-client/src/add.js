@@ -1,8 +1,7 @@
-'use strict'
-
-const addAll = require('./add-all')
-const last = require('it-last')
-const configure = require('./lib/configure')
+import { createAddAll } from './add-all.js'
+import last from 'it-last'
+import { configure } from './lib/configure.js'
+import { normaliseInput } from 'ipfs-core-utils/files/normalise-input-single'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -12,15 +11,15 @@ const configure = require('./lib/configure')
 /**
  * @param {import('./types').Options} options
  */
-module.exports = (options) => {
-  const all = addAll(options)
+export function createAdd (options) {
+  const all = createAddAll(options)
   return configure(() => {
     /**
      * @type {RootAPI["add"]}
      */
     async function add (input, options = {}) {
       // @ts-ignore - last may return undefined if source is empty
-      return await last(all(input, options))
+      return await last(all(normaliseInput(input), options))
     }
     return add
   })(options)

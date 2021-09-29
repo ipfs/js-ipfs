@@ -1,31 +1,35 @@
-'use strict'
+import {
+  listResource,
+  genResource,
+  rmResource,
+  renameResource,
+  importResource
+} from '../resources/key.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/key/list',
-    ...resources.key.list
+    ...listResource
   },
   {
     method: 'POST',
     path: '/api/v0/key/gen',
-    ...resources.key.gen
+    ...genResource
   },
   {
     method: 'POST',
     path: '/api/v0/key/rm',
-    ...resources.key.rm
+    ...rmResource
   },
   {
     method: 'POST',
     path: '/api/v0/key/rename',
-    ...resources.key.rename
+    ...renameResource
   },
   {
     method: 'POST',
     path: '/api/v0/key/import',
-    ...resources.key.import
+    ...importResource
   }
 ]

@@ -1,9 +1,7 @@
-'use strict'
+import prettyBytes from 'pretty-bytes'
+import parseDuration from 'parse-duration'
 
-const prettyBytes = require('pretty-bytes')
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'stat',
 
   describe: 'Get stats for the currently used repo',

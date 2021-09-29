@@ -1,17 +1,15 @@
-'use strict'
-
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
  * @param {import('../../types').NetworkService} config.network
  */
-module.exports = ({ network }) => {
+export function createStat ({ network }) {
   /**
    * @type {import('ipfs-core-types/src/bitswap').API["stat"]}
    */
   async function stat (options = {}) {
-    /** @type {import('ipfs-bitswap')} */
+    /** @type {import('ipfs-bitswap').IPFSBitswap} */
     const bitswap = (await network.use(options)).bitswap
     const snapshot = bitswap.stat().snapshot
 

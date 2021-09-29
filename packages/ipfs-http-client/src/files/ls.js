@@ -1,28 +1,25 @@
-'use strict'
-
-const CID = require('cids')
-const toCamelWithMetadata = require('../lib/object-to-camel-with-metadata')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { objectToCamelWithMetadata } from '../lib/object-to-camel-with-metadata.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
-module.exports = configure(api => {
+export const createLs = configure(api => {
   /**
    * @type {FilesAPI["ls"]}
    */
   async function * ls (path, options = {}) {
-    if (!path || typeof path !== 'string') {
+    if (!path) {
       throw new Error('ipfs.files.ls requires a path')
     }
 
     const res = await api.post('files/ls', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: CID.isCID(path) ? `/ipfs/${path}` : path,
+        arg: CID.asCID(path) ? `/ipfs/${path}` : path,
         // default long to true, diverges from go-ipfs where its false by default
         long: true,
         ...options,
@@ -35,10 +32,10 @@ module.exports = configure(api => {
       // go-ipfs does not yet support the "stream" option
       if ('Entries' in result) {
         for (const entry of result.Entries || []) {
-          yield toCoreInterface(toCamelWithMetadata(entry))
+          yield toCoreInterface(objectToCamelWithMetadata(entry))
         }
       } else {
-        yield toCoreInterface(toCamelWithMetadata(result))
+        yield toCoreInterface(objectToCamelWithMetadata(result))
       }
     }
   }
@@ -50,7 +47,7 @@ module.exports = configure(api => {
  */
 function toCoreInterface (entry) {
   if (entry.hash) {
-    entry.cid = new CID(entry.hash)
+    entry.cid = CID.parse(entry.hash)
   }
 
   delete entry.hash

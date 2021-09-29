@@ -1,39 +1,47 @@
 /* eslint-env mocha */
-'use strict'
 
-const { Multiaddr } = require('multiaddr')
-const CID = require('cids')
-const delay = require('delay')
-const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+import { Multiaddr } from 'multiaddr'
+import PeerId from 'peer-id'
+import delay from 'delay'
+import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
-  const ipfsOptions = getIpfsOptions()
+export function testPeers (factory, options) {
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.swarm.peers', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsA
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsB
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfsBId
 
     before(async () => {
-      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
-      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsBId = await ipfsB.id()
+      await ipfsA.swarm.connect(ipfsBId.addresses[0])
       /* TODO: Seen if we still need this after this is fixed
          https://github.com/ipfs/js-ipfs/issues/2601 gets resolved */
       // await delay(60 * 1000) // wait for open streams in the connection available
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should list peers this node is connected to', async () => {
       const peers = await ipfsA.swarm.peers()
@@ -44,7 +52,7 @@ module.exports = (common, options) => {
       expect(peer).to.have.a.property('addr')
       expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer').that.is.a('string')
-      expect(CID.isCID(new CID(peer.peer))).to.equal(true)
+      expect(PeerId.parse(peer.peer)).to.be.ok()
       expect(peer).to.not.have.a.property('latency')
 
       /* TODO: These assertions must be uncommented as soon as
@@ -70,6 +78,10 @@ module.exports = (common, options) => {
       // expect(peer).to.have.a.property('streams')
     })
 
+    /**
+     * @param {string | string[]} addrs
+     * @returns
+     */
     function getConfig (addrs) {
       addrs = Array.isArray(addrs) ? addrs : [addrs]
 
@@ -89,9 +101,10 @@ module.exports = (common, options) => {
     }
 
     it('should list peers only once', async () => {
-      const nodeA = (await common.spawn({ type: 'proc', ipfsOptions })).api
-      const nodeB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      await nodeA.swarm.connect(nodeB.peerId.addresses[0])
+      const nodeA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      const nodeB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      const nodeBId = await nodeB.id()
+      await nodeA.swarm.connect(nodeBId.addresses[0])
       await delay(1000)
       const peersA = await nodeA.swarm.peers()
       const peersB = await nodeB.swarm.peers()
@@ -101,31 +114,32 @@ module.exports = (common, options) => {
 
     it('should list peers only once even if they have multiple addresses', async () => {
       // TODO: Change to port 0, needs: https://github.com/ipfs/interface-ipfs-core/issues/152
-      const config = getConfig(isBrowser && common.opts.type !== 'go'
+      const config = getConfig(isBrowser && factory.opts.type !== 'go'
         ? [
-            process.env.SIGNALA_SERVER,
-            process.env.SIGNALB_SERVER
+            `${process.env.SIGNALA_SERVER}`,
+            `${process.env.SIGNALB_SERVER}`
           ]
         : [
             '/ip4/127.0.0.1/tcp/26545/ws',
             '/ip4/127.0.0.1/tcp/26546/ws'
           ])
 
-      const nodeA = (await common.spawn({
+      const nodeA = (await factory.spawn({
         // browser nodes have webrtc-star addresses which can't be dialled by go so make the other
         // peer a js-ipfs node to get a tcp address that can be dialled. Also, webworkers are not
         // diable so don't use a in-proc node for webworkers
-        type: ((isBrowser && common.opts.type === 'go') || isWebWorker) ? 'js' : 'proc',
+        type: ((isBrowser && factory.opts.type === 'go') || isWebWorker) ? 'js' : 'proc',
         ipfsOptions
       })).api
-      const nodeB = (await common.spawn({
+      const nodeAId = await nodeA.id()
+      const nodeB = (await factory.spawn({
         type: isWebWorker ? 'go' : undefined,
         ipfsOptions: {
           config
         }
       })).api
 
-      await nodeB.swarm.connect(nodeA.peerId.addresses[0])
+      await nodeB.swarm.connect(nodeAId.addresses[0])
 
       await delay(1000)
       const peersA = await nodeA.swarm.peers()

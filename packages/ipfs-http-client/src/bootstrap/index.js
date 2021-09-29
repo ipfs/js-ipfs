@@ -1,12 +1,18 @@
-'use strict'
+import { createAdd } from './add.js'
+import { createClear } from './clear.js'
+import { createList } from './list.js'
+import { createReset } from './reset.js'
+import { createRm } from './rm.js'
 
 /**
  * @param {import('../types').Options} config
  */
-module.exports = config => ({
-  add: require('./add')(config),
-  clear: require('./clear')(config),
-  rm: require('./rm')(config),
-  reset: require('./reset')(config),
-  list: require('./list')(config)
-})
+export function createBootstrap (config) {
+  return {
+    add: createAdd(config),
+    clear: createClear(config),
+    list: createList(config),
+    reset: createReset(config),
+    rm: createRm(config)
+  }
+}

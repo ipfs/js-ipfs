@@ -1,21 +1,19 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('./lib/configure')
-const toUrlSearchParams = require('./lib/to-url-search-params')
-const stat = require('./files/stat')
+import { CID } from 'multiformats/cid'
+import { configure } from './lib/configure.js'
+import { toUrlSearchParams } from './lib/to-url-search-params.js'
+import { createStat } from './files/stat.js'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
-module.exports = configure((api, opts) => {
+export const createLs = configure((api, opts) => {
   /**
    * @type {RootAPI["ls"]}
    */
   async function * ls (path, options = {}) {
-    const pathStr = `${path instanceof Uint8Array ? new CID(path) : path}`
+    const pathStr = `${path instanceof Uint8Array ? CID.decode(path) : path}`
 
     /**
      * @param {*} link
@@ -26,9 +24,11 @@ module.exports = configure((api, opts) => {
       if (hash.includes('/')) {
         // the hash is a path, but we need the CID
         const ipfsPath = hash.startsWith('/ipfs/') ? hash : `/ipfs/${hash}`
-        const stats = await stat(opts)(ipfsPath)
+        const stats = await createStat(opts)(ipfsPath)
 
         hash = stats.cid
+      } else {
+        hash = CID.parse(hash)
       }
 
       /** @type {import('ipfs-core-types/src/root').IPFSEntry} */
@@ -36,9 +36,8 @@ module.exports = configure((api, opts) => {
         name: link.Name,
         path: pathStr + (link.Name ? `/${link.Name}` : ''),
         size: link.Size,
-        cid: new CID(hash),
-        type: typeOf(link),
-        depth: link.Depth || 1
+        cid: hash,
+        type: typeOf(link)
       }
 
       if (link.Mode) {
@@ -59,7 +58,6 @@ module.exports = configure((api, opts) => {
     }
 
     const res = await api.post('ls', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: pathStr,

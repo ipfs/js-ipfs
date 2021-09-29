@@ -1,11 +1,14 @@
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const multihashing = require('multihashing-async')
-const CID = require('cids')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
 
-exports.fakeCid = async (data) => {
+/**
+ * @param {Uint8Array} [data]
+ * @returns
+ */
+export async function fakeCid (data) {
   const bytes = data || uint8ArrayFromString(`TEST${Math.random()}`)
-  const mh = await multihashing(bytes, 'sha2-256')
-  return new CID(0, 'dag-pb', mh)
+  const mh = await sha256.digest(bytes)
+  return CID.createV0(mh)
 }

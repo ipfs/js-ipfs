@@ -1,3 +1,2 @@
-'use strict'
 
-require('./agent')
+import './agent.js'

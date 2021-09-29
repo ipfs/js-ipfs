@@ -1,28 +1,33 @@
 /* eslint-env mocha */
-'use strict'
 
-const all = require('it-all')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import all from 'it-all'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testSubs (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.name.pubsub.subs', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get an empty array as a result of subscriptions before any resolve', async function () {
+      // @ts-ignore this is mocha
       this.timeout(60 * 1000)
 
       const res = await ipfs.name.pubsub.subs()
@@ -31,6 +36,7 @@ module.exports = (common, options) => {
     })
 
     it('should get the list of subscriptions updated after a resolve', async function () {
+      // @ts-ignore this is mocha
       this.timeout(300 * 1000)
       const id = 'QmNP1ASen5ZREtiJTtVD3jhMKhoPb1zppET1tgpjHx2NGA'
 

@@ -1,13 +1,7 @@
-'use strict'
-
-const Client = require('./client')
-const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const { decodeError } = require('ipfs-message-port-protocol/src/error')
-const {
-  encodeBlock,
-  decodeBlock
-} = require('ipfs-message-port-protocol/src/block')
-const CID = require('cids')
+import { Client } from './client.js'
+import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
+import { decodeError } from 'ipfs-message-port-protocol/error'
+import { encodeBlock } from 'ipfs-message-port-protocol/block'
 
 /**
  * @typedef {import('./client').MessageTransport} MessageTransport
@@ -20,7 +14,7 @@ const CID = require('cids')
  * @class
  * @extends {Client<BlockService>}
  */
-class BlockClient extends Client {
+export class BlockClient extends Client {
   /**
    * @param {MessageTransport} transport
    */
@@ -36,9 +30,9 @@ BlockClient.prototype.get = async function get (cid, options = {}) {
   const { transfer } = options
   const { block } = await this.remote.get({
     ...options,
-    cid: encodeCID(new CID(cid), transfer)
+    cid: encodeCID(cid, transfer)
   })
-  return decodeBlock(block)
+  return block
 }
 
 /**
@@ -52,10 +46,9 @@ BlockClient.prototype.put = async function put (block, options = {}) {
   const result = await this.remote.put({
     ...options,
     // @ts-ignore PutOptions requires CID, we send EncodedCID
-    cid: options.cid == null ? undefined : encodeCID(new CID(options.cid), transfer),
     block: block instanceof Uint8Array ? block : encodeBlock(block, transfer)
   })
-  return decodeBlock(result.block)
+  return decodeCID(result.cid)
 }
 
 /**
@@ -66,8 +59,8 @@ BlockClient.prototype.rm = async function * rm (cids, options = {}) {
   const entries = await this.remote.rm({
     ...options,
     cids: Array.isArray(cids)
-      ? cids.map(cid => encodeCID(new CID(cid), transfer))
-      : [encodeCID(new CID(cids), transfer)]
+      ? cids.map(cid => encodeCID(cid, transfer))
+      : [encodeCID(cids, transfer)]
   })
 
   yield * entries.map(decodeRmEntry)
@@ -80,7 +73,7 @@ BlockClient.prototype.stat = async function stat (cid, options = {}) {
   const { transfer } = options
   const result = await this.remote.stat({
     ...options,
-    cid: encodeCID(new CID(cid), transfer)
+    cid: encodeCID(cid, transfer)
   })
 
   return { ...result, cid: decodeCID(result.cid) }
@@ -97,5 +90,3 @@ const decodeRmEntry = entry => {
     return { cid }
   }
 }
-
-module.exports = BlockClient

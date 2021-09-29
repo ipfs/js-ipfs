@@ -1,10 +1,8 @@
-'use strict'
-
 /**
- * @param {import('ipfs-unixfs').Mtime} mtime
+ * @param {import('ipfs-unixfs').Mtime | null} [mtime]
  * @returns {string}
  */
-function formatMtime (mtime) {
+export function formatMtime (mtime) {
   if (mtime == null) {
     return '-'
   }
@@ -21,5 +19,3 @@ function formatMtime (mtime) {
     timeZoneName: 'short'
   })
 }
-
-module.exports = formatMtime

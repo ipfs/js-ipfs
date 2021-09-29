@@ -1,31 +1,38 @@
 /* eslint-env mocha */
-'use strict'
 
-const PeerId = require('peer-id')
-const all = require('it-all')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import PeerId from 'peer-id'
+import all from 'it-all'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testCancel (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.name.pubsub.cancel', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
+    /** @type {string} */
     let nodeId
 
     before(async () => {
-      ipfs = (await common.spawn()).api
-      nodeId = ipfs.peerId.id
+      ipfs = (await factory.spawn()).api
+      const peerInfo = await ipfs.id()
+      nodeId = peerInfo.id
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should return false when the name that is intended to cancel is not subscribed', async function () {
+      // @ts-ignore this is mocha
       this.timeout(60 * 1000)
 
       const res = await ipfs.name.pubsub.cancel(nodeId)
@@ -35,6 +42,7 @@ module.exports = (common, options) => {
     })
 
     it('should cancel a subscription correctly returning true', async function () {
+      // @ts-ignore this is mocha
       this.timeout(300 * 1000)
 
       const peerId = await PeerId.create({ bits: 512 })

@@ -1,20 +1,17 @@
-'use strict'
-
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
-module.exports = configure(api => {
+export const createTouch = configure(api => {
   /**
    * @type {FilesAPI["touch"]}
    */
   async function touch (path, options = {}) {
     const res = await api.post('files/touch', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,

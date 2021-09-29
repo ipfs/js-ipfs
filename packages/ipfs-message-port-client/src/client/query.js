@@ -1,4 +1,14 @@
-'use strict'
+/**
+ * @typedef {Object} QueryOptions
+ * @property {AbortSignal} [signal]
+ * @property {number} [timeout]
+ * @property {Set<Transferable>} [transfer]
+ */
+
+/**
+ * @template I
+ * @typedef {I & QueryOptions} QueryInput
+ */
 
 /**
  * Represents server query, encapsulating inputs to the server endpoint and
@@ -6,7 +16,7 @@
  *
  * @template I,O
  */
-module.exports = class Query {
+export class Query {
   /**
    * @param {string} namespace - component namespace on the server.
    * @param {string} method - remote method this is a query of.
@@ -22,7 +32,7 @@ module.exports = class Query {
       this.namespace = namespace
       this.method = method
       this.timeout = input.timeout == null ? Infinity : input.timeout
-      /** @type {number|null} */
+      /** @type {ReturnType<typeof setTimeout> | null} */
       this.timerID = null
     })
   }
@@ -45,14 +55,3 @@ module.exports = class Query {
     return this.input.transfer
   }
 }
-
-/**
- * @typedef {Object} QueryOptions
- * @property {AbortSignal} [signal]
- * @property {number} [timeout]
- * @property {Set<Transferable>} [transfer]
- */
-/**
- * @template I
- * @typedef {I & QueryOptions} QueryInput
- */

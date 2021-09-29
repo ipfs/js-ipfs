@@ -1,12 +1,16 @@
-'use strict'
-const { createSuite } = require('../utils/suite')
+import { createSuite } from '../utils/suite.js'
+import { testConnect } from './connect.js'
+import { testPeers } from './peers.js'
+import { testAddrs } from './addrs.js'
+import { testLocalAddrs } from './local-addrs.js'
+import { testDisconnect } from './disconnect.js'
 
 const tests = {
-  connect: require('./connect'),
-  peers: require('./peers'),
-  addrs: require('./addrs'),
-  localAddrs: require('./local-addrs'),
-  disconnect: require('./disconnect')
+  connect: testConnect,
+  peers: testPeers,
+  addrs: testAddrs,
+  localAddrs: testLocalAddrs,
+  disconnect: testDisconnect
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

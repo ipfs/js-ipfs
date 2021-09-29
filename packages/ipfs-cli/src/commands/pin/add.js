@@ -1,10 +1,6 @@
-'use strict'
+import parseDuration from 'parse-duration'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'add <ipfsPath...>',
 
   describe: 'Pins object to local storage, preventing it from being garbage collected',
@@ -19,7 +15,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -61,7 +57,7 @@ module.exports = {
    * @param {import('../../types').Context} argv.ctx
    * @param {string[]} argv.ipfsPath
    * @param {boolean} argv.recursive
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    * @param {Record<string, any>} argv.metadata
    * @param {Record<string, any>} argv.metadataJson
@@ -69,13 +65,14 @@ module.exports = {
   async handler ({ ctx, ipfsPath, recursive, cidBase, timeout, metadata, metadataJson }) {
     const { ipfs, print } = ctx
     const type = recursive ? 'recursive' : 'direct'
+    const base = await ipfs.bases.getBase(cidBase)
 
     if (metadataJson) {
       metadata = metadataJson
     }
 
     for await (const res of ipfs.pin.addAll(ipfsPath.map(path => ({ path, recursive, metadata })), { timeout })) {
-      print(`pinned ${cidToString(res, { base: cidBase })} ${type}ly`)
+      print(`pinned ${res.toString(base.encoder)} ${type}ly`)
     }
   }
 }

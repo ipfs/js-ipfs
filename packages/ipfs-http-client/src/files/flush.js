@@ -1,15 +1,13 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
-module.exports = configure(api => {
+export const createFlush = configure(api => {
   /**
    * @type {FilesAPI["flush"]}
    */
@@ -19,7 +17,6 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('files/flush', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: path,
@@ -29,7 +26,7 @@ module.exports = configure(api => {
     })
     const data = await res.json()
 
-    return new CID(data.Cid)
+    return CID.parse(data.Cid)
   }
   return flush
 })

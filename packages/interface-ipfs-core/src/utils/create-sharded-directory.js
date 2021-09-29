@@ -1,10 +1,12 @@
-'use strict'
+import { expect } from 'aegir/utils/chai.js'
+import isShardAtPath from './is-shard-at-path.js'
+import last from 'it-last'
 
-const { expect } = require('./mocha')
-const isShardAtPath = require('./is-shard-at-path')
-const last = require('it-last')
-
-module.exports = async (ipfs, files = 1001) => {
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {number} [files]
+ */
+export async function createShardedDirectory (ipfs, files = 1001) {
   const dirPath = `/sharded-dir-${Math.random()}`
 
   const result = await last(ipfs.addAll((function * () {
@@ -18,6 +20,10 @@ module.exports = async (ipfs, files = 1001) => {
     preload: false,
     pin: false
   }))
+
+  if (!result) {
+    throw new Error('No result received from ipfs.addAll')
+  }
 
   await ipfs.files.cp(`/ipfs/${result.cid}`, dirPath)
 

@@ -1,61 +1,69 @@
-'use strict'
+import { chmodResource } from '../resources/files/chmod.js'
+import { cpResource } from '../resources/files/cp.js'
+import { flushResource } from '../resources/files/flush.js'
+import { lsResource } from '../resources/files/ls.js'
+import { mkdirResource } from '../resources/files/mkdir.js'
+import { mvResource } from '../resources/files/mv.js'
+import { readResource } from '../resources/files/read.js'
+import { rmResource } from '../resources/files/rm.js'
+import { statResource } from '../resources/files/stat.js'
+import { touchResource } from '../resources/files/touch.js'
+import { writeResource } from '../resources/files/write.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/files/chmod',
-    ...resources.files.chmod
+    ...chmodResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/cp',
-    ...resources.files.cp
+    ...cpResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/flush',
-    ...resources.files.flush
+    ...flushResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/ls',
-    ...resources.files.ls
+    ...lsResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/mkdir',
-    ...resources.files.mkdir
+    ...mkdirResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/mv',
-    ...resources.files.mv
+    ...mvResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/read',
-    ...resources.files.read
+    ...readResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/rm',
-    ...resources.files.rm
+    ...rmResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/stat',
-    ...resources.files.stat
+    ...statResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/touch',
-    ...resources.files.touch
+    ...touchResource
   },
   {
     method: 'POST',
     path: '/api/v0/files/write',
-    ...resources.files.write
+    ...writeResource
   }
 ]

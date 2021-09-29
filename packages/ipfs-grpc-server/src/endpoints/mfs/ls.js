@@ -1,12 +1,10 @@
-'use strict'
-
-const encodeMtime = require('../../utils/encode-mtime')
+import { encodeMtime } from '../../utils/encode-mtime.js'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('../../types').Options} options
  */
-module.exports = function grpcMfsLs (ipfs, options = {}) {
+export function grpcMfsLs (ipfs, options = {}) {
   /**
    * TODO: Fill out input/output types after https://github.com/ipfs/js-ipfs/issues/3594
    *

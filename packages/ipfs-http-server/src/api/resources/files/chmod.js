@@ -1,8 +1,6 @@
-'use strict'
+import Joi from '../../../utils/joi.js'
 
-const Joi = require('../../../utils/joi')
-
-const mfsChmod = {
+export const chmodResource = {
   options: {
     validate: {
       options: {
@@ -74,5 +72,3 @@ const mfsChmod = {
     return h.response()
   }
 }
-
-module.exports = mfsChmod

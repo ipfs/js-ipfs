@@ -1,12 +1,6 @@
-'use strict'
+import { commands } from './cid/index.js'
 
-const path = require('path')
-
-const cidCommandsPath = path.join(
-  path.dirname(require.resolve('cid-tool')), 'cli', 'commands'
-)
-
-module.exports = {
+export default {
   command: 'cid <command>',
 
   description: 'Convert, format and discover properties of CIDs.',
@@ -15,7 +9,7 @@ module.exports = {
    * @param {import('yargs').Argv} yargs
    */
   builder (yargs) {
-    return yargs
-      .commandDir(cidCommandsPath)
+    // @ts-expect-error types are wrong
+    return yargs.command(commands)
   }
 }

@@ -1,36 +1,44 @@
 /* eslint-env mocha */
-'use strict'
 
-const CID = require('cids')
-const { Multiaddr } = require('multiaddr')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { isWebWorker } = require('ipfs-utils/src/env')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+import PeerId from 'peer-id'
+import { Multiaddr } from 'multiaddr'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { isWebWorker } from 'ipfs-utils/src/env.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
-  const ipfsOptions = getIpfsOptions()
+export function testAddrs (factory, options) {
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.swarm.addrs', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsA
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsB
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfsBId
 
     before(async () => {
-      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsBId = await ipfsB.id()
+      await ipfsA.swarm.connect(ipfsBId.addresses[0])
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get a list of node addresses', async () => {
       const peers = await ipfsA.swarm.addrs()
@@ -38,7 +46,7 @@ module.exports = (common, options) => {
       expect(peers).to.be.an('array')
 
       for (const peer of peers) {
-        expect(CID.isCID(new CID(peer.id))).to.be.true()
+        expect(PeerId.parse(peer.id)).to.be.ok()
         expect(peer).to.have.a.property('addrs').that.is.an('array')
 
         for (const ma of peer.addrs) {

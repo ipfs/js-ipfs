@@ -1,14 +1,16 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const tests = require('interface-ipfs-core')
-const { isNode } = require('ipfs-utils/src/env')
-const factory = require('./utils/factory')
+import * as tests from 'interface-ipfs-core'
+import { isNode } from 'ipfs-utils/src/env.js'
+import { factory } from './utils/factory.js'
+import * as ipfsClientModule from 'ipfs-client'
 
 /** @typedef { import("ipfsd-ctl").ControllerOptions } ControllerOptions */
 
 describe('interface-ipfs-core tests', function () {
-  const commonFactory = factory()
+  const commonFactory = factory({
+    ipfsClientModule
+  })
 
   tests.root(commonFactory, {
     skip: isNode
@@ -77,15 +79,28 @@ describe('interface-ipfs-core tests', function () {
 
   tests.object(commonFactory)
 
-  tests.pin(commonFactory)
+  tests.pin(commonFactory, {
+    skip: [{
+      name: '.pin.remote.service',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.add',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.ls',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.rm',
+      reason: 'Not implemented'
+    }, {
+      name: '.pin.remote.rmAll',
+      reason: 'Not implemented'
+    }]
+  })
 
   tests.ping(commonFactory)
 
-  tests.pubsub(factory({}, {
-    go: {
-      args: ['--enable-pubsub-experiment']
-    }
-  }), {
+  tests.pubsub(commonFactory, {
     skip: [
       ...(isNode
         ? []

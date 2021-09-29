@@ -1,11 +1,9 @@
-'use strict'
-
-const { default: parseDuration } = require('parse-duration')
-const {
+import parseDuration from 'parse-duration'
+import {
   stripControlCharacters
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'gen <name>',
 
   describe: 'Create a new key',
@@ -13,8 +11,9 @@ module.exports = {
   builder: {
     type: {
       alias: 't',
-      describe: 'type of the key to create [rsa, ed25519].',
-      default: 'rsa'
+      describe: 'type of the key to create',
+      choices: ['rsa', 'ed25519'],
+      default: 'ed25519'
     },
     size: {
       alias: 's',

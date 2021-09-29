@@ -278,7 +278,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const key = await ipfs.key.import('clone', 'password')
+const key = await ipfs.key.import('clone', pem, 'password')
 
 console.log(key)
 // { id: 'QmQRiays958UM7norGRQUG3tmrLq8pJdmJarwYSk2eLthQ',

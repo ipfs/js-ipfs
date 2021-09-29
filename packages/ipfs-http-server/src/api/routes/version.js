@@ -1,9 +1,7 @@
-'use strict'
+import { versionResource } from '../resources/version.js'
 
-const resources = require('../resources')
-
-module.exports = {
+export default [{
   method: 'POST',
   path: '/api/v0/version',
-  ...resources.version
-}
+  ...versionResource
+}]

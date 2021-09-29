@@ -1,14 +1,17 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const MemoryStore = require('interface-datastore').MemoryDatastore
-const PeerId = require('peer-id')
-const Libp2p = require('libp2p')
-const EE = require('events')
-const libp2pComponent = require('../src/components/libp2p')
-const { NOISE: Crypto } = require('libp2p-noise')
+import { expect } from 'aegir/utils/chai.js'
+import { MemoryDatastore } from 'datastore-core/memory'
+import PeerId from 'peer-id'
+import Libp2p from 'libp2p'
+import { EventEmitter } from 'events'
+import { createLibp2p as libp2pComponent } from '../src/components/libp2p.js'
+import { NOISE as Crypto } from '@chainsafe/libp2p-noise'
+import gossipsub from 'libp2p-gossipsub'
 
+/**
+ * @type {import('libp2p-interfaces/src/transport/types').TransportFactory<any, any>}
+ */
 class DummyTransport {
   get [Symbol.toStringTag] () {
     return 'DummyTransport'
@@ -19,7 +22,7 @@ class DummyTransport {
   }
 }
 
-class DummyDiscovery extends EE {
+class DummyDiscovery extends EventEmitter {
   get [Symbol.toStringTag] () {
     return 'DummyDiscovery'
   }
@@ -37,9 +40,21 @@ describe('libp2p customization', function () {
   // Provide some extra time for ci since we're starting libp2p nodes in each test
   this.timeout(25 * 1000)
 
+  /**
+   * @type {import('interface-datastore').Datastore}
+   */
   let datastore
+  /**
+   * @type {import('peer-id')}
+   */
   let peerId
+  /**
+   * @type {import('ipfs-core-types/src/config').Config}
+   */
   let testConfig
+  /**
+   * @type {import('libp2p') | null}
+   */
   let libp2p
 
   before(async function () {
@@ -60,7 +75,7 @@ describe('libp2p customization', function () {
         }
       }
     }
-    datastore = new MemoryStore()
+    datastore = new MemoryDatastore()
     peerId = await PeerId.create()
   })
 
@@ -75,15 +90,18 @@ describe('libp2p customization', function () {
     it('should allow for using a libp2p bundle', async () => {
       libp2p = await libp2pComponent({
         options: {
-          libp2p: (opts) => {
+          /** @type {import('../src/types').Libp2pFactoryFn} */
+          libp2p: async (opts) => {
             return Libp2p.create({
               peerId: opts.peerId,
+              // @ts-ignore DummyTransport is not complete implementation
               modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }
         },
         peerId,
+        // @ts-ignore repo is not complete implementation
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig
@@ -99,15 +117,18 @@ describe('libp2p customization', function () {
     it('should pass libp2p options to libp2p bundle function', async () => {
       libp2p = await libp2pComponent({
         options: {
-          libp2p: (opts) => {
+          /** @type {import('../src/types').Libp2pFactoryFn} */
+          libp2p: async (opts) => {
             return Libp2p.create({
               peerId: opts.peerId,
+              // @ts-ignore DummyTransport is not complete implementation
               modules: { transport: [DummyTransport], connEncryption: [Crypto] },
               config: { relay: { enabled: false } }
             })
           }
         },
         peerId,
+        // @ts-ignore repo is not complete implementation
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig
@@ -125,6 +146,7 @@ describe('libp2p customization', function () {
     it('should use options by default', async () => {
       libp2p = await libp2pComponent({
         peerId,
+        // @ts-ignore repo is not complete implementation
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig
@@ -160,13 +182,16 @@ describe('libp2p customization', function () {
 
       libp2p = await libp2pComponent({
         peerId,
+        // @ts-ignore repo is not complete implementation
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: testConfig,
         options: {
           libp2p: {
             modules: {
+              // @ts-ignore DummyTransport is not complete implementation
               transport: [DummyTransport],
+              // @ts-ignore DummyDiscovery is not complete implementation
               peerDiscovery: [DummyDiscovery]
             },
             config: { relay: { enabled: false } },
@@ -197,6 +222,7 @@ describe('libp2p customization', function () {
 
       libp2p = await libp2pComponent({
         peerId,
+        // @ts-ignore repo is not complete implementation
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: {
@@ -216,17 +242,18 @@ describe('libp2p customization', function () {
     it('should select gossipsub as pubsub router', async () => {
       libp2p = await libp2pComponent({
         peerId,
+        // @ts-ignore repo is not complete implementation
         repo: { datastore },
         print: console.log, // eslint-disable-line no-console
         config: {
           ...testConfig,
-          Pubsub: { Router: 'gossipsub' }
+          Pubsub: { PubSubRouter: 'gossipsub' }
         }
       })
 
       await libp2p.start()
 
-      expect(libp2p._modules.pubsub).to.eql(require('libp2p-gossipsub'))
+      expect(libp2p._modules.pubsub).to.eql(gossipsub)
     })
   })
 })

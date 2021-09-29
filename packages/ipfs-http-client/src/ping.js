@@ -1,28 +1,25 @@
-'use strict'
-
-const toCamel = require('./lib/object-to-camel')
-const configure = require('./lib/configure')
-const toUrlSearchParams = require('./lib/to-url-search-params')
+import { objectToCamel } from './lib/object-to-camel.js'
+import { configure } from './lib/configure.js'
+import { toUrlSearchParams } from './lib/to-url-search-params.js'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
-module.exports = configure(api => {
+export const createPing = configure(api => {
   /**
    * @type {RootAPI["ping"]}
    */
   async function * ping (peerId, options = {}) {
     const res = await api.post('ping', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: `${peerId}`,
         ...options
       }),
       headers: options.headers,
-      transform: toCamel
+      transform: objectToCamel
     })
 
     yield * res.ndjson()

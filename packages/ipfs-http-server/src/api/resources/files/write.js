@@ -1,11 +1,9 @@
-'use strict'
+import Joi from '../../../utils/joi.js'
+import { multipartRequestParser } from '../../../utils/multipart-request-parser.js'
+import Boom from '@hapi/boom'
+import drain from 'it-drain'
 
-const Joi = require('../../../utils/joi')
-const multipart = require('../../../utils/multipart-request-parser')
-const Boom = require('@hapi/boom')
-const drain = require('it-drain')
-
-const mfsWrite = {
+export const writeResource = {
   options: {
     payload: {
       parse: false,
@@ -99,7 +97,7 @@ const mfsWrite = {
 
     let files = 0
 
-    for await (const entry of multipart(request.raw.req)) {
+    for await (const entry of multipartRequestParser(request.raw.req)) {
       if (entry.type === 'file') {
         files++
 
@@ -135,5 +133,3 @@ const mfsWrite = {
     return h.response()
   }
 }
-
-module.exports = mfsWrite

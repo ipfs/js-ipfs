@@ -1,20 +1,18 @@
-'use strict'
-
-const { gateway } = require('ipfs-http-gateway/src/resources')
+import resources from 'ipfs-http-gateway/resources/index'
 
 const webuiCid = 'bafybeif4zkmu7qdhkpf3pnhwxipylqleof7rl6ojbe7mq3fzogz6m4xk3i' // v2.11.4
 
-module.exports = [
+export default [
   {
     method: 'GET',
     path: `/ipfs/${webuiCid}/{path*}`, // only the whitelisted webui is allowed on API port
     options: {
-      handler: gateway.handler,
+      handler: resources.gateway.handler,
       response: {
         ranges: false // disable built-in support, handler does it manually
       },
       ext: {
-        onPostHandler: { method: gateway.afterHandler }
+        onPostHandler: { method: resources.gateway.afterHandler }
       }
     }
   },

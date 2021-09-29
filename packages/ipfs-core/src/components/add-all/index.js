@@ -1,28 +1,25 @@
-'use strict'
-
-const { importer } = require('ipfs-unixfs-importer')
-const normaliseAddInput = require('ipfs-core-utils/src/files/normalise-input/index')
-const { parseChunkerString } = require('./utils')
-const { pipe } = require('it-pipe')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
+import { importer } from 'ipfs-unixfs-importer'
+import { normaliseInput } from 'ipfs-core-utils/files/normalise-input-multiple'
+import { parseChunkerString } from './utils.js'
+import { pipe } from 'it-pipe'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import mergeOpts from 'merge-options'
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-unixfs-importer').ImportResult} ImportResult
  */
 
 /**
  * @typedef {Object} Context
- * @property {import('ipfs-core-types/src/block').API} block
- * @property {import('../gc-lock').GCLock} gcLock
+ * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../../types').Preload} preload
- * @property {import('ipfs-core-types/src/pin').API} pin
  * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
  *
  * @param {Context} context
  */
-module.exports = ({ block, gcLock, preload, pin, options }) => {
+export function createAddAll ({ repo, preload, options }) {
   const isShardingEnabled = options && options.sharding
 
   /**
@@ -86,20 +83,20 @@ module.exports = ({ block, gcLock, preload, pin, options }) => {
     }
 
     const iterator = pipe(
-      normaliseAddInput(source),
+      normaliseInput(source),
       /**
        * @param {AsyncIterable<import('ipfs-unixfs-importer').ImportCandidate>} source
        */
-      source => importer(source, block, {
+      source => importer(source, repo.blocks, {
         ...opts,
         pin: false
       }),
       transformFile(opts),
       preloadFile(preload, opts),
-      pinFile(pin, opts)
+      pinFile(repo, opts)
     )
 
-    const releaseLock = await gcLock.readLock()
+    const releaseLock = await repo.gcLock.readLock()
 
     try {
       for await (const added of iterator) {
@@ -139,7 +136,7 @@ function transformFile (opts) {
 
       yield {
         path,
-        cid,
+        cid: cid,
         size: file.size,
         mode: file.unixfs && file.unixfs.mode,
         mtime: file.unixfs && file.unixfs.mtime
@@ -178,10 +175,10 @@ function preloadFile (preload, opts) {
 }
 
 /**
- * @param {import('ipfs-core-types/src/pin').API} pin
+ * @param {import('ipfs-repo').IPFSRepo} repo
  * @param {import('ipfs-core-types/src/root').AddAllOptions} opts
  */
-function pinFile (pin, opts) {
+function pinFile (repo, opts) {
   /**
    * @param {AsyncGenerator<ImportResult, void, undefined>} source
    */
@@ -193,12 +190,7 @@ function pinFile (pin, opts) {
       const shouldPin = (opts.pin == null ? true : opts.pin) && isRootDir && !opts.onlyHash
 
       if (shouldPin) {
-        // Note: addAsyncIterator() has already taken a GC lock, so tell
-        // pin.add() not to take a (second) GC lock
-        await pin.add(file.cid, {
-          preload: false,
-          lock: false
-        })
+        await repo.pins.pinRecursively(file.cid)
       }
 
       yield file

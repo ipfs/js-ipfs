@@ -1,27 +1,24 @@
 /* eslint-disable no-unreachable */
-'use strict'
 
-const isIpfs = require('is-ipfs')
-const CID = require('cids')
-const Key = require('interface-datastore').Key
-const errCode = require('err-code')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-/** @type {typeof Object.assign} */
-const mergeOptions = require('merge-options')
-const resolve = require('./components/dag/resolve')
+import isIpfs from 'is-ipfs'
+import { CID } from 'multiformats/cid'
+import { Key } from 'interface-datastore/key'
+import errCode from 'err-code'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
+import * as dagPB from '@ipld/dag-pb'
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ * @typedef {import('@ipld/dag-pb').PBLink} PBLink
  */
-
-exports.mergeOptions = mergeOptions
 
 const ERR_BAD_PATH = 'ERR_BAD_PATH'
 
-exports.OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
-exports.MFS_ROOT_KEY = new Key('/local/filesroot')
-exports.MFS_MAX_CHUNK_SIZE = 262144
-exports.MFS_MAX_LINKS = 174
+export const OFFLINE_ERROR = 'This command must be run in online mode. Try running \'ipfs daemon\' first.'
+export const MFS_ROOT_KEY = new Key('/local/filesroot')
+export const MFS_MAX_CHUNK_SIZE = 262144
+export const MFS_MAX_LINKS = 174
 
 /**
  * Returns a well-formed ipfs Path.
@@ -31,11 +28,21 @@ exports.MFS_MAX_LINKS = 174
  * @returns {string} - ipfs-path or ipns-path
  * @throws on an invalid @param pathStr
  */
-const normalizePath = (pathStr) => {
-  if (isIpfs.cid(pathStr) || CID.isCID(pathStr)) {
-    return `/ipfs/${new CID(pathStr)}`
-  } else if (isIpfs.path(pathStr)) {
-    return pathStr
+export const normalizePath = (pathStr) => {
+  const cid = CID.asCID(pathStr)
+
+  if (cid) {
+    return `/ipfs/${pathStr}`
+  }
+
+  const str = pathStr.toString()
+
+  try {
+    return `/ipfs/${CID.parse(str)}`
+  } catch {}
+
+  if (isIpfs.path(str)) {
+    return str
   } else {
     throw errCode(new Error(`invalid path: ${pathStr}`), ERR_BAD_PATH)
   }
@@ -45,57 +52,86 @@ const normalizePath = (pathStr) => {
 // TODO: don't forget ipfs-core-utils/src/to-cid-and-path
 /**
  * @param {Uint8Array|CID|string} path
- * @returns {string}
  */
-const normalizeCidPath = (path) => {
+export const normalizeCidPath = (path) => {
   if (path instanceof Uint8Array) {
-    return new CID(path).toString()
+    return CID.decode(path).toString()
   }
-  if (CID.isCID(path)) {
-    return path.toString()
-  }
+
+  path = path.toString()
+
   if (path.indexOf('/ipfs/') === 0) {
     path = path.substring('/ipfs/'.length)
   }
+
   if (path.charAt(path.length - 1) === '/') {
     path = path.substring(0, path.length - 1)
   }
+
   return path
 }
 
 /**
  * Resolve various styles of an ipfs-path to the hash of the target node.
- * Follows links in the path.
+ * Follows links in the path
  *
- * Accepts formats:
- * - <base58 string>
- * - <base58 string>/link/to/venus
- * - /ipfs/<base58 string>/link/to/pluto
- * - multihash Buffer
- *
- * @param {import('ipld')} ipld
- * @param {CID | string} ipfsPath - A CID or IPFS path
- * @param {Object} [options] - Optional options passed directly to dag.resolve
- * @returns {Promise<CID>}
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
+ * @param {CID | string | Uint8Array} ipfsPath - A CID or IPFS path
+ * @param {{ path?: string, signal?: AbortSignal }} [options] - Optional options passed directly to dag.resolve
+ * @returns {Promise<{ cid: CID, remainderPath: string}>}
  */
-const resolvePath = async function (ipld, ipfsPath, options = {}) {
-  const preload = () => {}
-  preload.stop = () => {}
-  preload.start = () => {}
+export const resolvePath = async function (repo, codecs, ipfsPath, options = {}) {
+  const {
+    cid,
+    path
+  } = toCidAndPath(ipfsPath)
 
-  const { cid } = await resolve({ ipld, preload })(ipfsPath, { preload: false })
+  if (path) {
+    options.path = path
+  }
 
-  return cid
+  let lastCid = cid
+  let lastRemainderPath = options.path || ''
+
+  if (lastRemainderPath.startsWith('/')) {
+    lastRemainderPath = lastRemainderPath.substring(1)
+  }
+
+  if (options.path) {
+    try {
+      for await (const { value, remainderPath } of resolve(cid, options.path, codecs, repo, {
+        signal: options.signal
+      })) {
+        if (!CID.asCID(value)) {
+          break
+        }
+
+        lastRemainderPath = remainderPath
+        lastCid = value
+      }
+    } catch (/** @type {any} */ err) {
+      // TODO: add error codes to IPLD
+      if (err.message.startsWith('Object has no property')) {
+        err.message = `no link named "${lastRemainderPath.split('/')[0]}" under ${lastCid}`
+        err.code = 'ERR_NO_LINK'
+      }
+      throw err
+    }
+  }
+
+  return {
+    cid: lastCid,
+    remainderPath: lastRemainderPath || ''
+  }
 }
 
 /**
  * @typedef {import('ipfs-unixfs-exporter').UnixFSEntry} UnixFSEntry
  *
  * @param {UnixFSEntry} file
- * @param {Object} [options]
- * @param {boolean} [options.includeContent]
  */
-const mapFile = (file, options = {}) => {
+export const mapFile = (file) => {
   if (file.type !== 'file' && file.type !== 'directory' && file.type !== 'raw') {
     // file.type === object | identity not supported yet
     throw new Error(`Unknown node type '${file.type}'`)
@@ -106,7 +142,6 @@ const mapFile = (file, options = {}) => {
     cid: file.cid,
     path: file.path,
     name: file.name,
-    depth: file.path.split('/').length,
     size: file.size,
     type: 'file'
   }
@@ -128,17 +163,10 @@ const mapFile = (file, options = {}) => {
     }
   }
 
-  if (options.includeContent) {
-    if (file.type === 'file' || file.type === 'raw') {
-      // @ts-expect-error - content is readonly
-      output.content = file.content()
-    }
-  }
-
   return output
 }
 
-const withTimeout = withTimeoutOption(
+export const withTimeout = withTimeoutOption(
   /**
    * @template T
    * @param {Promise<T>|T} promise
@@ -148,9 +176,76 @@ const withTimeout = withTimeoutOption(
   async (promise, _options) => await promise
 )
 
-exports.normalizePath = normalizePath
-exports.normalizeCidPath = normalizeCidPath
-exports.resolvePath = resolvePath
-exports.mapFile = mapFile
-exports.withTimeoutOption = withTimeoutOption
-exports.withTimeout = withTimeout
+/**
+ * Retrieves IPLD Nodes along the `path` that is rooted at `cid`.
+ *
+ * @param {CID} cid - the CID where the resolving starts
+ * @param {string} path - the path that should be resolved
+ * @param {import('ipfs-core-utils/src/multicodecs').Multicodecs} codecs
+ * @param {import('ipfs-repo').IPFSRepo} repo
+ * @param {AbortOptions} [options]
+ */
+export const resolve = async function * (cid, path, codecs, repo, options) {
+  /**
+   * @param {CID} cid
+   */
+  const load = async (cid) => {
+    const codec = await codecs.getCodec(cid.code)
+    const block = await repo.blocks.get(cid, options)
+
+    return codec.decode(block)
+  }
+
+  const parts = path.split('/').filter(Boolean)
+  let value = await load(cid)
+  let lastCid = cid
+
+  if (!parts.length) {
+    yield {
+      value,
+      remainderPath: ''
+    }
+  }
+
+  // End iteration if there isn't a CID to follow any more
+  while (parts.length) {
+    const key = parts.shift()
+
+    if (!key) {
+      throw errCode(new Error(`Could not resolve path "${path}"`), 'ERR_INVALID_PATH')
+    }
+
+    // special case for dag-pb, use the link name as the path segment
+    if (cid.code === dagPB.code && Array.isArray(value.Links)) {
+      const link = value.Links.find((/** @type {PBLink} */ l) => l.Name === key)
+
+      if (link) {
+        yield {
+          value: link.Hash,
+          remainderPath: parts.join('/')
+        }
+
+        value = await load(link.Hash)
+        lastCid = link.Hash
+
+        continue
+      }
+    }
+
+    if (Object.prototype.hasOwnProperty.call(value, key)) {
+      value = value[key]
+
+      yield {
+        value,
+        remainderPath: parts.join('/')
+      }
+    } else {
+      throw errCode(new Error(`no link named "${key}" under ${lastCid}`), 'ERR_NO_LINK')
+    }
+
+    if (CID.asCID(value)) {
+      lastCid = value
+      value = await load(value)
+    }
+  }
+}

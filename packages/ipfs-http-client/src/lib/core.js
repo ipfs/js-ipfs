@@ -1,14 +1,17 @@
-'use strict'
+
 /* eslint-env browser */
-const { Multiaddr } = require('multiaddr')
-const { isBrowser, isWebWorker, isNode } = require('ipfs-utils/src/env')
-const { default: parseDuration } = require('parse-duration')
-const log = require('debug')('ipfs-http-client:lib:error-handler')
-const HTTP = require('ipfs-utils/src/http')
-const merge = require('merge-options')
-const toUrlString = require('ipfs-core-utils/src/to-url-string')
-const http = require('http')
-const https = require('https')
+
+import { Multiaddr } from 'multiaddr'
+import { isBrowser, isWebWorker, isNode } from 'ipfs-utils/src/env.js'
+import parseDuration from 'parse-duration'
+import debug from 'debug'
+import HTTP from 'ipfs-utils/src/http.js'
+import mergeOpts from 'merge-options'
+import { toUrlString } from 'ipfs-core-utils/to-url-string'
+import getAgent from 'ipfs-core-utils/agent'
+
+const log = debug('ipfs-http-client:lib:error-handler')
+const merge = mergeOpts.bind({ ignoreUndefined: true })
 
 const DEFAULT_PROTOCOL = isBrowser || isWebWorker ? location.protocol : 'http'
 const DEFAULT_HOST = isBrowser || isWebWorker ? location.hostname : 'localhost'
@@ -56,7 +59,7 @@ const normalizeOptions = (options = {}) => {
   }
 
   if (isNode) {
-    const Agent = url.protocol.startsWith('https') ? https.Agent : http.Agent
+    const Agent = getAgent(url)
 
     agent = opts.agent || new Agent({
       keepAlive: true,
@@ -79,7 +82,7 @@ const normalizeOptions = (options = {}) => {
 /**
  * @param {Response} response
  */
-const errorHandler = async (response) => {
+export const errorHandler = async (response) => {
   let msg
 
   try {
@@ -90,7 +93,7 @@ const errorHandler = async (response) => {
     } else {
       msg = await response.text()
     }
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     log('Failed to parse error response', err)
     // Failed to extract/parse error message from response
     msg = err.message
@@ -99,14 +102,21 @@ const errorHandler = async (response) => {
   /** @type {Error} */
   let error = new HTTP.HTTPError(response)
 
-  // This is what go-ipfs returns where there's a timeout
-  if (msg && msg.includes('context deadline exceeded')) {
-    error = new HTTP.TimeoutError('Request timed out')
+  if (msg) {
+    // This is what rs-ipfs returns where there's a timeout
+    if (msg.includes('deadline has elapsed')) {
+      error = new HTTP.TimeoutError()
+    }
+
+    // This is what go-ipfs returns where there's a timeout
+    if (msg && msg.includes('context deadline exceeded')) {
+      error = new HTTP.TimeoutError()
+    }
   }
 
   // This also gets returned
   if (msg && msg.includes('request timed out')) {
-    error = new HTTP.TimeoutError('Request timed out')
+    error = new HTTP.TimeoutError()
   }
 
   // If we managed to extract a message from the response, use it
@@ -135,7 +145,7 @@ const parseTimeout = (value) => {
   return typeof value === 'string' ? parseDuration(value) : value
 }
 
-class Client extends HTTP {
+export class Client extends HTTP {
   /**
    * @param {Options|URL|Multiaddr|string} [options]
    */
@@ -143,7 +153,7 @@ class Client extends HTTP {
     const opts = normalizeOptions(options)
 
     super({
-      timeout: parseTimeout(opts.timeout || 0) || 60000 * 20,
+      timeout: parseTimeout(opts.timeout || 0) || undefined,
       headers: opts.headers,
       base: `${opts.url}`,
       handleError: errorHandler,
@@ -199,6 +209,4 @@ class Client extends HTTP {
   }
 }
 
-Client.errorHandler = errorHandler
-
-module.exports = Client
+export const HTTPError = HTTP.HTTPError

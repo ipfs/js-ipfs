@@ -1,23 +1,20 @@
-'use strict'
-
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const { Value } = require('./response-types')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { Value } from './response-types.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
  */
 
-module.exports = configure(api => {
+export const createGet = configure(api => {
   /**
    * @type {DHTAPI["get"]}
    */
   async function get (key, options = {}) {
     const res = await api.post('dht/get', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: key instanceof Uint8Array ? uint8ArrayToString(key) : key,

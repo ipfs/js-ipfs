@@ -1,10 +1,8 @@
-'use strict'
+import path from 'path'
+import fs from 'fs'
+import parseDuration from 'parse-duration'
 
-const path = require('path')
-const fs = require('fs')
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'replace <file>',
 
   describe: 'Replaces the config with <file>',

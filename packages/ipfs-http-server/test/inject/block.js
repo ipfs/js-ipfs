@@ -1,16 +1,17 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
-const multibase = require('multibase')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const CID = require('cids')
-const { AbortSignal } = require('native-abort-controller')
+import { expect } from 'aegir/utils/chai.js'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
+import { base32 } from 'multiformats/bases/base32'
 
 const sendData = async (data) => {
   const form = new FormData()
@@ -25,7 +26,7 @@ const sendData = async (data) => {
 }
 
 describe('/block', () => {
-  const cid = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
+  const cid = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
   const data = Buffer.from('hello world\n')
   const expectedResult = {
     Key: cid.toString(),
@@ -40,16 +41,18 @@ describe('/block', () => {
         get: sinon.stub(),
         stat: sinon.stub(),
         rm: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
 
   describe('/put', () => {
     const defaultOptions = {
-      mhtype: undefined,
-      mhlen: undefined,
-      format: undefined,
-      version: undefined,
+      mhtype: 'sha2-256',
+      format: 'dag-pb',
+      version: 0,
       pin: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
@@ -75,10 +78,8 @@ describe('/block', () => {
     })
 
     it('updates value', async () => {
-      ipfs.block.put.withArgs(data, defaultOptions).returns({
-        cid,
-        data
-      })
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+      ipfs.block.put.withArgs(data, defaultOptions).returns(cid)
 
       const res = await http({
         method: 'POST',
@@ -90,14 +91,26 @@ describe('/block', () => {
       expect(res).to.have.deep.property('result', expectedResult)
     })
 
+    it('converts a v0 format to dag-pb', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+      ipfs.block.put.withArgs(data, defaultOptions).returns(cid)
+
+      const res = await http({
+        method: 'POST',
+        url: '/api/v0/block/put?format=v0',
+        ...await sendData(data)
+      }, { ipfs })
+
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.deep.property('result', expectedResult)
+    })
+
     it('updates value and pins block', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.put.withArgs(data, {
         ...defaultOptions,
         pin: true
-      }).returns({
-        cid,
-        data
-      })
+      }).returns(cid)
 
       const res = await http({
         method: 'POST',
@@ -109,14 +122,12 @@ describe('/block', () => {
       expect(res).to.have.deep.property('result', expectedResult)
     })
 
-    it('updates value with a v1 CID', async () => {
+    it('defaults to base32 encoding with a v1 CID', async () => {
+      ipfs.bases.getBase.withArgs('base32').returns(base32)
       ipfs.block.put.withArgs(data, {
         ...defaultOptions,
         version: 1
-      }).returns({
-        cid,
-        data
-      })
+      }).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
@@ -125,44 +136,32 @@ describe('/block', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.property('result', expectedResult)
+      expect(res.result.Key).to.equal(cid.toV1().toString())
     })
 
     it('should put a value and return a base64 encoded CID', async () => {
-      ipfs.block.put.withArgs(data, defaultOptions).returns({
-        cid,
-        data
-      })
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      ipfs.block.put.withArgs(data, {
+        ...defaultOptions,
+        version: 1
+      }).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
-        url: '/api/v0/block/put?cid-base=base64',
+        url: '/api/v0/block/put?version=1&cid-base=base64',
         ...await sendData(data)
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Key)).to.equal('base64')
-    })
-
-    it('should not put a value for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/block/put?cid-base=invalid',
-        ...await sendData(data)
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res.result.Key).to.equal(cid.toV1().toString(base64))
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.put.withArgs(data, {
         ...defaultOptions,
         timeout: 1000
-      }).returns({
-        cid,
-        data
-      })
+      }).returns(cid)
 
       const res = await http({
         method: 'POST',
@@ -206,10 +205,7 @@ describe('/block', () => {
     })
 
     it('returns value', async () => {
-      ipfs.block.get.withArgs(cid, defaultOptions).returns({
-        cid,
-        data
-      })
+      ipfs.block.get.withArgs(cid, defaultOptions).returns(data)
 
       const res = await http({
         method: 'POST',
@@ -224,10 +220,7 @@ describe('/block', () => {
       ipfs.block.get.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
-      }).returns({
-        cid,
-        data
-      })
+      }).returns(data)
 
       const res = await http({
         method: 'POST',
@@ -270,6 +263,7 @@ describe('/block', () => {
     })
 
     it('returns value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.stat.withArgs(cid, defaultOptions).returns({
         cid,
         size: data.byteLength
@@ -287,8 +281,9 @@ describe('/block', () => {
     })
 
     it('should stat a block and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.block.stat.withArgs(cid, defaultOptions).returns({
-        cid,
+        cid: cid.toV1(),
         size: data.byteLength
       })
 
@@ -298,20 +293,11 @@ describe('/block', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Key)).to.deep.equal('base64')
-    })
-
-    it('should not stat a block for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/block/stat?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res.result.Key).to.equal(cid.toV1().toString(base64))
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.stat.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
@@ -363,6 +349,7 @@ describe('/block', () => {
     })
 
     it('returns 200', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.rm.withArgs([cid], defaultOptions).returns([{ cid }])
 
       const res = await http({
@@ -374,6 +361,7 @@ describe('/block', () => {
     })
 
     it('returns 200 when forcing removal', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.rm.withArgs([cid], {
         ...defaultOptions,
         force: true
@@ -388,6 +376,7 @@ describe('/block', () => {
     })
 
     it('returns 200 when removing quietly', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.rm.withArgs([cid], {
         ...defaultOptions,
         quiet: true
@@ -402,7 +391,8 @@ describe('/block', () => {
     })
 
     it('returns 200 for multiple CIDs', async () => {
-      const cid2 = new CID('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Ka')
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+      const cid2 = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Ka')
 
       ipfs.block.rm.withArgs([cid, cid2], defaultOptions).returns([{ cid, cid2 }])
 
@@ -415,6 +405,7 @@ describe('/block', () => {
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.block.rm.withArgs([cid], {
         ...defaultOptions,
         timeout: 1000

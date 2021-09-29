@@ -1,31 +1,28 @@
-'use strict'
-
-const toCamel = require('../lib/object-to-camel')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { objectToCamel } from '../lib/object-to-camel.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/name').API<HTTPClientExtraOptions>} NameAPI
  */
 
-module.exports = configure(api => {
+export const createPublish = configure(api => {
   /**
    * @type {NameAPI["publish"]}
    */
   async function publish (path, options = {}) {
     const res = await api.post('name/publish', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: path,
+        arg: `${path}`,
         ...options
       }),
       headers: options.headers
     })
 
     // @ts-ignore server output is not typed
-    return toCamel(await res.json())
+    return objectToCamel(await res.json())
   }
   return publish
 })

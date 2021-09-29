@@ -1,11 +1,7 @@
-'use strict'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../utils.js'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../utils')
-
-module.exports = {
+export default {
   command: 'stat <key>',
 
   describe: 'Print information of a raw IPFS block',
@@ -18,7 +14,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -29,8 +25,8 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {import('multiformats/cid').CID} argv.key
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx, key, cidBase, timeout }) {
@@ -38,7 +34,8 @@ module.exports = {
     const stats = await ipfs.block.stat(key, {
       timeout
     })
-    print('Key: ' + cidToString(stats.cid, { base: cidBase }))
+    const base = await ipfs.bases.getBase(cidBase)
+    print('Key: ' + stats.cid.toString(base.encoder))
     print('Size: ' + stats.size)
   }
 }

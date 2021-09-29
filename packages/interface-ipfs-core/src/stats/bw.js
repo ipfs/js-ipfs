@@ -1,31 +1,40 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expectIsBandwidth } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const last = require('it-last')
-const all = require('it-all')
+import { expectIsBandwidth } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import last from 'it-last'
+import all from 'it-all'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testBw (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.stats.bw', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get bandwidth stats ', async () => {
       const res = await last(ipfs.stats.bw())
+
+      if (!res) {
+        throw new Error('No bw stats returned')
+      }
+
       expectIsBandwidth(null, res)
     })
 

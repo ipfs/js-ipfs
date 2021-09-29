@@ -1,6 +1,4 @@
-'use strict'
-
-const { AbortController } = require('native-abort-controller')
+import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('ipfs-core-types/src/pubsub').MessageHandlerFn} MessageHandlerFn
@@ -10,7 +8,7 @@ const { AbortController } = require('native-abort-controller')
  * @property {AbortController} controller
  */
 
-class SubscriptionTracker {
+export class SubscriptionTracker {
   constructor () {
     /** @type {Map<string, Subscription[]>} */
     this._subs = new Map()
@@ -64,5 +62,3 @@ class SubscriptionTracker {
     unsubs.forEach(s => s.controller.abort())
   }
 }
-
-module.exports = SubscriptionTracker

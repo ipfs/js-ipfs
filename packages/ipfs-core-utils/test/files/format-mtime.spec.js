@@ -1,9 +1,7 @@
-'use strict'
-
 /* eslint-env mocha */
 
-const { expect } = require('aegir/utils/chai')
-const formatMtime = require('../../src/files/format-mtime')
+import { expect } from 'aegir/utils/chai.js'
+import { formatMtime } from '../../src/files/format-mtime.js'
 
 describe('format-mtime', function () {
   it('formats mtime', function () {

@@ -1,35 +1,44 @@
 /* eslint-env mocha, browser */
-'use strict'
 
-const { fixtures } = require('./utils')
-const { Readable } = require('readable-stream')
-const all = require('it-all')
-const last = require('it-last')
-const drain = require('it-drain')
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const { supportsFileReader } = require('ipfs-utils/src/supports')
-const globSource = require('ipfs-utils/src/files/glob-source')
-const { isNode } = require('ipfs-utils/src/env')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const bufferStream = require('it-buffer-stream')
+import { fixtures } from './utils/index.js'
+import { Readable } from 'readable-stream'
+import all from 'it-all'
+import last from 'it-last'
+import drain from 'it-drain'
+import { supportsFileReader } from 'ipfs-utils/src/supports.js'
+import globSource from 'ipfs-utils/src/files/glob-source.js'
+import { isNode } from 'ipfs-utils/src/env.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import bufferStream from 'it-buffer-stream'
+import * as raw from 'multiformats/codecs/raw'
+import * as dagPB from '@ipld/dag-pb'
+import resolve from 'aegir/utils/resolve.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testAddAll (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.addAll', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
+    /**
+     * @param {string | number} mode
+     * @param {number} expectedMode
+     */
     async function testMode (mode, expectedMode) {
       const content = String(Math.random() + Date.now())
       const files = await all(ipfs.addAll([{
@@ -43,12 +52,16 @@ module.exports = (common, options) => {
       expect(stats).to.have.property('mode', expectedMode)
     }
 
+    /**
+     * @param {MtimeLike} mtime
+     * @param {MtimeLike} expectedMtime
+     */
     async function testMtime (mtime, expectedMtime) {
       const content = String(Math.random() + Date.now())
-      const files = await all(ipfs.addAll({
+      const files = await all(ipfs.addAll([{
         content: uint8ArrayFromString(content),
         mtime
-      }))
+      }]))
       expect(files).to.have.length(1)
       expect(files).to.have.deep.nested.property('[0].mtime', expectedMtime)
 
@@ -56,12 +69,15 @@ module.exports = (common, options) => {
       expect(stats).to.have.deep.property('mtime', expectedMtime)
     }
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should add a File as array of tuples', async function () {
-      if (!supportsFileReader) return this.skip('skip in node')
+      if (!supportsFileReader) {
+        // @ts-ignore this is mocha
+        return this.skip('skip in node')
+      }
 
       const tuple = {
         path: 'filename.txt',
@@ -79,12 +95,16 @@ module.exports = (common, options) => {
       expect(filesAdded).to.have.length(1)
 
       const file = filesAdded[0]
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
       expect(file.path).to.equal('testfile.txt')
     })
 
     it('should add array of objects with readable stream content', async function () {
-      if (!isNode) this.skip()
+      if (!isNode) {
+        // @ts-ignore this is mocha
+        this.skip('Only node supports readable streams')
+      }
+
       const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
 
       const rs = new Readable()
@@ -103,11 +123,17 @@ module.exports = (common, options) => {
     })
 
     it('should add a nested directory as array of tupples', async function () {
+      /**
+       * @param {string} name
+       */
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
       })
 
+      /**
+       * @param {string} name
+       */
       const emptyDir = (name) => ({ path: `test-folder/${name}` })
 
       const dirs = [
@@ -123,17 +149,29 @@ module.exports = (common, options) => {
 
       const root = await last(ipfs.addAll(dirs))
 
+      if (!root) {
+        throw new Error('Dirs were not loaded')
+      }
+
       expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root.cid.toString()).to.equal(fixtures.directory.cid.toString())
     })
 
     it('should add a nested directory as array of tupples with progress', async function () {
+      /**
+       * @param {string} name
+       */
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
       })
 
-      const emptyDir = (name) => ({ path: `test-folder/${name}` })
+      /**
+       * @param {string} name
+       */
+      const emptyDir = (name) => ({ path: `test-folder/${name}`, content: undefined })
+
+      /** @type {Record<string, number>} */
       const progressSizes = {}
 
       const dirs = [
@@ -147,7 +185,7 @@ module.exports = (common, options) => {
         emptyDir('files/empty')
       ]
 
-      const total = dirs.reduce((acc, curr) => {
+      const total = dirs.reduce((/** @type {Record<string, number>} */ acc, curr) => {
         if (curr.content) {
           acc[curr.path] = curr.content.length
         }
@@ -155,18 +193,28 @@ module.exports = (common, options) => {
         return acc
       }, {})
 
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
       const handler = (bytes, path) => {
-        progressSizes[path] = bytes
+        if (path) {
+          progressSizes[path] = bytes
+        }
       }
 
       const root = await last(ipfs.addAll(dirs, { progress: handler }))
       expect(progressSizes).to.deep.equal(total)
-      expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root).to.have.property('path', 'test-folder')
+      expect(root).to.have.deep.property('cid', fixtures.directory.cid)
     })
 
     it('should receive progress path as empty string when adding content without paths', async function () {
+      /**
+       * @param {string} name
+       */
       const content = (name) => fixtures.directory.files[name]
+
+      /** @type {Record<string, number>} */
       const progressSizes = {}
 
       const dirs = [
@@ -179,8 +227,11 @@ module.exports = (common, options) => {
         '': dirs.reduce((acc, curr) => acc + curr.length, 0)
       }
 
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
       const handler = (bytes, path) => {
-        progressSizes[path] = bytes
+        progressSizes[`${path}`] = bytes
       }
 
       await drain(ipfs.addAll(dirs, { progress: handler }))
@@ -188,9 +239,16 @@ module.exports = (common, options) => {
     })
 
     it('should receive file name from progress event', async () => {
+      /** @type {string[]} */
       const receivedNames = []
+
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
       function handler (p, name) {
-        receivedNames.push(name)
+        if (name) {
+          receivedNames.push(name)
+        }
       }
 
       await drain(ipfs.addAll([{
@@ -208,9 +266,12 @@ module.exports = (common, options) => {
     })
 
     it('should add files to a directory non sequentially', async function () {
+      /**
+       * @param {string} path
+       */
       const content = path => ({
         path: `test-dir/${path}`,
-        content: fixtures.directory.files[path.split('/').pop()]
+        content: fixtures.directory.files[path.split('/').pop() || '']
       })
 
       const input = [
@@ -222,6 +283,10 @@ module.exports = (common, options) => {
 
       const filesAdded = await all(ipfs.addAll(input))
 
+      /**
+       * @param {object} arg
+       * @param {string} arg.path
+       */
       const toPath = ({ path }) => path
       const nonSeqDirFilePaths = input.map(toPath).filter(p => p.includes('/a/'))
       const filesAddedPaths = filesAdded.map(toPath)
@@ -232,23 +297,45 @@ module.exports = (common, options) => {
     it('should fail when passed invalid input', async () => {
       const nonValid = 138
 
+      // @ts-expect-error nonValid is the wrong type
       await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejected()
+    })
+
+    it('should fail when passed single file objects', async () => {
+      const nonValid = { content: 'hello world' }
+
+      // @ts-expect-error nonValid is non valid
+      await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejectedWith(/single item passed/)
+    })
+
+    it('should fail when passed single strings', async () => {
+      const nonValid = 'hello world'
+
+      await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejectedWith(/single item passed/)
+    })
+
+    it('should fail when passed single buffers', async () => {
+      const nonValid = uint8ArrayFromString('hello world')
+
+      // @ts-expect-error nonValid is non valid
+      await expect(all(ipfs.addAll(nonValid))).to.eventually.be.rejectedWith(/single item passed/)
     })
 
     it('should wrap content in a directory', async () => {
       const data = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
-      const filesAdded = await all(ipfs.addAll(data, { wrapWithDirectory: true }))
+      const filesAdded = await all(ipfs.addAll([data], { wrapWithDirectory: true }))
       expect(filesAdded).to.have.length(2)
 
       const file = filesAdded[0]
       const wrapped = filesAdded[1]
-      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid)
+      expect(file.cid.toString()).to.equal(fixtures.smallFile.cid.toString())
       expect(file.path).to.equal('testfile.txt')
       expect(wrapped.path).to.equal('')
     })
 
     it('should add a directory with only-hash=true', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const content = String(Math.random() + Date.now())
 
@@ -270,18 +357,21 @@ module.exports = (common, options) => {
     })
 
     it('should add with mode as string', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mode = '0777'
       await testMode(mode, parseInt(mode, 8))
     })
 
     it('should add with mode as number', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mode = parseInt('0777', 8)
       await testMode(mode, mode)
     })
 
     it('should add with mtime as Date', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mtime = new Date(5000)
       await testMtime(mtime, {
@@ -291,6 +381,7 @@ module.exports = (common, options) => {
     })
 
     it('should add with mtime as { nsecs, secs }', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mtime = {
         secs: 5,
@@ -300,6 +391,7 @@ module.exports = (common, options) => {
     })
 
     it('should add with mtime as timespec', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       await testMtime({
         Seconds: 5,
@@ -311,6 +403,7 @@ module.exports = (common, options) => {
     })
 
     it('should add with mtime as hrtime', async function () {
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
       const mtime = process.hrtime()
       await testMtime(mtime, {
@@ -320,64 +413,66 @@ module.exports = (common, options) => {
     })
 
     it('should add a directory from the file system', async function () {
+      // @ts-ignore this is mocha
       if (!isNode) this.skip()
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'test-folder')
+      const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
-      const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
+      const result = await all(ipfs.addAll(globSource(filesPath, '**/*')))
       expect(result.length).to.be.above(8)
     })
 
     it('should add a directory from the file system with an odd name', async function () {
+      // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'weird name folder [v0]')
+      const filesPath = resolve('test/fixtures/weird name folder [v0]', 'interface-ipfs-core')
 
-      const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true })))
+      const result = await all(ipfs.addAll(globSource(filesPath, '**/*')))
       expect(result.length).to.be.above(8)
     })
 
     it('should ignore a directory from the file system', async function () {
+      // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'test-folder')
+      const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
-      const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, ignore: ['files/**'] })))
-      expect(result.length).to.be.below(9)
+      const result = await all(ipfs.addAll(globSource(filesPath, '@(!(files*))')))
+      expect(result.length).to.equal(6)
     })
 
     it('should add a file from the file system', async function () {
+      // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filePath = path.join(__dirname, 'add-all.js')
+      const filePath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
-      const result = await all(ipfs.addAll(globSource(filePath)))
+      const result = await all(ipfs.addAll(globSource(filePath, 'ipfs-add.js')))
       expect(result.length).to.equal(1)
-      expect(result[0].path).to.equal('add-all.js')
+      expect(result[0].path).to.equal('ipfs-add.js')
     })
 
     it('should add a hidden file in a directory from the file system', async function () {
+      // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
-      const filesPath = path.join(__dirname, '..', 'test', 'fixtures', 'hidden-files-folder')
+      const filesPath = resolve('test/fixtures', 'interface-ipfs-core')
 
-      const result = await all(ipfs.addAll(globSource(filesPath, { recursive: true, hidden: true })))
-      expect(result.length).to.be.above(10)
+      const result = await all(ipfs.addAll(globSource(filesPath, 'hidden-files-folder/**/*', { hidden: true })))
       expect(result.map(object => object.path)).to.include('hidden-files-folder/.hiddenTest.txt')
       expect(result.map(object => object.cid.toString())).to.include('QmdbAjVmLRdpFyi8FFvjPfhTGB2cVXvWLuK7Sbt38HXrtt')
     })
 
-    it('should add a file from the file system with only-hash=true', async function () {
+    it('should add a file with only-hash=true', async function () {
+      // @ts-ignore this is mocha
       if (!isNode) this.skip()
 
+      // @ts-ignore this is mocha
       this.slow(10 * 1000)
 
-      const content = String(Math.random() + Date.now())
-      const filepath = path.join(os.tmpdir(), `${content}.txt`)
-      fs.writeFileSync(filepath, content)
-
-      const out = await all(ipfs.addAll(globSource(filepath), { onlyHash: true }))
-
-      fs.unlinkSync(filepath)
+      const out = await all(ipfs.addAll([{
+        content: uint8ArrayFromString('hello world')
+      }], { onlyHash: true }))
 
       await expect(ipfs.object.get(out[0].cid, { timeout: 500 }))
         .to.eventually.be.rejected()
@@ -385,33 +480,33 @@ module.exports = (common, options) => {
     })
 
     it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {
-      const files = await all(ipfs.addAll(Uint8Array.from([0, 1, 2]), {
+      const files = await all(ipfs.addAll([Uint8Array.from([0, 1, 2])], {
         cidVersion: 1,
         rawLeaves: true
       }))
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('bafkreifojmzibzlof6xyh5auu3r5vpu5l67brf3fitaf73isdlglqw2t7q')
-      expect(files[0].cid.codec).to.equal('raw')
+      expect(files[0].cid.code).to.equal(raw.code)
       expect(files[0].size).to.equal(3)
     })
 
     it('should override raw leaves when file is smaller than one block and metadata is present', async () => {
-      const files = await all(ipfs.addAll({
+      const files = await all(ipfs.addAll([{
         content: Uint8Array.from([0, 1, 2]),
         mode: 0o123,
         mtime: {
           secs: 1000,
           nsecs: 0
         }
-      }, {
+      }], {
         cidVersion: 1,
         rawLeaves: true
       }))
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('bafybeifmayxiu375ftlgydntjtffy5cssptjvxqw6vyuvtymntm37mpvua')
-      expect(files[0].cid.codec).to.equal('dag-pb')
+      expect(files[0].cid.code).to.equal(dagPB.code)
       expect(files[0].size).to.equal(18)
     })
 
@@ -427,13 +522,16 @@ module.exports = (common, options) => {
 
       expect(files.length).to.equal(1)
       expect(files[0].cid.toString()).to.equal('QmaZTosBmPwo9LQ48ESPCEcNuX2kFxkpXYy8i3rxqBdzRG')
-      expect(files[0].cid.codec).to.equal('dag-pb')
+      expect(files[0].cid.code).to.equal(dagPB.code)
       expect(files[0].size).to.equal(11)
     })
 
     it('should support bidirectional streaming', async function () {
-      let progressInvoked
+      let progressInvoked = false
 
+      /**
+       * @type {import('ipfs-core-types/src/root').AddProgressFn}
+       */
       const handler = (bytes, path) => {
         progressInvoked = true
       }
@@ -451,7 +549,7 @@ module.exports = (common, options) => {
             // so the streaming is bidirectional and we can finish up
             if (progressInvoked) {
               clearInterval(interval)
-              resolve()
+              resolve(null)
             }
           }, 10)
         })

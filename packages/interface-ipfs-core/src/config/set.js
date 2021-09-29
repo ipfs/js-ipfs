@@ -1,27 +1,31 @@
 /* eslint-env mocha */
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testSet (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.config.set', function () {
     this.timeout(30 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should set a new key', async () => {
       await ipfs.config.set('Fruit', 'banana')
@@ -74,6 +78,7 @@ module.exports = (common, options) => {
     })
 
     it('should fail on non valid key', () => {
+      // @ts-expect-error invalid arg
       return expect(ipfs.config.set(uint8ArrayFromString('heeey'), '')).to.eventually.be.rejected()
     })
 

@@ -1,18 +1,15 @@
-'use strict'
-
-const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const { decodeNode, encodeNode } = require('ipfs-message-port-protocol/src/dag')
-const collect = require('it-all')
+import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
+import { decodeNode, encodeNode } from 'ipfs-message-port-protocol/dag'
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
- * @typedef {import('cids')} CID
- * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
- * @typedef {import('ipfs-message-port-protocol/src/dag').EncodedDAGNode} EncodedDAGNode
+ * @typedef {import('multiformats/cid').CID} CID
+ * @typedef {import('ipfs-message-port-protocol/cid').EncodedCID} EncodedCID
+ * @typedef {import('ipfs-message-port-protocol/dag').EncodedDAGNode} EncodedDAGNode
  * @typedef {import('ipfs-core-types/src/dag').PutOptions} PutOptions
  */
 
-exports.DAGService = class DAGService {
+export class DAGService {
   /**
    * @param {IPFS} ipfs
    */
@@ -30,11 +27,8 @@ exports.DAGService = class DAGService {
    */
   async put (query) {
     const dagNode = decodeNode(query.dagNode)
+    const cid = await this.ipfs.dag.put(dagNode, query)
 
-    const cid = await this.ipfs.dag.put(dagNode, {
-      ...query,
-      cid: query.encodedCid ? decodeCID(query.encodedCid) : undefined
-    })
     return encodeCID(cid)
   }
 
@@ -93,30 +87,6 @@ exports.DAGService = class DAGService {
       cid: encodeCID(cid),
       remainderPath
     }
-  }
-
-  /**
-   * @typedef {Object} EnumerateDAG
-   * @property {EncodedCID} cid
-   * @property {string} [path]
-   * @property {boolean} [recursive]
-   * @property {number} [timeout]
-   * @property {AbortSignal} [signal]
-   *
-   * @param {EnumerateDAG} query
-   * @returns {Promise<string[]>}
-   */
-  async tree (query) {
-    const { cid, path, recursive, timeout, signal } = query
-    const result = await this.ipfs.dag.tree(decodeCID(cid), {
-      path,
-      recursive,
-      timeout,
-      signal
-    })
-    const entries = await collect(result)
-
-    return entries
   }
 }
 

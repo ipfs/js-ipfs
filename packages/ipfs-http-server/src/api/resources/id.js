@@ -1,8 +1,6 @@
-'use strict'
+import Joi from '../../utils/joi.js'
 
-const Joi = require('../../utils/joi')
-
-module.exports = {
+export const idResource = {
   options: {
     validate: {
       options: {

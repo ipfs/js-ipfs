@@ -1,16 +1,14 @@
-'use strict'
-
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const toHeaders = require('../utils/to-headers')
-const unaryToPromise = require('../utils/unary-to-promise')
-const { Multiaddr } = require('multiaddr')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { toHeaders } from '../utils/to-headers.js'
+import { unaryToPromise } from '../utils/unary-to-promise.js'
+import { Multiaddr } from 'multiaddr'
 
 /**
  * @param {import('@improbable-eng/grpc-web').grpc} grpc
  * @param {*} service
  * @param {import('../types').Options} opts
  */
-module.exports = function grpcId (grpc, service, opts) {
+export function grpcId (grpc, service, opts) {
   /**
    * @type {import('ipfs-core-types/src/root').API["id"]}
    */

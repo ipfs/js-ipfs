@@ -20,7 +20,6 @@
 - [Usage](#usage)
 - [Wire protocol codecs](#wire-protocol-codecs)
   - [`CID`](#cid)
-  - [Block](#block)
   - [DAGNode](#dagnode)
   - [AsyncIterable](#asynciterable)
   - [Callback](#callback)
@@ -46,9 +45,9 @@ All encoders take an optional `transfer` array. If provided, the encoder will ad
 Codecs for [CID][] implementation in JavaScript.
 
 ```js
-const { CID, encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
+import { CID, encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
 
-const cid = new CID('bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu')
+const cid = CID.parse('bafybeig6xv5nwphfmvcnektpnojts33jqcuam7bmye2pb54adnrtccjlsu')
 
 const { port1, port2 } = new MessageChannel()
 
@@ -66,41 +65,12 @@ port2.onmessage = ({data}) => {
 }
 ```
 
-### Block
-
-Codecs for [IPLD Block][] implementation in JavaScript.
-
-```js
-const { Block, encodeBlock, decodeBlock } = require('ipfs-message-port-protocol/src/block')
-
-const data = new TextEncoder().encode('hello')
-const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-const block = new Block(data, cid)
-
-const { port1, port2 } = new MessageChannel()
-
-// Will copy underlying memory
-port1.postMessage(encodeBlock(block))
-
-// Will transfer underlying memory (block & cid will be corrupt on this thread)
-const transfer = []
-port1.postMessage(encodeBlock(block, transfer), transfer)
-
-
-// On the receiver thread
-port2.onmessage = ({data}) => {
-  const block = decodeBlock(data)
-  block instanceof Block // true
-}
-```
-
 ### DAGNode
 
 Codec for DAGNodes accepted by `ipfs.dag.put` API.
 
 ```js
-const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
-
+import { encodeNode, decodeNode } from 'ipfs-message-port-protocol/dag'
 
 const cid = CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
 const dagNode = { hi: 'hello', link: cid }
@@ -133,7 +103,7 @@ iterable is encoded to a [MessagePort][] that can only be transferred).
 
 
 ```js
-const { encodeIterable, decodeIterable } = require('ipfs-message-port-protocol/src/core')
+import { encodeIterable, decodeIterable } from 'ipfs-message-port-protocol/core')
 
 const data = ipfs.cat('/ipfs/QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
 
@@ -179,7 +149,7 @@ port2.onmessage = async ({data}) => {
 Primitive callbacks that take single parameter supported by [structured cloning algorithm][] like progress callback used across IPFS APIs can be encoded / decoded. Unlike most encoders `transfer` argument is required (because value is encoded to a [MessagePort][] that can only be transferred)
 
 ```js
-const { encodeCallback, decodeCallback } = require('ipfs-message-port-protocol/src/core')
+import { encodeCallback, decodeCallback } from 'ipfs-message-port-protocol/core'
 
 const { port1, port2 } = new MessageChannel()
 
@@ -203,7 +173,6 @@ port2.onmessage = ({data}) => {
 [MessagePort]:https://developer.mozilla.org/en-US/docs/Web/API/MessagePort
 [Transferable]:https://developer.mozilla.org/en-US/docs/Web/API/Transferable
 
-[IPLD Block]:https://github.com/ipld/js-ipld-block
 [CID]:https://github.com/multiformats/js-cid
 
 [async iterables]:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of

@@ -1,30 +1,34 @@
 /* eslint-env mocha */
-'use strict'
 
-const { nanoid } = require('nanoid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const createShardedDirectory = require('../utils/create-sharded-directory')
-const createTwoShards = require('../utils/create-two-shards')
-const { randomBytes } = require('iso-random-stream')
-const isShardAtPath = require('../utils/is-shard-at-path')
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { createShardedDirectory } from '../utils/create-sharded-directory.js'
+import { createTwoShards } from '../utils/create-two-shards.js'
+import { randomBytes } from 'iso-random-stream'
+import isShardAtPath from '../utils/is-shard-at-path.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testRm (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.rm', function () {
-    this.timeout(120 * 1000)
+    this.timeout(300 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should not remove not found file/dir, expect error', () => {
       const testDir = `/test-${nanoid()}`
@@ -33,6 +37,7 @@ module.exports = (common, options) => {
     })
 
     it('refuses to remove files without arguments', async () => {
+      // @ts-expect-error invalid args
       await expect(ipfs.files.rm()).to.eventually.be.rejected()
     })
 
@@ -127,10 +132,11 @@ module.exports = (common, options) => {
     })
 
     describe('with sharding', () => {
+      /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
 
       before(async function () {
-        const ipfsd = await common.spawn({
+        const ipfsd = await factory.spawn({
           ipfsOptions: {
             EXPERIMENTAL: {
               // enable sharding for js

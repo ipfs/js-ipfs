@@ -1,10 +1,12 @@
-'use strict'
+import * as dagPB from '@ipld/dag-pb'
+import * as dagCBOR from '@ipld/dag-cbor'
+import * as raw from 'multiformats/codecs/raw'
+import { CID } from 'multiformats/cid'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
-const {
-  DAGLink
-} = require('ipld-dag-pb')
-const CID = require('cids')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+/**
+ * @typedef {import('@ipld/dag-pb').PBLink} DAGLink
+ */
 
 /**
  * @param {any} node
@@ -17,15 +19,25 @@ function findLinks (node, links = []) {
 
     if (key === '/' && Object.keys(node).length === 1) {
       try {
-        links.push(new DAGLink('', 0, new CID(val)))
+        links.push({
+          Name: '',
+          Tsize: 0,
+          Hash: CID.parse(val)
+        })
         continue
       } catch (_) {
         // not a CID
       }
     }
 
-    if (CID.isCID(val)) {
-      links.push(new DAGLink('', 0, val))
+    const cid = CID.asCID(val)
+
+    if (cid) {
+      links.push({
+        Name: '',
+        Tsize: 0,
+        Hash: cid
+      })
       continue
     }
 
@@ -43,29 +55,31 @@ function findLinks (node, links = []) {
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
+ * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  */
-module.exports = ({ ipld }) => {
+export function createLinks ({ repo, codecs }) {
   /**
    * @type {import('ipfs-core-types/src/object').API["links"]}
    */
-  async function links (multihash, options = {}) {
-    const cid = new CID(multihash)
-    const result = await ipld.get(cid, options)
+  async function links (cid, options = {}) {
+    const codec = await codecs.getCodec(cid.code)
+    const block = await repo.blocks.get(cid, options)
+    const node = codec.decode(block)
 
-    if (cid.codec === 'raw') {
+    if (cid.code === raw.code) {
       return []
     }
 
-    if (cid.codec === 'dag-pb') {
-      return result.Links
+    if (cid.code === dagPB.code) {
+      return node.Links
     }
 
-    if (cid.codec === 'dag-cbor') {
-      return findLinks(result)
+    if (cid.code === dagCBOR.code) {
+      return findLinks(node)
     }
 
-    throw new Error(`Cannot resolve links from codec ${cid.codec}`)
+    throw new Error(`Cannot resolve links from codec ${cid.code}`)
   }
 
   return withTimeoutOption(links)

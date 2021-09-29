@@ -1,62 +1,5 @@
-'use strict'
-
-const PeerId = require('peer-id')
-/** @type {{success:true, time:0, text: ''}} */
-const basePacket = { success: true, time: 0, text: '' }
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-
-/**
- * @param {Object} config
- * @param {import('../types').NetworkService} config.network
- */
-module.exports = ({ network }) => {
-  /**
-   * @type {import('ipfs-core-types/src/root').API["ping"]}
-   */
-  async function * ping (peerId, options = {}) {
-    const { libp2p } = await network.use()
-    options.count = options.count || 10
-
-    const peer = PeerId.createFromCID(peerId)
-
-    const storedPeer = libp2p.peerStore.get(peer)
-    let id = storedPeer && storedPeer.id
-
-    if (!id) {
-      yield { ...basePacket, text: `Looking up peer ${peerId}` }
-      const remotePeer = await libp2p.peerRouting.findPeer(peer)
-
-      id = remotePeer && remotePeer.id
-    }
-
-    if (!id) {
-      throw new Error('Peer was not found')
-    }
-
-    yield { ...basePacket, text: `PING ${id.toB58String()}` }
-
-    let packetCount = 0
-    let totalTime = 0
-
-    for (let i = 0; i < options.count; i++) {
-      try {
-        const time = await libp2p.ping(id)
-        totalTime += time
-        packetCount++
-        yield { ...basePacket, time }
-      } catch (err) {
-        yield { ...basePacket, success: false, text: err.toString() }
-      }
-    }
-
-    if (packetCount) {
-      const average = totalTime / packetCount
-      yield { ...basePacket, text: `Average latency: ${average}ms` }
-    }
-  }
-
-  return withTimeoutOption(ping)
-}
+import PeerId from 'peer-id'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @typedef {Pong|PingFailure|StatusUpdate} Packet
@@ -86,3 +29,59 @@ module.exports = ({ network }) => {
  *
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
+
+/** @type {{success:true, time:0, text: ''}} */
+const basePacket = { success: true, time: 0, text: '' }
+
+/**
+ * @param {Object} config
+ * @param {import('../types').NetworkService} config.network
+ */
+export function createPing ({ network }) {
+  /**
+   * @type {import('ipfs-core-types/src/root').API["ping"]}
+   */
+  async function * ping (peerId, options = {}) {
+    const { libp2p } = await network.use()
+    options.count = options.count || 10
+
+    const peer = PeerId.createFromB58String(peerId)
+
+    const storedPeer = libp2p.peerStore.get(peer)
+    let id = storedPeer && storedPeer.id
+
+    if (!id) {
+      yield { ...basePacket, text: `Looking up peer ${peerId}` }
+      const remotePeer = await libp2p.peerRouting.findPeer(peer)
+
+      id = remotePeer && remotePeer.id
+    }
+
+    if (!id) {
+      throw new Error('Peer was not found')
+    }
+
+    yield { ...basePacket, text: `PING ${id.toB58String()}` }
+
+    let packetCount = 0
+    let totalTime = 0
+
+    for (let i = 0; i < options.count; i++) {
+      try {
+        const time = await libp2p.ping(id)
+        totalTime += time
+        packetCount++
+        yield { ...basePacket, time }
+      } catch (/** @type {any} */ err) {
+        yield { ...basePacket, success: false, text: err.toString() }
+      }
+    }
+
+    if (packetCount) {
+      const average = totalTime / packetCount
+      yield { ...basePacket, text: `Average latency: ${average}ms` }
+    }
+  }
+
+  return withTimeoutOption(ping)
+}

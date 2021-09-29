@@ -1,20 +1,18 @@
-'use strict'
-
-const CID = require('cids')
-const { Multiaddr } = require('multiaddr')
-const toCamel = require('../lib/object-to-camel')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const multipartRequest = require('../lib/multipart-request')
-const abortSignal = require('../lib/abort-signal')
-const { AbortController } = require('native-abort-controller')
+import { Multiaddr } from 'multiaddr'
+import { objectToCamel } from '../lib/object-to-camel.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { multipartRequest } from 'ipfs-core-utils/multipart-request'
+import { abortSignal } from '../lib/abort-signal.js'
+import { AbortController } from 'native-abort-controller'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/dht').API<HTTPClientExtraOptions>} DHTAPI
  */
 
-module.exports = configure(api => {
+export const createPut = configure(api => {
   /**
    * @type {DHTAPI["put"]}
    */
@@ -23,22 +21,19 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
 
-    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('dht/put', {
-      timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams({
-        arg: key,
+        arg: uint8ArrayToString(key),
         ...options
       }),
       ...(
-        await multipartRequest(value, controller, options.headers)
+        await multipartRequest([value], controller, options.headers)
       )
     })
 
     for await (let message of res.ndjson()) {
-      message = toCamel(message)
-      message.id = new CID(message.id)
+      message = objectToCamel(message)
       if (message.responses) {
         message.responses = message.responses.map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
           id: ID,

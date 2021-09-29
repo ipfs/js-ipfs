@@ -1,9 +1,7 @@
-'use strict'
+import parseDuration from 'parse-duration'
+import { coerceCIDs } from '../../utils.js'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCIDs } = require('../../utils')
-
-module.exports = {
+export default {
   command: 'rm <hash...>',
 
   describe: 'Remove IPFS block(s)',
@@ -34,7 +32,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')[]} argv.hash
+   * @param {import('multiformats/cid').CID[]} argv.hash
    * @param {boolean} argv.force
    * @param {boolean} argv.quiet
    * @param {number} argv.timeout

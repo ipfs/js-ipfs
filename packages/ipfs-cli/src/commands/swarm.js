@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './swarm/index.js'
 
-module.exports = {
+export default {
   command: 'swarm <command>',
 
   description: 'Swarm inspection tool.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('swarm')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

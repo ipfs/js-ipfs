@@ -1,27 +1,32 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testDns (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dns', function () {
     this.timeout(60 * 1000)
     this.retries(3)
+
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should non-recursively resolve ipfs.io', async function () {
       try {
@@ -29,8 +34,9 @@ module.exports = (common, options) => {
 
         // matches pattern /ipns/<ipnsaddress>
         expect(res).to.match(/\/ipns\/.+$/)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
+          // @ts-ignore this is mocha
           return this.skip()
         }
 
@@ -44,8 +50,9 @@ module.exports = (common, options) => {
 
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
+          // @ts-ignore this is mocha
           return this.skip()
         }
 
@@ -59,8 +66,9 @@ module.exports = (common, options) => {
 
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
+          // @ts-ignore this is mocha
           return this.skip()
         }
 

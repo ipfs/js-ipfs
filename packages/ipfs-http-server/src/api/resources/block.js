@@ -1,17 +1,12 @@
-'use strict'
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import Joi from '../../utils/joi.js'
+import Boom from '@hapi/boom'
+import all from 'it-all'
+import { pipe } from 'it-pipe'
+import map from 'it-map'
+import { streamResponse } from '../../utils/stream-response.js'
 
-const multihash = require('multihashing-async').multihash
-const { nameToCode: codecs } = require('multicodec')
-const multipart = require('../../utils/multipart-request-parser')
-const Joi = require('../../utils/joi')
-const Boom = require('@hapi/boom')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const all = require('it-all')
-const { pipe } = require('it-pipe')
-const map = require('it-map')
-const streamResponse = require('../../utils/stream-response')
-
-exports.get = {
+export const getResource = {
   options: {
     payload: {
       parse: false,
@@ -59,7 +54,7 @@ exports.get = {
         timeout,
         signal
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get block' })
     }
 
@@ -67,10 +62,10 @@ exports.get = {
       throw Boom.notFound('Block was unwanted before it could be remotely retrieved')
     }
 
-    return h.response(Buffer.from(block.data.buffer, block.data.byteOffset, block.data.byteLength)).header('X-Stream-Output', '1')
+    return h.response(Buffer.from(block.buffer, block.byteOffset, block.byteLength)).header('X-Stream-Output', '1')
   }
 }
-exports.put = {
+export const putResource = {
   options: {
     payload: {
       parse: false,
@@ -89,7 +84,7 @@ exports.put = {
 
         let data
 
-        for await (const part of multipart(request.raw.req)) {
+        for await (const part of multipartRequestParser(request.raw.req)) {
           if (part.type !== 'file') {
             continue
           }
@@ -110,12 +105,12 @@ exports.put = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.cidBase(),
-        format: Joi.string().valid(...Object.keys(codecs)),
-        mhtype: Joi.string().valid(...Object.keys(multihash.names)),
+        cidBase: Joi.string().default('base32'),
+        format: Joi.string().default('dag-pb'),
+        mhtype: Joi.string().default('sha2-256'),
         mhlen: Joi.number(),
         pin: Joi.bool().default(false),
-        version: Joi.number(),
+        version: Joi.number().default(0),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -146,7 +141,6 @@ exports.put = {
       },
       query: {
         mhtype,
-        mhlen,
         format,
         version,
         pin,
@@ -155,29 +149,33 @@ exports.put = {
       }
     } = request
 
-    let block
+    const codec = format === 'v0' ? 'dag-pb' : format
+    const cidVersion = codec === 'dag-pb' && mhtype === 'sha2-256' ? version : 1
+    let cid
+
     try {
-      block = await ipfs.block.put(data, {
+      cid = await ipfs.block.put(data, {
         mhtype,
-        mhlen,
-        format,
-        version,
+        format: codec,
+        version: cidVersion,
         pin,
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to put block' })
     }
 
+    const base = await ipfs.bases.getBase(cidVersion === 0 ? 'base58btc' : cidBase)
+
     return h.response({
-      Key: cidToString(block.cid, { base: cidBase }),
-      Size: block.data.length
+      Key: cid.toString(base.encoder),
+      Size: data.length
     })
   }
 }
 
-exports.rm = {
+export const rmResource = {
   options: {
     validate: {
       options: {
@@ -188,7 +186,7 @@ exports.rm = {
         cids: Joi.array().single().items(Joi.cid()).min(1).required(),
         force: Joi.boolean().default(false),
         quiet: Joi.boolean().default(false),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -233,13 +231,15 @@ exports.rm = {
         signal
       }),
       async function * (source) {
-        yield * map(source, ({ cid, error }) => ({ Hash: cidToString(cid, { base: cidBase }), Error: error ? error.message : undefined }))
+        const base = await ipfs.bases.getBase(cidBase)
+
+        yield * map(source, ({ cid, error }) => ({ Hash: cid.toString(base.encoder), Error: error ? error.message : undefined }))
       }
     ))
   }
 }
 
-exports.stat = {
+export const statResource = {
   options: {
     validate: {
       options: {
@@ -248,7 +248,7 @@ exports.stat = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'cid', {
@@ -289,12 +289,14 @@ exports.stat = {
         timeout,
         signal
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to get block stats' })
     }
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     return h.response({
-      Key: cidToString(stats.cid, { base: cidBase }),
+      Key: stats.cid.toString(base.encoder),
       Size: stats.size
     })
   }

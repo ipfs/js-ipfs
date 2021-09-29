@@ -1,13 +1,9 @@
-'use strict'
+import fs from 'fs'
+import concat from 'it-concat'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../../utils.js'
 
-const fs = require('fs')
-const concat = require('it-concat')
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../../utils')
-
-module.exports = {
+export default {
   command: 'set-data <root> [data]',
 
   describe: 'Set data field of an ipfs object',
@@ -20,7 +16,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -31,9 +27,9 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../../types').Context} argv.ctx
-   * @param {import('cids')} argv.root
+   * @param {import('multiformats/cid').CID} argv.root
    * @param {string} argv.data
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print, getStdin }, root, data, cidBase, timeout }) {
@@ -49,6 +45,8 @@ module.exports = {
       timeout
     })
 
-    print(cidToString(cid, { base: cidBase, upgrade: false }))
+    const base = await ipfs.bases.getBase(cidBase)
+
+    print(cid.toString(base.encoder))
   }
 }

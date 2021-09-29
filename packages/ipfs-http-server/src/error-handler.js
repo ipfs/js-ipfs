@@ -1,11 +1,9 @@
-'use strict'
-
-const Boom = require('@hapi/boom')
+import Boom from '@hapi/boom'
 
 /**
  * @param {import('./types').Server} server
  */
-module.exports = server => {
+export function errorHandler (server) {
   /**
    * @param {import('./types').Request} request
    * @param {import('@hapi/hapi').ResponseToolkit} h

@@ -1,8 +1,6 @@
-'use strict'
-
 // dns-nodejs gets replaced by dns-browser when bundled
-const dns = require('../runtime/dns-nodejs')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { resolveDnslink } from 'ipfs-core-config/dns'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {string} domain
@@ -17,7 +15,7 @@ function fqdnFixups (domain) {
   return domain
 }
 
-module.exports = () => {
+export function createDns () {
   /**
    * @type {import('ipfs-core-types/src/root').API["dns"]}
    */
@@ -28,7 +26,7 @@ module.exports = () => {
 
     domain = fqdnFixups(domain)
 
-    return dns(domain, options)
+    return resolveDnslink(domain, options)
   }
 
   return withTimeoutOption(resolveDNS)

@@ -1,21 +1,35 @@
-'use strict'
+import {
+  exportResource,
+  getResource,
+  importResource,
+  putResource,
+  resolveResource
+} from '../resources/dag.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
+  {
+    method: 'POST',
+    path: '/api/v0/dag/export',
+    ...exportResource
+  },
   {
     method: 'POST',
     path: '/api/v0/dag/get',
-    ...resources.dag.get
+    ...getResource
+  },
+  {
+    method: 'POST',
+    path: '/api/v0/dag/import',
+    ...importResource
   },
   {
     method: 'POST',
     path: '/api/v0/dag/put',
-    ...resources.dag.put
+    ...putResource
   },
   {
     method: 'POST',
     path: '/api/v0/dag/resolve',
-    ...resources.dag.resolve
+    ...resolveResource
   }
 ]

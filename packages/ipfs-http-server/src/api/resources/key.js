@@ -1,6 +1,4 @@
-'use strict'
-
-const Joi = require('../../utils/joi')
+import Joi from '../../utils/joi.js'
 
 /**
  * @param {any} key
@@ -12,7 +10,7 @@ function toKeyInfo (key) {
   }
 }
 
-exports.list = {
+export const listResource = {
   options: {
     validate: {
       options: {
@@ -52,7 +50,7 @@ exports.list = {
   }
 }
 
-exports.rm = {
+export const rmResource = {
   options: {
     validate: {
       options: {
@@ -98,7 +96,7 @@ exports.rm = {
   }
 }
 
-exports.rename = {
+export const renameResource = {
   options: {
     validate: {
       options: {
@@ -148,7 +146,7 @@ exports.rename = {
   }
 }
 
-exports.gen = {
+export const genResource = {
   options: {
     validate: {
       options: {
@@ -200,7 +198,7 @@ exports.gen = {
   }
 }
 
-exports.import = {
+export const importResource = {
   options: {
     validate: {
       options: {

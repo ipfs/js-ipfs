@@ -1,12 +1,16 @@
-'use strict'
-const { createSuite } = require('../utils/suite')
+import { createSuite } from '../utils/suite.js'
+import { testStat } from './stat.js'
+import { testWantlist } from './wantlist.js'
+import { testWantlistForPeer } from './wantlist-for-peer.js'
+import { testTransfer } from './transfer.js'
+import { testUnwant } from './unwant.js'
 
 const tests = {
-  stat: require('./stat'),
-  wantlist: require('./wantlist'),
-  wantlistForPeer: require('./wantlist-for-peer'),
-  transfer: require('./transfer'),
-  unwant: require('./unwant')
+  stat: testStat,
+  wantlist: testWantlist,
+  wantlistForPeer: testWantlistForPeer,
+  transfer: testTransfer,
+  unwant: testUnwant
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

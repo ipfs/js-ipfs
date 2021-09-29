@@ -1,14 +1,12 @@
-'use strict'
-
-const pushable = require('it-pushable')
-const { pipe } = require('it-pipe')
-const encodeMtime = require('../utils/encode-mtime')
+import pushable from 'it-pushable'
+import { pipe } from 'it-pipe'
+import { encodeMtime } from '../utils/encode-mtime.js'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('../types').Options} options
  */
-module.exports = function grpcAdd (ipfs, options = {}) {
+export function grpcAdd (ipfs, options = {}) {
   /**
    * TODO: Fill out input/output types after https://github.com/ipfs/js-ipfs/issues/3594
    *
@@ -85,7 +83,7 @@ module.exports = function grpcAdd (ipfs, options = {}) {
             }
 
             fileInputStream.end()
-          } catch (err) {
+          } catch (/** @type {any} */ err) {
             fileInputStream.end(err)
           } finally {
             // clean up any open streams

@@ -1,12 +1,17 @@
-'use strict'
+import { expect } from 'aegir/utils/chai.js'
 
-const { expect } = require('../utils/mocha')
-
+/**
+ * @param {any} n
+ */
 const isBigInt = (n) => {
   return typeof n === 'bigint'
 }
 
-exports.expectIsBitswap = (err, stats) => {
+/**
+ * @param {Error | null} err
+ * @param {import('ipfs-core-types/src/bitswap').Stats} stats
+ */
+export function expectIsBitswap (err, stats) {
   expect(err).to.not.exist()
   expect(stats).to.exist()
   expect(stats).to.have.a.property('provideBufLen')
@@ -30,7 +35,11 @@ exports.expectIsBitswap = (err, stats) => {
   expect(isBigInt(stats.dupDataReceived)).to.eql(true)
 }
 
-exports.expectIsBandwidth = (err, stats) => {
+/**
+ * @param {Error | null} err
+ * @param {import('ipfs-core-types/src/stats').BWResult} stats
+ */
+export function expectIsBandwidth (err, stats) {
   expect(err).to.not.exist()
   expect(stats).to.exist()
   expect(stats).to.have.a.property('totalIn')
@@ -39,11 +48,15 @@ exports.expectIsBandwidth = (err, stats) => {
   expect(stats).to.have.a.property('rateOut')
   expect(isBigInt(stats.totalIn)).to.eql(true)
   expect(isBigInt(stats.totalOut)).to.eql(true)
-  expect(isBigInt(stats.rateIn)).to.eql(true)
-  expect(isBigInt(stats.rateOut)).to.eql(true)
+  expect(stats.rateIn).to.be.a('number')
+  expect(stats.rateOut).to.be.a('number')
 }
 
-exports.expectIsRepo = (err, res) => {
+/**
+ * @param {Error | null} err
+ * @param {import('ipfs-core-types/src/repo').StatResult} res
+ */
+export function expectIsRepo (err, res) {
   expect(err).to.not.exist()
   expect(res).to.exist()
   expect(res).to.have.a.property('numObjects')

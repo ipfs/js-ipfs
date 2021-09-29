@@ -1,9 +1,7 @@
-'use strict'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../utils.js'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../utils')
-
-module.exports = {
+export default {
   command: 'stat <key>',
 
   describe: 'Get stats for the DAG node named by <key>',
@@ -22,7 +20,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
+   * @param {import('multiformats/cid').CID} argv.key
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, timeout }) {

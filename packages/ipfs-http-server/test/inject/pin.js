@@ -1,19 +1,19 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 8] */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const multibase = require('multibase')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const CID = require('cids')
-const allNdjson = require('../utils/all-ndjson')
-const { AbortSignal } = require('native-abort-controller')
+import { expect } from 'aegir/utils/chai.js'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { allNdjson } from '../utils/all-ndjson.js'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
 
 describe('/pin', () => {
-  const cid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
-  const cid2 = new CID('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V')
+  const cid = CID.parse('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
+  const cid2 = CID.parse('QmZTR5bcpQD7cFgTorqxZDYaew1Wqgfbd2ud9QqGPAkK2V')
   let ipfs
 
   beforeEach(() => {
@@ -23,6 +23,9 @@ describe('/pin', () => {
         addAll: sinon.stub(),
         rmAll: sinon.stub(),
         query: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -47,6 +50,7 @@ describe('/pin', () => {
     })
 
     it('unpins recursive pins', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{ cid, recursive: true }], defaultOptions).returns([
         cid
       ])
@@ -61,6 +65,7 @@ describe('/pin', () => {
     })
 
     it('unpins direct pins', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{
         cid,
         recursive: false
@@ -80,32 +85,24 @@ describe('/pin', () => {
     })
 
     it('should remove pin and return base64 encoded CID', async () => {
-      ipfs.pin.rmAll.withArgs([{ cid, recursive: true }], defaultOptions).returns([
-        cid
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      ipfs.pin.rmAll.withArgs([{ cid: cid.toV1(), recursive: true }], defaultOptions).returns([
+        cid.toV1()
       ])
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pin/rm?arg=${cid}&cid-base=base64`
+        url: `/api/v0/pin/rm?arg=${cid.toV1()}&cid-base=base64`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      res.result.Pins.forEach(cid => {
-        expect(multibase.isEncoded(cid)).to.deep.equal('base64')
+      res.result.Pins.forEach(c => {
+        expect(c).to.equal(cid.toV1().toString(base64))
       })
     })
 
-    it('should not remove pin for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/pin/rm?arg=${cid}&cid-base=invalid`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.rmAll.withArgs([{
         cid,
         recursive: true
@@ -146,6 +143,7 @@ describe('/pin', () => {
     })
 
     it('recursively', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         cid,
         recursive: true,
@@ -164,6 +162,7 @@ describe('/pin', () => {
     })
 
     it('directly', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         cid,
         recursive: false,
@@ -182,36 +181,28 @@ describe('/pin', () => {
     })
 
     it('should add pin and return base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.pin.addAll.withArgs([{
-        cid,
+        cid: cid.toV1(),
         recursive: true,
         metadata: undefined
       }], defaultOptions).returns([
-        cid
+        cid.toV1()
       ])
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pin/add?arg=${cid}&cid-base=base64`
+        url: `/api/v0/pin/add?arg=${cid.toV1()}&cid-base=base64`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      res.result.Pins.forEach(cid => {
-        expect(multibase.isEncoded(cid)).to.deep.equal('base64')
+      res.result.Pins.forEach(c => {
+        expect(c).to.equal(cid.toV1().toString(base64))
       })
     })
 
-    it('should not add pin for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/pin/add?arg=${cid}&cid-base=invalid`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.addAll.withArgs([{
         cid,
         recursive: true,
@@ -255,6 +246,7 @@ describe('/pin', () => {
     })
 
     it('finds all pinned objects', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
         cid,
         type: 'recursive'
@@ -270,6 +262,7 @@ describe('/pin', () => {
     })
 
     it('finds all pinned objects streaming', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
         cid: cid,
         type: 'recursive'
@@ -291,6 +284,7 @@ describe('/pin', () => {
     })
 
     it('finds specific pinned objects', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs({
         ...defaultOptions,
         paths: [`${cid}`]
@@ -313,6 +307,7 @@ describe('/pin', () => {
     })
 
     it('finds pins of type', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs({
         ...defaultOptions,
         type: 'direct'
@@ -335,8 +330,9 @@ describe('/pin', () => {
     })
 
     it('should list pins and return base64 encoded CIDs', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.pin.ls.withArgs(defaultOptions).returns([{
-        cid,
+        cid: cid.toV1(),
         type: 'direct'
       }])
 
@@ -346,24 +342,13 @@ describe('/pin', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Keys').that.satisfies((keys) => {
-        return Object.keys(keys).reduce((acc, curr) => {
-          return acc && multibase.isEncoded(curr) === 'base64'
-        }, true)
+      expect(res).to.have.nested.deep.property(`result.Keys.${cid.toV1().toString(base64)}`, {
+        Type: 'direct'
       })
     })
 
-    it('should not list pins for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/pin/ls?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
-    })
-
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.pin.ls.withArgs({
         ...defaultOptions,
         timeout: 1000

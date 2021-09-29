@@ -1,21 +1,18 @@
-'use strict'
-
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const { Multiaddr } = require('multiaddr')
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { Multiaddr } from 'multiaddr'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/bootstrap').API<HTTPClientExtraOptions>} BootstrapAPI
  */
 
-module.exports = configure(api => {
+export const createClear = configure(api => {
   /**
    * @type {BootstrapAPI["clear"]}
    */
   async function clear (options = {}) {
     const res = await api.post('bootstrap/rm', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         ...options,

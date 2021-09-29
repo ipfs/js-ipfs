@@ -1,12 +1,10 @@
-'use strict'
-
-const { callbackify } = require('util')
+import { callbackify } from 'util'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('../types').Options} options
  */
-module.exports = function grpcId (ipfs, options = {}) {
+export function grpcId (ipfs, options = {}) {
   /**
    * TODO: Fill out input/output types after https://github.com/ipfs/js-ipfs/issues/3594
    *

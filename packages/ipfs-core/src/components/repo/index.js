@@ -1,21 +1,26 @@
-'use strict'
+import { createGc } from './gc.js'
+import { createStat } from './stat.js'
+import { createVersion } from './version.js'
 
-const createGC = require('./gc')
-const createStat = require('./stat')
-const createVersion = require('./version')
+/**
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ * @typedef {import('ipfs-core-utils/multihashes').Multihashes} Multihashes
+ */
 
-class RepoAPI {
+export class RepoAPI {
   /**
    * @param {Object} config
-   * @param {import('../gc-lock').GCLock} config.gcLock
-   * @param {import('ipfs-core-types/src/pin').API} config.pin
-   * @param {import('ipfs-repo')} config.repo
-   * @param {import('ipfs-core-types/src/refs').API["refs"]} config.refs
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
+   * @param {Multihashes} config.hashers
    */
-  constructor ({ gcLock, pin, repo, refs }) {
-    this.gc = createGC({ gcLock, pin, refs, repo })
+  constructor ({ repo, hashers }) {
+    this.gc = createGc({ repo, hashers })
     this.stat = createStat({ repo })
     this.version = createVersion({ repo })
+
+    /**
+     * @param {string} addr
+     */
+    this.setApiAddr = (addr) => repo.apiAddr.set(addr)
   }
 }
-module.exports = RepoAPI

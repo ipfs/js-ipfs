@@ -1,23 +1,20 @@
-'use strict'
-
-const toCamel = require('../lib/object-to-camel')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { objectToCamel } from '../lib/object-to-camel.js'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/refs').API<HTTPClientExtraOptions>} RefsAPI
  */
 
-module.exports = configure(api => {
+export const createLocal = configure(api => {
   /**
    * @type {RefsAPI["local"]}
    */
   async function * refsLocal (options = {}) {
     const res = await api.post('refs/local', {
-      timeout: options.timeout,
       signal: options.signal,
-      transform: toCamel,
+      transform: objectToCamel,
       searchParams: toUrlSearchParams(options),
       headers: options.headers
     })

@@ -1,16 +1,35 @@
-'use strict'
+/**
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ * @typedef {object} Skip
+ * @property {string} [name]
+ * @property {string} [reason]
+ */
 
-const isObject = (o) => Object.prototype.toString.call(o) === '[object Object]'
+/**
+ * @param {any} o
+ * @returns {o is Skip}
+ */
+const isSkip = (o) => Object.prototype.toString.call(o) === '[object Object]' && (o.name || o.reason)
 
-function createSuite (tests, parent) {
-  const suite = (createCommon, options) => {
+/**
+ * @param {*} tests
+ * @param {*} [parent]
+ */
+export function createSuite (tests, parent) {
+  /**
+   * @param {Factory} factory
+   * @param {object} [options]
+   * @param {boolean | Skip | (string | Skip)[]} [options.skip]
+   * @param {boolean} [options.only]
+   */
+  const suite = (factory, options = {}) => {
     Object.keys(tests).forEach(t => {
       const opts = Object.assign({}, options)
       const suiteName = parent ? `${parent}.${t}` : t
 
       if (Array.isArray(opts.skip)) {
         const skip = opts.skip
-          .map((s) => isObject(s) ? s : { name: s })
+          .map((s) => isSkip(s) ? s : { name: s, reason: '🤷' })
           .find((s) => s.name === suiteName)
 
         if (skip) {
@@ -24,11 +43,9 @@ function createSuite (tests, parent) {
         }
       }
 
-      tests[t](createCommon, opts)
+      tests[t](factory, opts)
     })
   }
 
   return Object.assign(suite, tests)
 }
-
-exports.createSuite = createSuite

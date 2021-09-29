@@ -23,11 +23,14 @@ Use the IPFS module as a dependency of your project to spawn in process instance
     - [`node.start()`](#nodestart)
 - [Static types and utils](#static-types-and-utils)
       - [Glob source](#glob-source)
-        - [`globSource(path, [options])`](#globsourcepath-options)
+        - [`globSource(path, pattern, [options])`](#globsourcepath-pattern-options)
         - [Example](#example)
       - [URL source](#url-source)
         - [`urlSource(url)`](#urlsourceurl)
         - [Example](#example-1)
+      - [Path](#path)
+        - [`path()`](#path-1)
+        - [Example](#example-2)
 
 ## Getting started
 
@@ -71,9 +74,9 @@ const node = await IPFS.create({ repo: '/var/ipfs/data' })
 
 ### `options.repoAutoMigrate`
 
-| Type | Default |
-|------|---------|
-| `boolean` | `true` |
+| Type      | Default |
+| --------- | ------- |
+| `boolean` | `true`  |
 
 `js-ipfs` comes bundled with a tool that automatically migrates your IPFS repository when a new version is available.
 
@@ -83,9 +86,9 @@ a case, you should provide a way to trigger migrations manually.**
 
 ### `options.init`
 
-| Type | Default |
-|------|---------|
-| boolean or object | `true` |
+| Type              | Default |
+| ----------------- | ------- |
+| boolean or object | `true`  |
 
 Perform repo initialization steps when creating the IPFS node.
 
@@ -99,7 +102,7 @@ Instead of a boolean, you may provide an object with custom initialization optio
 - `privateKey` (string/PeerId) A pre-generated private key to use. Can be either a base64 string or a [PeerId](https://github.com/libp2p/js-peer-id) instance. **NOTE: This overrides `bits`.**
     ```js
     // Generating a Peer ID:
-    const PeerId = require('peer-id')
+    import PeerId from 'peer-id'
     // Generates a new Peer ID, complete with public/private keypair
     // See https://github.com/libp2p/js-peer-id
     const peerId = await PeerId.create({ bits: 2048 })
@@ -110,24 +113,24 @@ Instead of a boolean, you may provide an object with custom initialization optio
 
 ### `options.start`
 
-| Type | Default |
-|------|---------|
-| `boolean` | `true` |
+| Type      | Default |
+| --------- | ------- |
+| `boolean` | `true`  |
 
- If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestart) yourself.
+If `false`, do not automatically start the IPFS node. Instead, you’ll need to manually call [`node.start()`](#nodestart) yourself.
 
 ### `options.pass`
 
-| Type | Default |
-|------|---------|
-| string | `null` |
+| Type   | Default |
+| ------ | ------- |
+| string | `null`  |
 
 A passphrase to encrypt/decrypt your keys.
 
 ### `options.silent`
 
-| Type | Default |
-|------|---------|
+| Type    | Default |
+| ------- | ------- |
 | Boolean | `false` |
 
 Prevents all logging output from the IPFS node.
@@ -138,25 +141,25 @@ Prevents all logging output from the IPFS node.
 |------|---------|
 | object | `{ enabled: true, hop: { enabled: false, active: false } }` |
 
-Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs/js-ipfs/tree/master/examples/circuit-relaying) to learn more).
+Configure circuit relay (see the [circuit relay tutorial](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/circuit-relaying) to learn more).
 
 - `enabled` (boolean): Enable circuit relay dialer and listener. (Default: `true`)
 - `hop` (object)
-    - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
-    - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
+  - `enabled` (boolean): Make this node a relay (other nodes can connect *through* it). (Default: `false`)
+  - `active` (boolean): Make this an *active* relay node. Active relay nodes will attempt to dial a destination peer even if that peer is not yet connected to the relay. (Default: `false`)
 
 ### `options.offline`
 
-| Type | Default |
-|------|---------|
+| Type    | Default |
+| ------- | ------- |
 | Boolean | `false` |
 
 Run ipfs node offline. The node does not connect to the rest of the network but provides a local API.
 
 ### `options.preload`
 
-| Type | Default |
-|------|---------|
+| Type   | Default                               |
+| ------ | ------------------------------------- |
 | object | `{ enabled: true, addresses: [...] }` |
 
 Configure remote preload nodes. The remote will preload content added on this node, and also attempt to preload objects requested by this node.
@@ -166,8 +169,8 @@ Configure remote preload nodes. The remote will preload content added on this no
 
 ### `options.EXPERIMENTAL`
 
-| Type | Default |
-|------|---------|
+| Type   | Default                                  |
+| ------ | ---------------------------------------- |
 | object | `{ ipnsPubsub: false, sharding: false }` |
 
 Enable and configure experimental features.
@@ -179,46 +182,60 @@ Enable and configure experimental features.
 
 | Type | Default |
 |------|---------|
-| object |  [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/config-browser.js) in browsers |
+| object | [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config-browser.js) in browsers |
 
-Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](./docs/CONFIG.md).
+Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](./CONFIG.md).
 
 ### `options.ipld`
 
- | Type | Default |
+| Type | Default |
 |------|---------|
-| object |  [`ipld.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core/src/runtime/ipld.js) |
+| object | [`ipld.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/ipld.js) |
 
- Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
+Modify the default IPLD config. This object will be *merged* with the default config; it will not replace it. Check IPLD [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information on the available options.
 
- > Browser config does **NOT** include by default all the IPLD formats. Only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` are included.
+> Browser config does **NOT** include by default all the IPLD formats. Only `ipld-dag-pb`, `ipld-dag-cbor` and `ipld-raw` are included.
 
- To add support for other formats we provide two options, one sync and another async.
+To add support for other formats we provide two options, one sync and another async.
 
- Examples for the sync option:
+Examples for the sync option:
 
 <details><summary>ESM Environments</summary>
 
 ```js
 import ipldGit from 'ipld-git'
 import ipldBitcoin from 'ipld-bitcoin'
+import { convert } from 'ipld-format-to-blockcodec'
 
 const node = await IPFS.create({
   ipld: {
-    formats: [ipldGit, ipldBitcoin]
+    codecs: [
+      convert(ipldGit),
+      convert(ipldBitcoin)
+    ]
   }
 })
 ```
+
 </details>
 <details><summary>Commonjs Environments</summary>
 
 ```js
+const IPFS = require('ipfs')
+const ipldGit = require('ipld-git')
+const ipldBitcoin = require('ipld-bitcoin')
+const { convert } = require('ipld-format-to-blockcodec')
+
 const node = await IPFS.create({
   ipld: {
-    formats: [require('ipld-git'), require('ipld-bitcoin')]
+    codecs: [
+      convert(ipldGit),
+      convert(ipldBitcoin)
+    ]
   }
 })
 ```
+
 </details>
 <details><summary>Using script tags</summary>
 
@@ -226,29 +243,34 @@ const node = await IPFS.create({
 <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipld-git/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipld-bitcoin/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipld-format-to-blockcodec/dist/index.min.js"></script>
 <script>
-async function main () {
-  const node = await self.IPFS.create({
-    ipld: {
-      formats: [self.IpldGit, self.IpldBitcoin]
-    }
-  })
-}
-main()
+  async function main() {
+    const node = await self.IPFS.create({
+      ipld: {
+        codecs: [
+          convert(self.ipldGit),
+          convert(self.ipldBitcoin)
+        ]
+      },
+    });
+  }
+  main();
 </script>
 ```
+
 </details>
 
- Examples for the async option:
+Examples for the async option:
 
 <details><summary>ESM Environments</summary>
 
 ```js
 const node = await IPFS.create({
   ipld: {
-    async loadFormat (codec) {
+    async loadCodec (codec) {
       if (codec === multicodec.GIT_RAW) {
-        return import('ipld-git') // This is a dynamic import
+        return convert(await import('ipld-git')) // This is a dynamic import
       } else {
         throw new Error('unable to load format ' + multicodec.print[codec])
       }
@@ -256,11 +278,13 @@ const node = await IPFS.create({
   }
 })
 ```
+
 > For more information about dynamic imports please check [webpack docs](https://webpack.js.org/guides/code-splitting/#dynamic-imports) or search your bundler documention.
 
 Using dynamic imports will tell your bundler to create a separate file (normally called *chunk*) that will **only** be requested by the browser if it's really needed. This strategy will reduce your bundle size and load times without removing any functionality.
 
 With Webpack IPLD formats can even be grouped together using magic comments `import(/* webpackChunkName: "ipld-formats" */ 'ipld-git')` to produce a single file with all of them.
+
 </details>
 
 <details><summary>Commonjs Environments</summary>
@@ -278,6 +302,7 @@ const node = await IPFS.create({
   }
 })
 ```
+
 </details>
 
 <details><summary>Using Script tags</summary>
@@ -309,19 +334,19 @@ const node = await self.IPFS.create({
 })
 </script>
 ```
-</details>
 
+</details>
 
 ### `options.libp2p`
 
 | Type | Default |
 |------|---------|
-| object | [`libp2p-nodejs.js`](../src/core/runtime/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](../src/core/runtime/libp2p-browser.js) in browsers |
-| function | [`libp2p bundle`](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p) |
+| object   | [`libp2p-nodejs.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src/libp2p-nodejs.js) in Node.js, [`libp2p-browser.js`](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config/src)/libp2p-browser.js) in browsers |
+| function | [`libp2p bundle`](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/custom-libp2p)                                         |
 
 The libp2p option allows you to build your libp2p node by configuration, or via a bundle function. If you are looking to just modify the below options, using the object format is the quickest way to get the default features of libp2p. If you need to create a more customized libp2p node, such as with custom transports or peer/content routers that need some of the ipfs data on startup, a custom bundle is a great way to achieve this.
 
-You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs/js-ipfs/tree/master/examples/custom-libp2p).
+You can see the bundle in action in the [custom libp2p example](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/custom-libp2p).
 
 Please see [libp2p/docs/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md) for the list of options libp2p supports.
 
@@ -340,7 +365,7 @@ console.log('Node is ready to use but not started!')
 try {
   await node.start()
   console.log('Node started!')
-} catch (error) {
+} catch (/** @type {any} */ error) {
   console.error('Node failed to start!', error)
 }
 ```
@@ -373,12 +398,11 @@ import { CID } from 'ipfs'
 
 A utility to allow files on the file system to be easily added to IPFS.
 
-###### `globSource(path, [options])`
+###### `globSource(path, pattern, [options])`
 
 - `path`: A path to a single file or directory to glob from
+- `pattern`: A pattern to match files under `path`
 - `options`: Optional options
-- `options.recursive`: If `path` is a directory, use option `{ recursive: true }` to add the directory and all its sub-directories.
-- `options.ignore`: To exclude file globs from the directory, use option `{ ignore: ['ignore/this/folder/**', 'and/this/file'] }`.
 - `options.hidden`: Hidden/dot files (files or folders starting with a `.`, for example, `.git/`) are not included by default. To add them, use the option `{ hidden: true }`.
 
 Returns an async iterable that yields `{ path, content }` objects suitable for passing to `ipfs.add`.
@@ -386,10 +410,11 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ###### Example
 
 ```js
-const IPFS = require('ipfs')
-const { globSource } = IPFS
-const ipfs = await IPFS.create()
-for await (const file of ipfs.addAll(globSource('./docs', { recursive: true }))) {
+import { create, globSource } from 'ipfs'
+
+const ipfs = await create()
+
+for await (const file of ipfs.addAll(globSource('./docs', '**/*'))) {
   console.log(file)
 }
 /*
@@ -420,9 +445,9 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 ###### Example
 
 ```js
-const IPFS = require('ipfs')
-const { urlSource } = IPFS
-const ipfs = await IPFS.create()
+import { create, urlSource } from 'ipfs'
+
+const ipfs = await create()
 
 const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
 console.log(file)
@@ -434,4 +459,22 @@ console.log(file)
   size: 3243
 }
 */
+```
+
+##### Path
+
+A function that returns the path to the js-ipfs CLI.
+
+This is analogous to the `.path()` function exported by the [go-ipfs](https://www.npmjs.com/package/go-ipfs) module.
+
+###### `path()`
+
+Returns the path to the js-ipfs CLI
+
+###### Example
+
+```js
+import { path } from 'ipfs'
+
+console.info(path()) // /foo/bar/node_modules/ipfs/src/cli.js
 ```

@@ -1,20 +1,34 @@
 /* eslint-env mocha */
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const { nanoid } = require('nanoid')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const isShardAtPath = require('../utils/is-shard-at-path')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { nanoid } from 'nanoid'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import isShardAtPath from '../utils/is-shard-at-path.js'
 
-module.exports = (common, options) => {
+/**
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
+ * @param {Object} options
+ */
+export function testChmod (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.files.chmod', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
+    /**
+     * @param {string} initialMode
+     * @param {string} modification
+     * @param {string} expectedFinalMode
+     */
     async function testChmod (initialMode, modification, expectedFinalMode) {
       const path = `/test-${nanoid()}`
 
@@ -32,10 +46,10 @@ module.exports = (common, options) => {
     }
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should update the mode for a file', async () => {
       const path = `/foo-${Math.random()}`

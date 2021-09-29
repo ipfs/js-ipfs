@@ -1,25 +1,22 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../../lib/configure')
-const toUrlSearchParams = require('../../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../../lib/configure.js'
+import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/object/patch').API<HTTPClientExtraOptions>} ObjectPatchAPI
  */
 
-module.exports = configure(api => {
+export const createAddLink = configure(api => {
   /**
    * @type {ObjectPatchAPI["addLink"]}
    */
   async function addLink (cid, dLink, options = {}) {
     const res = await api.post('object/patch/add-link', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: [
-          `${cid instanceof Uint8Array ? new CID(cid) : cid}`,
+          `${cid}`,
           // @ts-ignore loose types
           dLink.Name || dLink.name || '',
           // @ts-ignore loose types
@@ -32,7 +29,8 @@ module.exports = configure(api => {
 
     const { Hash } = await res.json()
 
-    return new CID(Hash)
+    return CID.parse(Hash)
   }
+
   return addLink
 })

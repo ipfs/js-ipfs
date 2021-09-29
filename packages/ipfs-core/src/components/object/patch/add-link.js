@@ -1,24 +1,26 @@
-'use strict'
-
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { createGet } from '../get.js'
+import { createPut } from '../put.js'
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../../types').Preload} config.preload
- * @param {import('.').GCLock} config.gcLock
  */
-module.exports = ({ ipld, gcLock, preload }) => {
-  const get = require('../get')({ ipld, preload })
-  const put = require('../put')({ ipld, gcLock, preload })
+export function createAddLink ({ repo, preload }) {
+  const get = createGet({ repo, preload })
+  const put = createPut({ repo, preload })
 
   /**
    * @type {import('ipfs-core-types/src/object/patch').API["addLink"]}
    */
-  async function addLink (multihash, link, options = {}) {
-    const node = await get(multihash, options)
-    node.addLink(link)
-    return put(node, options)
+  async function addLink (cid, link, options = {}) {
+    const node = await get(cid, options)
+
+    return put({
+      ...node,
+      Links: node.Links.concat([link])
+    }, options)
   }
 
   return withTimeoutOption(addLink)

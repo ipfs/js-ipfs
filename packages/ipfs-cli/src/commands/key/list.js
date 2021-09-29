@@ -1,11 +1,9 @@
-'use strict'
-
-const { default: parseDuration } = require('parse-duration')
-const {
+import parseDuration from 'parse-duration'
+import {
   stripControlCharacters
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'list',
 
   describe: 'List all local keys',

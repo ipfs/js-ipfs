@@ -1,7 +1,12 @@
-'use strict'
 
-const execa = require('execa')
-const path = require('path')
+import execa from 'execa'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
+// but then the "--module" setting doesn't get used by the "--build" setting
+// which we use to build types from jsdoc
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 // This is our new test utility to easily check and execute ipfs cli commands.
 //
@@ -13,7 +18,7 @@ const path = require('path')
 // and returns a promise which is resolved to `stdout` of the command.
 // The `.fail` variation asserts that the command exited with `Code > 0`
 // and returns a promise that resolves to `stderr`.
-module.exports = (repoPath, opts) => {
+export function ipfsExec (repoPath, opts) {
   const env = { ...process.env }
   env.IPFS_PATH = repoPath
 
@@ -75,15 +80,15 @@ module.exports = (repoPath, opts) => {
    * Expect the command passed as @param arguments to fail.
    *
    * @param {string} command - String command to run, e.g. `'pin ls'`
-   * @param {Object} options - Options to pass to `execa`
-   * @returns {Promise} Resolves if the command passed as @param arguments fails,
+   * @param {Object} [options] - Options to pass to `execa`
+   * @returns {Promise<Error | undefined>} Resolves if the command passed as @param command fails,
    * rejects if it was successful.
    */
   ipfs.fail = function ipfsFail (command, options) {
     return ipfs(command, { disableErrorLog: true, ...(options || {}) })
       .then(() => {
         throw new Error(`jsipfs expected to fail during command: jsipfs ${command}`)
-      }, (err) => {
+      }, (/** @type {Error} */ err) => {
         return err
       })
   }

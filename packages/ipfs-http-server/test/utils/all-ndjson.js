@@ -1,6 +1,5 @@
-'use strict'
 
-module.exports = (res) => {
+export function allNdjson (res) {
   return res.result
     .split('\n')
     .map(line => line.trim())

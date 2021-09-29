@@ -1,18 +1,16 @@
-'use strict'
-
-const createExport = require('./export')
-const createGen = require('./gen')
-const createImport = require('./import')
-const createInfo = require('./info')
-const createList = require('./list')
-const createRename = require('./rename')
-const createRm = require('./rm')
+import { createExport } from './export.js'
+import { createGen } from './gen.js'
+import { createImport } from './import.js'
+import { createInfo } from './info.js'
+import { createList } from './list.js'
+import { createRename } from './rename.js'
+import { createRm } from './rm.js'
 
 /**
  * @typedef {import('libp2p/src/keychain')} Keychain
  */
 
-class KeyAPI {
+export class KeyAPI {
   /**
    * @param {Object} config
    * @param {Keychain} config.keychain
@@ -27,4 +25,3 @@ class KeyAPI {
     this.info = createInfo({ keychain })
   }
 }
-module.exports = KeyAPI

@@ -1,15 +1,16 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const CID = require('cids')
-const sinon = require('sinon')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const { AbortSignal } = require('native-abort-controller')
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
+import sinon from 'sinon'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import { AbortSignal } from 'native-abort-controller'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64 } from 'multiformats/bases/base64'
 
 describe('/bitswap', () => {
-  const cid = new CID('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
+  const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
   let ipfs
 
   beforeEach(() => {
@@ -19,6 +20,9 @@ describe('/bitswap', () => {
         wantlistForPeer: sinon.stub(),
         stat: sinon.stub(),
         unwant: sinon.stub()
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -34,6 +38,7 @@ describe('/bitswap', () => {
     })
 
     it('/wantlist', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.bitswap.wantlist.withArgs(defaultOptions).returns([
         cid
       ])
@@ -48,6 +53,7 @@ describe('/bitswap', () => {
     })
 
     it('/wantlist?timeout=1s', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.bitswap.wantlist.withArgs({
         ...defaultOptions,
         timeout: 1000
@@ -66,8 +72,9 @@ describe('/bitswap', () => {
 
     // TODO: unskip after switch to v1 CIDs by default
     it.skip('/wantlist?cid-base=base64', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.bitswap.wantlist.withArgs(defaultOptions).returns([
-        cid
+        cid.toV1()
       ])
 
       const res = await http({
@@ -76,27 +83,14 @@ describe('/bitswap', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toV1().toString('base64') })
-    })
-
-    it('/wantlist?cid-base=invalid', async () => {
-      ipfs.bitswap.wantlist.withArgs(defaultOptions).returns([
-        cid
-      ])
-
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/bitswap/wantlist?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toV1().toString(base64) })
     })
 
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
-      ipfs.bitswap.wantlistForPeer.withArgs(new CID(peerId), defaultOptions).returns([
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).returns([
         cid
       ])
 
@@ -110,9 +104,10 @@ describe('/bitswap', () => {
     })
 
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D&timeout=1s', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
 
-      ipfs.bitswap.wantlistForPeer.withArgs(new CID(peerId), {
+      ipfs.bitswap.wantlistForPeer.withArgs(peerId, {
         ...defaultOptions,
         timeout: 1000
       }).returns([
@@ -127,17 +122,6 @@ describe('/bitswap', () => {
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Keys').that.deep.includes({ '/': cid.toString() })
     })
-
-    it('/wantlist?peer=invalid', async () => {
-      const peerId = 'invalid'
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/bitswap/wantlist?peer=${peerId}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-    })
   })
 
   describe('/stat', () => {
@@ -151,6 +135,7 @@ describe('/bitswap', () => {
     })
 
     it('/stat', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.bitswap.stat.withArgs(defaultOptions).returns({
         provideBufLen: 'provideBufLen',
         blocksReceived: 'blocksReceived',
@@ -183,6 +168,7 @@ describe('/bitswap', () => {
     })
 
     it('/stat?timeout=1s', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.bitswap.stat.withArgs(defaultOptions).withArgs({
         signal: sinon.match.any,
         timeout: 1000
@@ -209,6 +195,7 @@ describe('/bitswap', () => {
     })
 
     it('/stat?cid-base=base64', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.bitswap.stat.withArgs(defaultOptions).returns({
         provideBufLen: 'provideBufLen',
         blocksReceived: 'blocksReceived',
@@ -229,10 +216,10 @@ describe('/bitswap', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Wantlist').that.deep.includes({ '/': cid.toV1().toString('base64') })
+      expect(res).to.have.nested.property('result.Wantlist').that.deep.includes({ '/': cid.toV1().toString(base64) })
     })
 
-    it('/stat?cid-base=invalid', async () => {
+    it.skip('/stat?cid-base=invalid', async () => {
       const res = await http({
         method: 'POST',
         url: '/api/v0/bitswap/stat?cid-base=invalid'
@@ -243,6 +230,7 @@ describe('/bitswap', () => {
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.bitswap.stat.withArgs(defaultOptions).withArgs(sinon.match({
         timeout: 1000
       })).returns({
@@ -279,23 +267,25 @@ describe('/bitswap', () => {
     })
 
     it('/unwant', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const res = await http({
         method: 'POST',
         url: `/api/v0/bitswap/unwant?arg=${cid}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(ipfs.bitswap.unwant.calledWith(new CID(cid), defaultOptions)).to.be.true()
+      expect(ipfs.bitswap.unwant.calledWith(cid, defaultOptions)).to.be.true()
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const res = await http({
         method: 'POST',
         url: `/api/v0/bitswap/unwant?arg=${cid}&timeout=1s`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(ipfs.bitswap.unwant.calledWith(new CID(cid), {
+      expect(ipfs.bitswap.unwant.calledWith(cid, {
         ...defaultOptions,
         timeout: 1000
       })).to.be.true()

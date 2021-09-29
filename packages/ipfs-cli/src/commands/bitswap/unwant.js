@@ -1,11 +1,7 @@
-'use strict'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../utils.js'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../utils')
-
-module.exports = {
+export default {
   command: 'unwant <key>',
 
   describe: 'Removes a given block from your wantlist.',
@@ -20,7 +16,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -31,15 +27,16 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {import('multiformats/cid').CID} argv.key
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx, key, cidBase, timeout }) {
     const { ipfs, print } = ctx
+    const base = await ipfs.bases.getBase(cidBase)
     await ipfs.bitswap.unwant(key, {
       timeout
     })
-    print(`Key ${cidToString(key, { base: cidBase, upgrade: false })} removed from wantlist`)
+    print(`Key ${key.toString(base.encoder)} removed from wantlist`)
   }
 }

@@ -1,14 +1,12 @@
-'use strict'
-
-const isMultiaddr = require('mafmt').IPFS.matches
+import mafmt from 'mafmt'
 
 /**
  * @param {any} ma
  */
-exports.isValidMultiaddr = ma => {
+export function isValidMultiaddr (ma) {
   try {
-    return isMultiaddr(ma)
-  } catch (err) {
+    return mafmt.IPFS.matches(ma)
+  } catch (/** @type {any} */ err) {
     return false
   }
 }

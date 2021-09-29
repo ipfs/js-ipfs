@@ -1,36 +1,41 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const fs = require('fs')
-const FormData = require('form-data')
-const streamToPromise = require('stream-to-promise')
-const multibase = require('multibase')
-const testHttpMethod = require('../utils/test-http-method')
-const http = require('../utils/http')
-const sinon = require('sinon')
-const CID = require('cids')
-const { UnixFS } = require('ipfs-unixfs')
-const { AbortSignal } = require('native-abort-controller')
-const {
-  DAGNode,
-  DAGLink
-} = require('ipld-dag-pb')
-const uint8ArrayToString = require('uint8arrays/to-string')
+import { expect } from 'aegir/utils/chai.js'
+import fs from 'fs'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
+import { testHttpMethod } from '../utils/test-http-method.js'
+import { http } from '../utils/http.js'
+import sinon from 'sinon'
+import { CID } from 'multiformats/cid'
+import { UnixFS } from 'ipfs-unixfs'
+import { AbortSignal } from 'native-abort-controller'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { base58btc } from 'multiformats/bases/base58'
+import { base64, base64pad } from 'multiformats/bases/base64'
 
 describe('/object', () => {
-  const cid = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
-  const cid2 = new CID('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1a')
+  const cid = CID.parse('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+  const cid2 = CID.parse('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1a')
   const unixfs = new UnixFS({
     type: 'file'
   })
-  const fileNode = new DAGNode(unixfs.marshal(), [
-    new DAGLink('', 5, cid)
-  ])
-  const emptyDirectoryNode = new DAGNode(new UnixFS({
-    type: 'directory'
-  }).marshal())
+  const fileNode = {
+    Data: unixfs.marshal(),
+    Links: [{
+      Name: '',
+      Tsize: 5,
+      Hash: cid
+    }]
+  }
+  const emptyDirectoryNode = {
+    Data: new UnixFS({
+      type: 'directory'
+    }).marshal(),
+    Links: []
+  }
   let ipfs
 
   beforeEach(() => {
@@ -48,6 +53,9 @@ describe('/object', () => {
           addLink: sinon.stub(),
           rmLink: sinon.stub()
         }
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
   })
@@ -63,6 +71,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.new.withArgs({
         ...defaultOptions,
         template: undefined
@@ -80,6 +89,7 @@ describe('/object', () => {
     })
 
     it('should create an object with the passed template', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const template = 'unixfs-dir'
 
       ipfs.object.new.withArgs({
@@ -115,13 +125,13 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should create a new object and return a base64 encoded CID', async () => {
+    it('should create a new object and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       ipfs.object.new.withArgs({
         ...defaultOptions,
         template: undefined
-      }).returns(cid)
-      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
+      }).returns(cid.toV1())
+      ipfs.object.get.withArgs(cid.toV1(), defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
@@ -129,20 +139,11 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not create a new object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/object/new?cid-base=invalid'
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res.result.Hash).to.equal(cid.toV1().toString(base64))
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.new.withArgs({
         ...defaultOptions,
         template: undefined,
@@ -196,6 +197,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
@@ -208,30 +210,21 @@ describe('/object', () => {
       expect(res).to.have.nested.property('result.Data', uint8ArrayToString(emptyDirectoryNode.Data, 'base64pad'))
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should get object and return a base64 encoded CID', async () => {
-      ipfs.object.get.withArgs(cid, defaultOptions).returns(emptyDirectoryNode)
+    it('should get object and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      ipfs.object.get.withArgs(cid.toV1(), defaultOptions).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/object/get?cid-base=base64&arg=${cid}`
+        url: `/api/v0/object/get?cid-base=base64&arg=${cid.toV1()}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not get an object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/get?cid-base=invalid&arg=${cid}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res.result.Hash).to.equal(cid.toV1().toString(base64))
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.get.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
@@ -250,7 +243,7 @@ describe('/object', () => {
 
   describe('/put', () => {
     const defaultOptions = {
-      enc: undefined,
+      pin: false,
       signal: sinon.match.instanceOf(AbortSignal),
       timeout: undefined
     }
@@ -296,24 +289,32 @@ describe('/object', () => {
       expect(res).to.have.property('statusCode', 400)
     })
 
-    it('updates value', async () => {
-      const expectedResult = {
-        Data: Buffer.from('another'),
-        Hash: cid.toString(),
+    it('puts value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+      const pbNode = {
+        Data: uint8ArrayFromString('another'),
+        Links: [{
+          Name: 'some link',
+          Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'),
+          Tsize: 8
+        }
+        ]
+      }
+
+      ipfs.object.put.withArgs(pbNode, defaultOptions).returns(cid)
+      ipfs.object.get.withArgs(cid).resolves(pbNode)
+
+      const form = new FormData()
+      form.append('data', Buffer.from(JSON.stringify({
+        Data: Buffer.from('another').toString('base64'),
         Links: [{
           Name: 'some link',
           Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
           Size: 8
-        }],
-        Size: 68
-      }
-
-      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), defaultOptions).returns(cid)
-      ipfs.object.get.withArgs(cid).resolves(new DAGNode(expectedResult.Data, expectedResult.Links, expectedResult.Size - 8))
-
-      const form = new FormData()
-      const filePath = 'test/fixtures/test-data/node.json'
-      form.append('data', fs.createReadStream(filePath))
+        }
+        ]
+      })))
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
@@ -325,13 +326,44 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.property('result', expectedResult)
+      expect(res).to.have.deep.property('result', {
+        Data: Buffer.from('another').toString('base64'),
+        Hash: cid.toString(),
+        Links: [{
+          Name: 'some link',
+          Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+          Size: 8
+        }],
+        Size: 60
+      })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should put data and return a base64 encoded CID', async () => {
+    it('should put data and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+
+      const pbNode = {
+        Data: uint8ArrayFromString('another'),
+        Links: [{
+          Name: 'some link',
+          Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1(),
+          Tsize: 8
+        }
+        ]
+      }
+
+      ipfs.object.put.withArgs(pbNode, defaultOptions).returns(cid.toV1())
+      ipfs.object.get.withArgs(cid.toV1()).resolves(pbNode)
+
       const form = new FormData()
-      form.append('file', JSON.stringify({ Data: 'TEST' + Date.now(), Links: [] }), { filename: 'node.json' })
+      form.append('data', Buffer.from(JSON.stringify({
+        Data: Buffer.from('another').toString('base64'),
+        Links: [{
+          Name: 'some link',
+          Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1().toString(),
+          Size: 8
+        }
+        ]
+      })))
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
@@ -343,50 +375,50 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not put data for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('file', JSON.stringify({ Data: 'TEST' + Date.now(), Links: [] }), { filename: 'node.json' })
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
-      const res = await http({
-        method: 'POST',
-        url: '/api/v0/object/put?cid-base=invalid',
-        headers,
-        payload
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res).to.have.deep.property('result', {
+        Data: Buffer.from('another').toString('base64'),
+        Hash: cid.toV1().toString(base64),
+        Links: [{
+          Name: 'some link',
+          Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1().toString(base64),
+          Size: 8
+        }],
+        Size: 62
+      })
     })
 
     it('accepts a timeout', async () => {
-      const expectedResult = {
-        Data: Buffer.from('another'),
-        Hash: cid.toString(),
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+      const pbNode = {
+        Data: uint8ArrayFromString('another'),
         Links: [{
           Name: 'some link',
-          Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
-          Size: 8
-        }],
-        Size: 68
+          Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'),
+          Tsize: 8
+        }
+        ]
       }
 
-      ipfs.object.put.withArgs(sinon.match.instanceOf(Buffer), {
+      ipfs.object.put.withArgs(pbNode, {
         ...defaultOptions,
         timeout: 1000
       }).returns(cid)
       ipfs.object.get.withArgs(cid, {
         signal: sinon.match.instanceOf(AbortSignal),
         timeout: 1000
-      }).resolves(new DAGNode(expectedResult.Data, expectedResult.Links, expectedResult.Size - 8))
+      }).resolves(pbNode)
 
       const form = new FormData()
-      const filePath = 'test/fixtures/test-data/node.json'
-      form.append('data', fs.createReadStream(filePath))
+      form.append('data', Buffer.from(JSON.stringify({
+        Data: Buffer.from('another').toString('base64'),
+        Links: [{
+          Name: 'some link',
+          Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+          Size: 8
+        }
+        ]
+      })))
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
@@ -398,7 +430,16 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.property('result', expectedResult)
+      expect(res).to.have.deep.property('result', {
+        Data: Buffer.from('another').toString('base64'),
+        Hash: cid.toString(),
+        Links: [{
+          Name: 'some link',
+          Hash: 'QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V',
+          Size: 8
+        }],
+        Size: 60
+      })
     })
   })
 
@@ -434,8 +475,9 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.stat.withArgs(cid, defaultOptions).returns({
-        Hash: cid.toString(),
+        Hash: cid,
         NumLinks: 'NumLinks',
         BlockSize: 'BlockSize',
         LinksSize: 'LinksSize',
@@ -457,40 +499,33 @@ describe('/object', () => {
       expect(res).to.have.nested.property('result.CumulativeSize', 'CumulativeSize')
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should stat object and return a base64 encoded CID', async () => {
-      let res = await http({
-        method: 'POST',
-        url: '/api/v0/object/new'
-      }, { ipfs })
+    it('should stat object and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      ipfs.object.stat.withArgs(cid, defaultOptions).returns({
+        Hash: cid.toV1(),
+        NumLinks: 'NumLinks',
+        BlockSize: 'BlockSize',
+        LinksSize: 'LinksSize',
+        DataSize: 'DataSize',
+        CumulativeSize: 'CumulativeSize'
+      })
 
-      expect(res).to.have.property('statusCode', 200)
-
-      res = await http({
-        method: 'POST',
-        url: '/api/v0/object/stat?cid-base=base64&arg=' + res.result.Hash
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not stat object for invalid cid-base option', async () => {
       const res = await http({
         method: 'POST',
-        url: `/api/v0/object/stat?cid-base=invalid&arg=${cid}`
+        url: `/api/v0/object/stat?cid-base=base64&arg=${cid}`
       }, { ipfs })
 
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res).to.have.property('statusCode', 200)
+      expect(res).to.have.nested.property('result.Hash', cid.toV1().toString(base64))
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.stat.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
       }).returns({
-        Hash: cid.toString(),
+        Hash: cid,
         NumLinks: 'NumLinks',
         BlockSize: 'BlockSize',
         LinksSize: 'LinksSize',
@@ -604,16 +639,8 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.links.withArgs(cid, defaultOptions).returns(fileNode.Links)
-
-      const expectedResult = {
-        Hash: cid.toString(),
-        Links: [{
-          Name: '',
-          Hash: cid.toString(),
-          Size: 5
-        }]
-      }
 
       const res = await http({
         method: 'POST',
@@ -621,33 +648,42 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.property('result', expectedResult)
+      expect(res).to.have.deep.property('result', {
+        Hash: cid.toString(),
+        Links: [{
+          Name: '',
+          Hash: cid.toString(),
+          Size: 5
+        }]
+      })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should list object links and return a base64 encoded CID', async () => {
+    it('should list object links and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      ipfs.object.links.withArgs(cid.toV1(), defaultOptions)
+        .returns(fileNode.Links.map(l => ({
+          ...l,
+          Hash: l.Hash.toV1()
+        })))
+
       const res = await http({
         method: 'POST',
-        url: `/api/v0/object/links?cid-base=base64&arg=${cid}`
+        url: `/api/v0/object/links?arg=${cid.toV1()}&cid-base=base64`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-      expect(res).to.have.nested.property('result.Links').that.is.empty()
-      expect(multibase.isEncoded(res.result.Links[0].Hash)).to.deep.equal('base64')
-    })
-
-    it('should not list object links for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/links?cid-base=invalid&arg=${cid}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res).to.have.deep.property('result', {
+        Hash: cid.toV1().toString(base64),
+        Links: [{
+          Name: '',
+          Hash: cid.toV1().toString(base64),
+          Size: 5
+        }]
+      })
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       ipfs.object.links.withArgs(cid, {
         ...defaultOptions,
         timeout: 1000
@@ -725,6 +761,7 @@ describe('/object', () => {
     })
 
     it('updates value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const data = Buffer.from('TEST' + Date.now())
 
       ipfs.object.patch.appendData.withArgs(cid, data, defaultOptions).returns(cid)
@@ -733,12 +770,6 @@ describe('/object', () => {
       const form = new FormData()
       form.append('data', data)
       const headers = form.getHeaders()
-      const expectedResult = {
-        Data: emptyDirectoryNode.Data,
-        Hash: cid.toString(),
-        Links: [],
-        Size: 4
-      }
 
       const payload = await streamToPromise(form)
       const res = await http({
@@ -749,45 +780,44 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res.result).to.deep.equal(expectedResult)
+      expect(res.result).to.deep.equal({
+        Data: base64pad.encode(emptyDirectoryNode.Data).substring(1),
+        Hash: cid.toString(),
+        Links: [],
+        Size: 4
+      })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should append data to object and return a base64 encoded CID', async () => {
+    it('should append data to object and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      const data = Buffer.from('TEST' + Date.now())
+
+      ipfs.object.patch.appendData.withArgs(cid.toV1(), data, defaultOptions).returns(cid.toV1())
+      ipfs.object.get.withArgs(cid.toV1()).returns(emptyDirectoryNode)
+
       const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
+      form.append('data', data)
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
       const res = await http({
         method: 'POST',
-        url: `/api/v0/object/patch/append-data?cid-base=base64&arg=${cid}`,
+        url: `/api/v0/object/patch/append-data?arg=${cid.toV1()}&cid-base=base64`,
         headers,
         payload
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not append data to object for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/append-data?cid-base=invalid&arg=${cid}`,
-        headers,
-        payload
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res.result).to.deep.equal({
+        Data: base64pad.encode(emptyDirectoryNode.Data).substring(1),
+        Hash: cid.toV1().toString(base64),
+        Links: [],
+        Size: 4
+      })
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const data = Buffer.from('TEST' + Date.now())
 
       ipfs.object.patch.appendData.withArgs(cid, data, {
@@ -799,12 +829,6 @@ describe('/object', () => {
       const form = new FormData()
       form.append('data', data)
       const headers = form.getHeaders()
-      const expectedResult = {
-        Data: emptyDirectoryNode.Data,
-        Hash: cid.toString(),
-        Links: [],
-        Size: 4
-      }
 
       const payload = await streamToPromise(form)
       const res = await http({
@@ -815,7 +839,12 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res.result).to.deep.equal(expectedResult)
+      expect(res.result).to.deep.equal({
+        Data: base64pad.encode(emptyDirectoryNode.Data).substring(1),
+        Hash: cid.toString(),
+        Links: [],
+        Size: 4
+      })
     })
   })
 
@@ -872,6 +901,7 @@ describe('/object', () => {
     })
 
     it('updates value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const data = Buffer.from('TEST' + Date.now())
 
       ipfs.object.patch.setData.withArgs(cid, data, defaultOptions).returns(cid)
@@ -880,10 +910,6 @@ describe('/object', () => {
       const form = new FormData()
       form.append('data', data)
       const headers = form.getHeaders()
-      const expectedResult = {
-        Hash: cid.toString(),
-        Links: []
-      }
 
       const payload = await streamToPromise(form)
       const res = await http({
@@ -894,45 +920,40 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res.result).to.deep.equal(expectedResult)
+      expect(res.result).to.deep.equal({
+        Hash: cid.toString(),
+        Links: []
+      })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should set data for object and return a base64 encoded CID', async () => {
+    it('should set data for object and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      const data = Buffer.from('TEST' + Date.now())
+
+      ipfs.object.patch.setData.withArgs(cid.toV1(), data, defaultOptions).returns(cid.toV1())
+      ipfs.object.get.withArgs(cid.toV1()).returns(emptyDirectoryNode)
+
       const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
+      form.append('data', data)
       const headers = form.getHeaders()
 
       const payload = await streamToPromise(form)
       const res = await http({
         method: 'POST',
-        url: `/api/v0/object/patch/set-data?cid-base=base64&arg=${cid}`,
+        url: `/api/v0/object/patch/set-data?arg=${cid.toV1()}&cid-base=base64`,
         headers,
         payload
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not set data for object for invalid cid-base option', async () => {
-      const form = new FormData()
-      form.append('data', Buffer.from('TEST' + Date.now()))
-      const headers = form.getHeaders()
-
-      const payload = await streamToPromise(form)
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/set-data?cid-base=invalid&arg=${cid}`,
-        headers,
-        payload
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res.result).to.deep.equal({
+        Hash: cid.toV1().toString(base64),
+        Links: []
+      })
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const data = Buffer.from('TEST' + Date.now())
 
       ipfs.object.patch.setData.withArgs(cid, data, {
@@ -944,10 +965,6 @@ describe('/object', () => {
       const form = new FormData()
       form.append('data', data)
       const headers = form.getHeaders()
-      const expectedResult = {
-        Hash: cid.toString(),
-        Links: []
-      }
 
       const payload = await streamToPromise(form)
       const res = await http({
@@ -958,7 +975,10 @@ describe('/object', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res.result).to.deep.equal(expectedResult)
+      expect(res.result).to.deep.equal({
+        Hash: cid.toString(),
+        Links: []
+      })
     })
   })
 
@@ -1015,6 +1035,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const name = 'name'
 
       ipfs.object.patch.addLink.withArgs(cid, sinon.match({
@@ -1038,28 +1059,45 @@ describe('/object', () => {
       })
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should add a link to an object and return a base64 encoded CID', async () => {
+    it('should add a link to an object and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
+      const name = 'name'
+
+      ipfs.object.patch.addLink.withArgs(cid.toV1(), sinon.match({
+        Name: name,
+        Hash: cid2.toV1()
+      }), defaultOptions).returns(cid.toV1())
+      ipfs.object.get.withArgs(cid.toV1()).returns({
+        ...fileNode,
+        Links: fileNode.Links.map(l => ({
+          ...l,
+          Hash: l.Hash.toV1()
+        }))
+      })
+      ipfs.object.get.withArgs(cid2.toV1()).returns({
+        ...fileNode,
+        Links: fileNode.Links.map(l => ({
+          ...l,
+          Hash: l.Hash.toV1()
+        }))
+      })
+
       const res = await http({
         method: 'POST',
-        url: `/api/v0/object/patch/add-link?cid-base=base64&arg=${cid}&arg=test&arg=${cid2}`
+        url: `/api/v0/object/patch/add-link?arg=${cid.toV1()}&arg=${name}&arg=${cid2.toV1()}&cid-base=base64`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not add a link to an object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/add-link?cid-base=invalid&arg=${cid}&arg=test&arg=${cid2}`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res).to.have.nested.property('result.Hash', cid.toV1().toString(base64))
+      expect(res).to.have.deep.nested.property('result.Links[0]', {
+        Name: '',
+        Hash: cid.toV1().toString(base64),
+        Size: 5
+      })
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const name = 'name'
 
       ipfs.object.patch.addLink.withArgs(cid, sinon.match({
@@ -1140,6 +1178,7 @@ describe('/object', () => {
     })
 
     it('returns value', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const name = 'name'
 
       ipfs.object.patch.rmLink.withArgs(cid, name, {
@@ -1156,30 +1195,26 @@ describe('/object', () => {
       expect(res).to.have.nested.property('result.Hash', cid2.toString())
     })
 
-    // TODO: unskip after switch to v1 CIDs by default
-    it.skip('should remove a link from an object and return a base64 encoded CID', async () => {
+    it('should remove a link from an object and return a base64 encoded CID', async () => {
+      ipfs.bases.getBase.withArgs('base64').returns(base64)
       const name = 'name'
+
+      ipfs.object.patch.rmLink.withArgs(cid.toV1(), name, {
+        ...defaultOptions
+      }).returns(cid2.toV1())
+      ipfs.object.get.withArgs(cid2.toV1()).returns(emptyDirectoryNode)
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/object/patch/rm-link?cid-base=base64&arg=${cid}&arg=${name}`
+        url: `/api/v0/object/patch/rm-link?arg=${cid.toV1()}&arg=${name}&cid-base=base64`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(multibase.isEncoded(res.result.Hash)).to.deep.equal('base64')
-    })
-
-    it('should not remove a link from an object for invalid cid-base option', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/object/patch/rm-link?cid-base=invalid&arg=${cid}&arg=derp`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 400)
-      expect(res).to.have.nested.property('result.Message').that.includes('Invalid request query input')
+      expect(res).to.have.nested.property('result.Hash', cid2.toV1().toString(base64))
     })
 
     it('accepts a timeout', async () => {
+      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
       const name = 'name'
 
       ipfs.object.patch.rmLink.withArgs(cid, name, {

@@ -1,7 +1,6 @@
-'use strict'
-
 /* eslint-env browser */
-const { encodeError, decodeError } = require('./error')
+
+import { encodeError, decodeError } from './error.js'
 
 /**
  * @template T
@@ -51,7 +50,7 @@ const { encodeError, decodeError } = require('./error')
  * @param {function(I):O} decode
  * @returns {AsyncIterable<O>}
  */
-const decodeIterable = async function * ({ port }, decode) {
+export const decodeIterable = async function * ({ port }, decode) {
   /**
    * @param {RemoteNext<I>} _data
    */
@@ -89,7 +88,6 @@ const decodeIterable = async function * ({ port }, decode) {
     port.close()
   }
 }
-exports.decodeIterable = decodeIterable
 
 /**
  * @template I,O
@@ -98,7 +96,7 @@ exports.decodeIterable = decodeIterable
  * @param {Set<Transferable>} transfer
  * @returns {RemoteIterable<O>}
  */
-const encodeIterable = (iterable, encode, transfer) => {
+export const encodeIterable = (iterable, encode, transfer) => {
   const { port1: port, port2: remote } = new MessageChannel()
   /** @type {Iterator<I>|AsyncIterator<I>} */
   const iterator = toIterator(iterable)
@@ -130,7 +128,7 @@ const encodeIterable = (iterable, encode, transfer) => {
               itemTransfer
             )
           }
-        } catch (error) {
+        } catch (/** @type {any} */ error) {
           port.postMessage({
             type: 'throw',
             error: encodeError(error)
@@ -156,7 +154,6 @@ const encodeIterable = (iterable, encode, transfer) => {
 
   return { type: 'RemoteIterable', port: remote }
 }
-exports.encodeIterable = encodeIterable
 
 /**
  * @template I
@@ -182,21 +179,20 @@ const toIterator = iterable => {
  * @param {Set<Transferable>} transfer
  * @returns {RemoteCallback}
  */
-const encodeCallback = (callback, transfer) => {
+export const encodeCallback = (callback, transfer) => {
   // eslint-disable-next-line no-undef
   const { port1: port, port2: remote } = new MessageChannel()
   port.onmessage = ({ data }) => callback.apply(null, data)
   transfer.add(remote)
   return { type: 'RemoteCallback', port: remote }
 }
-exports.encodeCallback = encodeCallback
 
 /**
  * @template T
  * @param {RemoteCallback} remote
  * @returns {function(T[]):void | function(T[], Set<Transferable>):void}
  */
-const decodeCallback = ({ port }) => {
+export const decodeCallback = ({ port }) => {
   /**
    * @param {T[]} args
    * @param {Set<Transferable>} [transfer]
@@ -208,7 +204,6 @@ const decodeCallback = ({ port }) => {
 
   return callback
 }
-exports.decodeCallback = decodeCallback
 
 /**
  * @param {MessagePort} port
@@ -216,6 +211,6 @@ exports.decodeCallback = decodeCallback
  * @param {Iterable<Transferable>} [transfer]
  */
 const postMessage = (port, message, transfer) =>
-  // @ts-expect-error - Bultin types expect Transferable[] but it really
+  // @ts-expect-error - Built in types expect Transferable[] but it really
   // should be Iterable<Transferable>
   port.postMessage(message, transfer)

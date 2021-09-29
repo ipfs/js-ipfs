@@ -1,48 +1,39 @@
 /* eslint-env mocha */
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const dagPB = require('ipld-dag-pb')
-const DAGNode = dagPB.DAGNode
-const dagCBOR = require('ipld-dag-cbor')
-const CID = require('cids')
-const multihash = require('multihashing-async').multihash
-const { getDescribe, getIt, expect } = require('../utils/mocha')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as dagCBOR from '@ipld/dag-cbor'
+import { CID } from 'multiformats/cid'
+import { sha256, sha512 } from 'multiformats/hashes/sha2'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testPut (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.dag.put', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
-    before(async () => { ipfs = (await common.spawn()).api })
+    before(async () => { ipfs = (await factory.spawn()).api })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
-    let pbNode
-    let cborNode
-
-    before((done) => {
-      const someData = uint8ArrayFromString('some data')
-
-      try {
-        pbNode = new DAGNode(someData)
-      } catch (err) {
-        return done(err)
-      }
-
-      cborNode = {
-        data: someData
-      }
-
-      done()
-    })
+    const pbNode = {
+      Data: uint8ArrayFromString('some data'),
+      Links: []
+    }
+    const cborNode = {
+      data: uint8ArrayFromString('some other data')
+    }
 
     it('should put dag-pb with default hash func (sha2-256)', () => {
       return ipfs.dag.put(pbNode, {
@@ -51,10 +42,10 @@ module.exports = (common, options) => {
       })
     })
 
-    it('should put dag-pb with custom hash func (sha3-512)', () => {
+    it('should put dag-pb with non-default hash func (sha2-512)', () => {
       return ipfs.dag.put(pbNode, {
         format: 'dag-pb',
-        hashAlg: 'sha3-512'
+        hashAlg: 'sha2-512'
       })
     })
 
@@ -65,10 +56,10 @@ module.exports = (common, options) => {
       })
     })
 
-    it('should put dag-cbor with custom hash func (sha3-512)', () => {
+    it('should put dag-cbor with non-default hash func (sha2-512)', () => {
       return ipfs.dag.put(cborNode, {
         format: 'dag-cbor',
-        hashAlg: 'sha3-512'
+        hashAlg: 'sha2-512'
       })
     })
 
@@ -78,9 +69,12 @@ module.exports = (common, options) => {
         hashAlg: 'sha2-256'
       })
       expect(cid).to.exist()
-      expect(CID.isCID(cid)).to.equal(true)
+      expect(cid).to.be.an.instanceOf(CID)
 
-      const _cid = await dagCBOR.util.cid(dagCBOR.util.serialize(cborNode))
+      const bytes = dagCBOR.encode(cborNode)
+      const hash = await sha256.digest(bytes)
+      const _cid = CID.createV1(dagCBOR.code, hash)
+
       expect(cid.bytes).to.eql(_cid.bytes)
     })
 
@@ -90,17 +84,17 @@ module.exports = (common, options) => {
 
     it('should set defaults when calling put without options', async () => {
       const cid = await ipfs.dag.put(cborNode)
-      expect(cid.codec).to.equal('dag-cbor')
-      expect(multihash.decode(cid.multihash).name).to.equal('sha2-256')
+      expect(cid.code).to.equal(dagCBOR.code)
+      expect(cid.multihash.code).to.equal(sha256.code)
     })
 
-    it('should override hash algoritm default and resolve with it', async () => {
+    it('should override hash algorithm default and resolve with it', async () => {
       const cid = await ipfs.dag.put(cborNode, {
         format: 'dag-cbor',
-        hashAlg: 'sha3-512'
+        hashAlg: 'sha2-512'
       })
-      expect(cid.codec).to.equal('dag-cbor')
-      expect(multihash.decode(cid.multihash).name).to.equal('sha3-512')
+      expect(cid.code).to.equal(dagCBOR.code)
+      expect(cid.multihash.code).to.equal(sha512.code)
     })
 
     it.skip('should put by passing the cid instead of format and hashAlg', (done) => {})

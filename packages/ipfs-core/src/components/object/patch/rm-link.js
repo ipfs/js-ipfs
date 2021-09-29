@@ -1,24 +1,25 @@
-'use strict'
-
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { createGet } from '../get.js'
+import { createPut } from '../put.js'
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../../types').Preload} config.preload
- * @param {import('.').GCLock} config.gcLock
  */
-module.exports = ({ ipld, gcLock, preload }) => {
-  const get = require('../get')({ ipld, preload })
-  const put = require('../put')({ ipld, gcLock, preload })
+export function createRmLink ({ repo, preload }) {
+  const get = createGet({ repo, preload })
+  const put = createPut({ repo, preload })
 
   /**
    * @type {import('ipfs-core-types/src/object/patch').API["rmLink"]}
    */
   async function rmLink (multihash, linkRef, options = {}) {
     const node = await get(multihash, options)
-    // @ts-ignore - loose input types
-    node.rmLink(linkRef.Name || linkRef.name || linkRef)
+    const name = (typeof linkRef === 'string' ? linkRef : linkRef.Name) || ''
+
+    node.Links = node.Links.filter(l => l.Name !== name)
+
     return put(node, options)
   }
 

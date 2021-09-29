@@ -1,11 +1,16 @@
-'use strict'
+import { createGet } from './get.js'
+import { createPut } from './put.js'
+import { createRm } from './rm.js'
+import { createStat } from './stat.js'
 
 /**
  * @param {import('../types').Options} config
  */
-module.exports = config => ({
-  get: require('./get')(config),
-  stat: require('./stat')(config),
-  put: require('./put')(config),
-  rm: require('./rm')(config)
-})
+export function createBlock (config) {
+  return {
+    get: createGet(config),
+    put: createPut(config),
+    rm: createRm(config),
+    stat: createStat(config)
+  }
+}

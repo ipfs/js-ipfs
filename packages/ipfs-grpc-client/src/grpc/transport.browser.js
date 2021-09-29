@@ -1,5 +1,3 @@
-'use strict'
+import grpcWeb from '@improbable-eng/grpc-web'
 
-const { grpc } = require('@improbable-eng/grpc-web')
-
-module.exports = grpc.WebsocketTransport
+export const transport = () => grpcWeb.grpc.WebsocketTransport

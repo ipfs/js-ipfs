@@ -1,7 +1,8 @@
 {
   "extends": "aegir/src/config/tsconfig.aegir.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "types",
+    "module": "es2020"
   },
   "include": [
     "src",
@@ -22,12 +23,6 @@
     },
     {
       "path": "../ipfs-http-client"
-    },
-    {
-      "path": "../ipfs-http-gateway"
-    },
-    {
-      "path": "../ipfs-http-server"
     }
   ]
 }

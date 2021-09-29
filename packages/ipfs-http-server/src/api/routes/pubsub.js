@@ -1,26 +1,29 @@
-'use strict'
+import {
+  subscribeResource,
+  publishResource,
+  lsResource,
+  peersResource
+} from '../resources/pubsub.js'
 
-const resources = require('../resources')
-
-module.exports = [
+export default [
   {
     method: 'POST',
     path: '/api/v0/pubsub/sub',
-    ...resources.pubsub.subscribe
+    ...subscribeResource
   },
   {
     method: 'POST',
     path: '/api/v0/pubsub/pub',
-    ...resources.pubsub.publish
+    ...publishResource
   },
   {
     method: 'POST',
     path: '/api/v0/pubsub/ls',
-    ...resources.pubsub.ls
+    ...lsResource
   },
   {
     method: 'POST',
     path: '/api/v0/pubsub/peers',
-    ...resources.pubsub.peers
+    ...peersResource
   }
 ]

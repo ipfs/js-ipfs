@@ -1,7 +1,5 @@
-'use strict'
-
-const IpnsPubsubDatastore = require('../../../ipns/routing/pubsub-datastore')
-const errcode = require('err-code')
+import { IpnsPubsubDatastore } from '../../../ipns/routing/pubsub-datastore.js'
+import errcode from 'err-code'
 
 /**
  * @typedef {import('../../../types').ExperimentalOptions} ExperimentalOptions
@@ -11,10 +9,10 @@ const errcode = require('err-code')
 /**
  * Get pubsub from IPNS routing
  *
- * @param {import('../../ipns')} ipns
+ * @param {import('../../ipns').IPNSAPI} ipns
  * @param {ExperimentalOptions} [options]
  */
-exports.getPubsubRouting = (ipns, options) => {
+export function getPubsubRouting (ipns, options) {
   if (!ipns || !(options && options.ipnsPubsub)) {
     throw errcode(new Error('IPNS pubsub subsystem is not enabled'), 'ERR_IPNS_PUBSUB_NOT_ENABLED')
   }

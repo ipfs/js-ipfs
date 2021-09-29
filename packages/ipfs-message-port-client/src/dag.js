@@ -1,11 +1,9 @@
-'use strict'
-
-const Client = require('./client')
-const { encodeCID, decodeCID } = require('ipfs-message-port-protocol/src/cid')
-const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
+import { Client } from './client.js'
+import { encodeCID, decodeCID } from 'ipfs-message-port-protocol/cid'
+import { encodeNode, decodeNode } from 'ipfs-message-port-protocol/dag'
 
 /**
- * @typedef {import('cids')} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-message-port-protocol/src/cid').EncodedCID} EncodedCID
  * @typedef {import('ipfs-message-port-server').DAGService} DagService
  * @typedef {import('./client').MessageTransport} MessageTransport
@@ -17,12 +15,12 @@ const { encodeNode, decodeNode } = require('ipfs-message-port-protocol/src/dag')
  * @class
  * @extends {Client<DagService>}
  */
-class DAGClient extends Client {
+export class DAGClient extends Client {
   /**
    * @param {MessageTransport} transport
    */
   constructor (transport) {
-    super('dag', ['put', 'get', 'resolve', 'tree'], transport)
+    super('dag', ['put', 'get', 'resolve'], transport)
   }
 }
 
@@ -30,11 +28,8 @@ class DAGClient extends Client {
  * @type {DAGAPI["put"]}
  */
 DAGClient.prototype.put = async function put (dagNode, options = {}) {
-  const { cid } = options
-
   const encodedCID = await this.remote.put({
     ...options,
-    encodedCid: cid != null ? encodeCID(cid) : undefined,
     dagNode: encodeNode(dagNode, options.transfer)
   })
 
@@ -66,18 +61,6 @@ DAGClient.prototype.resolve = async function resolve (cid, options = {}) {
 }
 
 /**
- * @type {DAGAPI["tree"]}
- */
-DAGClient.prototype.tree = async function * tree (cid, options = {}) {
-  const paths = await this.remote.tree({
-    ...options,
-    cid: encodeCID(cid, options.transfer)
-  })
-
-  yield * paths
-}
-
-/**
  * @param {string|CID} input
  * @param {Set<Transferable>} [transfer]
  * @returns {string|EncodedCID}
@@ -89,5 +72,3 @@ const encodeCIDOrPath = (input, transfer) => {
     return encodeCID(input, transfer)
   }
 }
-
-module.exports = DAGClient

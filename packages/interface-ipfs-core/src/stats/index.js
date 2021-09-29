@@ -1,10 +1,12 @@
-'use strict'
-const { createSuite } = require('../utils/suite')
+import { createSuite } from '../utils/suite.js'
+import { testBitswap } from './bitswap.js'
+import { testBw } from './bw.js'
+import { testRepo } from './repo.js'
 
 const tests = {
-  bitswap: require('./bitswap'),
-  bw: require('./bw'),
-  repo: require('./repo')
+  bitswap: testBitswap,
+  bw: testBw,
+  repo: testRepo
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

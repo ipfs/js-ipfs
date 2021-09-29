@@ -1,36 +1,35 @@
 /* eslint-env mocha */
-'use strict'
 
-require('./inject/bitswap')
-require('./inject/block')
-require('./inject/bootstrap')
-require('./inject/browser-headers')
-require('./inject/config')
-require('./inject/dag')
-require('./inject/dht')
-require('./inject/dns')
-require('./inject/files')
-require('./inject/id')
-require('./inject/key')
-require('./inject/mfs/chmod')
-require('./inject/mfs/cp')
-require('./inject/mfs/flush')
-require('./inject/mfs/ls')
-require('./inject/mfs/mkdir')
-require('./inject/mfs/mv')
-require('./inject/mfs/read')
-require('./inject/mfs/rm')
-require('./inject/mfs/stat')
-require('./inject/mfs/touch')
-require('./inject/mfs/write')
-require('./inject/name')
-require('./inject/object')
-require('./inject/pin')
-require('./inject/ping')
-require('./inject/pubsub')
-require('./inject/repo')
-require('./inject/resolve')
-require('./inject/shutdown')
-require('./inject/stats')
-require('./inject/swarm')
-require('./inject/version')
+import './inject/bitswap.js'
+import './inject/block.js'
+import './inject/bootstrap.js'
+import './inject/browser-headers.js'
+import './inject/config.js'
+import './inject/dag.js'
+import './inject/dht.js'
+import './inject/dns.js'
+import './inject/files.js'
+import './inject/id.js'
+import './inject/key.js'
+import './inject/mfs/chmod.js'
+import './inject/mfs/cp.js'
+import './inject/mfs/flush.js'
+import './inject/mfs/ls.js'
+import './inject/mfs/mkdir.js'
+import './inject/mfs/mv.js'
+import './inject/mfs/read.js'
+import './inject/mfs/rm.js'
+import './inject/mfs/stat.js'
+import './inject/mfs/touch.js'
+import './inject/mfs/write.js'
+import './inject/name.js'
+import './inject/object.js'
+import './inject/pin.js'
+import './inject/ping.js'
+import './inject/pubsub.js'
+import './inject/repo.js'
+import './inject/resolve.js'
+import './inject/shutdown.js'
+import './inject/stats.js'
+import './inject/swarm.js'
+import './inject/version.js'

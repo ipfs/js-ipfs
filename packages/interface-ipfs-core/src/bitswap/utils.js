@@ -1,8 +1,11 @@
-'use strict'
+import delay from 'delay'
 
-const delay = require('delay')
-
-async function waitForWantlistKey (ipfs, key, opts = {}) {
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {string} key
+ * @param {{ timeout?: number, interval?: number, peerId?: string }} [opts]
+ */
+export async function waitForWantlistKey (ipfs, key, opts = {}) {
   opts.timeout = opts.timeout || 10000
   opts.interval = opts.interval || 100
 
@@ -27,7 +30,12 @@ async function waitForWantlistKey (ipfs, key, opts = {}) {
   throw new Error(`Timed out waiting for ${key} in wantlist`)
 }
 
-async function waitForWantlistKeyToBeRemoved (ipfs, key, opts = {}) {
+/**
+ * @param {import('ipfs-core-types').IPFS} ipfs
+ * @param {string} key
+ * @param {{ timeout?: number, interval?: number, peerId?: string }} [opts]
+ */
+export async function waitForWantlistKeyToBeRemoved (ipfs, key, opts = {}) {
   opts.timeout = opts.timeout || 10000
   opts.interval = opts.interval || 100
 
@@ -53,6 +61,3 @@ async function waitForWantlistKeyToBeRemoved (ipfs, key, opts = {}) {
 
   throw new Error(`Timed out waiting for ${key} to be removed from wantlist`)
 }
-
-module.exports.waitForWantlistKey = waitForWantlistKey
-module.exports.waitForWantlistKeyToBeRemoved = waitForWantlistKeyToBeRemoved

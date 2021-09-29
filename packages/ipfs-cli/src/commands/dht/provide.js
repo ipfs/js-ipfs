@@ -1,9 +1,7 @@
-'use strict'
+import parseDuration from 'parse-duration'
+import { coerceCID } from '../../utils.js'
 
-const { default: parseDuration } = require('parse-duration')
-const { coerceCID } = require('../../utils')
-
-module.exports = {
+export default {
   command: 'provide <key>',
 
   describe: 'Announce to the network that you are providing given values.',
@@ -28,7 +26,7 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
+   * @param {import('multiformats/cid').CID} argv.key
    * @param {boolean} argv.recursive
    * @param {number} argv.timeout
    */

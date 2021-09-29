@@ -1,26 +1,29 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expectIsRepo } = require('./utils')
-const { getDescribe, getIt } = require('../utils/mocha')
+import { expectIsRepo } from './utils.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testRepo (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.stats.repo', () => {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should get repo stats', async () => {
       const res = await ipfs.stats.repo()

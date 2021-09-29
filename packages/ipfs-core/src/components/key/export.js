@@ -1,12 +1,10 @@
-'use strict'
-
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
  * @param {Object} config
  * @param {import('libp2p/src/keychain')} config.keychain
  */
-module.exports = ({ keychain }) => {
+export function createExport ({ keychain }) {
   /**
    * @type {import('ipfs-core-types/src/key').API["export"]}
    */

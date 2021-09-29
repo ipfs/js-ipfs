@@ -1,13 +1,11 @@
-'use strict'
-
-const modeToString = require('./mode-to-string')
-const { parseMtime } = require('ipfs-unixfs')
+import { modeToString } from './mode-to-string.js'
+import { parseMtime } from '../lib/parse-mtime.js'
 
 /**
  * @param {*} params
  * @returns {URLSearchParams}
  */
-module.exports = ({ arg, searchParams, hashAlg, mtime, mode, ...options } = {}) => {
+export function toUrlSearchParams ({ arg, searchParams, hashAlg, mtime, mode, ...options } = {}) {
   if (searchParams) {
     options = {
       ...options,

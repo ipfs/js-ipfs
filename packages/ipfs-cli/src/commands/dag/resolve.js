@@ -1,8 +1,6 @@
-'use strict'
+import parseDuration from 'parse-duration'
 
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'resolve <ref>',
 
   describe: 'fetches a dag node from ipfs, prints its address and remaining path',
@@ -43,7 +41,7 @@ module.exports = {
       }
 
       print(lastCid.toString())
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       return print(`dag get resolve: ${err}`)
     }
   }

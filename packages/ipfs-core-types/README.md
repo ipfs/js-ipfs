@@ -4,7 +4,7 @@
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?style=flat-square&path=packages/interface-ipfs-core)](https://david-dm.org/ipfs/js-ipfs?path=packages/interface-ipfs-core)
+[![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?style=flat-square&path=packages/ipfs-core-types)](https://david-dm.org/ipfs/js-ipfs?path=packages/ipfs-core-types)
 
 > IPFS interface definitions used by implementations for API compatibility
 

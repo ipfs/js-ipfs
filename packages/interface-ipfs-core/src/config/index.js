@@ -1,11 +1,14 @@
-'use strict'
-const { createSuite } = require('../utils/suite')
+import { createSuite } from '../utils/suite.js'
+import { testGet } from './get.js'
+import { testSet } from './set.js'
+import { testReplace } from './replace.js'
+import profiles from './profiles/index.js'
 
 const tests = {
-  get: require('./get'),
-  set: require('./set'),
-  replace: require('./replace'),
-  profiles: require('./profiles')
+  get: testGet,
+  set: testSet,
+  replace: testReplace,
+  profiles
 }
 
-module.exports = createSuite(tests)
+export default createSuite(tests)

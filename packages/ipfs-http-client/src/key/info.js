@@ -1,18 +1,17 @@
-'use strict'
-
-const configure = require('../lib/configure')
+import { configure } from '../lib/configure.js'
+import errCode from 'err-code'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/key').API<HTTPClientExtraOptions>} KeyAPI
  */
 
-module.exports = configure(api => {
+export const createInfo = configure(api => {
   /**
    * @type {KeyAPI["info"]}
    */
   const info = async (name, options = {}) => {
-    throw new Error('Not implemented')
+    throw errCode(new Error('Not implemented'), 'ERR_NOT_IMPLEMENTED')
   }
 
   return info

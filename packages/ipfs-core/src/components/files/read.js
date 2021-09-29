@@ -1,10 +1,10 @@
-'use strict'
+import { exporter } from 'ipfs-unixfs-exporter'
+import mergeOpts from 'merge-options'
+import { toMfsPath } from './utils/to-mfs-path.js'
+import errCode from 'err-code'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
-const { exporter } = require('ipfs-unixfs-exporter')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const toMfsPath = require('./utils/to-mfs-path')
-const errCode = require('err-code')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
  * @typedef {import('./').MfsContext} MfsContext
@@ -26,7 +26,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createRead (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["read"]}
    */
@@ -37,7 +37,7 @@ module.exports = (context) => {
     return {
       [Symbol.asyncIterator]: async function * read () {
         const mfsPath = await toMfsPath(context, path, options)
-        const result = await exporter(mfsPath.mfsPath, context.ipld)
+        const result = await exporter(mfsPath.mfsPath, context.repo.blocks)
 
         if (result.type !== 'file') {
           throw errCode(new Error(`${path} was not a file`), 'ERR_NOT_FILE')

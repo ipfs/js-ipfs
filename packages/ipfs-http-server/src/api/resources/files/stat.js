@@ -1,8 +1,6 @@
-'use strict'
+import Joi from '../../../utils/joi.js'
 
-const Joi = require('../../../utils/joi')
-
-const mfsStat = {
+export const statResource = {
   options: {
     validate: {
       options: {
@@ -14,7 +12,7 @@ const mfsStat = {
         hash: Joi.boolean().default(false),
         size: Joi.boolean().default(false),
         withLocal: Joi.boolean().default(false),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
     }
@@ -45,11 +43,13 @@ const mfsStat = {
       timeout
     })
 
+    const base = await ipfs.bases.getBase(cidBase)
+
     const output = {
       Type: stats.type,
       Blocks: stats.blocks,
       Size: stats.size,
-      Hash: stats.cid.toString(cidBase),
+      Hash: stats.cid.toString(base.encoder),
       CumulativeSize: stats.cumulativeSize,
       WithLocality: stats.withLocality,
       Local: stats.local,
@@ -62,5 +62,3 @@ const mfsStat = {
     return h.response(output)
   }
 }
-
-module.exports = mfsStat

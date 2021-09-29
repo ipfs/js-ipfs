@@ -1,8 +1,6 @@
-'use strict'
+import parseDuration from 'parse-duration'
 
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'refs <key> [keys..]',
 
   describe: 'List links (references) from an object',

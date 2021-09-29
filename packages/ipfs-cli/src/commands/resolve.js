@@ -1,12 +1,9 @@
-'use strict'
-
-const multibase = require('multibase')
-const { default: parseDuration } = require('parse-duration')
-const {
+import parseDuration from 'parse-duration'
+import {
   stripControlCharacters
-} = require('../utils')
+} from '../utils.js'
 
-module.exports = {
+export default {
   command: 'resolve <name>',
 
   description: 'Resolve the value of names to IPFS',
@@ -15,12 +12,12 @@ module.exports = {
     recursive: {
       alias: 'r',
       type: 'boolean',
-      default: false
+      default: true
     },
     'cid-base': {
       describe: 'Number base to display CIDs in.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -33,7 +30,7 @@ module.exports = {
    * @param {import('../types').Context} argv.ctx
    * @param {string} argv.name
    * @param {boolean} argv.recursive
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { print, ipfs }, name, recursive, cidBase, timeout }) {

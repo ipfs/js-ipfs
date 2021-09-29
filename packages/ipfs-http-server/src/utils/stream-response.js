@@ -1,11 +1,10 @@
-'use strict'
+import { PassThrough } from 'stream'
+import { pipe } from 'it-pipe'
+import debug from 'debug'
+// @ts-expect-error no types
+import toIterable from 'stream-to-it'
 
-const { PassThrough } = require('stream')
-const { pipe } = require('it-pipe')
-const log = require('debug')('ipfs:http-api:utils:stream-response')
-// @ts-ignore no types
-const toIterable = require('stream-to-it')
-
+const log = debug('ipfs:http-api:utils:stream-response')
 const ERROR_TRAILER = 'X-Stream-Error'
 
 /**
@@ -13,9 +12,9 @@ const ERROR_TRAILER = 'X-Stream-Error'
  * @param {import('../types').Request} request
  * @param {import('@hapi/hapi').ResponseToolkit} h
  * @param {() => AsyncIterable<any>} getSource
- * @param {{ onError?: (error: Error) => void }} [options]
+ * @param {{ onError?: (error: Error) => void, onEnd?: () => void }} [options]
  */
-async function streamResponse (request, h, getSource, options = {}) {
+export async function streamResponse (request, h, getSource, options = {}) {
   // eslint-disable-next-line no-async-promise-executor
   const stream = await new Promise(async (resolve, reject) => {
     let started = false
@@ -38,11 +37,15 @@ async function streamResponse (request, h, getSource, options = {}) {
               }
             }
 
+            if (options.onEnd) {
+              options.onEnd()
+            }
+
             if (!started) { // Maybe it was an empty source?
               started = true
               resolve(stream)
             }
-          } catch (err) {
+          } catch (/** @type {any} */ err) {
             log(err)
 
             if (options.onError) {
@@ -63,7 +66,7 @@ async function streamResponse (request, h, getSource, options = {}) {
         })(),
         toIterable.sink(stream)
       )
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       reject(err)
     }
   })
@@ -73,5 +76,3 @@ async function streamResponse (request, h, getSource, options = {}) {
     .header('Content-Type', 'application/json')
     .header('Trailer', ERROR_TRAILER)
 }
-
-module.exports = streamResponse

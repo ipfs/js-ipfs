@@ -1,18 +1,16 @@
-'use strict'
-
-const { exporter } = require('ipfs-unixfs-exporter')
-const { normalizeCidPath } = require('../utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
-const CID = require('cids')
+import { exporter } from 'ipfs-unixfs-exporter'
+import { normalizeCidPath } from '../utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {Object} Context
- * @property {import('ipld')} ipld
+ * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../types').Preload} preload
  *
  * @param {Context} context
  */
-module.exports = function ({ ipld, preload }) {
+export function createCat ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["cat"]}
    */
@@ -21,10 +19,10 @@ module.exports = function ({ ipld, preload }) {
 
     if (options.preload !== false) {
       const pathComponents = ipfsPath.split('/')
-      preload(new CID(pathComponents[0]))
+      preload(CID.parse(pathComponents[0]))
     }
 
-    const file = await exporter(ipfsPath, ipld, options)
+    const file = await exporter(ipfsPath, repo.blocks, options)
 
     // File may not have unixfs prop if small & imported with rawLeaves true
     if (file.type === 'directory') {

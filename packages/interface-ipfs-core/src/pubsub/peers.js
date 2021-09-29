@@ -1,40 +1,58 @@
 /* eslint-env mocha */
-'use strict'
 
-const { waitForPeers, getTopic } = require('./utils')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('delay')
-const { isWebWorker } = require('ipfs-utils/src/env')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+import { waitForPeers, getTopic } from './utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import delay from 'delay'
+import { isWebWorker } from 'ipfs-utils/src/env.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
-  const ipfsOptions = getIpfsOptions()
+export function testPeers (factory, options) {
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.pubsub.peers', function () {
     this.timeout(80 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs1
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs2
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs3
+    /** @type {string[]} */
     let subscribedTopics = []
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfs2Id
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfs3Id
 
     before(async () => {
-      ipfs1 = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfs1 = (await factory.spawn({ ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfs2 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
-      ipfs3 = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfs2 = (await factory.spawn({ type: isWebWorker ? 'js' : undefined, ipfsOptions })).api
+      ipfs3 = (await factory.spawn({ type: isWebWorker ? 'js' : undefined, ipfsOptions })).api
 
-      const ipfs2Addr = ipfs2.peerId.addresses
+      ipfs2Id = await ipfs2.id()
+      ipfs3Id = await ipfs3.id()
+
+      const ipfs2Addr = ipfs2Id.addresses
         .find(ma => ma.nodeAddress().address === '127.0.0.1')
-      const ipfs3Addr = ipfs3.peerId.addresses
+      const ipfs3Addr = ipfs3Id.addresses
         .find(ma => ma.nodeAddress().address === '127.0.0.1')
+
+      if (!ipfs2Addr || !ipfs3Addr) {
+        throw new Error('Could not find addrs')
+      }
 
       await ipfs1.swarm.connect(ipfs2Addr)
       await ipfs1.swarm.connect(ipfs3Addr)
@@ -51,7 +69,7 @@ module.exports = (common, options) => {
       await delay(100)
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should not error when not subscribed to a topic', async () => {
       const topic = getTopic()
@@ -95,7 +113,7 @@ module.exports = (common, options) => {
       await ipfs2.pubsub.subscribe(topic, sub2)
       await ipfs3.pubsub.subscribe(topic, sub3)
 
-      await waitForPeers(ipfs1, topic, [ipfs2.peerId.id], 30000)
+      await waitForPeers(ipfs1, topic, [ipfs2Id.id], 30000)
     })
 
     it('should return peers for a topic - multiple peers', async () => {
@@ -110,7 +128,7 @@ module.exports = (common, options) => {
       await ipfs2.pubsub.subscribe(topic, sub2)
       await ipfs3.pubsub.subscribe(topic, sub3)
 
-      await waitForPeers(ipfs1, topic, [ipfs2.peerId.id, ipfs3.peerId.id], 30000)
+      await waitForPeers(ipfs1, topic, [ipfs2Id.id, ipfs3Id.id], 30000)
     })
   })
 }

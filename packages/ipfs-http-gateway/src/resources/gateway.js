@@ -1,27 +1,23 @@
-'use strict'
+import debug from 'debug'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import Boom from '@hapi/boom'
+import Ammo from '@hapi/ammo'
+import last from 'it-last'
+import { CID } from 'multiformats/cid'
+import { base32 } from 'multiformats/bases/base32'
+import { resolver, utils } from 'ipfs-http-response'
+import isIPFS from 'is-ipfs'
+// @ts-expect-error no types
+import toStream from 'it-to-stream'
+import * as PathUtils from '../utils/path.js'
 
-const debug = require('debug')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const Boom = require('@hapi/boom')
-const Ammo = require('@hapi/ammo') // HTTP Range processing utilities
-const last = require('it-last')
-const multibase = require('multibase')
-// @ts-ignore no types
-const { resolver } = require('ipfs-http-response')
-// @ts-ignore no types
-const detectContentType = require('ipfs-http-response/src/utils/content-type')
-const isIPFS = require('is-ipfs')
-// @ts-ignore no types
-const toStream = require('it-to-stream')
-const PathUtils = require('../utils/path')
-const { cidToString } = require('ipfs-core-utils/src/cid')
+const { detectContentType } = utils
 
 const log = Object.assign(debug('ipfs:http-gateway'), {
   error: debug('ipfs:http-gateway:error')
 })
 
-module.exports = {
+export const Gateway = {
 
   /**
    * @param {import('../types').Request} request
@@ -47,7 +43,7 @@ module.exports = {
     let data
     try {
       data = await resolver.cid(ipfs, ipfsPath)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       const errorToString = err.toString()
       log.error('err: ', errorToString, ' fileName: ', err.fileName)
 
@@ -206,15 +202,15 @@ module.exports = {
         response.header('Last-Modified', 'Thu, 01 Jan 1970 00:00:01 GMT')
         // Suborigin for /ipfs/: https://github.com/ipfs/in-web-browsers/issues/66
         const rootCid = path.split('/')[2]
-        const ipfsOrigin = cidToString(rootCid, { base: 'base32' })
+        const ipfsOrigin = CID.parse(rootCid).toV1().toString(base32)
         response.header('Suborigin', `ipfs000${ipfsOrigin}`)
       } else if (path.startsWith('/ipns/')) {
         // Suborigin for /ipns/: https://github.com/ipfs/in-web-browsers/issues/66
         const root = path.split('/')[2]
         // encode CID/FQDN in base32 (Suborigin allows only a-z)
         const ipnsOrigin = isIPFS.cid(root)
-          ? cidToString(root, { base: 'base32' })
-          : uint8ArrayToString(multibase.encode('base32', uint8ArrayFromString(root)))
+          ? CID.parse(root).toV1().toString(base32)
+          : base32.encode(uint8ArrayFromString(root))
         response.header('Suborigin', `ipns000${ipnsOrigin}`)
       }
     }

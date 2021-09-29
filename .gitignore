@@ -4,6 +4,7 @@ logs
 npm-debug.log*
 package-lock.json
 yarn.lock
+tsconfig-types.aegir.json
 
 # Coverage directory used by tools like istanbul
 coverage
@@ -21,6 +22,7 @@ dist
 build
 bundle.js
 tsconfig-types.aegir.json
+tsconfig-check.aegir.json
 .tsbuildinfo
 
 # Deployment files
@@ -31,3 +33,4 @@ tsconfig-types.aegir.json
 
 # Operating system files
 .DS_Store
+types

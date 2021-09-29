@@ -1,8 +1,7 @@
-'use strict'
 
-const { parseArgsStringToArgv } = require('string-argv')
-const cli = require('../../src')
-const uint8ArrayToString = require('uint8arrays/to-string')
+import { parseArgsStringToArgv } from 'string-argv'
+import { cli as exec } from '../../src/index.js'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const output = () => {
   const output = []
@@ -31,12 +30,12 @@ const output = () => {
   return print
 }
 
-module.exports = async (command, ctx = {}) => {
+export async function cli (command, ctx = {}) {
   const print = output()
 
   command = parseArgsStringToArgv(command)
 
-  await cli(command, (args) => {
+  await exec(command, (args) => {
     args.ctx = {
       print,
       ...ctx
@@ -52,13 +51,13 @@ module.exports = async (command, ctx = {}) => {
   return uint8ArrayToString(out)
 }
 
-module.exports.fail = async (command, ctx = {}) => {
+export async function fail (command, ctx = {}) {
   const print = output()
 
   command = parseArgsStringToArgv(command)
 
   try {
-    await cli(command, (args) => {
+    await exec(command, (args) => {
       args.ctx = {
         print,
         ...ctx
@@ -66,7 +65,7 @@ module.exports.fail = async (command, ctx = {}) => {
     })
 
     throw new Error('Command did not error')
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.message === 'Command did not error') {
       throw err
     }

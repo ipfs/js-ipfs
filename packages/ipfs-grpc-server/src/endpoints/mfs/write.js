@@ -1,14 +1,12 @@
-'use strict'
-
-const peekable = require('it-peekable')
-const map = require('it-map')
-const { callbackify } = require('util')
+import peekable from 'it-peekable'
+import map from 'it-map'
+import { callbackify } from 'util'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('../../types').Options} options
  */
-module.exports = function grpcMfsWrite (ipfs, options = {}) {
+export function grpcMfsWrite (ipfs, options = {}) {
   /**
    * TODO: Fill out input/output types after https://github.com/ipfs/js-ipfs/issues/3594
    *

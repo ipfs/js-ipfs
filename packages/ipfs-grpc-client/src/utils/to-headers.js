@@ -1,11 +1,9 @@
-'use strict'
-
-const { paramCase } = require('change-case')
+import { paramCase } from 'change-case'
 
 /**
  * @param {Record<string, any>} [object] - key/value pairs to turn into HTTP headers
  */
-module.exports = (object = {}) => {
+export function toHeaders (object = {}) {
   /** @type {Record<string, string>} */
   const output = {}
 

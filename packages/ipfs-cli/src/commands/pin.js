@@ -1,6 +1,6 @@
-'use strict'
+import { commands } from './pin/index.js'
 
-module.exports = {
+export default {
   command: 'pin <command>',
 
   description: 'Pin and unpin objects to local storage.',
@@ -10,6 +10,7 @@ module.exports = {
    */
   builder (yargs) {
     return yargs
-      .commandDir('pin')
+      // @ts-expect-error types are wrong
+      .command(commands)
   }
 }

@@ -1,15 +1,13 @@
-'use strict'
+import Joi from '../../utils/joi.js'
+import all from 'it-all'
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import Boom from '@hapi/boom'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { streamResponse } from '../../utils/stream-response.js'
+import pushable from 'it-pushable'
 
-const Joi = require('../../utils/joi')
-const all = require('it-all')
-const multipart = require('../../utils/multipart-request-parser')
-const Boom = require('@hapi/boom')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const streamResponse = require('../../utils/stream-response')
-const pushable = require('it-pushable')
-
-exports.subscribe = {
+export const subscribeResource = {
   options: {
     timeout: {
       socket: false
@@ -86,7 +84,7 @@ exports.subscribe = {
   }
 }
 
-exports.publish = {
+export const publishResource = {
   options: {
     payload: {
       parse: false,
@@ -105,7 +103,7 @@ exports.publish = {
 
         let data
 
-        for await (const part of multipart(request.raw.req)) {
+        for await (const part of multipartRequestParser(request.raw.req)) {
           if (part.type === 'file') {
             data = Buffer.concat(await all(part.content))
           }
@@ -162,7 +160,7 @@ exports.publish = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: `Failed to publish to topic ${topic}` })
     }
 
@@ -170,7 +168,7 @@ exports.publish = {
   }
 }
 
-exports.ls = {
+export const lsResource = {
   options: {
     validate: {
       options: {
@@ -207,7 +205,7 @@ exports.ls = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       throw Boom.boomify(err, { message: 'Failed to list subscriptions' })
     }
 
@@ -215,7 +213,7 @@ exports.ls = {
   }
 }
 
-exports.peers = {
+export const peersResource = {
   options: {
     validate: {
       options: {
@@ -258,7 +256,7 @@ exports.peers = {
         signal,
         timeout
       })
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       const message = topic
         ? `Failed to find peers subscribed to ${topic}: ${err}`
         : `Failed to find peers: ${err}`

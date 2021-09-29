@@ -1,21 +1,18 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/object').API<HTTPClientExtraOptions>} ObjectAPI
  */
 
-module.exports = configure(api => {
+export const createNew = configure(api => {
   /**
    * @type {ObjectAPI["new"]}
    */
   async function newObject (options = {}) {
     const res = await api.post('object/new', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: options.template,
@@ -26,7 +23,7 @@ module.exports = configure(api => {
 
     const { Hash } = await res.json()
 
-    return new CID(Hash)
+    return CID.parse(Hash)
   }
   return newObject
 })

@@ -1,15 +1,10 @@
-'use strict'
-
-const { UnixFS } = require('ipfs-unixfs')
-const {
-  DAGNode
-} = require('ipld-dag-pb')
-const mc = require('multicodec')
-const mh = require('multihashing-async').multihash
+import { UnixFS } from 'ipfs-unixfs'
+import * as dagPB from '@ipld/dag-pb'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('../').MfsContext} MfsContext
  */
 
@@ -17,14 +12,13 @@ const mh = require('multihashing-async').multihash
  * @param {MfsContext} context
  * @param {'file' | 'directory'} type
  * @param {object} options
- * @param {import('multihashes').HashName} options.hashAlg
+ * @param {string} options.hashAlg
  * @param {CIDVersion} options.cidVersion
  * @param {boolean} options.flush
  * @param {MtimeLike} [options.mtime]
  * @param {number} [options.mode]
  */
-const createNode = async (context, type, options) => {
-  const hashAlg = mh.names[options.hashAlg]
+export async function createNode (context, type, options) {
   const metadata = new UnixFS({
     type,
     mode: options.mode,
@@ -32,17 +26,22 @@ const createNode = async (context, type, options) => {
     mtime: options.mtime
   })
 
-  const node = new DAGNode(metadata.marshal())
-  const cid = await context.ipld.put(node, mc.DAG_PB, {
-    cidVersion: options.cidVersion,
-    hashAlg,
-    onlyHash: !options.flush
-  })
+  // Persist the new parent PBNode
+  const hasher = await context.hashers.getHasher(options.hashAlg)
+  const node = {
+    Data: metadata.marshal(),
+    Links: []
+  }
+  const buf = dagPB.encode(node)
+  const hash = await hasher.digest(buf)
+  const cid = CID.create(options.cidVersion, dagPB.code, hash)
+
+  if (options.flush) {
+    await context.repo.blocks.put(cid, buf)
+  }
 
   return {
     cid,
     node
   }
 }
-
-module.exports = createNode

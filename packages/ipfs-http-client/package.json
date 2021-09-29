@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "50.1.2",
+  "version": "53.0.1",
   "description": "A client library for the IPFS HTTP API",
   "keywords": [
     "ipfs"
@@ -9,15 +9,28 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
-  "files": [
-    "src",
-    "dist",
-    "!dist/*.tsbuildinfo"
-  ],
+  "type": "module",
   "main": "src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "types": "types/src/index.d.ts",
+  "files": [
+    "*",
+    "!**/*.tsbuildinfo"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
   "browser": {
-    "./src/lib/multipart-request.js": "./src/lib/multipart-request.browser.js",
     "ipfs-utils/src/files/glob-source": false,
     "go-ipfs": false,
     "ipfs-core-utils/src/files/normalise-input": "ipfs-core-utils/src/files/normalise-input/index.browser.js",
@@ -34,51 +47,38 @@
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
     "test:webworker": "aegir test -t webworker",
-    "test:electron-main": "aegir test -t electron-main",
-    "test:electron-renderer": "aegir test -t electron-renderer",
-    "test:chrome": "aegir test -t browser -t webworker -- --browsers ChromeHeadless",
-    "test:firefox": "aegir test -t browser -t webworker -- --browsers FirefoxHeadless",
-    "lint": "aegir lint",
-    "coverage": "npx nyc -r html npm run test:node -- --bail",
+    "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
+    "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
+    "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller -i ipld"
+    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
+    "@ipld/dag-cbor": "^6.0.5",
+    "@ipld/dag-pb": "^2.1.3",
     "abort-controller": "^3.0.0",
     "any-signal": "^2.1.2",
-    "cids": "^1.1.6",
     "debug": "^4.1.1",
-    "form-data": "^4.0.0",
-    "ipfs-core-types": "^0.5.2",
-    "ipfs-core-utils": "^0.8.3",
-    "ipfs-unixfs": "^4.0.3",
-    "ipfs-utils": "^8.1.2",
-    "ipld-block": "^0.11.0",
-    "ipld-dag-cbor": "^1.0.0",
-    "ipld-dag-pb": "^0.22.1",
-    "ipld-raw": "^7.0.0",
+    "err-code": "^3.0.1",
+    "ipfs-core-types": "^0.8.1",
+    "ipfs-core-utils": "^0.11.1",
+    "ipfs-utils": "^9.0.2",
+    "it-first": "^1.0.6",
     "it-last": "^1.0.4",
-    "it-map": "^1.0.4",
-    "it-tar": "^3.0.0",
-    "it-to-stream": "^1.0.0",
     "merge-options": "^3.0.4",
-    "multiaddr": "^9.0.1",
-    "multibase": "^4.0.2",
-    "multicodec": "^3.0.1",
-    "multihashes": "^4.0.2",
-    "nanoid": "^3.1.12",
+    "multiaddr": "^10.0.0",
+    "multiformats": "^9.4.1",
     "native-abort-controller": "^1.0.3",
     "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
-    "uint8arrays": "^2.1.3"
+    "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
-    "aegir": "^33.0.0",
+    "aegir": "^35.1.1",
     "delay": "^5.0.0",
-    "go-ipfs": "0.8.0",
-    "ipfsd-ctl": "^8.0.1",
+    "go-ipfs": "0.9.1",
+    "ipfsd-ctl": "^10.0.4",
     "it-all": "^1.0.4",
-    "it-concat": "^2.0.0",
     "it-first": "^1.0.4",
     "nock": "^13.0.2",
     "p-defer": "^3.0.0",

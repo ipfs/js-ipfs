@@ -1,16 +1,14 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../lib/configure')
-const normaliseInput = require('ipfs-core-utils/src/pins/normalise-input')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { normaliseInput } from 'ipfs-core-utils/pins/normalise-input'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/pin').API<HTTPClientExtraOptions>} PinAPI
  */
 
-module.exports = configure(api => {
+export const createRmAll = configure(api => {
   /**
    * @type {PinAPI["rmAll"]}
    */
@@ -22,7 +20,6 @@ module.exports = configure(api => {
       if (recursive != null) searchParams.set('recursive', String(recursive))
 
       const res = await api.post('pin/rm', {
-        timeout: options.timeout,
         signal: options.signal,
         headers: options.headers,
         searchParams: toUrlSearchParams({
@@ -34,10 +31,10 @@ module.exports = configure(api => {
 
       for await (const pin of res.ndjson()) {
         if (pin.Pins) { // non-streaming response
-          yield * pin.Pins.map((/** @type {string} */ cid) => new CID(cid))
+          yield * pin.Pins.map((/** @type {string} */ cid) => CID.parse(cid))
           continue
         }
-        yield new CID(pin)
+        yield CID.parse(pin)
       }
     }
   }

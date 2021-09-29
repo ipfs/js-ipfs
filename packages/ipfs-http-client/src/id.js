@@ -1,22 +1,19 @@
-'use strict'
-
-const toCamel = require('./lib/object-to-camel')
-const { Multiaddr } = require('multiaddr')
-const configure = require('./lib/configure')
-const toUrlSearchParams = require('./lib/to-url-search-params')
+import { objectToCamel } from './lib/object-to-camel.js'
+import { Multiaddr } from 'multiaddr'
+import { configure } from './lib/configure.js'
+import { toUrlSearchParams } from './lib/to-url-search-params.js'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
-module.exports = configure(api => {
+export const createId = configure(api => {
   /**
    * @type {RootAPI["id"]}
    */
   async function id (options = {}) {
     const res = await api.post('id', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: options.peerId ? options.peerId.toString() : undefined,
@@ -27,7 +24,7 @@ module.exports = configure(api => {
     const data = await res.json()
 
     const output = {
-      ...toCamel(data)
+      ...objectToCamel(data)
     }
 
     if (output.addresses) {

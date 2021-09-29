@@ -1,13 +1,13 @@
-'use strict'
+import WS from 'ws'
+import { EventEmitter } from 'events'
+import { WebSocketMessageChannel } from './web-socket-message-channel.js'
+import debug from 'debug'
+// @ts-expect-error - no types
+import coerce from 'coercer'
+import { camelCase } from 'change-case'
+import { Multiaddr } from 'multiaddr'
 
-const { Server: WebSocketServer } = require('ws')
-const { EventEmitter } = require('events')
-const WebSocketMessageChannel = require('./web-socket-message-channel')
-const debug = require('debug')('ipfs:grpc-server:utils:web-socket-server')
-// @ts-ignore - no types
-const coerce = require('coercer')
-const { camelCase } = require('change-case')
-const { Multiaddr } = require('multiaddr')
+const log = debug('ipfs:grpc-server:utils:web-socket-server')
 
 /**
  * @param {import('ws').Data} buf - e.g. `Buffer.from('foo-bar: baz\r\n')`
@@ -31,7 +31,7 @@ const fromHeaders = (buf) => {
 
 class Messages extends EventEmitter {
   /**
-   * @param {WebSocketServer} wss
+   * @param {WS.Server} wss
    */
   constructor (wss) {
     super()
@@ -39,8 +39,13 @@ class Messages extends EventEmitter {
     this._wss = wss
     this.multiaddr = ''
 
+    this.info = {
+      uri: '',
+      ma: new Multiaddr('/ip4/127.0.0.1/tcp/0/ws')
+    }
+
     wss.on('connection', (ws, request) => {
-      ws.on('error', error => debug(`WebSocket Error: ${error.stack}`))
+      ws.on('error', error => log(`WebSocket Error: ${error.stack}`))
 
       ws.once('message', (buf) => {
         const path = request.url
@@ -86,8 +91,6 @@ class Messages extends EventEmitter {
           }
         } else {
           this.info = {
-            address: info.address,
-            port: info.port,
             uri: `http://${info.address}:${info.port}`,
             ma: new Multiaddr(`/ip4/${info.address}/tcp/${info.port}/ws`)
           }
@@ -104,7 +107,7 @@ class Messages extends EventEmitter {
  * @param {any} options
  * @returns {Promise<import('../types').WebsocketServer>}
  */
-module.exports = async (ipfs, options = {}) => {
+export async function webSocketServer (ipfs, options = {}) {
   const config = await ipfs.config.getAll()
   const grpcAddr = config.Addresses?.RPC
 
@@ -114,9 +117,9 @@ module.exports = async (ipfs, options = {}) => {
 
   const [,, host, , port] = grpcAddr.split('/')
 
-  debug(`starting ws server on ${host}:${port}`)
+  log(`starting ws server on ${host}:${port}`)
 
-  const wss = new WebSocketServer({
+  const wss = new WS.Server({
     host,
     port: parseInt(port, 10)
   })

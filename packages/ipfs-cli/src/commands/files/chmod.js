@@ -1,11 +1,9 @@
-'use strict'
-
-const {
+import {
   asBoolean
-} = require('../../utils')
-const { default: parseDuration } = require('parse-duration')
+} from '../../utils.js'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'chmod [mode] [path]',
 
   describe: 'Change file modes',
@@ -56,7 +54,7 @@ module.exports = {
    * @param {string} argv.path
    * @param {number} argv.mode
    * @param {boolean} argv.recursive
-   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {string} argv.hashAlg
    * @param {boolean} argv.flush
    * @param {number} argv.shardSplitThreshold
    * @param {number} argv.timeout

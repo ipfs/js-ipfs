@@ -1,8 +1,6 @@
-'use strict'
+import Joi from '../../utils/joi.js'
 
-const Joi = require('../../utils/joi')
-
-module.exports = {
+export const resolveResource = {
   options: {
     validate: {
       options: {
@@ -12,7 +10,7 @@ module.exports = {
       query: Joi.object().keys({
         path: Joi.string().required(),
         recursive: Joi.boolean().default(true),
-        cidBase: Joi.cidBase(),
+        cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })
         .rename('arg', 'path', {

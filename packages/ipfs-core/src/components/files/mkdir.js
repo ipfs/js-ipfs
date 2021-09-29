@@ -1,28 +1,27 @@
-'use strict'
+import errCode from 'err-code'
+import debug from 'debug'
+import { exporter } from 'ipfs-unixfs-exporter'
+import { createNode } from './utils/create-node.js'
+import { toPathComponents } from './utils/to-path-components.js'
+import { updateMfsRoot } from './utils/update-mfs-root.js'
+import { updateTree } from './utils/update-tree.js'
+import { addLink } from './utils/add-link.js'
+import { loadMfsRoot } from './utils/with-mfs-root.js'
+import mergeOpts from 'merge-options'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
-const errCode = require('err-code')
-const log = require('debug')('ipfs:mfs:mkdir')
-const { exporter } = require('ipfs-unixfs-exporter')
-const createNode = require('./utils/create-node')
-const toPathComponents = require('./utils/to-path-components')
-const updateMfsRoot = require('./utils/update-mfs-root')
-const updateTree = require('./utils/update-tree')
-const addLink = require('./utils/add-link')
-const withMfsRoot = require('./utils/with-mfs-root')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
+const log = debug('ipfs:mfs:mkdir')
 
 /**
- * @typedef {import('ipld-dag-pb').DAGNode} DAGNode
- * @typedef {import('ipld-dag-pb').DAGLink} DAGLink
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids')} CID
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('@ipld/dag-pb').PBNode} PBNode
+ * @typedef {import('multiformats/cid').CID} CID
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions
  * @property {boolean} parents
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {CIDVersion} cidVersion
  * @property {number} shardSplitThreshold
  * @property {boolean} flush
@@ -46,7 +45,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createMkdir (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["mkdir"]}
    */
@@ -80,7 +79,7 @@ module.exports = (context) => {
       throw errCode(new Error("path cannot have the prefix 'ipfs'"), 'ERR_INVALID_PATH')
     }
 
-    const root = await withMfsRoot(context, opts)
+    const root = await loadMfsRoot(context, opts)
     let parent
     const trail = []
     const emptyDir = await createNode(context, 'directory', opts)
@@ -91,7 +90,7 @@ module.exports = (context) => {
       const subPath = `/ipfs/${root}/${subPathComponents.join('/')}`
 
       try {
-        parent = await exporter(subPath, context.ipld)
+        parent = await exporter(subPath, context.repo.blocks)
 
         if (parent.type !== 'file' && parent.type !== 'directory') {
           throw errCode(new Error(`${path} was not a UnixFS node`), 'ERR_NOT_UNIXFS')
@@ -109,7 +108,7 @@ module.exports = (context) => {
           name: parent.name,
           cid: parent.cid
         })
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         if (err.code === 'ERR_NOT_FOUND') {
           if (i < pathComponents.length && !opts.parents) {
             throw errCode(new Error(`Intermediate directory path ${subPath} does not exist, use the -p flag to create it`), 'ERR_NOT_FOUND')
@@ -139,8 +138,8 @@ module.exports = (context) => {
 /**
  * @param {MfsContext} context
  * @param {string} childName
- * @param {{ cid: CID, node: { size: number }}} emptyDir
- * @param {{ cid?: CID, node?: DAGNode }} parent
+ * @param {{ cid: CID, node?: PBNode }} emptyDir
+ * @param {{ cid?: CID, node?: PBNode }} parent
  * @param {{ name: string, cid: CID }[]} trail
  * @param {DefaultOptions} options
  */
@@ -150,7 +149,8 @@ const addEmptyDir = async (context, childName, emptyDir, parent, trail, options)
   const result = await addLink(context, {
     parent: parent.node,
     parentCid: parent.cid,
-    size: emptyDir.node.size,
+    // TODO vmx 2021-03-09: Remove the usage of size completely
+    size: 0,
     cid: emptyDir.cid,
     name: childName,
     hashAlg: options.hashAlg,

@@ -1,15 +1,12 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/files').API<HTTPClientExtraOptions>} FilesAPI
  */
 
-module.exports = configure(api => {
+export const createMv = configure(api => {
   /**
    * @type {FilesAPI["mv"]}
    */
@@ -19,10 +16,9 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('files/mv', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: sources.concat(destination).map(src => CID.isCID(src) ? `/ipfs/${src}` : src),
+        arg: sources.concat(destination),
         ...options
       }),
       headers: options.headers

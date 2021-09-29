@@ -1,8 +1,6 @@
-'use strict'
+import Joi from '../../../utils/joi.js'
 
-const Joi = require('../../../utils/joi')
-
-const mfsCp = {
+export const cpResource = {
   options: {
     validate: {
       options: {
@@ -81,5 +79,3 @@ const mfsCp = {
     return h.response()
   }
 }
-
-module.exports = mfsCp

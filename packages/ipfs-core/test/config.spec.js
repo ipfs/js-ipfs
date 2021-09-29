@@ -1,17 +1,20 @@
 
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { Multiaddr } = require('multiaddr')
-const { isBrowser, isWebWorker } = require('ipfs-utils/src/env')
-const createNode = require('./utils/create-node')
-const bootstrapList = require('../src/runtime/config-nodejs.js')().Bootstrap
+import { expect } from 'aegir/utils/chai.js'
+import { Multiaddr } from 'multiaddr'
+import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
+import createNode from './utils/create-node.js'
+import createConfig from 'ipfs-core-config/config'
+
+const { Bootstrap: bootstrapList } = createConfig()
 
 describe('config', function () {
   this.timeout(10 * 1000)
 
+  /** @type {import('ipfs-core-types').IPFS} */
   let ipfs
+  /** @type {() => Promise<void>} */
   let cleanup
 
   before(async () => {

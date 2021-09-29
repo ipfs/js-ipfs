@@ -49,7 +49,7 @@ separate JS bundle and loaded in the [SharedWorker][].
 
 
 ```js
-const IPFSClient = require('ipfs-message-port-client')
+import { IPFSClient } from 'ipfs-message-port-client'
 // URL to the script containing ipfs-message-port-server.
 const IPFS_SERVER_URL = '/bundle/ipfs-worker.js'
 
@@ -72,8 +72,7 @@ from another JS context (e.g. iframe)
 > attached (unless they time out or are aborted in the meantime).
 
 ```js
-const IPFSClient = require('ipfs-message-port-client')
-
+import { IPFSClient } from 'ipfs-message-port-client'
 
 const ipfs = IPFSClient.detached()
 

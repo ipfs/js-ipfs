@@ -1,31 +1,35 @@
 /* eslint-env mocha */
-'use strict'
 
-const { clearServices } = require('../utils')
-const { getDescribe, getIt, expect } = require('../../utils/mocha')
+import { clearServices } from '../utils.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../../utils/mocha.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testService (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   const ENDPOINT = new URL(process.env.PINNING_SERVICE_ENDPOINT || '')
-  const KEY = process.env.PINNING_SERVIEC_KEY
+  const KEY = `${process.env.PINNING_SERVICE_KEY}`
 
   describe('.pin.remote.service', function () {
     this.timeout(50 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
     after(async () => {
-      await common.clean()
+      await factory.clean()
     })
     afterEach(() => clearServices(ipfs))
 
@@ -44,11 +48,13 @@ module.exports = (common, options) => {
       })
 
       it('service add requires endpoint', async () => {
+        // @ts-expect-error missing property
         const result = ipfs.pin.remote.service.add('noend', { key: 'token' })
         await expect(result).to.eventually.be.rejectedWith(/is required/)
       })
 
       it('service add requires key', async () => {
+        // @ts-expect-error missing property
         const result = ipfs.pin.remote.service.add('nokey', {
           endpoint: ENDPOINT
         })
@@ -87,7 +93,7 @@ module.exports = (common, options) => {
         })
 
         const result = ipfs.pin.remote.service.add('pinbot', {
-          endpoint: 'http://pinbot.io/',
+          endpoint: new URL('http://pinbot.io/'),
           key: KEY
         })
 
@@ -143,6 +149,7 @@ module.exports = (common, options) => {
           key: KEY
         })
         await ipfs.pin.remote.service.add('boombot', {
+          // @ts-expect-error invalid property
           endpoint: 'http://127.0.0.1:5555',
           key: 'boom'
         })
@@ -198,6 +205,7 @@ module.exports = (common, options) => {
       })
 
       it('expects service name', async () => {
+        // @ts-expect-error invalid arg
         const result = ipfs.pin.remote.service.rm()
         await expect(result).to.eventually.be.rejectedWith(/is required/)
       })
@@ -205,4 +213,8 @@ module.exports = (common, options) => {
   })
 }
 
+/**
+ * @param {{ service: string }} a
+ * @param {{ service: string }} b
+ */
 const byName = (a, b) => a.service > b.service ? 1 : -1

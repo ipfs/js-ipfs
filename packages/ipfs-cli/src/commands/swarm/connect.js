@@ -1,11 +1,9 @@
-'use strict'
-
-const { default: parseDuration } = require('parse-duration')
-const {
+import parseDuration from 'parse-duration'
+import {
   coerceMultiaddr
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'connect <address>',
 
   describe: 'Open connection to a given address',

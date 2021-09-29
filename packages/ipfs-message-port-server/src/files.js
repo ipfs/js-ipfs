@@ -1,8 +1,7 @@
-'use strict'
 
 /* eslint-env browser */
 
-const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
+import { encodeCID } from 'ipfs-message-port-protocol/cid'
 
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
@@ -10,7 +9,7 @@ const { encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @typedef {import('ipfs-message-port-protocol/src/files').EncodedStat} EncodedStat
  */
 
-exports.FilesService = class FilesService {
+export class FilesService {
   /**
    *
    * @param {IPFS} ipfs

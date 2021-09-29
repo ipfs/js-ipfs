@@ -1,8 +1,6 @@
-'use strict'
+import parseDuration from 'parse-duration'
 
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'query <peerId>',
 
   describe: 'Find the closest Peer IDs to a given Peer ID by querying the DHT.',

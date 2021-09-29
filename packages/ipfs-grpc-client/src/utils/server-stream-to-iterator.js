@@ -1,6 +1,4 @@
-'use strict'
-
-const bidiToDuplex = require('./bidi-to-duplex')
+import { bidiToDuplex } from './bidi-to-duplex.js'
 
 /**
  * @typedef {import('http').Agent} HttpAgent
@@ -18,7 +16,7 @@ const bidiToDuplex = require('./bidi-to-duplex')
  * @param {import('../types').RPCOptions<any>} options - RPC options
  * @returns {AsyncIterable<any>}
  **/
-module.exports = function serverStreamToIterator (grpc, service, request, options) {
+export function serverStreamToIterator (grpc, service, request, options) {
   const {
     source, sink
   } = bidiToDuplex(grpc, service, options)

@@ -1,33 +1,42 @@
 /* eslint-env mocha */
-'use strict'
 
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const delay = require('delay')
-const CID = require('cids')
-const last = require('it-last')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import delay from 'delay'
+import PeerId from 'peer-id'
+import last from 'it-last'
+import { CID } from 'multiformats/cid'
+import * as Digest from 'multiformats/hashes/digest'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testResolve (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.name.resolve offline', function () {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
+    /** @type {string} */
     let nodeId
 
     before(async () => {
-      ipfs = (await common.spawn()).api
-      nodeId = ipfs.peerId.id
+      ipfs = (await factory.spawn()).api
+      const peerInfo = await ipfs.id()
+      nodeId = peerInfo.id
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should resolve a record default options', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options'))
@@ -41,17 +50,18 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a record from peerid as cidv1 in base32', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
-      const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record from cidv1b32'))
+      const { cid } = await ipfs.add(uint8ArrayFromString('should resolve a record from cidv1b32'))
       const { id: peerId } = await ipfs.id()
-      await ipfs.name.publish(path, { allowOffline: true })
+      await ipfs.name.publish(cid, { allowOffline: true })
 
       // Represent Peer ID as CIDv1 Base32
       // https://github.com/libp2p/specs/blob/master/RFC/0001-text-peerid-cid.md
-      const keyCid = new CID(peerId).toV1().toString('base32')
+      const keyCid = CID.createV1(0x72, Digest.decode(PeerId.parse(peerId).toBytes()))
       const resolvedPath = await last(ipfs.name.resolve(`/ipns/${keyCid}`))
 
-      expect(resolvedPath).to.equal(`/ipfs/${path}`)
+      expect(resolvedPath).to.equal(`/ipfs/${cid}`)
     })
 
     it('should resolve a record recursive === false', async () => {
@@ -62,6 +72,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a record recursive === true', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
@@ -75,6 +86,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a record default options with remainder', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options with remainder'))
@@ -95,6 +107,7 @@ module.exports = (common, options) => {
     })
 
     it('should resolve a record recursive === true with remainder', async function () {
+      // @ts-ignore this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive = true with remainder'))
@@ -122,21 +135,22 @@ module.exports = (common, options) => {
       // so here we just expect an Error and don't match the error type to expiration
       try {
         await last(ipfs.name.resolve(nodeId))
-      } catch (error) {
+      } catch (/** @type {any} */ error) {
         expect(error).to.exist()
       }
     })
   })
 
   describe('.name.resolve dns', function () {
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     this.retries(5)
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should resolve /ipns/ipfs.io', async () => {
       expect(await last(ipfs.name.resolve('/ipns/ipfs.io')))
@@ -171,7 +185,7 @@ module.exports = (common, options) => {
     it('should fail to resolve /ipns/ipfs.a', async () => {
       try {
         await last(ipfs.name.resolve('ipfs.a'))
-      } catch (error) {
+      } catch (/** @type {any} */ error) {
         expect(error).to.exist()
       }
     })

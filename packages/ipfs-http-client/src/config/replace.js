@@ -1,18 +1,16 @@
-'use strict'
-
-const uint8ArrayFromString = require('uint8arrays/from-string')
-const multipartRequest = require('../lib/multipart-request')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
-const abortSignal = require('../lib/abort-signal')
-const { AbortController } = require('native-abort-controller')
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { multipartRequest } from 'ipfs-core-utils/multipart-request'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { abortSignal } from '../lib/abort-signal.js'
+import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/config').API<HTTPClientExtraOptions>} ConfigAPI
  */
 
-module.exports = configure(api => {
+export const createReplace = configure(api => {
   /**
    * @type {ConfigAPI["replace"]}
    */
@@ -21,13 +19,11 @@ module.exports = configure(api => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
 
-    // @ts-ignore https://github.com/ipfs/js-ipfs-utils/issues/90
     const res = await api.post('config/replace', {
-      timeout: options.timeout,
       signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(uint8ArrayFromString(JSON.stringify(config)), controller, options.headers)
+        await multipartRequest([uint8ArrayFromString(JSON.stringify(config))], controller, options.headers)
       )
     })
 

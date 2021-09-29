@@ -1,22 +1,18 @@
-'use strict'
-
-const CID = require('cids')
-const errCode = require('err-code')
-const { parallelMap, filter } = require('streaming-iterables')
-const { pipe } = require('it-pipe')
-const { PinTypes } = require('../pin/pin-manager')
-const { cleanCid } = require('./utils')
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import errCode from 'err-code'
+import parallel from 'it-parallel'
+import map from 'it-map'
+import filter from 'it-filter'
+import { pipe } from 'it-pipe'
+import { cleanCid } from './utils.js'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 const BLOCK_RM_CONCURRENCY = 8
 
 /**
  * @param {Object} config
- * @param {import('ipfs-block-service')} config.blockService
- * @param {import('../pin/pin-manager')} config.pinManager
- * @param {import('.').GCLock} config.gcLock
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
-module.exports = ({ blockService, gcLock, pinManager }) => {
+export function createRm ({ repo }) {
   /**
    * @type {import('ipfs-core-types/src/block').API["rm"]}
    */
@@ -27,47 +23,38 @@ module.exports = ({ blockService, gcLock, pinManager }) => {
 
     // We need to take a write lock here to ensure that adding and removing
     // blocks are exclusive operations
-    const release = await gcLock.writeLock()
+    const release = await repo.gcLock.writeLock()
 
     try {
       yield * pipe(
         cids,
-        parallelMap(BLOCK_RM_CONCURRENCY, async cid => {
-          cid = cleanCid(cid)
+        source => map(source, cid => {
+          return async () => {
+            cid = cleanCid(cid)
 
-          /** @type {import('ipfs-core-types/src/block').RmResult} */
-          const result = { cid }
+            /** @type {import('ipfs-core-types/src/block').RmResult} */
+            const result = { cid }
 
-          try {
-            const pinResult = await pinManager.isPinnedWithType(cid, PinTypes.all)
+            try {
+              const has = await repo.blocks.has(cid)
 
-            if (pinResult.pinned) {
-              if (CID.isCID(pinResult.reason)) { // eslint-disable-line max-depth
-                throw errCode(new Error(`pinned via ${pinResult.reason}`), 'ERR_BLOCK_PINNED')
+              if (!has) {
+                throw errCode(new Error('block not found'), 'ERR_BLOCK_NOT_FOUND')
               }
 
-              throw errCode(new Error(`pinned: ${pinResult.reason}`), 'ERR_BLOCK_PINNED')
+              await repo.blocks.delete(cid)
+            } catch (/** @type {any} */ err) {
+              if (!options.force) {
+                err.message = `cannot remove ${cid}: ${err.message}`
+                result.error = err
+              }
             }
 
-            // remove has check when https://github.com/ipfs/js-ipfs-block-service/pull/88 is merged
-            // @ts-ignore - this accesses some internals
-            const has = await blockService._repo.blocks.has(cid)
-
-            if (!has) {
-              throw errCode(new Error('block not found'), 'ERR_BLOCK_NOT_FOUND')
-            }
-
-            await blockService.delete(cid)
-          } catch (err) {
-            if (!options.force) {
-              err.message = `cannot remove ${cid}: ${err.message}`
-              result.error = err
-            }
+            return result
           }
-
-          return result
         }),
-        filter(() => !options.quiet)
+        source => parallel(source, BLOCK_RM_CONCURRENCY),
+        source => filter(source, () => !options.quiet)
       )
     } finally {
       release()

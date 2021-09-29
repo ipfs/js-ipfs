@@ -1,8 +1,6 @@
-'use strict'
-
-const CID = require('cids')
-const configure = require('../lib/configure')
-const toUrlSearchParams = require('../lib/to-url-search-params')
+import { CID } from 'multiformats/cid'
+import { configure } from '../lib/configure.js'
+import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -10,7 +8,7 @@ const toUrlSearchParams = require('../lib/to-url-search-params')
  * @typedef {import('ipfs-core-types/src/block').RmResult} RmResult
  */
 
-module.exports = configure(api => {
+export const createRm = configure(api => {
   /**
    * @type {BlockAPI["rm"]}
    */
@@ -20,10 +18,9 @@ module.exports = configure(api => {
     }
 
     const res = await api.post('block/rm', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: cid.map(cid => new CID(cid).toString()),
+        arg: cid.map(cid => cid.toString()),
         'stream-channels': true,
         ...options
       }),
@@ -44,7 +41,7 @@ module.exports = configure(api => {
 function toCoreInterface (removed) {
   /** @type {RmResult} */
   const out = {
-    cid: new CID(removed.Hash)
+    cid: CID.parse(removed.Hash)
   }
 
   if (removed.Error) {

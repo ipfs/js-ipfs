@@ -1,52 +1,35 @@
-'use strict'
-
-// @ts-ignore no types
-const Tar = require('it-tar')
-const CID = require('cids')
-const configure = require('./lib/configure')
-const toUrlSearchParams = require('./lib/to-url-search-params')
-const map = require('it-map')
+import { CID } from 'multiformats/cid'
+import { configure } from './lib/configure.js'
+import { toUrlSearchParams } from './lib/to-url-search-params.js'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/root').API<HTTPClientExtraOptions>} RootAPI
  */
 
-module.exports = configure(api => {
+export const createGet = configure(api => {
   /**
    * @type {RootAPI["get"]}
    */
   async function * get (path, options = {}) {
+    /** @type {Record<string, any>} */
+    const opts = {
+      arg: `${path instanceof Uint8Array ? CID.decode(path) : path}`,
+      ...options
+    }
+
+    if (opts.compressionLevel) {
+      opts['compression-level'] = opts.compressionLevel
+      delete opts.compressionLevel
+    }
+
     const res = await api.post('get', {
-      timeout: options.timeout,
       signal: options.signal,
-      searchParams: toUrlSearchParams({
-        arg: `${path instanceof Uint8Array ? new CID(path) : path}`,
-        ...options
-      }),
+      searchParams: toUrlSearchParams(opts),
       headers: options.headers
     })
 
-    const extractor = Tar.extract()
-
-    for await (const { header, body } of extractor(res.iterator())) {
-      if (header.type === 'directory') {
-        // @ts-ignore - Missing the following properties from type 'Directory':
-        // cid, name, size, depthts
-        yield {
-          type: 'dir',
-          path: header.name
-        }
-      } else {
-        // @ts-ignore - Missing the following properties from type 'File':
-        // cid, name, size, depthts
-        yield {
-          type: 'file',
-          path: header.name,
-          content: map(body, (chunk) => chunk.slice()) // convert bl to Buffer/Uint8Array
-        }
-      }
-    }
+    yield * res.iterator()
   }
 
   return get

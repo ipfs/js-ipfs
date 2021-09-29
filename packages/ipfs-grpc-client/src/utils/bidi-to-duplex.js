@@ -1,10 +1,8 @@
-'use strict'
-
-const pushable = require('it-pushable')
-const errCode = require('err-code')
-const toUrlString = require('ipfs-core-utils/src/to-url-string')
-const toHeaders = require('./to-headers')
-const transport = require('../grpc/transport')
+import pushable from 'it-pushable'
+import errCode from 'err-code'
+import { toUrlString } from 'ipfs-core-utils/to-url-string'
+import { toHeaders } from './to-headers.js'
+import { transport } from '../grpc/transport.js'
 
 /**
  * @param {*} service
@@ -29,14 +27,14 @@ async function sendMessages (service, client, source) {
  * @param {import('../types').RPCOptions<any>} options
  * @returns {{ source: AsyncIterable<any>, sink: import('it-pushable').Pushable<any> }}
  **/
-module.exports = function bidiToDuplex (grpc, service, options) {
+export function bidiToDuplex (grpc, service, options) {
   const source = pushable()
   const sink = pushable()
 
   const client = grpc.client(service, {
     ...options,
     host: toUrlString(options.host),
-    transport: transport({
+    transport: transport()({
       agent: options.agent
     })
   })

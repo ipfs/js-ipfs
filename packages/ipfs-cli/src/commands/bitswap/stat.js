@@ -1,11 +1,7 @@
-'use strict'
+import prettyBytes from 'pretty-bytes'
+import parseDuration from 'parse-duration'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const prettyBytes = require('pretty-bytes')
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'stat',
 
   describe: 'Show some diagnostic information on the bitswap agent.',
@@ -14,7 +10,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     human: {
       type: 'boolean',
@@ -30,7 +26,7 @@ module.exports = {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {boolean} argv.human
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx, cidBase, human, timeout }) {
@@ -54,7 +50,9 @@ module.exports = {
       output.dupDataReceived = prettyBytes(Number(stats.dupDataReceived)).toUpperCase()
       output.wantlist = `[${stats.wantlist.length} keys]`
     } else {
-      const wantlist = stats.wantlist.map(cid => cidToString(cid, { base: cidBase, upgrade: false }))
+      const base = await ipfs.bases.getBase(cidBase)
+
+      const wantlist = stats.wantlist.map(cid => cid.toString(base.encoder))
       output.wantlist = `[${wantlist.length} keys]
             ${wantlist.join('\n            ')}`
     }

@@ -1,21 +1,20 @@
-'use strict'
-
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import { createGet } from './get.js'
 
 /**
  * @param {Object} config
- * @param {import('ipld')} config.ipld
+ * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */
-module.exports = ({ ipld, preload }) => {
-  const get = require('./get')({ ipld, preload })
+export function createData ({ repo, preload }) {
+  const get = createGet({ repo, preload })
 
   /**
    * @type {import('ipfs-core-types/src/object').API["data"]}
    */
   async function data (multihash, options = {}) {
     const node = await get(multihash, options)
-    return node.Data
+    return node.Data || new Uint8Array(0)
   }
 
   return withTimeoutOption(data)

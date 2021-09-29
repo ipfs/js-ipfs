@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const cli = require('../utils/cli')
-const sinon = require('sinon')
-const { isNode } = require('ipfs-utils/src/env')
-const CID = require('cids')
-const fileCid = new CID('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import { isNode } from 'ipfs-utils/src/env.js'
+import { CID } from 'multiformats/cid'
+import { base58btc } from 'multiformats/bases/base58'
+import { cli } from '../utils/cli.js'
+const fileCid = CID.parse('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')
 
 const defaultOptions = {
   withLocal: false,
@@ -36,6 +36,9 @@ describe('stat', () => {
           mode: 'stats-mode',
           mtime: 'stats-mtime'
         })
+      },
+      bases: {
+        getBase: sinon.stub()
       }
     }
     print = (msg = '', newline = true) => {
@@ -44,6 +47,8 @@ describe('stat', () => {
   })
 
   it('should stat a path', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -55,6 +60,8 @@ describe('stat', () => {
   })
 
   it('should stat a path with local', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat --with-local ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -68,6 +75,8 @@ describe('stat', () => {
   })
 
   it('should stat a path with local (short option)', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat -l ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -81,6 +90,8 @@ describe('stat', () => {
   })
 
   it('should stat a path and only show hashes', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat --hash ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -88,10 +99,12 @@ describe('stat', () => {
       path,
       defaultOptions
     ])
-    expect(output).to.equal(`${fileCid}\n`)
+    expect(output).to.equal(`${fileCid.toString(base58btc)}\n`)
   })
 
   it('should stat a path and only show hashes (short option)', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat -h ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -99,10 +112,12 @@ describe('stat', () => {
       path,
       defaultOptions
     ])
-    expect(output).to.equal(`${fileCid}\n`)
+    expect(output).to.equal(`${fileCid.toString(base58btc)}\n`)
   })
 
   it('should stat a path and only show sizes', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat --size ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -114,6 +129,8 @@ describe('stat', () => {
   })
 
   it('should stat a path and only show sizes (short option)', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat -s ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -125,6 +142,8 @@ describe('stat', () => {
   })
 
   it('should stat a path with format option', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat --format '<mode> <type>' ${path}`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)
@@ -136,6 +155,8 @@ describe('stat', () => {
   })
 
   it('should stat a path with a timeout', async () => {
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
     await cli(`files stat ${path} --timeout=1s`, { ipfs, print })
 
     expect(ipfs.files.stat.callCount).to.equal(1)

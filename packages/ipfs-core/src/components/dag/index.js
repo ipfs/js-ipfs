@@ -1,36 +1,22 @@
-'use strict'
+import { createExport } from './export.js'
+import { createGet } from './get.js'
+import { createImport } from './import.js'
+import { createPut } from './put.js'
+import { createResolve } from './resolve.js'
 
-const createGet = require('./get')
-const createResolve = require('./resolve')
-const createTree = require('./tree')
-const createPut = require('./put')
-
-/**
- * @typedef {Object} ReaderConfig
- * @property {IPLD} ipld
- * @property {Preload} preload
- *
- * @typedef {import('ipld')} IPLD
- * @typedef {import('../../types').Preload} Preload
- * @typedef {import('ipfs-core-types/src/pin').API} Pin
- * @typedef {import('../gc-lock').GCLock} GCLock
- * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
- */
-
-class DagAPI {
+export class DagAPI {
   /**
    * @param {Object} config
-   * @param {IPLD} config.ipld
-   * @param {Preload} config.preload
-   * @param {Pin} config.pin
-   * @param {GCLock} config.gcLock
+   * @param {import('ipfs-core-utils/multihashes').Multihashes} config.hashers
+   * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
+   * @param {import('../../types').Preload} config.preload
+   * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
-  constructor ({ ipld, pin, preload, gcLock }) {
-    this.get = createGet({ ipld, preload })
-    this.resolve = createResolve({ ipld, preload })
-    this.tree = createTree({ ipld, preload })
-    this.put = createPut({ ipld, preload, pin, gcLock })
+  constructor ({ repo, codecs, hashers, preload }) {
+    this.export = createExport({ repo, preload, codecs })
+    this.get = createGet({ codecs, repo, preload })
+    this.import = createImport({ repo })
+    this.resolve = createResolve({ repo, codecs, preload })
+    this.put = createPut({ repo, codecs, hashers, preload })
   }
 }
-
-module.exports = DagAPI

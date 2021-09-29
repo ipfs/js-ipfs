@@ -1,19 +1,18 @@
-'use strict'
+import { createCp } from './cp.js'
+import { createRm } from './rm.js'
+import mergeOpts from 'merge-options'
+import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
-const cp = require('./cp')
-const rm = require('./rm')
-const mergeOptions = require('merge-options').bind({ ignoreUndefined: true })
-const withTimeoutOption = require('ipfs-core-utils/src/with-timeout-option')
+const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
- * @typedef {import('multihashes').HashName} HashName
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions
  * @property {boolean} parents
  * @property {boolean} flush
  * @property {CIDVersion} cidVersion
- * @property {HashName} hashAlg
+ * @property {string} hashAlg
  * @property {number} shardSplitThreshold
  * @property {AbortSignal} [signal]
  * @property {number} [timeout]
@@ -33,7 +32,7 @@ const defaultOptions = {
 /**
  * @param {MfsContext} context
  */
-module.exports = (context) => {
+export function createMv (context) {
   /**
    * @type {import('ipfs-core-types/src/files').API["mv"]}
    */
@@ -41,8 +40,8 @@ module.exports = (context) => {
     /** @type {DefaultOptions} */
     const opts = mergeOptions(defaultOptions, options)
 
-    await cp(context)(from, to, opts)
-    await rm(context)(from, {
+    await createCp(context)(from, to, opts)
+    await createRm(context)(from, {
       ...opts,
       recursive: true
     })

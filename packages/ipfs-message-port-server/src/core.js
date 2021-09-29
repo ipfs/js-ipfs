@@ -1,16 +1,15 @@
-'use strict'
 
 /* eslint-env browser */
 
-const {
+import {
   decodeIterable,
   encodeIterable,
   decodeCallback
-} = require('ipfs-message-port-protocol/src/core')
-const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
+} from 'ipfs-message-port-protocol/core'
+import { decodeCID, encodeCID } from 'ipfs-message-port-protocol/cid'
 
 /**
- * @typedef {import('cids').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('ipfs-core-types/src/root').AddOptions} AddOptions
  * @typedef {import('ipfs-core-types/src/root').AddAllOptions} AddAllOptions
@@ -47,7 +46,7 @@ const { decodeCID, encodeCID } = require('ipfs-message-port-protocol/src/cid')
  * @typedef {AddAllInput & AddAllOptions} AddAllQuery
  */
 
-exports.CoreService = class CoreService {
+export class CoreService {
   /**
    * @param {IPFS} ipfs
    */
@@ -289,15 +288,14 @@ const encodeLsResult = entries => {
 /**
  * @param {IPFSEntry} entry
  */
-const encodeLsEntry = ({ depth, name, path, size, cid, type, mode, mtime }) => ({
+const encodeLsEntry = ({ name, path, size, cid, type, mode, mtime }) => ({
   cid: encodeCID(cid),
   type,
   name,
   path,
   mode,
   mtime,
-  size,
-  depth
+  size
 })
 
 /**

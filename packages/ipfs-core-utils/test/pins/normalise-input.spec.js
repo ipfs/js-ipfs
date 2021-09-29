@@ -1,19 +1,21 @@
-'use strict'
-
 /* eslint-env mocha */
 
-const { expect } = require('aegir/utils/chai')
-const normalise = require('../../src/pins/normalise-input')
-const all = require('it-all')
-const CID = require('cids')
+import { expect } from 'aegir/utils/chai.js'
+import { normaliseInput } from '../../src/pins/normalise-input.js'
+import all from 'it-all'
+import { CID } from 'multiformats/cid'
 
 const STRING = () => '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt'
-const PLAIN_CID = () => new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
-const OBJECT_CID = () => ({ cid: new CID('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'), recursive: true, metadata: { key: 'hello world' } })
+const PLAIN_CID = () => CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
+const OBJECT_CID = () => ({ cid: CID.parse('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'), recursive: true, metadata: { key: 'hello world' } })
 const OBJECT_PATH = () => ({ path: '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/path/to/file.txt', recursive: true, metadata: { key: 'hello world' } })
 
+/**
+ * @param {import('../../src/pins/normalise-input').Source} input
+ * @param {boolean} [withOptions]
+ */
 async function verifyNormalisation (input, withOptions) {
-  const result = await all(normalise(input))
+  const result = await all(normaliseInput(input))
 
   expect(result).to.have.lengthOf(1)
   expect(result[0]).to.have.property('path')
@@ -24,10 +26,20 @@ async function verifyNormalisation (input, withOptions) {
   }
 }
 
+/**
+ * @template T
+ * @param {T} thing
+ * @returns {T[]}
+ */
 function iterableOf (thing) {
   return [thing]
 }
 
+/**
+ * @template T
+ * @param {T} thing
+ * @returns {AsyncIterable<T>}
+ */
 function asyncIterableOf (thing) {
   return (async function * () { // eslint-disable-line require-await
     yield thing
@@ -35,6 +47,11 @@ function asyncIterableOf (thing) {
 }
 
 describe('pin normalise-input', function () {
+  /**
+   * @param {() => any} content
+   * @param {string} name
+   * @param {boolean} [withOptions]
+   */
   function testInputType (content, name, withOptions) {
     it(name, async function () {
       await verifyNormalisation(content(), withOptions)

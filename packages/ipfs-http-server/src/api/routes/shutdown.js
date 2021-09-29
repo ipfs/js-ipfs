@@ -1,9 +1,9 @@
-'use strict'
+import {
+  shutdownResource
+} from '../resources/shutdown.js'
 
-const resources = require('../resources')
-
-module.exports = {
+export default [{
   method: 'POST',
   path: '/api/v0/shutdown',
-  ...resources.shutdown
-}
+  ...shutdownResource
+}]

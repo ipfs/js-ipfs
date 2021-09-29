@@ -7,6 +7,7 @@ The js-ipfs config file is a JSON document located in the root directory of the 
 - [Profiles](#profiles)
 - [`Addresses`](#addresses)
   - [`API`](#api)
+  - [`RPC`](#rpc)
   - [`Delegates`](#delegates)
   - [`Gateway`](#gateway)
   - [`Swarm`](#swarm)
@@ -84,6 +85,14 @@ The IPFS daemon exposes an HTTP API that allows to control the node and run the 
 [Multiaddr](https://github.com/multiformats/multiaddr/) or array of [Multiaddr](https://github.com/multiformats/multiaddr/) describing the address(es) to serve the HTTP API on.
 
 Default: `/ip4/127.0.0.1/tcp/5002`
+
+### `RPC`
+
+js-IPFS has a gRPC-over-websockets server that allows it to do things that you cannot do over HTTP like bi-directional streaming.  It implements the same API as the [HTTP API Spec](https://docs.ipfs.io/reference/api/http) and can be accessed using the [ipfs-client](https://www.npmjs.com/package/ipfs-client) module.
+
+Configure the address it listens on using this config key.
+
+Default: `/ip4/127.0.0.1/tcp/5003`
 
 ### `Delegates`
 
@@ -191,7 +200,7 @@ Options for Multicast DNS peer discovery:
 
 ### `webRTCStar`
 
-WebRTCStar is a discovery mechanism prvided by a signalling-star that allows peer-to-peer communications in the browser.
+WebRTCStar is a discovery mechanism provided by a signalling-star that allows peer-to-peer communications in the browser.
 
 Options for webRTCstar peer discovery:
 

@@ -1,10 +1,6 @@
-'use strict'
+import parseDuration from 'parse-duration'
 
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'wantlist [peer]',
 
   describe: 'Print out all blocks currently on the bitswap wantlist for the local peer.',
@@ -18,7 +14,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -30,11 +26,14 @@ module.exports = {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.peer
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx, peer, cidBase, timeout }) {
     const { ipfs, print } = ctx
+    const base = await ipfs.bases.getBase(cidBase)
+
+    /** @type {import('multiformats/cid').CID[]} */
     let list
 
     if (peer) {
@@ -47,6 +46,6 @@ module.exports = {
       })
     }
 
-    list.forEach(cid => print(cidToString(cid, { base: cidBase, upgrade: false })))
+    list.forEach(cid => print(cid.toString(base.encoder)))
   }
 }

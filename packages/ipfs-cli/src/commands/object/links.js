@@ -1,14 +1,10 @@
-'use strict'
-
-const multibase = require('multibase')
-const { cidToString } = require('ipfs-core-utils/src/cid')
-const { default: parseDuration } = require('parse-duration')
-const {
+import parseDuration from 'parse-duration'
+import {
   stripControlCharacters,
   coerceCID
-} = require('../../utils')
+} from '../../utils.js'
 
-module.exports = {
+export default {
   command: 'links <key>',
 
   describe: 'Outputs the links pointed to by the specified object',
@@ -21,7 +17,7 @@ module.exports = {
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
       type: 'string',
-      choices: Object.keys(multibase.names)
+      default: 'base58btc'
     },
     timeout: {
       type: 'string',
@@ -32,15 +28,16 @@ module.exports = {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('cids')} argv.key
-   * @param {import('multibase').BaseName} argv.cidBase
+   * @param {import('multiformats/cid').CID} argv.key
+   * @param {string} argv.cidBase
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, cidBase, timeout }) {
     const links = await ipfs.object.links(key, { timeout })
+    const base = await ipfs.bases.getBase(cidBase)
 
     links.forEach((link) => {
-      const cidStr = cidToString(link.Hash, { base: cidBase, upgrade: false })
+      const cidStr = link.Hash.toString(base.encoder)
       print(`${cidStr} ${link.Tsize} ${stripControlCharacters(link.Name)}`)
     })
   }

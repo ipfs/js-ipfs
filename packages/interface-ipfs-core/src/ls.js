@@ -1,46 +1,59 @@
 /* eslint-env mocha */
-'use strict'
 
-const { fixtures } = require('./utils')
-const { getDescribe, getIt, expect } = require('./utils/mocha')
-const all = require('it-all')
-const CID = require('cids')
-const testTimeout = require('./utils/test-timeout')
+import { fixtures } from './utils/index.js'
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from './utils/mocha.js'
+import all from 'it-all'
+import { CID } from 'multiformats/cid'
+import testTimeout from './utils/test-timeout.js'
 
+/**
+ * @param {string} prefix
+ */
 const randomName = prefix => `${prefix}${Math.round(Math.random() * 1000)}`
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
+export function testLs (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.ls', function () {
     this.timeout(120 * 1000)
 
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
 
     before(async () => {
-      ipfs = (await common.spawn()).api
+      ipfs = (await factory.spawn()).api
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should respect timeout option when listing files', () => {
-      return testTimeout(() => ipfs.ls(new CID('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
+      return testTimeout(() => ipfs.ls(CID.parse('QmNonExistentCiD8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXg'), {
         timeout: 1
       }))
     })
 
     it('should ls with a base58 encoded CID', async function () {
+      /**
+       * @param {string} name
+       */
       const content = (name) => ({
         path: `test-folder/${name}`,
         content: fixtures.directory.files[name]
       })
 
+      /**
+       * @param {string} name
+       */
       const emptyDir = (name) => ({ path: `test-folder/${name}` })
 
       const dirs = [
@@ -58,48 +71,42 @@ module.exports = (common, options) => {
 
       const root = res[res.length - 1]
       expect(root.path).to.equal('test-folder')
-      expect(root.cid.toString()).to.equal(fixtures.directory.cid)
+      expect(root.cid.toString()).to.equal(fixtures.directory.cid.toString())
 
       const cid = 'QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'
       const output = await all(ipfs.ls(cid))
 
       expect(output).to.have.lengthOf(6)
-      expect(output[0].depth).to.equal(1)
       expect(output[0].name).to.equal('alice.txt')
       expect(output[0].path).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/alice.txt')
       expect(output[0].size).to.equal(11685)
       expect(output[0].cid.toString()).to.equal('QmZyUEQVuRK3XV7L9Dk26pg6RVSgaYkiSTEdnT2kZZdwoi')
       expect(output[0].type).to.equal('file')
 
-      expect(output[1].depth).to.equal(1)
       expect(output[1].name).to.equal('empty-folder')
       expect(output[1].path).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/empty-folder')
       expect(output[1].size).to.equal(0)
       expect(output[1].cid.toString()).to.equal('QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn')
       expect(output[1].type).to.equal('dir')
 
-      expect(output[2].depth).to.equal(1)
       expect(output[2].name).to.equal('files')
       expect(output[2].path).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/files')
       expect(output[2].size).to.equal(0)
       expect(output[2].cid.toString()).to.equal('QmZ25UfTqXGz9RsEJFg7HUAuBcmfx5dQZDXQd2QEZ8Kj74')
       expect(output[2].type).to.equal('dir')
 
-      expect(output[3].depth).to.equal(1)
       expect(output[3].name).to.equal('holmes.txt')
       expect(output[3].path).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/holmes.txt')
       expect(output[3].size).to.equal(581878)
       expect(output[3].cid.toString()).to.equal('QmR4nFjTu18TyANgC65ArNWp5Yaab1gPzQ4D8zp7Kx3vhr')
       expect(output[3].type).to.equal('file')
 
-      expect(output[4].depth).to.equal(1)
       expect(output[4].name).to.equal('jungle.txt')
       expect(output[4].path).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/jungle.txt')
       expect(output[4].size).to.equal(2294)
       expect(output[4].cid.toString()).to.equal('QmT6orWioMiSqXXPGsUi71CKRRUmJ8YkuueV2DPV34E9y9')
       expect(output[4].type).to.equal('file')
 
-      expect(output[5].depth).to.equal(1)
       expect(output[5].name).to.equal('pp.txt')
       expect(output[5].path).to.equal('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP/pp.txt')
       expect(output[5].size).to.equal(4540)

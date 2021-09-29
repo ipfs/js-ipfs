@@ -1,7 +1,5 @@
-'use strict'
-
-const errCode = require('err-code')
-const CID = require('cids')
+import errCode from 'err-code'
+import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {Object} Pinnable
@@ -46,15 +44,17 @@ const CID = require('cids')
  * @returns {AsyncIterable<Pin>}
  */
 // eslint-disable-next-line complexity
-module.exports = async function * normaliseInput (input) {
+export async function * normaliseInput (input) {
   // must give us something
   if (input === null || input === undefined) {
     throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
   }
 
-  // CID|String
-  if (CID.isCID(input)) {
-    yield toPin({ cid: input })
+  // CID
+  const cid = CID.asCID(input)
+
+  if (cid) {
+    yield toPin({ cid })
     return
   }
 
@@ -78,7 +78,7 @@ module.exports = async function * normaliseInput (input) {
     if (first.done) return iterator
 
     // Iterable<CID|String>
-    if (CID.isCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
+    if (CID.asCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
       yield toPin({ cid: first.value })
       for (const cid of iterator) {
         yield toPin({ cid })
@@ -106,7 +106,7 @@ module.exports = async function * normaliseInput (input) {
     if (first.done) return iterator
 
     // AsyncIterable<CID|String>
-    if (CID.isCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
+    if (CID.asCID(first.value) || first.value instanceof String || typeof first.value === 'string') {
       yield toPin({ cid: first.value })
       for await (const cid of iterator) {
         yield toPin({ cid })

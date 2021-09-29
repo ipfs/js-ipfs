@@ -1,32 +1,40 @@
 /* eslint-env mocha */
-'use strict'
 
-const { getDescribe, getIt, expect } = require('../utils/mocha')
-const { isWebWorker } = require('ipfs-utils/src/env')
-const getIpfsOptions = require('../utils/ipfs-options-websockets-filter-all')
+import { expect } from 'aegir/utils/chai.js'
+import { getDescribe, getIt } from '../utils/mocha.js'
+import { isWebWorker } from 'ipfs-utils/src/env.js'
+import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
-/** @typedef { import("ipfsd-ctl/src/factory") } Factory */
 /**
- * @param {Factory} common
+ * @typedef {import('ipfsd-ctl').Factory} Factory
+ */
+
+/**
+ * @param {Factory} factory
  * @param {Object} options
  */
-module.exports = (common, options) => {
-  const ipfsOptions = getIpfsOptions()
+export function testConnect (factory, options) {
+  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.swarm.connect', function () {
     this.timeout(80 * 1000)
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsA
+    /** @type {import('ipfs-core-types').IPFS} */
     let ipfsB
+    /** @type {import('ipfs-core-types/src/root').IDResult} */
+    let ipfsBId
 
     before(async () => {
-      ipfsA = (await common.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
       // webworkers are not dialable because webrtc is not available
-      ipfsB = (await common.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      ipfsBId = await ipfsB.id()
     })
 
-    after(() => common.clean())
+    after(() => factory.clean())
 
     it('should connect to a peer', async () => {
       let peers
@@ -34,7 +42,7 @@ module.exports = (common, options) => {
       peers = await ipfsA.swarm.peers()
       expect(peers).to.have.length(0)
 
-      await ipfsA.swarm.connect(ipfsB.peerId.addresses[0])
+      await ipfsA.swarm.connect(ipfsBId.addresses[0])
 
       peers = await ipfsA.swarm.peers()
       expect(peers).to.have.length.above(0)

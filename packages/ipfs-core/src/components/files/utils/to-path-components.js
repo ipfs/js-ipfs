@@ -1,14 +1,11 @@
-'use strict'
 
 /**
  * @param {string} [path]
  */
-const toPathComponents = (path = '') => {
+export function toPathComponents (path = '') {
   // split on / unless escaped with \
   return (path
     .trim()
     .match(/([^\\^/]|\\\/)+/g) || [])
     .filter(Boolean)
 }
-
-module.exports = toPathComponents

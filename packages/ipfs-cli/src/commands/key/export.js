@@ -1,9 +1,7 @@
-'use strict'
+import fs from 'fs'
+import parseDuration from 'parse-duration'
 
-const fs = require('fs')
-const { default: parseDuration } = require('parse-duration')
-
-module.exports = {
+export default {
   command: 'export <name>',
 
   describe: 'Export the key as a password protected PKCS #8 PEM file',

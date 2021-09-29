@@ -1,10 +1,9 @@
 /* eslint-env mocha */
-'use strict'
 
-const sinon = require('sinon')
-const server = require('../utils/server')
-const { expect } = require('aegir/utils/chai')
-const drain = require('it-drain')
+import sinon from 'sinon'
+import { server } from '../utils/server.js'
+import { expect } from 'aegir/utils/chai.js'
+import drain from 'it-drain'
 
 describe('MFS.write', () => {
   let ipfs

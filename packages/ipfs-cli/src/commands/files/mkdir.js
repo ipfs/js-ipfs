@@ -1,15 +1,13 @@
-'use strict'
-
-const {
+import {
   asBoolean,
   asOctal,
   asMtimeFromSeconds,
   coerceMtime,
   coerceMtimeNsecs
-} = require('../../utils')
-const { default: parseDuration } = require('parse-duration')
+} from '../../utils.js'
+import parseDuration from 'parse-duration'
 
-module.exports = {
+export default {
   command: 'mkdir <path>',
 
   describe: 'Make mfs directories',
@@ -72,8 +70,8 @@ module.exports = {
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.path
    * @param {boolean} argv.parents
-   * @param {import('cids').CIDVersion} argv.cidVersion
-   * @param {import('multihashes').HashName} argv.hashAlg
+   * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
+   * @param {string} argv.hashAlg
    * @param {boolean} argv.flush
    * @param {number} argv.shardSplitThreshold
    * @param {number} argv.mode

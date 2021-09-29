@@ -1,20 +1,17 @@
-'use strict'
-
-const configure = require('../../lib/configure')
-const toUrlSearchParams = require('../../lib/to-url-search-params')
+import { configure } from '../../lib/configure.js'
+import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
 
 /**
  * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions
  * @typedef {import('ipfs-core-types/src/config/profiles').API<HTTPClientExtraOptions>} ConfigProfilesAPI
  */
 
-module.exports = configure(api => {
+export const createApply = configure(api => {
   /**
    * @type {ConfigProfilesAPI["apply"]}
    */
   async function apply (profile, options = {}) {
     const res = await api.post('config/profile/apply', {
-      timeout: options.timeout,
       signal: options.signal,
       searchParams: toUrlSearchParams({
         arg: profile,

@@ -1,9 +1,8 @@
-'use strict'
 
-const HttpApi = require('../../src')
+import { HttpGateway } from '../../src/index.js'
 
-module.exports = async (request, { ipfs } = {}) => {
-  const api = new HttpApi(ipfs)
+export async function http (request, { ipfs } = {}) {
+  const api = new HttpGateway(ipfs)
   const server = await api._createGatewayServer('127.0.0.1', 8080, ipfs)
 
   return server.inject(request)
