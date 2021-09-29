@@ -46,9 +46,11 @@
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
+    "err-code": "^3.0.1",
     "ipfs-core-types": "^0.8.1",
     "ipfs-message-port-protocol": "^0.10.1",
     "ipfs-unixfs": "^6.0.3",
+    "it-peekable": "^1.0.2",
     "multiformats": "^9.4.1"
   },
   "devDependencies": {

@@ -4,12 +4,11 @@ import { multipartRequest as multipartRequestBrowser } from './multipart-request
 import { nanoid } from 'nanoid'
 
 /**
- * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  */
 
 /**
- * @param {ImportCandidateStream|ImportCandidate} source
+ * @param {ImportCandidateStream} source
  * @param {AbortController} abortController
  * @param {Headers|Record<string, string>} [headers]
  * @param {string} [boundary]

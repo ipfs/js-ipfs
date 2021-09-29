@@ -14,33 +14,25 @@ import {
 } from 'ipfs-unixfs'
 
 /**
+ * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').ToContent} ToContent
  * @typedef {import('ipfs-unixfs-importer').ImportCandidate} ImporterImportCandidate
- * @typedef {import('ipfs-core-types/src/utils').ImportCandidate} ImportCandidate
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
  */
 
 /**
- * @param {ImportCandidate | ImportCandidateStream} input
+ * @param {ImportCandidateStream} input
  * @param {(content:ToContent) => Promise<AsyncIterable<Uint8Array>>} normaliseContent
  */
 // eslint-disable-next-line complexity
-export async function * normalise (input, normaliseContent) {
-  if (input === null || input === undefined) {
-    throw errCode(new Error(`Unexpected input: ${input}`), 'ERR_UNEXPECTED_INPUT')
-  }
-
+export async function * normaliseCandidateMultiple (input, normaliseContent) {
   // String
-  if (typeof input === 'string' || input instanceof String) {
-    yield toFileObject(input.toString(), normaliseContent)
-    return
-  }
-
   // Uint8Array|ArrayBuffer|TypedArray
   // Blob|File
-  if (isBytes(input) || isBlob(input)) {
-    yield toFileObject(input, normaliseContent)
-    return
+  // fs.ReadStream
+  // @ts-expect-error _readableState is a property of a node fs.ReadStream
+  if (typeof input === 'string' || input instanceof String || isBytes(input) || isBlob(input) || input._readableState) {
+    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
   }
 
   // Browser ReadableStream
@@ -67,23 +59,19 @@ export async function * normalise (input, normaliseContent) {
 
     // (Async)Iterable<Number>
     // (Async)Iterable<Bytes>
-    if (Number.isInteger(value) || isBytes(value)) {
-      yield toFileObject(peekable, normaliseContent)
-      return
+    if (Number.isInteger(value)) {
+      throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
     }
 
-    // fs.ReadStream<Bytes>
+    // (Async)Iterable<fs.ReadStream>
     if (value._readableState) {
-      // @ts-ignore Node readable streams have a `.path` property so we need to pass it as the content
+      // @ts-ignore Node fs.ReadStreams have a `.path` property so we need to pass it as the content
       yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject({ content: value }, normaliseContent))
       return
     }
 
-    // (Async)Iterable<Blob>
-    // (Async)Iterable<String>
-    // (Async)Iterable<{ path, content }>
-    if (isFileObject(value) || isBlob(value) || typeof value === 'string' || value instanceof String) {
-      yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
+    if (isBytes(value)) {
+      yield toFileObject({ content: peekable }, normaliseContent)
       return
     }
 
@@ -91,18 +79,17 @@ export async function * normalise (input, normaliseContent) {
     // (Async)Iterable<ReadableStream<?>>
     // ReadableStream<(Async)Iterable<?>>
     // ReadableStream<ReadableStream<?>>
-    if (value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value)) {
+    if (isFileObject(value) || value[Symbol.iterator] || value[Symbol.asyncIterator] || isReadableStream(value) || isBlob(value)) {
       yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject(value, normaliseContent))
       return
     }
   }
 
   // { path, content: ? }
-  // Note: Detected _after_ (Async)Iterable<?> because Node.js streams have a
+  // Note: Detected _after_ (Async)Iterable<?> because Node.js fs.ReadStreams have a
   // `path` property that passes this check.
   if (isFileObject(input)) {
-    yield toFileObject(input, normaliseContent)
-    return
+    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
   }
 
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')

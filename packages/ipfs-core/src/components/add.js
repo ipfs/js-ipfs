@@ -1,4 +1,5 @@
 import last from 'it-last'
+import { normaliseInput } from 'ipfs-core-utils/files/normalise-input-single'
 
 /**
  * @param {Object} context
@@ -10,7 +11,7 @@ export function createAdd ({ addAll }) {
    */
   async function add (entry, options = {}) {
     // @ts-ignore TODO: https://github.com/ipfs/js-ipfs/issues/3290
-    const result = await last(addAll(entry, options))
+    const result = await last(addAll(normaliseInput(entry), options))
     // Note this should never happen as `addAll` should yield at least one item
     // but to satisfy type checker we perfom this check and for good measure
     // throw an error in case it does happen.

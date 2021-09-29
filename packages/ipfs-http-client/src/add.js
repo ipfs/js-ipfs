@@ -1,6 +1,7 @@
 import { createAddAll } from './add-all.js'
 import last from 'it-last'
 import { configure } from './lib/configure.js'
+import { normaliseInput } from 'ipfs-core-utils/files/normalise-input-single'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -18,7 +19,7 @@ export function createAdd (options) {
      */
     async function add (input, options = {}) {
       // @ts-ignore - last may return undefined if source is empty
-      return await last(all(input, options))
+      return await last(all(normaliseInput(input), options))
     }
     return add
   })(options)

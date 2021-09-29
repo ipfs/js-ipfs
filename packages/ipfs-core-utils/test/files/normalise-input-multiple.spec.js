@@ -5,7 +5,7 @@ import blobToIt from 'blob-to-it'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import all from 'it-all'
 import { File } from '@web-std/file'
-import { normaliseInput } from '../../src/files/normalise-input.js'
+import { normaliseInput } from '../../src/files/normalise-input-multiple.js'
 import { isNode } from 'ipfs-utils/src/env.js'
 import resolve from 'aegir/utils/resolve.js'
 
@@ -16,6 +16,7 @@ const NEWSTRING = () => new String('hello world') // eslint-disable-line no-new-
 const BUFFER = () => uint8ArrayFromString(STRING())
 const ARRAY = () => Array.from(BUFFER())
 const TYPEDARRAY = () => Uint8Array.from(ARRAY())
+const FILE = () => new File([BUFFER()], 'test-file.txt')
 /** @type {() => Blob} */
 let BLOB
 
@@ -55,6 +56,14 @@ async function testContent (input) {
 }
 
 /**
+ * @param {*} input
+ * @param {RegExp} message
+ */
+async function testFailure (input, message) {
+  await expect(all(normaliseInput(input))).to.eventually.be.rejectedWith(message)
+}
+
+/**
  * @template T
  * @param {T} thing
  * @returns {T[]}
@@ -86,18 +95,18 @@ function browserReadableStreamOf (thing) {
   })
 }
 
-describe('normalise-input', function () {
+describe('normalise-input-multiple', function () {
   /**
    * @param {() => any} content
    * @param {string} name
-   * @param {boolean} isBytes
+   * @param {{ acceptStream: boolean, acceptContentStream: boolean }} options
    */
-  function testInputType (content, name, isBytes) {
-    it(name, async function () {
-      await testContent(content())
+  function testInputType (content, name, { acceptStream, acceptContentStream }) {
+    it(`Failure ${name}`, async function () {
+      await testFailure(content(), /single item passed/)
     })
 
-    if (isBytes) {
+    if (acceptStream) {
       if (ReadableStream) {
         it(`ReadableStream<${name}>`, async function () {
           await testContent(browserReadableStreamOf(content()))
@@ -111,43 +120,35 @@ describe('normalise-input', function () {
       it(`AsyncIterable<${name}>`, async function () {
         await testContent(asyncIterableOf(content()))
       })
-    }
-
-    it(`{ path: '', content: ${name} }`, async function () {
-      await testContent({ path: '', content: content() })
-    })
-
-    if (isBytes) {
+    } else {
       if (ReadableStream) {
-        it(`{ path: '', content: ReadableStream<${name}> }`, async function () {
-          await testContent({ path: '', content: browserReadableStreamOf(content()) })
+        it(`Failure ReadableStream<${name}>`, async function () {
+          await testFailure(browserReadableStreamOf(content()), /single item passed/)
         })
       }
 
-      it(`{ path: '', content: Iterable<${name}> }`, async function () {
-        await testContent({ path: '', content: iterableOf(content()) })
+      it(`Failure Iterable<${name}>`, async function () {
+        await testFailure(iterableOf(content()), /single item passed/)
       })
 
-      it(`{ path: '', content: AsyncIterable<${name}> }`, async function () {
-        await testContent({ path: '', content: asyncIterableOf(content()) })
-      })
-    }
-
-    if (ReadableStream) {
-      it(`ReadableStream<${name}>`, async function () {
-        await testContent(browserReadableStreamOf(content()))
+      it(`Failure AsyncIterable<${name}>`, async function () {
+        await testFailure(asyncIterableOf(content()), /single item passed/)
       })
     }
 
-    it(`Iterable<{ path: '', content: ${name} }`, async function () {
+    it(`Failure { path: '', content: ${name} }`, async function () {
+      await testFailure({ path: '', content: content() }, /single item passed/)
+    })
+
+    it(`Iterable<{ path: '', content: ${name} }>`, async function () {
       await testContent(iterableOf({ path: '', content: content() }))
     })
 
-    it(`AsyncIterable<{ path: '', content: ${name} }`, async function () {
+    it(`AsyncIterable<{ path: '', content: ${name} }>`, async function () {
       await testContent(asyncIterableOf({ path: '', content: content() }))
     })
 
-    if (isBytes) {
+    if (acceptContentStream) {
       if (ReadableStream) {
         it(`Iterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
           await testContent(iterableOf({ path: '', content: browserReadableStreamOf(content()) }))
@@ -175,16 +176,53 @@ describe('normalise-input', function () {
       it(`AsyncIterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
         await testContent(asyncIterableOf({ path: '', content: asyncIterableOf(content()) }))
       })
+    } else {
+      if (ReadableStream) {
+        it(`Failure Iterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
+          await testFailure(iterableOf({ path: '', content: browserReadableStreamOf(content()) }), /Unexpected input/)
+        })
+      }
+
+      it(`Failure Iterable<{ path: '', content: Iterable<${name}> }>`, async function () {
+        await testFailure(iterableOf({ path: '', content: iterableOf(content()) }), /Unexpected input/)
+      })
+
+      it(`Failure Iterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
+        await testFailure(iterableOf({ path: '', content: asyncIterableOf(content()) }), /Unexpected input/)
+      })
+
+      if (ReadableStream) {
+        it(`Failure AsyncIterable<{ path: '', content: ReadableStream<${name}> }>`, async function () {
+          await testFailure(asyncIterableOf({ path: '', content: browserReadableStreamOf(content()) }), /Unexpected input/)
+        })
+      }
+
+      it(`Failure AsyncIterable<{ path: '', content: Iterable<${name}> }>`, async function () {
+        await testFailure(asyncIterableOf({ path: '', content: iterableOf(content()) }), /Unexpected input/)
+      })
+
+      it(`Failure AsyncIterable<{ path: '', content: AsyncIterable<${name}> }>`, async function () {
+        await testFailure(asyncIterableOf({ path: '', content: asyncIterableOf(content()) }), /Unexpected input/)
+      })
     }
   }
 
   describe('String', () => {
-    testInputType(STRING, 'String', true)
-    testInputType(NEWSTRING, 'new String()', true)
+    testInputType(STRING, 'String', {
+      acceptStream: true,
+      acceptContentStream: true
+    })
+    testInputType(NEWSTRING, 'new String()', {
+      acceptStream: true,
+      acceptContentStream: true
+    })
   })
 
   describe('Buffer', () => {
-    testInputType(BUFFER, 'Buffer', true)
+    testInputType(BUFFER, 'Buffer', {
+      acceptStream: true,
+      acceptContentStream: true
+    })
   })
 
   describe('Blob', () => {
@@ -192,23 +230,31 @@ describe('normalise-input', function () {
       return
     }
 
-    testInputType(BLOB, 'Blob', false)
+    testInputType(BLOB, 'Blob', {
+      acceptStream: true,
+      acceptContentStream: false
+    })
   })
 
   describe('@web-std/file', () => {
-    it('normalizes File input', async () => {
-      const FILE = new File([BUFFER()], 'test-file.txt')
-
-      await testContent(FILE)
+    testInputType(FILE, 'File', {
+      acceptStream: true,
+      acceptContentStream: false
     })
   })
 
   describe('Iterable<Number>', () => {
-    testInputType(ARRAY, 'Iterable<Number>', false)
+    testInputType(ARRAY, 'Iterable<Number>', {
+      acceptStream: true,
+      acceptContentStream: false
+    })
   })
 
   describe('TypedArray', () => {
-    testInputType(TYPEDARRAY, 'TypedArray', true)
+    testInputType(TYPEDARRAY, 'TypedArray', {
+      acceptStream: true,
+      acceptContentStream: true
+    })
   })
 
   if (isNode) {
@@ -226,14 +272,9 @@ describe('normalise-input', function () {
         return fs.createReadStream(path)
       }
 
-      testInputType(NODEFSREADSTREAM, 'Node fs.ReadStream', false)
-
-      it('Iterable<Node fs.ReadStream>', async function () {
-        await testContent(iterableOf(NODEFSREADSTREAM()))
-      })
-
-      it('AsyncIterable<Node fs.ReadStream>', async function () {
-        await testContent(asyncIterableOf(NODEFSREADSTREAM()))
+      testInputType(NODEFSREADSTREAM, 'Node fs.ReadStream', {
+        acceptStream: true,
+        acceptContentStream: false
       })
     })
   }

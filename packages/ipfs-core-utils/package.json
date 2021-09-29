@@ -38,11 +38,17 @@
     ".": {
       "import": "./src/index.js"
     },
-    "./files/normalise-input": {
-      "import": "./src/files/normalise-input.js"
+    "./files/normalise-input-single": {
+      "import": "./src/files/normalise-input-single.js"
     },
-    "./files/normalise-input.browser": {
-      "import": "./src/files/normalise-input.browser.js"
+    "./files/normalise-input-single.browser": {
+      "import": "./src/files/normalise-input-single.browser.js"
+    },
+    "./files/normalise-input-multiple": {
+      "import": "./src/files/normalise-input-multiple.js"
+    },
+    "./files/normalise-input-multiple.browser": {
+      "import": "./src/files/normalise-input-multiple.browser.js"
     },
     "./files/normalise-content": {
       "import": "./src/files/normalise-content.js"

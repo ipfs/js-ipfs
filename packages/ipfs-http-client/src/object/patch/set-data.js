@@ -28,7 +28,7 @@ export const createSetData = configure(api => {
         ...options
       }),
       ...(
-        await multipartRequest(data, controller, options.headers)
+        await multipartRequest([data], controller, options.headers)
       )
     })
 

@@ -23,7 +23,7 @@ export const createReplace = configure(api => {
       signal,
       searchParams: toUrlSearchParams(options),
       ...(
-        await multipartRequest(uint8ArrayFromString(JSON.stringify(config)), controller, options.headers)
+        await multipartRequest([uint8ArrayFromString(JSON.stringify(config))], controller, options.headers)
       )
     })
 

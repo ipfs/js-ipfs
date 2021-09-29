@@ -12,31 +12,29 @@ import {
 } from './utils.js'
 
 /**
- * @param {import('./normalise').ToContent} input
+ * @template T
+ * @param {T} thing
  */
-export async function normaliseContent (input) {
-  return toAsyncGenerator(input)
+async function * toAsyncIterable (thing) {
+  yield thing
 }
 
 /**
- * @param {import('./normalise').ToContent} input
+ * @param {import('ipfs-core-types/src/utils').ToContent} input
  */
-async function * toAsyncGenerator (input) {
+export async function normaliseContent (input) {
   // Bytes | String
   if (isBytes(input)) {
-    yield toBytes(input)
-    return
+    return toAsyncIterable(toBytes(input))
   }
 
   if (typeof input === 'string' || input instanceof String) {
-    yield toBytes(input.toString())
-    return
+    return toAsyncIterable(toBytes(input.toString()))
   }
 
   // Blob
   if (isBlob(input)) {
-    yield * blobToIt(input)
-    return
+    return blobToIt(input)
   }
 
   // Browser stream
@@ -54,22 +52,19 @@ async function * toAsyncGenerator (input) {
 
     if (done) {
       // make sure empty iterators result in empty files
-      yield * []
-      return
+      return toAsyncIterable(new Uint8Array(0))
     }
 
     peekable.push(value)
 
     // (Async)Iterable<Number>
     if (Number.isInteger(value)) {
-      yield Uint8Array.from((await all(peekable)))
-      return
+      return toAsyncIterable(Uint8Array.from(await all(peekable)))
     }
 
     // (Async)Iterable<Bytes|String>
     if (isBytes(value) || typeof value === 'string' || value instanceof String) {
-      yield * map(peekable, toBytes)
-      return
+      return map(peekable, toBytes)
     }
   }
 

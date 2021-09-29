@@ -1,5 +1,5 @@
 import { importer } from 'ipfs-unixfs-importer'
-import { normaliseInput } from 'ipfs-core-utils/files/normalise-input'
+import { normaliseInput } from 'ipfs-core-utils/files/normalise-input-multiple'
 import { parseChunkerString } from './utils.js'
 import { pipe } from 'it-pipe'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

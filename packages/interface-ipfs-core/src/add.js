@@ -244,6 +244,13 @@ export function testAdd (factory, options) {
       await expect(ipfs.add(null)).to.eventually.be.rejected()
     })
 
+    it('should fail when passed multiple file objects', async () => {
+      const nonValid = [{ content: 'hello' }, { content: 'world' }]
+
+      // @ts-expect-error nonValid is non valid
+      await expect(ipfs.add(nonValid)).to.eventually.be.rejectedWith(/multiple items passed/)
+    })
+
     it('should wrap content in a directory', async () => {
       const data = { path: 'testfile.txt', content: fixtures.smallFile.data }
 
