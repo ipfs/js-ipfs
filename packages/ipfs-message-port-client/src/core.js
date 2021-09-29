@@ -16,6 +16,8 @@ import {
   parseMode,
   parseMtime
 } from 'ipfs-unixfs'
+import itPeekable from 'it-peekable'
+import errCode from 'err-code'
 
 /**
  * @template T
@@ -104,7 +106,7 @@ CoreClient.prototype.add = async function add (input, options = {}) {
 
   const result = await this.remote.add({
     ...options,
-    input: encodeAddInput(input, transfer),
+    input: await encodeAddInput(input, transfer),
     progress: undefined,
     progressCallback,
     transfer,
@@ -183,9 +185,9 @@ const identity = (v) => v
  *
  * @param {ImportCandidate} input
  * @param {Transferable[]} transfer
- * @returns {EncodedAddInput}
+ * @returns {Promise<EncodedAddInput>}
  */
-const encodeAddInput = (input, transfer) => {
+const encodeAddInput = async (input, transfer) => {
   // We want to get a Blob as input. If we got it we're set.
   if (input instanceof Blob) {
     return input
@@ -201,13 +203,17 @@ const encodeAddInput = (input, transfer) => {
     // be encoded via own specific encoder.
     const iterable = asIterable(input)
     if (iterable) {
-      return encodeIterable(iterable, encodeIterableContent, transfer)
+      return encodeIterable(
+        await ensureIsByteStream(iterable),
+        encodeIterableContent,
+        transfer
+      )
     }
 
     const asyncIterable = asAsyncIterable(input)
     if (asyncIterable) {
       return encodeIterable(
-        asyncIterable,
+        await ensureIsByteStream(asyncIterable),
         encodeAsyncIterableContent,
         transfer
       )
@@ -216,7 +222,7 @@ const encodeAddInput = (input, transfer) => {
     const readableStream = asReadableStream(input)
     if (readableStream) {
       return encodeIterable(
-        iterateReadableStream(readableStream),
+        await ensureIsByteStream(iterateReadableStream(readableStream)),
         encodeAsyncIterableContent,
         transfer
       )
@@ -232,7 +238,7 @@ const encodeAddInput = (input, transfer) => {
 }
 
 /**
- * Encodes input passed to the `ipfs.add` via the best possible strategy for the
+ * Encodes input passed to the `ipfs.addAll` via the best possible strategy for the
  * given input.
  *
  * @param {ImportCandidateStream} input
@@ -447,4 +453,41 @@ const asFileObject = (input) => {
   } else {
     return null
   }
+}
+
+/**
+ * @template T
+ * @param {AsyncIterable<T> | Iterable<T>} input
+ * @returns {Promise<AsyncIterable<T> | Iterable<T>>}
+ */
+const ensureIsByteStream = async (input) => {
+  // @ts-ignore it's (async)iterable
+  const peekable = itPeekable(input)
+
+  /** @type {any} value **/
+  const { value, done } = await peekable.peek()
+
+  if (done) {
+    // make sure empty iterators result in empty files
+    return []
+  }
+
+  peekable.push(value)
+
+  // (Async)Iterable<Number>
+  // (Async)Iterable<Bytes>
+  // (Async)Iterable<String>
+  if (Number.isInteger(value) || isBytes(value) || typeof value === 'string' || value instanceof String) {
+    return peekable
+  }
+
+  throw errCode(new Error('Unexpected input: multiple items passed - if you are using ipfs.add, please use ipfs.addAll instead'), 'ERR_UNEXPECTED_INPUT')
+}
+
+/**
+ * @param {any} obj
+ * @returns {obj is ArrayBufferView|ArrayBuffer}
+ */
+function isBytes (obj) {
+  return ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer
 }
