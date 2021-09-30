@@ -180,7 +180,7 @@ export class MessageTransport {
         id,
         input: query.toJSON()
       },
-      // @ts-expect-error - Type signature does not expert 2nd undefined arg
+      // @ts-expect-error - Type signature does not expect 2nd undefined arg
       query.transfer()
     )
   }
