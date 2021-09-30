@@ -34,7 +34,7 @@ export class DAGService {
 
   /**
    * @typedef {Object} EncodedGetResult
-   * @property {Transferable[]} transfer
+   * @property {Set<Transferable>} transfer
    * @property {string} [remainderPath]
    * @property {EncodedDAGNode} value
    *
@@ -60,8 +60,8 @@ export class DAGService {
       }
     )
 
-    /** @type {Transferable[]} */
-    const transfer = []
+    /** @type {Set<Transferable>} */
+    const transfer = new Set()
     return { remainderPath, value: encodeNode(value, transfer), transfer }
   }
 

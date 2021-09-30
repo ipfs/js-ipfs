@@ -22,7 +22,7 @@ describe('block (browser)', function () {
     it('should decode Block over message channel & transfer bytes', async () => {
       const blockIn = uint8ArrayFromString('hello')
 
-      const transfer = []
+      const transfer = new Set()
 
       const blockOut = await move(encodeBlock(blockIn, transfer), transfer)
 

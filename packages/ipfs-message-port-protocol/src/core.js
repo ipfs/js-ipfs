@@ -92,16 +92,19 @@ export const decodeIterable = async function * ({ port }, decode) {
 /**
  * @template I,O
  * @param {AsyncIterable<I>|Iterable<I>} iterable
- * @param {function(I, Transferable[]):O} encode
- * @param {Transferable[]} transfer
+ * @param {function(I, Set<Transferable>):O} encode
+ * @param {Set<Transferable>} transfer
  * @returns {RemoteIterable<O>}
  */
 export const encodeIterable = (iterable, encode, transfer) => {
   const { port1: port, port2: remote } = new MessageChannel()
-  /** @type {Transferable[]} */
-  const itemTransfer = []
   /** @type {Iterator<I>|AsyncIterator<I>} */
   const iterator = toIterator(iterable)
+  // Note that port.onmessage will receive multiple 'next' method messages.
+  // Instead of allocating set every time we allocate one here and recycle
+  // it on each 'next' message.
+  /** @type {Set<Transferable>} */
+  const itemTransfer = new Set()
 
   port.onmessage = async ({ data: { method } }) => {
     switch (method) {
@@ -112,12 +115,15 @@ export const encodeIterable = (iterable, encode, transfer) => {
             port.postMessage({ type: 'next', done: true })
             port.close()
           } else {
-            itemTransfer.length = 0
-            port.postMessage(
+            itemTransfer.clear()
+            const encodedValue = encode(value, itemTransfer)
+
+            postMessage(
+              port,
               {
                 type: 'next',
                 done: false,
-                value: encode(value, itemTransfer)
+                value: encodedValue
               },
               itemTransfer
             )
@@ -144,7 +150,7 @@ export const encodeIterable = (iterable, encode, transfer) => {
     }
   }
   port.start()
-  transfer.push(remote)
+  transfer.add(remote)
 
   return { type: 'RemoteIterable', port: remote }
 }
@@ -170,31 +176,41 @@ const toIterator = iterable => {
 
 /**
  * @param {Function} callback
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {RemoteCallback}
  */
 export const encodeCallback = (callback, transfer) => {
   // eslint-disable-next-line no-undef
   const { port1: port, port2: remote } = new MessageChannel()
   port.onmessage = ({ data }) => callback.apply(null, data)
-  transfer.push(remote)
+  transfer.add(remote)
   return { type: 'RemoteCallback', port: remote }
 }
 
 /**
  * @template T
  * @param {RemoteCallback} remote
- * @returns {function(T[]):void | function(T[], Transferable[]):void}
+ * @returns {function(T[]):void | function(T[], Set<Transferable>):void}
  */
 export const decodeCallback = ({ port }) => {
   /**
    * @param {T[]} args
-   * @param {Transferable[]} [transfer]
+   * @param {Set<Transferable>} [transfer]
    * @returns {void}
    */
-  const callback = (args, transfer = []) => {
-    port.postMessage(args, [...new Set(transfer)])
+  const callback = (args, transfer) => {
+    postMessage(port, args, transfer)
   }
 
   return callback
 }
+
+/**
+ * @param {MessagePort} port
+ * @param {any} message
+ * @param {Iterable<Transferable>} [transfer]
+ */
+const postMessage = (port, message, transfer) =>
+  // @ts-expect-error - Built in types expect Transferable[] but it really
+  // should be Iterable<Transferable>
+  port.postMessage(message, transfer)

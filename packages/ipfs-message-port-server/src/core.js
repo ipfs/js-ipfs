@@ -247,8 +247,8 @@ const matchInput = (input, decode) => {
  * @param {AsyncIterable<AddResult>} out
  */
 const encodeAddAllResult = out => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return {
     data: encodeIterable(out, encodeFileOutput, transfer),
     transfer
@@ -259,8 +259,8 @@ const encodeAddAllResult = out => {
  * @param {AddResult} out
  */
 const encodeAddResult = out => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return {
     data: encodeFileOutput(out, transfer),
     transfer
@@ -271,8 +271,8 @@ const encodeAddResult = out => {
  * @param {AsyncIterable<Uint8Array>} content
  */
 const encodeCatResult = content => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return { data: encodeIterable(content, moveBuffer, transfer), transfer }
 }
 
@@ -280,8 +280,8 @@ const encodeCatResult = content => {
  * @param {AsyncIterable<IPFSEntry>} entries
  */
 const encodeLsResult = entries => {
-  /** @type {Transferable[]} */
-  const transfer = []
+  /** @type {Set<Transferable>} */
+  const transfer = new Set()
   return { data: encodeIterable(entries, encodeLsEntry, transfer), transfer }
 }
 
@@ -302,17 +302,17 @@ const encodeLsEntry = ({ name, path, size, cid, type, mode, mtime }) => ({
  * Adds underlying `ArrayBuffer` to the transfer list.
  *
  * @param {Uint8Array} buffer
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {Uint8Array}
  */
 const moveBuffer = (buffer, transfer) => {
-  transfer.push(buffer.buffer)
+  transfer.add(buffer.buffer)
   return buffer
 }
 
 /**
  * @param {AddResult} file
- * @param {Transferable[]} _transfer
+ * @param {Set<Transferable>} _transfer
  */
 const encodeFileOutput = (file, _transfer) => ({
   ...file,

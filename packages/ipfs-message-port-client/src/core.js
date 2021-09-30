@@ -71,7 +71,7 @@ export class CoreClient extends Client {
  */
 CoreClient.prototype.addAll = async function * addAll (input, options = {}) {
   const { timeout, signal } = options
-  const transfer = [...(options.transfer || [])]
+  const transfer = options.transfer || new Set()
   const progressCallback = options.progress
     ? encodeCallback(options.progress, transfer)
     : undefined
@@ -99,7 +99,7 @@ CoreClient.prototype.addAll = async function * addAll (input, options = {}) {
  */
 CoreClient.prototype.add = async function add (input, options = {}) {
   const { timeout, signal } = options
-  const transfer = [...(options.transfer || [])]
+  const transfer = options.transfer || new Set()
   const progressCallback = options.progress
     ? encodeCallback(options.progress, transfer)
     : undefined
@@ -184,7 +184,7 @@ const identity = (v) => v
  * given input.
  *
  * @param {ImportCandidate} input
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {Promise<EncodedAddInput>}
  */
 const encodeAddInput = async (input, transfer) => {
@@ -242,7 +242,7 @@ const encodeAddInput = async (input, transfer) => {
  * given input.
  *
  * @param {ImportCandidateStream} input
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedAddAllInput}
  */
 const encodeAddAllInput = (input, transfer) => {
@@ -279,7 +279,7 @@ const encodeAddAllInput = (input, transfer) => {
  * effective strategy.
  *
  * @param {ImportCandidate} content
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedAddInput}
  */
 const encodeAsyncIterableContent = (content, transfer) => {
@@ -303,7 +303,7 @@ const encodeAsyncIterableContent = (content, transfer) => {
 
 /**
  * @param {ImportCandidate} content
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedAddInput}
  */
 const encodeIterableContent = (content, transfer) => {
@@ -329,7 +329,7 @@ const encodeIterableContent = (content, transfer) => {
 
 /**
  * @param {ToFile | ToDirectory} file
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedFileInput | EncodedDirectoryInput}
  */
 const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
@@ -349,7 +349,7 @@ const encodeFileObject = ({ path, mode, mtime, content }, transfer) => {
 
 /**
  * @param {ToContent|undefined} content
- * @param {Transferable[]} transfer
+ * @param {Set<Transferable>} transfer
  * @returns {EncodedFileContent}
  */
 const encodeFileContent = (content, transfer) => {

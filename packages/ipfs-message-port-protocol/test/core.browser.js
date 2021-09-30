@@ -26,7 +26,7 @@ describe('core', function () {
           deliver = resolve
         })
 
-      const transfer = []
+      const transfer = new Set()
       const remote = decodeCallback(
         await move(encodeCallback(callback, transfer), transfer)
       )
@@ -49,7 +49,7 @@ describe('core', function () {
           deliver = resolve
         })
 
-      const transfer = []
+      const transfer = new Set()
       const remote = decodeCallback(
         await move(encodeCallback(callback, transfer), transfer)
       )
@@ -74,7 +74,7 @@ describe('core', function () {
         yield { items: [uint8ArrayFromString('bla'), uint8ArrayFromString('bla')] }
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -118,7 +118,7 @@ describe('core', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -159,7 +159,7 @@ describe('core', function () {
         throw Error('Producer Boom!')
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -200,7 +200,7 @@ describe('core', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -245,14 +245,14 @@ describe('core', function () {
         yield * outgoing
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
           encodeIterable(
             iterate(),
             (data, transfer) => {
-              transfer.push(data.buffer)
+              transfer.add(data.buffer)
               return data
             },
             transfer
@@ -287,7 +287,7 @@ describe('core', function () {
         yield { items: [uint8ArrayFromString('bla'), uint8ArrayFromString('bla')] }
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -331,7 +331,7 @@ describe('core', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -371,7 +371,7 @@ describe('core', function () {
         throw Error('Producer Boom!')
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -411,7 +411,7 @@ describe('core', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
@@ -455,14 +455,14 @@ describe('core', function () {
         yield * outgoing
       }
 
-      const transfer = []
+      const transfer = new Set()
 
       const remote = decodeIterable(
         await move(
           encodeIterable(
             iterate(),
             (data, transfer) => {
-              transfer.push(data.buffer)
+              transfer.add(data.buffer)
               return data
             },
             transfer

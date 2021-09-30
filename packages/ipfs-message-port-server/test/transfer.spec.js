@@ -14,7 +14,7 @@ describe('Server', function () {
     const cid = CID.parse('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
     return new Promise((resolve, reject) => {
-      const channel = process.browser
+      const channel = globalThis.MessageChannel
         ? new globalThis.MessageChannel()
         : new MessageChannel()
 
@@ -29,7 +29,7 @@ describe('Server', function () {
 
       const service = new IPFSService()
       const server = new Server(service)
-      const transfer = []
+      const transfer = new Set()
 
       server.run = a => a
       server.handleQuery(

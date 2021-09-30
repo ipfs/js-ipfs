@@ -58,7 +58,7 @@ describe('dag (browser)', function () {
           link: CID.parse(cid2)
         }
       }
-      const transfer = []
+      const transfer = new Set()
 
       const nodeOut = decodeNode(
         await move(encodeNode(nodeIn, transfer), transfer)
@@ -80,7 +80,7 @@ describe('dag (browser)', function () {
         }
       })
 
-      expect(transfer).to.containSubset(
+      expect([...transfer]).to.containSubset(
         [{ byteLength: 0 }, { byteLength: 0 }, { byteLength: 0 }],
         'transferred buffers were cleared'
       )

@@ -10,7 +10,7 @@ describe('dag', function () {
   this.timeout(10 * 1000)
 
   describe('encodeNode / decodeNode', () => {
-    it('shoud encode node', () => {
+    it('should encode node', () => {
       const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
@@ -34,7 +34,7 @@ describe('dag', function () {
       expect(data.cids).to.include(cid2)
     })
 
-    it('shoud encode and add buffers to transfer list', () => {
+    it('should encode and add buffers to transfer list', () => {
       const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
@@ -55,7 +55,7 @@ describe('dag', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
       const data = encodeNode(dagNode, transfer)
 
       expect(data.dagNode).to.be.equal(dagNode)
@@ -64,14 +64,14 @@ describe('dag', function () {
       expect(data.cids).to.include(cid1)
       expect(data.cids).to.include(cid2)
 
-      expect(transfer).to.be.an.instanceOf(Array)
-      expect(transfer).to.have.property('length', 3)
+      expect(transfer).to.be.an.instanceOf(Set)
+      expect(transfer).to.have.property('size', 3)
       expect(transfer).to.include(cid1.multihash.bytes.buffer)
       expect(transfer).to.include(cid2.multihash.bytes.buffer)
       expect(transfer).to.include(hi.buffer)
     })
 
-    it('shoud decode node', () => {
+    it('should decode node', () => {
       const cid1 = CID.parse(
         'bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce'
       )
@@ -92,7 +92,7 @@ describe('dag', function () {
         }
       }
 
-      const transfer = []
+      const transfer = new Set()
       const data = encodeNode(dagNode, transfer)
 
       expect(data.dagNode).to.be.equal(dagNode)
@@ -101,8 +101,8 @@ describe('dag', function () {
       expect(data.cids).to.include(cid1)
       expect(data.cids).to.include(cid2)
 
-      expect(transfer).to.be.an.instanceOf(Array)
-      expect(transfer).to.have.property('length', 3)
+      expect(transfer).to.be.an.instanceOf(Set)
+      expect(transfer).to.have.property('size', 3)
       expect(transfer).to.include(cid1.multihash.bytes.buffer)
       expect(transfer).to.include(cid2.multihash.bytes.buffer)
       expect(transfer).to.include(hi.buffer)

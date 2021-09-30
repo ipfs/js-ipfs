@@ -15,11 +15,11 @@
  * copy.
  *
  * @param {Uint8Array} data
- * @param {Transferable[]} [transfer]
+ * @param {Set<Transferable>} [transfer]
  */
 export const encodeBlock = (data, transfer) => {
   if (transfer) {
-    transfer.push(data.buffer)
+    transfer.add(data.buffer)
   }
   return data
 }

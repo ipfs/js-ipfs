@@ -41,7 +41,7 @@ export const decodeNode = ({ dagNode, cids }) => {
  * this node will be added to transfer so they are moved across without copy.
  *
  * @param {DAGNode} dagNode
- * @param {Transferable[]} [transfer]
+ * @param {Set<Transferable>} [transfer]
  * @returns {EncodedDAGNode}
  */
 export const encodeNode = (dagNode, transfer) => {
@@ -58,7 +58,7 @@ export const encodeNode = (dagNode, transfer) => {
  *
  * @param {DAGNode} value
  * @param {CID[]} cids
- * @param {Transferable[]} [transfer]
+ * @param {Set<Transferable>} [transfer]
  * @returns {void}
  */
 const collectNode = (value, cids, transfer) => {
@@ -70,11 +70,11 @@ const collectNode = (value, cids, transfer) => {
       encodeCID(cid, transfer)
     } else if (value instanceof ArrayBuffer) {
       if (transfer) {
-        transfer.push(value)
+        transfer.add(value)
       }
     } else if (ArrayBuffer.isView(value)) {
       if (transfer) {
-        transfer.push(value.buffer)
+        transfer.add(value.buffer)
       }
     } else if (Array.isArray(value)) {
       for (const member of value) {

@@ -34,6 +34,11 @@ import { encodeError } from 'ipfs-message-port-protocol/error'
 
 /**
  * @template T
+ * @typedef {import('ipfs-message-port-protocol/src/rpc').Return<T>} Return
+ */
+
+/**
+ * @template T
  * @typedef {import('ipfs-message-port-protocol/src/rpc').RPCQuery<T>} RPCQuery
  */
 
@@ -65,7 +70,7 @@ import { encodeError } from 'ipfs-message-port-protocol/error'
 
 /**
  * @typedef {Object} TransferOptions
- * @property {Transferable[]} [transfer]
+ * @property {Set<Transferable>} [transfer]
  */
 
 /**
@@ -97,6 +102,7 @@ export class Query {
    * @param {Inn<T>} input
    */
   constructor (namespace, method, input) {
+    /** @type {Return<any>} */
     this.result = new Promise((resolve, reject) => {
       this.succeed = resolve
       this.fail = reject
@@ -210,7 +216,9 @@ export class Server {
     if (!query.signal.aborted) {
       try {
         const value = await query.result
-        const transfer = [...new Set(value.transfer || [])]
+        const transfer = value.transfer
+
+        // Don't need the transfer value in the result
         delete value.transfer
 
         port.postMessage(

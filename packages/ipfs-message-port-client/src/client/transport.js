@@ -180,8 +180,8 @@ export class MessageTransport {
         id,
         input: query.toJSON()
       },
-      // @ts-ignore - TS seems to want second arg to postMessage to not be undefined
-      [...new Set(query.transfer() || [])]
+      // @ts-expect-error - Type signature does not expect 2nd undefined arg
+      query.transfer()
     )
   }
 

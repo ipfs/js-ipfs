@@ -2,7 +2,7 @@
  * @typedef {Object} QueryOptions
  * @property {AbortSignal} [signal]
  * @property {number} [timeout]
- * @property {Transferable[]} [transfer]
+ * @property {Set<Transferable>} [transfer]
  */
 
 /**
@@ -49,7 +49,7 @@ export class Query {
   /**
    * Data that will be transferred over message channel.
    *
-   * @returns {Transferable[]|void}
+   * @returns {Set<Transferable>|void}
    */
   transfer () {
     return this.input.transfer

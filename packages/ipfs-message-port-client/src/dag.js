@@ -62,7 +62,7 @@ DAGClient.prototype.resolve = async function resolve (cid, options = {}) {
 
 /**
  * @param {string|CID} input
- * @param {Transferable[]} [transfer]
+ * @param {Set<Transferable>} [transfer]
  * @returns {string|EncodedCID}
  */
 const encodeCIDOrPath = (input, transfer) => {

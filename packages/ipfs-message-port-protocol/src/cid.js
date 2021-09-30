@@ -14,12 +14,12 @@ import { CID } from 'multiformats/cid'
  * will be added for the transfer list.
  *
  * @param {CID} cid
- * @param {Transferable[]} [transfer]
+ * @param {Set<Transferable>} [transfer]
  * @returns {EncodedCID}
  */
 export const encodeCID = (cid, transfer) => {
   if (transfer) {
-    transfer.push(cid.multihash.bytes.buffer)
+    transfer.add(cid.multihash.bytes.buffer)
   }
   return cid
 }
