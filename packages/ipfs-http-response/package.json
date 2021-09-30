@@ -34,13 +34,12 @@
   },
   "scripts": {
     "lint": "aegir ts -p check && aegir lint",
-    "build": "aegir build",
-    "release": "aegir release --target node",
-    "release-minor": "aegir release --type minor --target node",
-    "release-major": "aegir release --type major --target node",
+    "clean": "rimraf ./dist",
+    "build": "aegir build --no-bundle",
     "pretest": "aegir build --esm-tests",
     "test": "aegir test -t node",
-    "test:node": "aegir test -t node"
+    "test:node": "aegir test -t node",
+    "dep-check": "aegir dep-check -i rimraf -i global"
   },
   "browser": {
     "file-type": "file-type/browser",
@@ -71,19 +70,18 @@
     "it-reader": "^3.0.0",
     "it-to-stream": "^1.0.0",
     "mime-types": "^2.1.30",
-    "multiformats": "^9.4.1",
     "p-try-each": "^1.0.1"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.0",
     "aegir": "^35.1.1",
     "get-stream": "^6.0.0",
+    "global": "^4.4.0",
     "ipfs-core": "^0.11.1",
     "ipfsd-ctl": "^10.0.4",
     "it-all": "^1.0.4",
-    "path": "^0.12.7",
-    "uint8arrays": "^3.0.0",
-    "util": "^0.12.3"
+    "rimraf": "^3.0.2",
+    "uint8arrays": "^3.0.0"
   },
   "contributors": [
     "Vasco Santos <vasco.santos@moxy.studio>",
