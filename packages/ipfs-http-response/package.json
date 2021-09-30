@@ -39,7 +39,7 @@
     "pretest": "aegir build --esm-tests",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node",
-    "dep-check": "aegir dep-check -i rimraf"
+    "dep-check": "aegir dep-check -i rimraf -i global"
   },
   "browser": {
     "file-type": "file-type/browser",
@@ -76,6 +76,7 @@
     "@types/ejs": "^3.1.0",
     "aegir": "^35.1.1",
     "get-stream": "^6.0.0",
+    "global": "^4.4.0",
     "ipfs-core": "^0.11.1",
     "ipfsd-ctl": "^10.0.4",
     "it-all": "^1.0.4",
