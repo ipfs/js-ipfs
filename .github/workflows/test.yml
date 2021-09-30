@@ -320,7 +320,7 @@ jobs:
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs browser angular
             repo: https://github.com/ipfs-examples/js-ipfs-browser-angular.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-core-types@$PWD/packages/ipfs-core-types
+            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-core-types@$PWD/packages/ipfs-core-types/dist
           - name: ipfs browser browserify
             repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
@@ -404,7 +404,7 @@ jobs:
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: types with typed js
             repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
+            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-core-types@$PWD/packages/ipfs-core-types/dist
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

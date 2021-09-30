@@ -34,13 +34,12 @@
   },
   "scripts": {
     "lint": "aegir ts -p check && aegir lint",
+    "clean": "rimraf ./dist",
     "build": "aegir build",
-    "release": "aegir release --target node",
-    "release-minor": "aegir release --type minor --target node",
-    "release-major": "aegir release --type major --target node",
     "pretest": "aegir build --esm-tests",
     "test": "aegir test -t node",
-    "test:node": "aegir test -t node"
+    "test:node": "aegir test -t node",
+    "dep-check": "aegir dep-check -i rimraf"
   },
   "browser": {
     "file-type": "file-type/browser",
@@ -82,6 +81,7 @@
     "ipfsd-ctl": "^10.0.4",
     "it-all": "^1.0.4",
     "path": "^0.12.7",
+    "rimraf": "^3.0.2",
     "uint8arrays": "^3.0.0",
     "util": "^0.12.3"
   },
