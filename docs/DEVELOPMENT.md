@@ -35,7 +35,7 @@ This will install [lerna](https://www.npmjs.com/package/lerna) and bootstrap the
 
 If later you add new dependencies to submodules or just wish to remove all the `node_modules`/`dist` folders and start again, run `npm run reset && npm install` from the root.
 
-See the scripts section of the root [`package.json`](./package.json) for more commands.
+See the scripts section of the root [`package.json`](../package.json) for more commands.
 
 ## Run tests
 
