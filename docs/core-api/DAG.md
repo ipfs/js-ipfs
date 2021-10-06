@@ -218,7 +218,7 @@ An optional object which may have the following keys:
 
 | Type | Description |
 | -------- | -------- |
-| `AsyncIterable<{ cid: CID, pinErrorMsg?: string }>` | A stream containing the result of importing the car file(s) |
+| `AsyncIterable<{ root: { cid: CID, pinErrorMsg?: string } }>` | A stream containing all roots from the car file(s) that are pinned |
 
 ### Example
 
