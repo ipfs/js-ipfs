@@ -68,7 +68,7 @@ describe('ipld', function () {
       hello: 'world'
     }
     const cid1 = await ipfs.dag.put(dagCborNode, {
-      format: 'dag-cbor',
+      storeCodec: 'dag-cbor',
       hashAlg: 'sha2-256'
     })
 
@@ -77,13 +77,13 @@ describe('ipld', function () {
       Links: []
     }
     const cid2 = await ipfs.dag.put(dagPbNode, {
-      format: 'dag-pb',
+      storeCodec: 'dag-pb',
       hashAlg: 'sha2-256'
     })
 
     const customNode = 'totally custom'
     const cid3 = await ipfs.dag.put(customNode, {
-      format: 'custom-codec',
+      storeCodec: 'custom-codec',
       hashAlg: 'sha2-256'
     })
 

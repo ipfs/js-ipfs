@@ -1,5 +1,6 @@
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
+import * as dagJSON from '@ipld/dag-json'
 import * as raw from 'multiformats/codecs/raw'
 import { CID } from 'multiformats/cid'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
@@ -67,19 +68,17 @@ export function createLinks ({ repo, codecs }) {
     const block = await repo.blocks.get(cid, options)
     const node = codec.decode(block)
 
-    if (cid.code === raw.code) {
-      return []
+    switch (cid.code) {
+      case raw.code:
+        return []
+      case dagPB.code:
+        return node.Links
+      case dagCBOR.code:
+      case dagJSON.code:
+        return findLinks(node)
+      default:
+        throw new Error(`Cannot resolve links from codec ${cid.code}`)
     }
-
-    if (cid.code === dagPB.code) {
-      return node.Links
-    }
-
-    if (cid.code === dagCBOR.code) {
-      return findLinks(node)
-    }
-
-    throw new Error(`Cannot resolve links from codec ${cid.code}`)
   }
 
   return withTimeoutOption(links)

@@ -68,6 +68,7 @@
     "@chainsafe/libp2p-noise": "^4.0.0",
     "@ipld/car": "^3.1.0",
     "@ipld/dag-cbor": "^6.0.5",
+    "@ipld/dag-json": "^8.0.1",
     "@ipld/dag-pb": "^2.1.3",
     "@multiformats/murmur3": "^1.0.1",
     "any-signal": "^2.1.2",

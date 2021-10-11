@@ -16,23 +16,33 @@ export function createPut ({ repo, codecs, hashers, preload }) {
     const release = options.pin ? await repo.gcLock.readLock() : null
 
     try {
-      const codecName = options.format || 'dag-cbor'
-      const cidVersion = options.version != null ? options.version : (codecName === 'dag-pb' ? 0 : 1)
-      const codec = await codecs.getCodec(codecName)
-
-      if (!codec) {
-        throw new Error(`Unknown codec ${options.format}, please configure additional BlockCodecs for this IPFS instance`)
+      const storeCodec = await codecs.getCodec(options.storeCodec || 'dag-cbor')
+      // TODO: doesn't getCodec throw? verify and possibly remove this
+      if (!storeCodec) {
+        throw new Error(`Unknown storeCodec ${options.storeCodec}, please configure additional BlockCodecs for this IPFS instance`)
       }
 
+      if (options.inputCodec) {
+        if (!(dagNode instanceof Uint8Array)) {
+          throw new Error('Can only inputCodec on raw bytes that can be decoded')
+        }
+        const inputCodec = await codecs.getCodec(options.inputCodec)
+        if (!inputCodec) {
+          throw new Error(`Unknown inputCodec ${options.inputCodec}, please configure additional BlockCodecs for this IPFS instance`)
+        }
+        dagNode = inputCodec.decode(dagNode)
+      }
+
+      const cidVersion = options.version != null ? options.version : 1
       const hasher = await hashers.getHasher(options.hashAlg || 'sha2-256')
 
       if (!hasher) {
         throw new Error(`Unknown hash algorithm ${options.hashAlg}, please configure additional MultihashHashers for this IPFS instance`)
       }
 
-      const buf = codec.encode(dagNode)
+      const buf = storeCodec.encode(dagNode)
       const hash = await hasher.digest(buf)
-      const cid = CID.create(cidVersion, codec.code, hash)
+      const cid = CID.create(cidVersion, storeCodec.code, hash)
 
       await repo.blocks.put(cid, buf, {
         signal: options.signal
