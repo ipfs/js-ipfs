@@ -84,7 +84,7 @@
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "0.9.1",
+    "go-ipfs": "0.10.0",
     "interface-ipfs-core": "^0.152.0",
     "ipfs-client": "^0.7.2",
     "ipfs-core-types": "^0.8.2",

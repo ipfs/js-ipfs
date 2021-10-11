@@ -135,7 +135,7 @@
     "@types/rimraf": "^3.0.1",
     "aegir": "^35.1.1",
     "delay": "^5.0.0",
-    "go-ipfs": "0.9.1",
+    "go-ipfs": "0.10.0",
     "interface-blockstore-tests": "^2.0.1",
     "interface-ipfs-core": "^0.152.0",
     "ipfsd-ctl": "^10.0.4",
