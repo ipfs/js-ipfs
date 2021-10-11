@@ -132,7 +132,12 @@ export interface GetResult {
 
 export interface PutOptions extends AbortOptions, PreloadOptions {
   /**
-   * The codec to use to create the CID (defaults to 'dag-cbor')
+   * The codec that the input object is encoded with (defaults to 'dag-json')
+   */
+  inputCodec?: string
+
+  /**
+   * The codec that the stored object will be encoded with (defaults to 'dag-cbor')
    */
   format?: string
 
