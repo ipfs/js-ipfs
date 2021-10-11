@@ -8,6 +8,7 @@ import {
 } from '../../utils.js'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
+import * as dagJSON from '@ipld/dag-json'
 import * as raw from 'multiformats/codecs/raw'
 
 export default {
@@ -75,6 +76,7 @@ export default {
     const node = result.value
     const base = await ipfs.bases.getBase(cidBase)
 
+    // TODO: just plain dag-json output by default, or use output-codec
     if (cid.code === dagPB.code) {
       /** @type {import('@ipld/dag-pb').PBNode} */
       const dagNode = node
@@ -89,7 +91,7 @@ export default {
       }))
     } else if (cid.code === raw.code) {
       print(uint8ArrayToString(node, dataEnc))
-    } else if (cid.code === dagCBOR.code) {
+    } else if (cid.code === dagCBOR.code || cid.code === dagJSON.code) {
       print(JSON.stringify(makeEntriesPrintable(node, base)))
     } else {
       print(escapeControlCharacters(node.toString()))

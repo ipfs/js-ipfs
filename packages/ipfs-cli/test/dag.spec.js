@@ -335,7 +335,7 @@ describe('dag', () => {
 
   describe('put', () => {
     const defaultOptions = {
-      format: 'dag-cbor',
+      storeCodec: 'dag-cbor',
       hashAlg: 'sha2-256',
       version: 1,
       onlyHash: false,
@@ -369,7 +369,7 @@ describe('dag', () => {
       ipfs.dag.put.withArgs({}, defaultOptions).resolves(dagCborCid)
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
-      const out = await cli('dag put --input-encoding cbor', {
+      const out = await cli('dag put --input-codec dag-cbor', {
         getStdin: function * () {
           yield dagCBOR.encode({})
         },
@@ -379,13 +379,13 @@ describe('dag', () => {
     })
 
     it('puts piped raw node', async () => {
-      ipfs.dag.put.withArgs(Buffer.alloc(10), {
+      ipfs.dag.put.withArgs(new Uint8Array(10), {
         ...defaultOptions,
-        format: 'raw'
+        storeCodec: 'raw'
       }).resolves(rawCid)
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
-      const out = await cli('dag put --input-encoding raw --format raw', {
+      const out = await cli('dag put --input-codec raw --store-codec raw', {
         getStdin: function * () {
           yield Buffer.alloc(10)
         },
@@ -394,15 +394,15 @@ describe('dag', () => {
       expect(out).to.equal(`${rawCid.toString(base58btc)}\n`)
     })
 
-    it('puts piped protobuf node', async () => {
+    it('puts piped dag-pb node', async () => {
       ipfs.dag.put.withArgs(dagPB.decode(dagPB.encode({ Links: [] })), {
         ...defaultOptions,
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         version: 0
       }).resolves(dagPbCid)
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
-      const out = await cli('dag put --input-encoding protobuf --format protobuf', {
+      const out = await cli('dag put --input-codec dag-pb --store-codec dag-pb', {
         getStdin: function * () {
           yield dagPB.encode({ Links: [] })
         },
@@ -411,29 +411,29 @@ describe('dag', () => {
       expect(out).to.equal(`${dagPbCid.toString(base58btc)}\n`)
     })
 
-    it('puts protobuf node as json', async () => {
+    it('puts dag-pb node as dag-json', async () => {
       ipfs.dag.put.withArgs({ Links: [] }, {
         ...defaultOptions,
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         version: 0
       }).resolves(dagPbCid)
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
-      const out = await cli('dag put --format protobuf \'{"Links":[]}\'', {
+      const out = await cli('dag put --store-codec dag-pb --input-codec dag-json \'{"Links":[]}\'', {
         ipfs
       })
       expect(out).to.equal(`${dagPbCid.toString(base58btc)}\n`)
     })
 
-    it('puts piped protobuf node with cid-v1', async () => {
+    it('puts piped dag-pb node with cid-v1', async () => {
       ipfs.dag.put.withArgs(dagPB.decode(dagPB.encode({ Links: [] })), {
         ...defaultOptions,
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         version: 1
       }).resolves(dagPbCid)
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
-      const out = await cli('dag put --input-encoding protobuf --format protobuf --cid-version=1', {
+      const out = await cli('dag put --input-codec dag-pb --store-codec dag-pb --cid-version=1', {
         getStdin: function * () {
           yield dagPB.encode({ Links: [] })
         },
