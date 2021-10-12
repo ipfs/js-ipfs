@@ -72,7 +72,7 @@ export class HttpGateway {
     // @ts-ignore TODO: move config typedefs to repo
     const config = await ipfs.config.getAll()
     const addresses = config.Addresses || { Swarm: [], Gateway: [] }
-    const gatewayAddrs = addresses?.Gateway || []
+    const gatewayAddrs = addresses.Gateway || []
 
     this._gatewayServers = await serverCreator(gatewayAddrs, this._createGatewayServer, ipfs)
 
