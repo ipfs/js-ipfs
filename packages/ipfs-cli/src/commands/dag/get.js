@@ -1,15 +1,20 @@
 import parseDuration from 'parse-duration'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-import {
-  stripControlCharacters,
-  makeEntriesPrintable,
-  escapeControlCharacters
-} from '../../utils.js'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
 import * as dagJSON from '@ipld/dag-json'
 import * as raw from 'multiformats/codecs/raw'
+
+/**
+ * @template T
+ * @typedef {import('multiformats/codecs/interface').BlockCodec<number, T>} BlockCodec
+ */
+
+const codecs = [dagCBOR, dagJSON, dagPB, raw].reduce((/** @type {Record<string, BlockCodec<any>>} */ m, codec) => {
+  m[codec.name] = codec
+  return m
+}, /** @type {Record<string, BlockCodec<any>>} */ {})
 
 export default {
   command: 'get <cid path>',
@@ -21,16 +26,16 @@ export default {
       type: 'boolean',
       default: false
     },
-    'cid-base': {
-      describe: 'Number base to display CIDs in.',
+    'output-codec': {
+      describe: 'Codec to encode data in before displaying.',
       type: 'string',
-      default: 'base58btc'
+      choices: ['dag-json', 'dag-cbor', 'dag-pb', 'raw'],
+      default: 'dag-json'
     },
     'data-enc': {
-      describe: 'String encoding to display data in.',
+      describe: 'String encoding to display raw node data in if using "raw" output-codec.',
       type: 'string',
-      choices: ['base16', 'base64', 'base58btc'],
-      default: 'base64'
+      choices: ['base16', 'base64', 'base58btc']
     },
     timeout: {
       type: 'string',
@@ -42,12 +47,12 @@ export default {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.cidpath
-   * @param {string} argv.cidBase
+   * @param {'dag-json' | 'dag-cbor' | 'dag-pb' | 'raw'} argv.outputCodec
    * @param {'base16' | 'base64' | 'base58btc'} argv.dataEnc
    * @param {boolean} argv.localResolve
    * @param {number} argv.timeout
    */
-  async handler ({ ctx: { ipfs, print }, cidpath, cidBase, dataEnc, localResolve, timeout }) {
+  async handler ({ ctx: { ipfs, print }, cidpath, dataEnc, outputCodec, localResolve, timeout }) {
     const options = {
       localResolve,
       timeout
@@ -74,27 +79,25 @@ export default {
     }
 
     const node = result.value
-    const base = await ipfs.bases.getBase(cidBase)
 
-    // TODO: just plain dag-json output by default, or use output-codec
-    if (cid.code === dagPB.code) {
-      /** @type {import('@ipld/dag-pb').PBNode} */
-      const dagNode = node
-
-      print(JSON.stringify({
-        data: dagNode.Data ? uint8ArrayToString(node.Data, dataEnc) : undefined,
-        links: (dagNode.Links || []).map(link => ({
-          Name: stripControlCharacters(link.Name),
-          Size: link.Tsize,
-          Cid: { '/': link.Hash.toString(base.encoder) }
-        }))
-      }))
-    } else if (cid.code === raw.code) {
-      print(uint8ArrayToString(node, dataEnc))
-    } else if (cid.code === dagCBOR.code || cid.code === dagJSON.code) {
-      print(JSON.stringify(makeEntriesPrintable(node, base)))
+    if (outputCodec === 'raw') {
+      if (!(node instanceof Uint8Array)) {
+        print('dag get cannot print a non-bytes node as "raw"')
+        return
+      }
+      if (dataEnc) {
+        print(uint8ArrayToString(node, dataEnc), false)
+      } else {
+        print.write(node)
+      }
     } else {
-      print(escapeControlCharacters(node.toString()))
+      const codec = codecs[outputCodec]
+      if (!codec) {
+        print(`unsupported codec "${outputCodec}"`)
+        return
+      }
+      const output = codec.encode(node)
+      print(output, false)
     }
   }
 }

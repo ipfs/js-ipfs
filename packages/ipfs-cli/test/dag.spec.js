@@ -47,11 +47,10 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(rawCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
-      const out = await cli(`dag get ${rawCid} --data-enc base16`, { ipfs })
+      const out = await cli(`dag get ${rawCid} --output-codec raw --data-enc base16`, { ipfs })
 
-      expect(out).to.equal(uint8ArrayToString(result.value, 'base16') + '\n')
+      expect(out).to.equal(uint8ArrayToString(result.value, 'base16'))
     })
 
     it('should get a dag-pb node', async () => {
@@ -67,14 +66,13 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagPbCid}`, { ipfs })
 
-      expect(out).to.equal(`{"data":"AAED","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString(base58btc)}"}}]}\n`)
+      expect(out).to.equal(`{"Data":{"/":{"bytes":"AAED"}},"Links":[{"Hash":{"/":"${dagCborCid.toString()}"},"Name":"foo","Tsize":10}]}`)
     })
 
-    it('should get a dag-pb node and specify data encoding', async () => {
+    it('should get a dag-pb node as dag-pb', async () => {
       const result = {
         value: {
           Data: Buffer.from([0, 1, 3]),
@@ -87,14 +85,13 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
-      const out = await cli(`dag get ${dagPbCid} --data-enc base16`, { ipfs })
+      const out = await cli(`dag get ${dagPbCid} --output-codec dag-pb`, { ipfs, raw: true })
 
-      expect(out).to.equal(`{"data":"000103","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString(base58btc)}"}}]}\n`)
+      expect(out).to.deep.equal(Buffer.from('122d0a2401711220b80784f97f67ad80d52575d643044ffb37b20f8d4db32ae59e47b1ac68df20e01203666f6f180a0a03000103', 'hex'))
     })
 
-    it('should get a dag-pb node and specify CID encoding', async () => {
+    it('should get a dag-pb node as dag-cbor', async () => {
       const result = {
         value: {
           Data: Buffer.from([0, 1, 3]),
@@ -107,11 +104,55 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base64').returns(base64)
 
-      const out = await cli(`dag get ${dagPbCid} --cid-base base64`, { ipfs })
+      const out = await cli(`dag get ${dagPbCid} --output-codec dag-cbor`, { ipfs, raw: true })
 
-      expect(out).to.equal(`{"data":"AAED","links":[{"Name":"foo","Size":10,"Cid":{"/":"${dagCborCid.toString(base64)}"}}]}\n`)
+      expect(out).to.deep.equal(Buffer.from('a2644461746143000103654c696e6b7381a36448617368d82a58250001711220b80784f97f67ad80d52575d643044ffb37b20f8d4db32ae59e47b1ac68df20e0644e616d6563666f6f655473697a650a', 'hex'))
+    })
+
+    it('should fail to get a non bytes node with "raw"', async () => {
+      const result = {
+        value: {
+          Data: Buffer.from([0, 1, 3]),
+          Links: [{
+            Hash: dagCborCid,
+            Name: 'foo',
+            Tsize: 10
+          }]
+        }
+      }
+
+      ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
+
+      const out = await cli(`dag get ${dagPbCid} --output-codec raw --data-enc base16`, { ipfs })
+
+      expect(out).to.equal('dag get cannot print a non-bytes node as "raw"\n')
+    })
+
+    it('should get a bytes node of a non-bytes block with "raw"', async () => {
+      // in this instance we're pretending to path into a 'Data' property of a dag-pb block
+      const result = {
+        value: Buffer.from([0, 1, 3])
+      }
+
+      ipfs.dag.get.withArgs(dagPbCid, { ...defaultOptions, path: '/Data' }).returns(result)
+
+      const out = await cli(`dag get ${dagPbCid}/Data --output-codec raw --data-enc base16`, { ipfs })
+
+      expect(out).to.equal('000103')
+    })
+
+    it('should get raw bytes without data encoding', async () => {
+      // in this instance we're pretending to path into a 'Data' property of a dag-pb block
+      const result = {
+        value: Buffer.from([0, 1, 3])
+      }
+
+      ipfs.dag.get.withArgs(rawCid, defaultOptions).returns(result)
+
+      const out = await cli(`dag get ${rawCid} --output-codec raw`, { ipfs })
+
+      expect(out).to.equal(Buffer.from([0, 1, 3]).toString())
     })
 
     it('should get a dag-cbor node', async () => {
@@ -122,11 +163,24 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
-      expect(out).to.equal('{"foo":"bar"}\n')
+      expect(out).to.equal('{"foo":"bar"}')
+    })
+
+    it('should get a dag-cbor node as dag-cbor', async () => {
+      const result = {
+        value: {
+          foo: 'bar'
+        }
+      }
+
+      ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
+
+      const out = await cli(`dag get ${dagCborCid} --output-codec dag-cbor`, { ipfs, raw: true })
+
+      expect(out).to.deep.equal(Buffer.from('a163666f6f63626172', 'hex'))
     })
 
     it('should get a dag-cbor node with a nested CID', async () => {
@@ -138,27 +192,10 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
-      expect(out).to.equal(`{"foo":"bar","baz":{"/":"${dagPbCid}"}}\n`)
-    })
-
-    it('should get a dag-cbor node with a nested CID and change the encoding', async () => {
-      const result = {
-        value: {
-          foo: 'bar',
-          baz: rawCid
-        }
-      }
-
-      ipfs.dag.get.withArgs(dagCborCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base64').returns(base64)
-
-      const out = await cli(`dag get ${dagCborCid} --cid-base=base64`, { ipfs })
-
-      expect(out).to.equal(`{"foo":"bar","baz":{"/":"${rawCid.toString(base64)}"}}\n`)
+      expect(out).to.equal(`{"baz":{"/":"${dagPbCid}"},"foo":"bar"}`)
     })
 
     it('should get a node with a deep path', async () => {
@@ -172,9 +209,9 @@ describe('dag', () => {
         path
       }).returns(result)
 
-      const out = await cli(`dag get ${rawCid}${path} --data-enc base16`, { ipfs })
+      const out = await cli(`dag get ${rawCid}${path} --output-codec raw --data-enc base16`, { ipfs })
 
-      expect(out).to.be.eql(uint8ArrayToString(result.value, 'base16') + '\n')
+      expect(out).to.be.eql(uint8ArrayToString(result.value, 'base16'))
     })
 
     it('should get a node with a deep path and an ipfs prefix', async () => {
@@ -188,9 +225,9 @@ describe('dag', () => {
         path
       }).returns(result)
 
-      const out = await cli(`dag get /ipfs/${rawCid}${path} --data-enc base16`, { ipfs })
+      const out = await cli(`dag get /ipfs/${rawCid}${path} --output-codec raw --data-enc base16`, { ipfs })
 
-      expect(out).to.be.eql(uint8ArrayToString(result.value, 'base16') + '\n')
+      expect(out).to.be.eql(uint8ArrayToString(result.value, 'base16'))
     })
 
     it('should get a node with local resolve', async () => {
@@ -203,11 +240,11 @@ describe('dag', () => {
         localResolve: true
       }).returns(result)
 
-      const out = await cli(`dag get ${rawCid} --local-resolve --data-enc base16`, { ipfs })
+      const out = await cli(`dag get ${rawCid} --local-resolve --output-codec raw --data-enc base16`, { ipfs })
 
       expect(out).to.include('resolving path within the node only\n')
       expect(out).to.include('remainder path: n/a\n')
-      expect(out).to.include(uint8ArrayToString(result.value, 'base16') + '\n')
+      expect(out).to.include(uint8ArrayToString(result.value, 'base16'))
     })
 
     it('should get a node with a timeout', async () => {
@@ -220,9 +257,9 @@ describe('dag', () => {
         timeout: 1000
       }).returns(result)
 
-      const out = await cli(`dag get ${rawCid} --timeout=1s --data-enc base16`, { ipfs })
+      const out = await cli(`dag get ${rawCid} --timeout=1s --output-codec raw --data-enc base16`, { ipfs })
 
-      expect(out).to.be.eql(uint8ArrayToString(result.value, 'base16') + '\n')
+      expect(out).to.be.eql(uint8ArrayToString(result.value, 'base16'))
     })
 
     it('should strip control characters from dag-pb nodes', async () => {
@@ -237,14 +274,13 @@ describe('dag', () => {
       }
 
       ipfs.dag.get.withArgs(dagPbCid, defaultOptions).returns(result)
-      ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const out = await cli(`dag get ${dagPbCid}`, { ipfs })
 
-      expect(out).to.equal(`{"links":[{"Name":"foo.txt","Size":9000,"Cid":{"/":"${dagPbCid.toString(base58btc)}"}}]}\n`)
+      expect(out).to.equal(`{"Links":[{"Hash":{"/":"${dagPbCid.toString(base58btc)}"},"Name":"foo\\b\\n\\t.txt","Tsize":9000}]}`)
     })
 
-    it('should strip control characters from dag-cbor nodes', async () => {
+    it('should not strip control characters from dag-cbor nodes', async () => {
       const result = {
         value: {
           'lo\nl': 'ok\t'
@@ -255,10 +291,10 @@ describe('dag', () => {
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
-      expect(out).to.equal('{"lol":"ok"}\n')
+      expect(out).to.equal('{"lo\\nl":"ok\\t"}')
     })
 
-    it('should strip control characters from dag-cbor string nodes', async () => {
+    it('should not strip control characters from dag-cbor string nodes', async () => {
       const result = {
         value: 'lo\nl'
       }
@@ -267,10 +303,10 @@ describe('dag', () => {
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
-      expect(out).to.equal('"lol"\n')
+      expect(out).to.equal('"lo\\nl"')
     })
 
-    it('should strip control characters from dag-cbor array nodes', async () => {
+    it('should not strip control characters from dag-cbor array nodes', async () => {
       const result = {
         value: ['lo\nl']
       }
@@ -279,10 +315,10 @@ describe('dag', () => {
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
-      expect(out).to.equal('["lol"]\n')
+      expect(out).to.equal('["lo\\nl"]')
     })
 
-    it('should strip control characters from dag-cbor nested array nodes', async () => {
+    it('should not strip control characters from dag-cbor nested array nodes', async () => {
       const result = {
         value: {
           'lo\nl': ['ok\t']
@@ -293,7 +329,7 @@ describe('dag', () => {
 
       const out = await cli(`dag get ${dagCborCid}`, { ipfs })
 
-      expect(out).to.equal('{"lol":["ok"]}\n')
+      expect(out).to.equal('{"lo\\nl":["ok\\t"]}')
     })
   })
 
