@@ -41,7 +41,7 @@ export function testStat (factory, options) {
       const cid = await ipfs.object.put(testObj)
       const stats = await ipfs.object.stat(cid)
       const expected = {
-        Hash: CID.parse('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ'),
+        Hash: CID.parse('QmNggDXca24S6cMPEYHZjeuc4QRmofkRrAEqVL3Ms2sdJZ').toV1(),
         NumLinks: 0,
         BlockSize: 17,
         LinksSize: 2,

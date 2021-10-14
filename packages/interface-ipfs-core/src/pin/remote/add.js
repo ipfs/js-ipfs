@@ -106,7 +106,7 @@ export function testAdd (factory, options) {
     })
     it('should pin dag-cbor', async () => {
       const cid = await ipfs.dag.put({}, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-256'
       })
 
@@ -125,7 +125,7 @@ export function testAdd (factory, options) {
 
     it('should pin raw', async () => {
       const cid = await ipfs.dag.put(new Uint8Array(0), {
-        format: 'raw',
+        storeCodec: 'raw',
         hashAlg: 'sha2-256'
       })
 
