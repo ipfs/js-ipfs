@@ -17,6 +17,7 @@ export const createLs = configure(api => {
       headers: options.headers
     })).json()
 
+    // TODO: unwrap topic names from multibase
     return Strings || []
   }
   return ls

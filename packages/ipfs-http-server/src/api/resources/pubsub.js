@@ -56,6 +56,8 @@ export const subscribeResource = {
        * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
        */
       const handler = (msg) => {
+        // TODO: data, seqno and topicIDs in multibase
+        // TODO: from should use canonical toString from peerid libp2p lib
         output.push({
           from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
           data: uint8ArrayToString(msg.data, 'base64pad'),
@@ -156,6 +158,7 @@ export const publishResource = {
     } = request
 
     try {
+      // TODO: unwrap topic from multibase?
       await ipfs.pubsub.publish(topic, data, {
         signal,
         timeout
@@ -209,6 +212,7 @@ export const lsResource = {
       throw Boom.boomify(err, { message: 'Failed to list subscriptions' })
     }
 
+    // TODO: multibase topic names in Strings array
     return h.response({ Strings: subscriptions })
   }
 }
@@ -252,6 +256,7 @@ export const peersResource = {
 
     let peers
     try {
+      // TODO: unwrap topic from multibase
       peers = await ipfs.pubsub.peers(topic, {
         signal,
         timeout

@@ -14,6 +14,7 @@ export const createPublish = configure(api => {
    * @type {PubsubAPI["publish"]}
    */
   async function publish (topic, data, options = {}) {
+    // TODO: wrap topic in multibase
     const searchParams = toUrlSearchParams({
       arg: topic,
       ...options

@@ -39,6 +39,7 @@ export const createSubscribe = (options, subsTracker) => {
       // is received. If this doesn't happen within 1 second assume success
       const ffWorkaround = setTimeout(() => done(), 1000)
 
+      // TODO: wrap topic in multibase
       // Do this async to not block Firefox
       api.post('pubsub/sub', {
         signal: options.signal,
@@ -94,6 +95,8 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
           continue
         }
 
+        // TODO: multibase data, seqno and topics
+        // TODO: parse string and get peerid bytes using libp2p lib
         onMessage({
           from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base64pad'), 'base58btc'),
           data: uint8ArrayFromString(msg.data, 'base64pad'),
