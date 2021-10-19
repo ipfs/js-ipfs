@@ -2,6 +2,7 @@ import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { abortSignal } from '../lib/abort-signal.js'
+import { textToUrlSafeRpc } from '../lib/http-rpc-wire-format.js'
 import { AbortController } from 'native-abort-controller'
 
 /**
@@ -14,9 +15,8 @@ export const createPublish = configure(api => {
    * @type {PubsubAPI["publish"]}
    */
   async function publish (topic, data, options = {}) {
-    // TODO: wrap topic in multibase
     const searchParams = toUrlSearchParams({
-      arg: topic,
+      arg: textToUrlSafeRpc(topic),
       ...options
     })
 

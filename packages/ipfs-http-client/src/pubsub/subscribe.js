@@ -1,8 +1,7 @@
-import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import debug from 'debug'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { textToUrlSafeRpc, rpcArrayToTextArray, rpcToBytes } from '../lib/http-rpc-wire-format.js'
 const log = debug('ipfs-http-client:pubsub:subscribe')
 
 /**
@@ -39,12 +38,11 @@ export const createSubscribe = (options, subsTracker) => {
       // is received. If this doesn't happen within 1 second assume success
       const ffWorkaround = setTimeout(() => done(), 1000)
 
-      // TODO: wrap topic in multibase
       // Do this async to not block Firefox
       api.post('pubsub/sub', {
         signal: options.signal,
         searchParams: toUrlSearchParams({
-          arg: topic,
+          arg: textToUrlSafeRpc(topic),
           ...options
         }),
         headers: options.headers
@@ -95,13 +93,11 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
           continue
         }
 
-        // TODO: multibase data, seqno and topics
-        // TODO: parse string and get peerid bytes using libp2p lib
         onMessage({
-          from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base64pad'), 'base58btc'),
-          data: uint8ArrayFromString(msg.data, 'base64pad'),
-          seqno: uint8ArrayFromString(msg.seqno, 'base64pad'),
-          topicIDs: msg.topicIDs
+          from: msg.from,
+          data: rpcToBytes(msg.data),
+          seqno: rpcToBytes(msg.seqno),
+          topicIDs: rpcArrayToTextArray(msg.topicIDs)
         })
       } catch (/** @type {any} */ err) {
         err.message = `Failed to parse pubsub message: ${err.message}`

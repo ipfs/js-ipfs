@@ -1,5 +1,6 @@
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { textToUrlSafeRpc } from '../lib/http-rpc-wire-format.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -14,7 +15,7 @@ export const createPeers = configure(api => {
     const res = await api.post('pubsub/peers', {
       signal: options.signal,
       searchParams: toUrlSearchParams({
-        arg: topic,
+        arg: textToUrlSafeRpc(topic),
         ...options
       }),
       headers: options.headers

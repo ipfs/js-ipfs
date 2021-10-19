@@ -67,7 +67,7 @@ describe('pubsub', () => {
       timeout: undefined
     }
 
-    it('should list toic peers', async () => {
+    it('should list topic peers', async () => {
       const subName = 'sub-name'
       const peer = 'peer-id'
 
@@ -79,7 +79,7 @@ describe('pubsub', () => {
       expect(out).to.equal(`${peer}\n`)
     })
 
-    it('should list toic peers with a timeout', async () => {
+    it('should list topic peers with a timeout', async () => {
       const subName = 'sub-name'
       const peer = 'peer-id'
 
@@ -101,19 +101,19 @@ describe('pubsub', () => {
     }
 
     it('should publish message', async () => {
-      const subName = 'sub-name'
-      const data = 'data'
+      const subName = 'sub-name-1'
+      const data = 'data\r\nfirst\nZażółć gęślą jaźń😇'
 
-      await cli(`pubsub pub ${subName} ${data}`, { ipfs })
+      await cli(`pubsub pub ${subName} "${data}"`, { ipfs })
 
       expect(ipfs.pubsub.publish.calledWith(subName, uint8ArrayFromString(data), defaultOptions)).to.be.true()
     })
 
     it('should publish message with timeout', async () => {
-      const subName = 'sub-name'
-      const data = 'data'
+      const subName = 'sub-name-2'
+      const data = 'data\r\nsecond\nZażółć gęślą jaźń😇'
 
-      await cli(`pubsub pub ${subName} ${data} --timeout=1s`, { ipfs })
+      await cli(`pubsub pub ${subName} "${data}" --timeout=1s`, { ipfs })
 
       expect(ipfs.pubsub.publish.calledWith(subName, uint8ArrayFromString(data), {
         ...defaultOptions,
@@ -128,9 +128,9 @@ describe('pubsub', () => {
     }
 
     it('should subscribe', async () => {
-      const subName = 'sub-name'
+      const subName = 'sub\nname'
 
-      await cli(`pubsub sub ${subName}`, { ipfs })
+      await cli(`pubsub sub "${subName}"`, { ipfs })
 
       expect(ipfs.pubsub.subscribe.calledWith(subName, sinon.match.func, defaultOptions)).to.be.true()
     })
@@ -138,7 +138,7 @@ describe('pubsub', () => {
     it('should subscribe with a timeout', async () => {
       const subName = 'sub-name'
 
-      await cli(`pubsub sub ${subName} --timeout=1s`, { ipfs })
+      await cli(`pubsub sub "${subName}" --timeout=1s`, { ipfs })
 
       expect(ipfs.pubsub.subscribe.calledWith(subName, sinon.match.func, {
         ...defaultOptions,
