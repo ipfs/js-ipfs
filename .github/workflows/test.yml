@@ -380,7 +380,7 @@ jobs:
             deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist,ipfs@$PWD/packages/ipfs/dist
           - name: ipfs-http-client name api
             repo: https://github.com/ipfs-examples/js-ipfs-http-client-name-api.git
-            deps: ipfs@$PWD/packages/ipfs/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
+            deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist
           - name: ipfs-http-client upload file
             repo: https://github.com/ipfs-examples/js-ipfs-http-client-upload-file.git
             deps: ipfs@$PWD/packages/ipfs/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
