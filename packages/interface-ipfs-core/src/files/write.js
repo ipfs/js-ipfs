@@ -14,6 +14,7 @@ import { randomBytes, randomStream } from 'iso-random-stream'
 import all from 'it-all'
 import isShardAtPath from '../utils/is-shard-at-path.js'
 import * as raw from 'multiformats/codecs/raw'
+import map from 'it-map'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -902,6 +903,49 @@ export function testWrite (factory, options) {
         await expect(all(ipfs.files.ls(newFilePath, {
           long: true
         }))).to.eventually.not.be.empty()
+      })
+
+      it('writes a file to a sub-shard of a shard that contains another sub-shard', async () => {
+        const data = Uint8Array.from([0, 1, 2])
+
+        await ipfs.files.mkdir('/hamttest-mfs')
+
+        const files = [
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-1398.txt',
+          'vivanov-sliceart',
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-1230.txt',
+          'methodify',
+          'fis-msprd-style-loader_0_13_1',
+          'js-form',
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-1181.txt',
+          'node-gr',
+          'yanvoidmodule',
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-1899.txt',
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-372.txt',
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-1032.txt',
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-1293.txt',
+          'file-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-766.txt'
+        ]
+
+        for (const path of files) {
+          await ipfs.files.write(`/hamttest-mfs/${path}`, data, {
+            shardSplitThreshold: 0,
+            create: true
+          })
+        }
+
+        const beforeFiles = await all(map(ipfs.files.ls('/hamttest-mfs'), (entry) => entry.name))
+
+        expect(beforeFiles).to.have.lengthOf(files.length)
+
+        await ipfs.files.write('/hamttest-mfs/supermodule_test', data, {
+          shardSplitThreshold: 0,
+          create: true
+        })
+
+        const afterFiles = await all(map(ipfs.files.ls('/hamttest-mfs'), (entry) => entry.name))
+
+        expect(afterFiles).to.have.lengthOf(beforeFiles.length + 1)
       })
     })
   })

@@ -3,7 +3,6 @@ import { importer } from 'ipfs-unixfs-importer'
 import {
   decode
 } from '@ipld/dag-pb'
-import { sha256, sha512 } from 'multiformats/hashes/sha2'
 import { createStat } from './stat.js'
 import { createMkdir } from './mkdir.js'
 import { addLink } from './utils/add-link.js'
@@ -293,17 +292,7 @@ const write = async (context, source, destination, options) => {
     mtime = destination.unixfs.mtime
   }
 
-  let hasher
-  switch (options.hashAlg) {
-    case 'sha2-256':
-      hasher = sha256
-      break
-    case 'sha2-512':
-      hasher = sha512
-      break
-    default:
-      throw new Error(`TODO vmx 2021-03-31: Proper error message for unsupported hash algorithms like ${options.hashAlg}`)
-  }
+  const hasher = await context.hashers.getHasher(options.hashAlg)
 
   const result = await last(importer([{
     content: content,
