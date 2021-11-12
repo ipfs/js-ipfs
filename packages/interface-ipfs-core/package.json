@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.151.1",
+  "version": "0.152.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
@@ -72,7 +72,7 @@
     "copyfiles": "^2.4.1",
     "delay": "^5.0.0",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.8.1",
+    "ipfs-core-types": "^0.8.2",
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
     "ipfs-utils": "^9.0.2",

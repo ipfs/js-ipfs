@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.9.1...ipfs-message-port-client@0.10.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* do not accept single items for ipfs.add ([#3900](https://github.com/ipfs/js-ipfs/issues/3900)) ([04e3cf3](https://github.com/ipfs/js-ipfs/commit/04e3cf3f46b585c4644cba70516f375e95361f52))
+* transfer set ([#3573](https://github.com/ipfs/js-ipfs/issues/3573)) ([b09a18c](https://github.com/ipfs/js-ipfs/commit/b09a18cd98883662353d116a8ff25a3ddaa48fc2))
+
+
+### BREAKING CHANGES
+
+* errors will now be thrown if multiple items are passed to `ipfs.add` or single items to `ipfs.addAll` (n.b. you can still pass a list of a single item to `ipfs.addAll`)
+
+
+
+
+
 ## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-client@0.9.0...ipfs-message-port-client@0.9.1) (2021-09-28)
 
 **Note:** Version bump only for package ipfs-message-port-client
