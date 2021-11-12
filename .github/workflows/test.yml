@@ -365,7 +365,7 @@ jobs:
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs custom ipfs repo
             repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
-            deps: ipfs@$PWD/packages/ipfs/dist
+            deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs custom ipld formats
             repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-daemon@$PWD/packages/ipfs-daemon/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
