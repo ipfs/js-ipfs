@@ -18,7 +18,7 @@ export function createPut ({ repo, preload }) {
     try {
       const buf = dagPB.encode(obj)
       const hash = await sha256.digest(buf)
-      const cid = CID.createV0(hash)
+      const cid = CID.createV1(dagPB.code, hash)
 
       await repo.blocks.put(cid, buf, {
         signal: options.signal

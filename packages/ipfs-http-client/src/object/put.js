@@ -22,7 +22,7 @@ export const createPut = (codecs, options) => {
         ...options,
         storeCodec: 'dag-pb',
         hashAlg: 'sha2-256',
-        version: 0
+        version: 1
       })
     }
     return put
