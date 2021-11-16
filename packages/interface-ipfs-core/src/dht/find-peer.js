@@ -3,6 +3,8 @@
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import testTimeout from '../utils/test-timeout.js'
+import drain from 'it-drain'
+import all from 'it-all'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -39,25 +41,37 @@ export function testFindPeer (factory, options) {
     it('should respect timeout option when finding a peer on the DHT', async () => {
       const nodeBId = await nodeB.id()
 
-      await testTimeout(() => nodeA.dht.findPeer(nodeBId.id, {
+      await testTimeout(() => drain(nodeA.dht.findPeer(nodeBId.id, {
         timeout: 1
-      }))
+      })))
     })
 
     it('should find other peers', async () => {
       const nodeBId = await nodeB.id()
-      const res = await nodeA.dht.findPeer(nodeBId.id)
-      const id = res.id.toString()
 
+      const results = await all(nodeA.dht.findPeer(nodeBId.id))
+      const finalPeer = results.filter(event => event.name === 'FINAL_PEER').pop()
+
+      if (!finalPeer || finalPeer.name !== 'FINAL_PEER') {
+        throw new Error('No finalPeer event received')
+      }
+
+      const id = finalPeer.peer.id
       const nodeAddresses = nodeBId.addresses.map((addr) => addr.nodeAddress())
-      const peerAddresses = res.addrs.map(ma => ma.nodeAddress())
+      const peerAddresses = finalPeer.peer.multiaddrs.map(ma => ma.nodeAddress())
 
-      expect(id).to.be.eql(nodeBId.id)
+      expect(id).to.equal(nodeBId.id)
       expect(peerAddresses).to.deep.include(nodeAddresses[0])
     })
 
-    it('should fail to find other peer if peer does not exist', () => {
-      return expect(nodeA.dht.findPeer('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ')).to.eventually.be.rejected()
+    it('should fail to find other peer if peer does not exist', async () => {
+      const events = await all(nodeA.dht.findPeer('Qmd7qZS4T7xXtsNFdRoK1trfMs5zU94EpokQ9WFtxdPxsZ'))
+
+      // no finalPeer events found
+      expect(events.filter(event => event.name === 'FINAL_PEER')).to.be.empty()
+
+      // queryError events found
+      expect(events.filter(event => event.name === 'QUERY_ERROR')).to.not.be.empty()
     })
   })
 }

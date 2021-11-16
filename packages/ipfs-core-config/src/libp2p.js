@@ -51,11 +51,8 @@ export function libp2pConfig () {
       },
       dht: {
         kBucketSize: 20,
-        enabled: false,
+        enabled: true,
         clientMode: true,
-        randomWalk: {
-          enabled: false
-        },
         validators: {
           ipns: validator
         },

@@ -11,7 +11,14 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
   this.timeout(20000)
 
   const commonFactory = factory({
-    type: 'js'
+    type: 'js',
+    ipfsOptions: {
+      config: {
+        Routing: {
+          Type: 'dhtserver'
+        }
+      }
+    }
   })
 
   tests.root(commonFactory, {
@@ -65,11 +72,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
     }]
   })
 
-  tests.dht(commonFactory, {
-    skip: {
-      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
-    }
-  })
+  tests.dht(commonFactory)
 
   tests.files(commonFactory, {
     skip: (isBrowser || isWebWorker

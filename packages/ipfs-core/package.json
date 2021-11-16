@@ -83,7 +83,7 @@
     "hashlru": "^2.3.0",
     "interface-blockstore": "^2.0.2",
     "interface-datastore": "^6.0.2",
-    "ipfs-bitswap": "^7.0.0",
+    "ipfs-bitswap": "ipfs/js-ipfs-bitswap#feat/update-dht",
     "ipfs-core-config": "^0.1.1",
     "ipfs-core-types": "^0.8.1",
     "ipfs-core-utils": "^0.11.1",
@@ -110,7 +110,7 @@
     "it-tar": "^4.0.0",
     "it-to-buffer": "^2.0.0",
     "just-safe-set": "^2.2.1",
-    "libp2p": "^0.33.0",
+    "libp2p": "libp2p/js-libp2p#feat/update-dht",
     "libp2p-bootstrap": "^0.13.0",
     "libp2p-crypto": "^0.19.7",
     "libp2p-delegated-content-routing": "^0.11.0",
@@ -126,7 +126,7 @@
     "pako": "^1.0.2",
     "parse-duration": "^1.0.0",
     "peer-id": "^0.15.1",
-    "timeout-abort-controller": "^1.1.1",
+    "timeout-abort-controller": "^2.0.0",
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {

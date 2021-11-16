@@ -20,7 +20,7 @@ export function testFindProvs (factory, options) {
   const it = getIt(options)
 
   describe('.dht.findProvs', function () {
-    this.timeout(20000)
+    this.timeout(80 * 1000)
 
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeA
@@ -57,8 +57,6 @@ export function testFindProvs (factory, options) {
      */
     let providedCid
     before('add providers for the same cid', async function () {
-      this.timeout(10 * 1000)
-
       const cids = await Promise.all([
         nodeB.object.new('unixfs-dir'),
         nodeC.object.new('unixfs-dir')
@@ -79,16 +77,17 @@ export function testFindProvs (factory, options) {
     })
 
     it('should be able to find providers', async function () {
-      // @ts-ignore this is mocha
-      this.timeout(20 * 1000)
+      /** @type {string[]} */
+      const providerIds = []
 
-      const provs = await all(nodeA.dht.findProvs(providedCid, { numProviders: 2 }))
-      const providerIds = provs.map((p) => p.id.toString())
+      for await (const event of nodeA.dht.findProvs(providedCid)) {
+        if (event.name === 'PROVIDER') {
+          providerIds.push(...event.providers.map(prov => prov.id))
+        }
+      }
 
-      expect(providerIds).to.have.members([
-        nodeBId.id,
-        nodeCId.id
-      ])
+      expect(providerIds).to.include(nodeBId.id)
+      expect(providerIds).to.include(nodeCId.id)
     })
 
     it('should take options to override timeout config', async function () {

@@ -52,7 +52,7 @@
     "ipfs-http-server": "^0.8.1",
     "ipfs-utils": "^9.0.2",
     "just-safe-set": "^2.2.1",
-    "libp2p": "^0.33.0",
+    "libp2p": "libp2p/js-libp2p#feat/update-dht",
     "libp2p-webrtc-star": "^0.24.0"
   },
   "devDependencies": {

@@ -64,7 +64,7 @@
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
-    "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
+    "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
@@ -89,7 +89,7 @@
     "ipfs-client": "^0.7.1",
     "ipfs-core-types": "^0.8.1",
     "ipfs-http-client": "^53.0.1",
-    "ipfs-interop": "^7.0.2",
+    "ipfs-interop": "ipfs/interop#feat/add-dht-interop-tests",
     "ipfs-utils": "^9.0.2",
     "ipfsd-ctl": "^10.0.4",
     "iso-url": "^1.0.0",

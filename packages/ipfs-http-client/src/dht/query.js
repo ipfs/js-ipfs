@@ -1,7 +1,6 @@
-import { Multiaddr } from 'multiaddr'
-import { objectToCamel } from '../lib/object-to-camel.js'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { mapEvent } from './map-event.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -22,13 +21,8 @@ export const createQuery = configure(api => {
       headers: options.headers
     })
 
-    for await (let message of res.ndjson()) {
-      message = objectToCamel(message)
-      message.responses = (message.responses || []).map((/** @type {{ ID: string, Addrs: string[] }} */ { ID, Addrs }) => ({
-        id: ID,
-        addrs: (Addrs || []).map((/** @type {string} **/ a) => new Multiaddr(a))
-      }))
-      yield message
+    for await (const event of res.ndjson()) {
+      yield mapEvent(event)
     }
   }
 

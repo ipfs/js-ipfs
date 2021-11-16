@@ -16,7 +16,6 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
  * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../../types').Preload} preload
  * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
- *
  * @param {Context} context
  */
 export function createAddAll ({ repo, preload, options }) {

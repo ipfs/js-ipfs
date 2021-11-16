@@ -46,6 +46,6 @@ export default () => ({
     DisableNatPortMap: true
   },
   Routing: {
-    Type: 'none'
+    Type: 'dhtclient'
   }
 })

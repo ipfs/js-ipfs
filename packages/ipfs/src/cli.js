@@ -41,6 +41,12 @@ const onUnhandledRejection = (err) => {
 process.once('uncaughtException', onUncaughtException)
 process.once('unhandledRejection', onUnhandledRejection)
 
+if (process.env.DEBUG) {
+  process.on('warning', err => {
+    console.error(err.stack)
+  })
+}
+
 const log = debug('ipfs:cli')
 
 process.title = pkg.name

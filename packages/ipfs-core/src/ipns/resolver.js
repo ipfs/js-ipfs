@@ -42,7 +42,7 @@ export class IpnsResolver {
     const key = nameSegments[2]
 
     // Define a maximum depth if recursive option enabled
-    let depth = Infinity
+    let depth
 
     if (recursive) {
       depth = defaultMaximumRecursiveDepth
@@ -58,7 +58,7 @@ export class IpnsResolver {
    * Recursive resolver according to the specified depth
    *
    * @param {string} name
-   * @param {number} depth
+   * @param {number} [depth]
    * @returns {Promise<string>}
    */
   async resolver (name, depth) {
@@ -74,7 +74,7 @@ export class IpnsResolver {
     const nameSegments = res.split('/')
 
     // If obtained a ipfs cid or recursive option is disabled
-    if (nameSegments[1] === 'ipfs' || !depth) {
+    if (nameSegments[1] === 'ipfs' || depth == null) {
       return res
     }
 

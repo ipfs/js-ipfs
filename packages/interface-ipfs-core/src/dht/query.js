@@ -2,7 +2,6 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import all from 'it-all'
 import drain from 'it-drain'
 import testTimeout from '../utils/test-timeout.js'
 
@@ -45,24 +44,16 @@ export function testQuery (factory, options) {
     })
 
     it('should return the other node in the query', async function () {
-      const timeout = 150 * 1000
-      // @ts-ignore this is mocha
-      this.timeout(timeout)
+      /** @type {string[]} */
+      const peers = []
 
-      try {
-        const peers = await all(nodeA.dht.query(nodeBId.id, { timeout: timeout - 1000 }))
-        expect(peers.map(p => p.id.toString())).to.include(nodeBId.id)
-      } catch (/** @type {any} */ err) {
-        if (err.name === 'TimeoutError') {
-          // This test is meh. DHT works best with >= 20 nodes. Therefore a
-          // failure might happen, but we don't want to report it as such.
-          // Hence skip the test before the timeout is reached
-          // @ts-ignore this is mocha
-          this.skip()
-        } else {
-          throw err
+      for await (const event of nodeA.dht.query(nodeBId.id)) {
+        if (event.name === 'PEER_RESPONSE') {
+          peers.push(...event.closer.map(data => data.id))
         }
       }
+
+      expect(peers).to.include(nodeBId.id)
     })
   })
 }

@@ -60,6 +60,7 @@ export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline
     }
 
     const [namespace, hash, ...remainder] = name.slice(1).split('/')
+
     try {
       if (hash.substring(0, 1) === '1') {
         PeerId.parse(hash)

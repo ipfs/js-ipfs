@@ -22,10 +22,14 @@ export default {
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, peerId, timeout }) {
-    for await (const result of ipfs.dht.query(peerId, {
+    for await (const event of ipfs.dht.query(peerId, {
       timeout
     })) {
-      print(result.id.toString())
+      if (event.name === 'PEER_RESPONSE') {
+        event.closer.forEach(peerData => {
+          print(peerData.id)
+        })
+      }
     }
   }
 }

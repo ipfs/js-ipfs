@@ -130,7 +130,7 @@
     "multiformats": "^9.4.1",
     "nanoid": "^3.1.23",
     "parse-duration": "^1.0.0",
-    "timeout-abort-controller": "^1.1.1",
+    "timeout-abort-controller": "^2.0.0",
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
