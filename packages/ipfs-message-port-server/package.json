@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-server",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "IPFS server library for exposing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -67,8 +67,8 @@
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.8.2",
-    "ipfs-message-port-protocol": "^0.10.2",
+    "ipfs-core-types": "^0.8.3",
+    "ipfs-message-port-protocol": "^0.10.3",
     "it-all": "^1.0.4",
     "multiformats": "^9.4.1"
   },

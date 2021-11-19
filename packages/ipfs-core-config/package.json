@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-config",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Package to store node and browser specific config for ipfs-core",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-config#readme",
@@ -106,7 +106,7 @@
   },
   "devDependencies": {
     "aegir": "^35.1.1",
-    "ipfs-core-utils": "^0.12.0",
+    "ipfs-core-utils": "^0.12.1",
     "rimraf": "^3.0.2"
   }
 }

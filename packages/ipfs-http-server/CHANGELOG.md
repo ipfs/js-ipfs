@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.9.0...ipfs-http-server@0.9.1) (2021-11-19)
+
+**Note:** Version bump only for package ipfs-http-server
+
+
+
+
+
 # [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.8.1...ipfs-http-server@0.9.0) (2021-11-12)
 
 

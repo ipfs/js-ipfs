@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.7.2...ipfs-http-gateway@0.7.3) (2021-11-19)
+
+**Note:** Version bump only for package ipfs-http-gateway
+
+
+
+
+
 ## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-gateway@0.7.1...ipfs-http-gateway@0.7.2) (2021-11-12)
 
 **Note:** Version bump only for package ipfs-http-gateway
