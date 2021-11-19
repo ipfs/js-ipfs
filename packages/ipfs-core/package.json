@@ -83,7 +83,7 @@
     "hashlru": "^2.3.0",
     "interface-blockstore": "^2.0.2",
     "interface-datastore": "^6.0.2",
-    "ipfs-bitswap": "^7.0.0",
+    "ipfs-bitswap": "^7.0.1",
     "ipfs-core-config": "^0.1.2",
     "ipfs-core-types": "^0.8.2",
     "ipfs-core-utils": "^0.12.0",
