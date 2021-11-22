@@ -339,7 +339,7 @@ const addFileToShardedDirectory = async (context, options) => {
     // subshard hasn't been loaded, descend to the next level of the HAMT
     if (!path[index]) {
       log(`Loaded new subshard ${segment.prefix}`)
-      await recreateHamtLevel(subShard.Links, rootBucket, segment.bucket, parseInt(segment.prefix, 16))
+      await recreateHamtLevel(context, subShard.Links, rootBucket, segment.bucket, parseInt(segment.prefix, 16))
 
       const position = await rootBucket._findNewBucketAndPos(file.name)
 
@@ -355,7 +355,7 @@ const addFileToShardedDirectory = async (context, options) => {
     const nextSegment = path[index]
 
     // add next levels worth of links to bucket
-    await addLinksToHamtBucket(subShard.Links, nextSegment.bucket, rootBucket)
+    await addLinksToHamtBucket(context, subShard.Links, nextSegment.bucket, rootBucket)
 
     nextSegment.node = subShard
   }

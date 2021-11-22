@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.152.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.152.0...interface-ipfs-core@0.152.1) (2021-11-19)
+
+**Note:** Version bump only for package interface-ipfs-core
+
+
+
+
+
+# [0.152.0](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.151.1...interface-ipfs-core@0.152.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* do not accept single items for ipfs.add ([#3900](https://github.com/ipfs/js-ipfs/issues/3900)) ([04e3cf3](https://github.com/ipfs/js-ipfs/commit/04e3cf3f46b585c4644cba70516f375e95361f52))
+* do not lose files when writing files into subshards that contain other subshards ([#3936](https://github.com/ipfs/js-ipfs/issues/3936)) ([8a3ed19](https://github.com/ipfs/js-ipfs/commit/8a3ed19575beaafe5dfd3bce310a548950c148d0)), closes [#3921](https://github.com/ipfs/js-ipfs/issues/3921)
+
+
+### BREAKING CHANGES
+
+* errors will now be thrown if multiple items are passed to `ipfs.add` or single items to `ipfs.addAll` (n.b. you can still pass a list of a single item to `ipfs.addAll`)
+
+
+
+
+
 ## [0.151.1](https://github.com/ipfs/js-ipfs/compare/interface-ipfs-core@0.151.0...interface-ipfs-core@0.151.1) (2021-09-28)
 
 **Note:** Version bump only for package interface-ipfs-core

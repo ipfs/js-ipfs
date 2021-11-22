@@ -10,9 +10,10 @@ import { Service } from '../utils/service.js'
  * @param {import('../types').MfsPreload} config.mfsPreload
  * @param {import('./ipns').IPNSAPI} config.ipns
  * @param {import('libp2p/src/keychain')} config.keychain
+ * @param {import('ipfs-core-utils/multihashes').Multihashes} config.hashers
  * @param {import('../types').Options} config.options
  */
-export function createStart ({ network, preload, peerId, keychain, repo, ipns, mfsPreload, print, options }) {
+export function createStart ({ network, preload, peerId, keychain, repo, ipns, mfsPreload, print, hashers, options }) {
   /**
    * @type {import('ipfs-core-types/src/root').API["start"]}
    */
@@ -21,6 +22,7 @@ export function createStart ({ network, preload, peerId, keychain, repo, ipns, m
       peerId,
       repo,
       print,
+      hashers,
       options
     })
 

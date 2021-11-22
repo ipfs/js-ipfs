@@ -72,12 +72,13 @@ export const updateHamtDirectory = async (context, links, bucket, options) => {
 }
 
 /**
+ * @param {MfsContext} context
  * @param {PBLink[]} links
  * @param {Bucket<any>} rootBucket
  * @param {Bucket<any>} parentBucket
  * @param {number} positionAtParent
  */
-export const recreateHamtLevel = async (links, rootBucket, parentBucket, positionAtParent) => {
+export const recreateHamtLevel = async (context, links, rootBucket, parentBucket, positionAtParent) => {
   // recreate this level of the HAMT
   const bucket = new Bucket({
     hash: rootBucket._options.hash,
@@ -85,7 +86,7 @@ export const recreateHamtLevel = async (links, rootBucket, parentBucket, positio
   }, parentBucket, positionAtParent)
   parentBucket._putObjectAt(positionAtParent, bucket)
 
-  await addLinksToHamtBucket(links, bucket, rootBucket)
+  await addLinksToHamtBucket(context, links, bucket, rootBucket)
 
   return bucket
 }
@@ -99,28 +100,57 @@ export const recreateInitialHamtLevel = async (links) => {
     bits: hamtBucketBits
   })
 
-  await addLinksToHamtBucket(links, bucket, bucket)
-
-  return bucket
-}
-
-/**
- * @param {PBLink[]} links
- * @param {Bucket<any>} bucket
- * @param {Bucket<any>} rootBucket
- */
-export const addLinksToHamtBucket = async (links, bucket, rootBucket) => {
+  // populate sub bucket but do not recurse as we do not want to pull whole shard in
   await Promise.all(
-    links.map(link => {
+    links.map(async link => {
       const linkName = (link.Name || '')
 
       if (linkName.length === 2) {
         const pos = parseInt(linkName, 16)
 
-        bucket._putObjectAt(pos, new Bucket({
+        const subBucket = new Bucket({
+          hash: bucket._options.hash,
+          bits: bucket._options.bits
+        }, bucket, pos)
+        bucket._putObjectAt(pos, subBucket)
+
+        return Promise.resolve()
+      }
+
+      return bucket.put(linkName.substring(2), {
+        size: link.Tsize,
+        cid: link.Hash
+      })
+    })
+  )
+
+  return bucket
+}
+
+/**
+ * @param {MfsContext} context
+ * @param {PBLink[]} links
+ * @param {Bucket<any>} bucket
+ * @param {Bucket<any>} rootBucket
+ */
+export const addLinksToHamtBucket = async (context, links, bucket, rootBucket) => {
+  await Promise.all(
+    links.map(async link => {
+      const linkName = (link.Name || '')
+
+      if (linkName.length === 2) {
+        log('Populating sub bucket', linkName)
+        const pos = parseInt(linkName, 16)
+        const block = await context.repo.blocks.get(link.Hash)
+        const node = dagPB.decode(block)
+
+        const subBucket = new Bucket({
           hash: rootBucket._options.hash,
           bits: rootBucket._options.bits
-        }, bucket, pos))
+        }, bucket, pos)
+        bucket._putObjectAt(pos, subBucket)
+
+        await addLinksToHamtBucket(context, node.Links, subBucket, rootBucket)
 
         return Promise.resolve()
       }
@@ -213,7 +243,7 @@ export const generatePath = async (context, fileName, rootNode) => {
     if (!path[i + 1]) {
       log(`Loaded new subshard ${segment.prefix}`)
 
-      await recreateHamtLevel(node.Links, rootBucket, segment.bucket, parseInt(segment.prefix, 16))
+      await recreateHamtLevel(context, node.Links, rootBucket, segment.bucket, parseInt(segment.prefix, 16))
       const position = await rootBucket._findNewBucketAndPos(fileName)
 
       // i--
@@ -229,7 +259,7 @@ export const generatePath = async (context, fileName, rootNode) => {
     const nextSegment = path[i + 1]
 
     // add intermediate links to bucket
-    await addLinksToHamtBucket(node.Links, nextSegment.bucket, rootBucket)
+    await addLinksToHamtBucket(context, node.Links, nextSegment.bucket, rootBucket)
 
     nextSegment.node = node
   }

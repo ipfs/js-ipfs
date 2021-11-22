@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.3](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.10.2...ipfs-message-port-server@0.10.3) (2021-11-19)
+
+**Note:** Version bump only for package ipfs-message-port-server
+
+
+
+
+
+## [0.10.2](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.10.1...ipfs-message-port-server@0.10.2) (2021-11-12)
+
+
+### Bug Fixes
+
+* transfer set ([#3573](https://github.com/ipfs/js-ipfs/issues/3573)) ([b09a18c](https://github.com/ipfs/js-ipfs/commit/b09a18cd98883662353d116a8ff25a3ddaa48fc2))
+
+
+
+
+
 ## [0.10.1](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.10.0...ipfs-message-port-server@0.10.1) (2021-09-28)
 
 **Note:** Version bump only for package ipfs-message-port-server
