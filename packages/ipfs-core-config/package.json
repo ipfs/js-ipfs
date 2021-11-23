@@ -87,7 +87,7 @@
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "hashlru": "^2.3.0",
-    "ipfs-repo": "^13.0.4",
+    "ipfs-repo": "^13.0.6",
     "ipfs-utils": "^9.0.2",
     "ipns": "^0.15.0",
     "is-ipfs": "^6.0.1",

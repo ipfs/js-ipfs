@@ -70,7 +70,7 @@
     "ipfs-core-utils": "^0.12.1",
     "ipfs-daemon": "^0.10.3",
     "ipfs-http-client": "^54.0.1",
-    "ipfs-repo": "^13.0.4",
+    "ipfs-repo": "^13.0.6",
     "ipfs-utils": "^9.0.2",
     "it-all": "^1.0.4",
     "it-concat": "^2.0.0",
