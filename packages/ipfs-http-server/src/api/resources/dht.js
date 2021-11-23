@@ -203,11 +203,11 @@ export const findProvsResource = {
             })
           }
 
+          yield mapQueryEvent(id.id, event)
+
           if (providers.size >= numProviders) {
             break
           }
-
-          yield mapQueryEvent(id.id, event)
         }
 
         if (timeoutController) {
