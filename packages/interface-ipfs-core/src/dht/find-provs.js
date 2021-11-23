@@ -4,7 +4,6 @@ import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import drain from 'it-drain'
-import { fakeCid } from './utils.js'
 import testTimeout from '../utils/test-timeout.js'
 
 /**
@@ -88,30 +87,6 @@ export function testFindProvs (factory, options) {
 
       expect(providerIds).to.include(nodeBId.id)
       expect(providerIds).to.include(nodeCId.id)
-    })
-
-    it('should take options to override timeout config', async function () {
-      const options = {
-        timeout: 1
-      }
-
-      const cidV0 = await fakeCid()
-      const start = Date.now()
-      let res
-
-      try {
-        res = await all(nodeA.dht.findProvs(cidV0, options))
-      } catch (/** @type {any} */ err) {
-        // rejected by http client
-        expect(err).to.have.property('name', 'TimeoutError')
-        return
-      }
-
-      console.info(res) // eslint-disable-line no-console
-
-      // rejected by the server, errors don't work over http - https://github.com/ipfs/js-ipfs/issues/2519
-      expect(res).to.be.an('array').with.lengthOf(0)
-      expect(Date.now() - start).to.be.lessThan(100)
     })
   })
 }
