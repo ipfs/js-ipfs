@@ -107,6 +107,8 @@ export function testFindProvs (factory, options) {
         return
       }
 
+      console.info(res) // eslint-disable-line no-console
+
       // rejected by the server, errors don't work over http - https://github.com/ipfs/js-ipfs/issues/2519
       expect(res).to.be.an('array').with.lengthOf(0)
       expect(Date.now() - start).to.be.lessThan(100)
