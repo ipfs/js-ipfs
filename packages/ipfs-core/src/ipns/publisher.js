@@ -108,11 +108,11 @@ export class IpnsPublisher {
     // Add record to routing (buffer key)
     try {
       const res = await this._routing.put(k.uint8Array(), entryData)
-      log(`ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
+      log(`ipns record for ${uint8ArrayToString(k.uint8Array(), 'base32')} was stored in the routing`)
 
       return res
     } catch (/** @type {any} */err) {
-      const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} could not be stored in the routing`
+      const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base32')} could not be stored in the routing`
       log.error(errMsg)
       log.error(err)
 
