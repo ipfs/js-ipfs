@@ -152,14 +152,15 @@ function mapEvent (event) {
  * @param {Object} config
  * @param {import('../types').NetworkService} config.network
  * @param {import('ipfs-repo').IPFSRepo} config.repo
+ * @param {PeerId} config.peerId
  */
-export function createDht ({ network, repo }) {
+export function createDht ({ network, repo, peerId }) {
   const { get, put, findProvs, findPeer, provide, query } = {
     /**
      * @type {import('ipfs-core-types/src/dht').API["get"]}
      */
     async * get (key, options = {}) {
-      const { libp2p } = await use(network, options)
+      const { libp2p } = await use(network, peerId, options)
 
       const dhtKey = key instanceof Uint8Array ? key : toDHTKey(key)
 
@@ -170,7 +171,7 @@ export function createDht ({ network, repo }) {
      * @type {import('ipfs-core-types/src/dht').API["put"]}
      */
     async * put (key, value, options) {
-      const { libp2p } = await use(network, options)
+      const { libp2p } = await use(network, peerId, options)
 
       const dhtKey = key instanceof Uint8Array ? key : toDHTKey(key)
 
@@ -181,7 +182,7 @@ export function createDht ({ network, repo }) {
      * @type {import('ipfs-core-types/src/dht').API["findProvs"]}
      */
     async * findProvs (cid, options = { numProviders: 20 }) {
-      const { libp2p } = await use(network, options)
+      const { libp2p } = await use(network, peerId, options)
 
       yield * map(libp2p._dht.findProviders(cid, {
         signal: options.signal
@@ -191,10 +192,10 @@ export function createDht ({ network, repo }) {
     /**
      * @type {import('ipfs-core-types/src/dht').API["findPeer"]}
      */
-    async * findPeer (peerId, options = {}) {
-      const { libp2p } = await use(network, options)
+    async * findPeer (peerIdToFind, options = {}) {
+      const { libp2p } = await use(network, peerId, options)
 
-      yield * map(libp2p._dht.findPeer(PeerId.parse(peerId), {
+      yield * map(libp2p._dht.findPeer(PeerId.parse(peerIdToFind), {
         signal: options.signal
       }), mapEvent)
     },
@@ -203,7 +204,7 @@ export function createDht ({ network, repo }) {
      * @type {import('ipfs-core-types/src/dht').API["provide"]}
      */
     async * provide (cid, options = { recursive: false }) {
-      const { libp2p } = await use(network, options)
+      const { libp2p } = await use(network, peerId, options)
 
       // ensure blocks are actually local
       const hasBlock = await repo.blocks.has(cid)
@@ -223,15 +224,15 @@ export function createDht ({ network, repo }) {
     /**
      * @type {import('ipfs-core-types/src/dht').API["query"]}
      */
-    async * query (peerId, options = {}) {
-      const { libp2p } = await use(network, options)
+    async * query (peerIdToQuery, options = {}) {
+      const { libp2p } = await use(network, peerId, options)
       let bytes
-      const asCid = CID.asCID(peerId)
+      const asCid = CID.asCID(peerIdToQuery)
 
       if (asCid != null) {
         bytes = asCid.multihash.bytes
       } else {
-        bytes = PeerId.parse(peerId.toString()).toBytes()
+        bytes = PeerId.parse(peerIdToQuery.toString()).toBytes()
       }
 
       yield * map(libp2p._dht.getClosestPeers(bytes, options), mapEvent)
@@ -250,13 +251,34 @@ export function createDht ({ network, repo }) {
 
 /**
  * @param {import('../types').NetworkService} network
+ * @param {PeerId} peerId
  * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
  */
-const use = async (network, options) => {
+const use = async (network, peerId, options) => {
   const net = await network.use(options)
   if (get(net.libp2p, '_config.dht.enabled', false)) {
     return net
   } else {
-    throw new NotEnabledError('dht not enabled')
+    const fn = async function * () {
+      yield {
+        from: peerId,
+        name: 'QUERY_ERROR',
+        type: 3,
+        error: new NotEnabledError('dht not enabled')
+      }
+    }
+
+    return {
+      libp2p: {
+        _dht: {
+          get: fn,
+          put: fn,
+          findProvs: fn,
+          findPeer: fn,
+          provide: fn,
+          query: fn
+        }
+      }
+    }
   }
 }
