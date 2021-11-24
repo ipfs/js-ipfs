@@ -70,7 +70,7 @@
     "ipfs-core-types": "^0.8.4",
     "ipfs-message-port-protocol": "^0.10.4",
     "it-all": "^1.0.4",
-    "multiformats": "^9.4.13"
+    "multiformats": "^9.5.1"
   },
   "devDependencies": {
     "aegir": "^36.0.1",

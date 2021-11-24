@@ -1,11 +1,11 @@
 import { CID } from 'multiformats/cid'
 import { createUnsafe } from 'multiformats/block'
-import { base58btc } from 'multiformats/bases/base58'
 import { CarWriter } from '@ipld/car/writer'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import debug from 'debug'
 import * as raw from 'multiformats/codecs/raw'
 import * as json from 'multiformats/codecs/json'
+import { walk } from 'multiformats/traversal'
 
 const log = debug('ipfs:components:dag:import')
 
@@ -21,6 +21,11 @@ const NO_LINKS_CODECS = [
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
  * @typedef {import('@ipld/car/api').BlockWriter} BlockWriter
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ */
+
+/**
+ * @template T
+ * @typedef {import('multiformats/block').Block<T>} Block
  */
 
 /**
@@ -53,13 +58,9 @@ export function createExport ({ repo, preload, codecs }) {
     let err = null
     ;(async () => {
       try {
-        await traverseWrite(
-          repo,
-          { signal: options.signal, timeout: options.timeout },
-          cid,
-          writer,
-          codecs)
-        writer.close()
+        const load = makeLoader(repo, writer, { signal: options.signal, timeout: options.timeout }, codecs)
+        await walk({ cid, load })
+        await writer.close()
       } catch (/** @type {any} */ e) {
         err = e
       }
@@ -80,52 +81,30 @@ export function createExport ({ repo, preload, codecs }) {
 }
 
 /**
+ * @template T
  * @param {IPFSRepo} repo
- * @param {AbortOptions} options
- * @param {CID} cid
  * @param {BlockWriter} writer
- * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
- * @param {Set<string>} seen
- * @returns {Promise<void>}
- */
-async function traverseWrite (repo, options, cid, writer, codecs, seen = new Set()) {
-  const b58Cid = cid.toString(base58btc)
-  if (seen.has(b58Cid)) {
-    return
-  }
-
-  const block = await getBlock(repo, options, cid, codecs)
-
-  log(`Adding block ${cid} to car`)
-  await writer.put(block)
-  seen.add(b58Cid)
-
-  // recursive traversal of all links
-  for (const link of block.links) {
-    await traverseWrite(repo, options, link, writer, codecs, seen)
-  }
-}
-
-/**
- * @param {IPFSRepo} repo
  * @param {AbortOptions} options
- * @param {CID} cid
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
- * @returns {Promise<{cid:CID, bytes:Uint8Array, links:CID[]}>}
+ * @returns {(cid:CID)=>Promise<Block<T>|null>}
  */
-async function getBlock (repo, options, cid, codecs) {
-  const bytes = await repo.blocks.get(cid, options)
+function makeLoader (repo, writer, options, codecs) {
+  return async (cid) => {
+    const codec = await codecs.getCodec(cid.code)
 
-  /** @type {CID[]} */
-  let links = []
-  const codec = await codecs.getCodec(cid.code)
+    if (!codec) {
+      throw new Error(`Can't decode links in block with codec 0x${cid.code.toString(16)} to form complete DAG`)
+    }
 
-  if (codec) {
-    const block = createUnsafe({ bytes, cid, codec })
-    links = [...block.links()].map((l) => l[1])
-  } else if (!NO_LINKS_CODECS.includes(cid.code)) {
-    throw new Error(`Can't decode links in block with codec 0x${cid.code.toString(16)} to form complete DAG`)
+    const bytes = await repo.blocks.get(cid, options)
+
+    log(`Adding block ${cid} to car`)
+    await writer.put({ cid, bytes })
+
+    if (NO_LINKS_CODECS.includes(cid.code)) {
+      return null // skip this block, no need to look inside
+    }
+
+    return createUnsafe({ bytes, cid, codec })
   }
-
-  return { cid, bytes, links }
 }
