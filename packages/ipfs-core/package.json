@@ -126,7 +126,7 @@
     "pako": "^1.0.2",
     "parse-duration": "^1.0.0",
     "peer-id": "^0.15.1",
-    "timeout-abort-controller": "^1.1.1",
+    "timeout-abort-controller": "^2.0.0",
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
