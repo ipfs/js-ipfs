@@ -53,7 +53,7 @@ export class IpnsPubsubDatastore {
     try {
       // @ts-ignore datastores take Key keys, this one takes Uint8Array keys
       res = await this._pubsubDs.get(key)
-    } catch (e) {
+    } catch (/** @type {any} */ e) {
       err = e
     }
 

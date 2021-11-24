@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.4](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-protocol@0.5.3...ipfs-grpc-protocol@0.5.4) (2021-11-24)
+
+**Note:** Version bump only for package ipfs-grpc-protocol
+
+
+
+
+
 ## [0.5.3](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-protocol@0.5.2...ipfs-grpc-protocol@0.5.3) (2021-11-19)
 
 **Note:** Version bump only for package ipfs-grpc-protocol

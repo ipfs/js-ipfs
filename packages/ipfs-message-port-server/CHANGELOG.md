@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.4](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.10.3...ipfs-message-port-server@0.10.4) (2021-11-24)
+
+**Note:** Version bump only for package ipfs-message-port-server
+
+
+
+
+
 ## [0.10.3](https://github.com/ipfs/js-ipfs/compare/ipfs-message-port-server@0.10.2...ipfs-message-port-server@0.10.3) (2021-11-19)
 
 **Note:** Version bump only for package ipfs-message-port-server
