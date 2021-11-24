@@ -92,7 +92,7 @@
     "progress": "^2.0.3",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^3.0.0",
-    "yargs": "^16.0.3"
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
     "@types/ncp": "^2.0.5",
