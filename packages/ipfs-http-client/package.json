@@ -67,14 +67,14 @@
     "it-last": "^1.0.4",
     "merge-options": "^3.0.4",
     "multiaddr": "^10.0.0",
-    "multiformats": "^9.4.1",
+    "multiformats": "^9.4.13",
     "native-abort-controller": "^1.0.3",
     "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
-    "aegir": "^35.1.1",
+    "aegir": "^36.0.1",
     "delay": "^5.0.0",
     "go-ipfs": "0.9.1",
     "ipfsd-ctl": "^10.0.4",

@@ -61,14 +61,14 @@
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.2",
     "multiaddr": "^10.0.0",
-    "multiformats": "^9.4.1",
+    "multiformats": "^9.4.13",
     "p-defer": "^3.0.0",
     "protobufjs": "^6.10.2",
     "wherearewe": "^1.0.0",
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "aegir": "^35.1.1",
+    "aegir": "^36.0.1",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1"

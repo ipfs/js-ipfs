@@ -127,7 +127,7 @@
     "merge-options": "^3.0.4",
     "multiaddr": "^10.0.0",
     "multiaddr-to-uri": "^8.0.0",
-    "multiformats": "^9.4.1",
+    "multiformats": "^9.4.13",
     "nanoid": "^3.1.23",
     "parse-duration": "^1.0.0",
     "timeout-abort-controller": "^1.1.1",
@@ -135,7 +135,7 @@
   },
   "devDependencies": {
     "@web-std/file": "^1.1.2",
-    "aegir": "^35.1.1",
+    "aegir": "^36.0.1",
     "rimraf": "^3.0.2"
   }
 }
