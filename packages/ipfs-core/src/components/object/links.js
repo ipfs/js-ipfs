@@ -25,7 +25,7 @@ function findLinks (node, links = []) {
           Hash: CID.parse(val)
         })
         continue
-      } catch (_) {
+      } catch (/** @type {any} */ _) {
         // not a CID
       }
     }

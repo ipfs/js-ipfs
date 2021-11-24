@@ -90,7 +90,7 @@ export async function getResponse (ipfsNode, ipfsPath) {
     } catch (/** @type {any} */ err) {
       return new Response(err.toString(), getHeader(500, 'Error fetching the file'))
     }
-  } catch (error) {
+  } catch (/** @type {any} */ error) {
     log(error)
     return handleResolveError(ipfsNode, ipfsPath, error)
   }

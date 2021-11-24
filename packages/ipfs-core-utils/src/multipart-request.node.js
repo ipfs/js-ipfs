@@ -71,7 +71,7 @@ export async function multipartRequest (source, abortController, headers = {}, b
 
         index++
       }
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       log(err)
       // workaround for https://github.com/node-fetch/node-fetch/issues/753
       abortController.abort()

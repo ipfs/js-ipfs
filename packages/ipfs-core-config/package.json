@@ -105,7 +105,7 @@
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
-    "aegir": "^35.1.1",
+    "aegir": "^36.0.1",
     "ipfs-core-utils": "^0.12.1",
     "rimraf": "^3.0.2"
   }

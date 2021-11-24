@@ -40,7 +40,7 @@
     "lint": "aegir ts -p check && aegir lint"
   },
   "devDependencies": {
-    "aegir": "^35.1.1",
+    "aegir": "^36.0.1",
     "mkdirp": "^1.0.4",
     "protobufjs": "^6.10.2",
     "rimraf": "^3.0.2"
