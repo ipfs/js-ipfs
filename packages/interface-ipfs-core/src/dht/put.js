@@ -36,7 +36,7 @@ export function testPut (factory, options) {
 
     after(() => factory.clean())
 
-    it('should put a value to the DHT', async function () {
+    it.only('should put a value to the DHT', async function () { // eslint-disable-line no-only-tests/no-only-tests
       const { cid } = await nodeA.add('should put a value to the DHT')
 
       const publish = await nodeA.name.publish(cid)
