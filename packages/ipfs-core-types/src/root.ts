@@ -135,7 +135,7 @@ export interface API<OptionExtension = {}> {
    * Returns true if this IPFS node is online - that is, it's listening on network addresses
    * for incoming connections
    */
-  isOnline: () => boolean
+  isOnline: () => Promise<boolean>
 }
 
 export interface IPFSEntry {
