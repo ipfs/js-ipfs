@@ -31,6 +31,8 @@ export function testPut (factory, options) {
       nodeB = (await factory.spawn()).api
       nodeBId = await nodeB.id()
 
+      console.info(nodeBId.addresses.map(addr => addr.toString())) // eslint-disable-line no-console
+
       await nodeA.swarm.connect(nodeBId.addresses[0])
     })
 
