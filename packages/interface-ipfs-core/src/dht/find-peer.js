@@ -5,6 +5,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 import testTimeout from '../utils/test-timeout.js'
 import drain from 'it-drain'
 import all from 'it-all'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -25,15 +26,12 @@ export function testFindPeer (factory, options) {
     let nodeA
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
-      nodeBId = await nodeB.id()
 
-      await nodeA.swarm.connect(nodeBId.addresses[0])
+      await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())

@@ -35,6 +35,9 @@ export async function ensureReachable (nodeA, nodeB) {
     throw new Error(`Could not find ${id} in DHT`)
   }
 
+  const nodeBId = await nodeB.id()
+  await nodeA.swarm.connect(nodeBId.addresses[0])
+
   while (true) {
     try {
       await Promise.all([

@@ -24,24 +24,17 @@ export function testPut (factory, options) {
     let nodeA
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
-      nodeBId = await nodeB.id()
-
-      console.info(nodeBId.addresses.map(addr => addr.toString())) // eslint-disable-line no-console
-
-      await nodeA.swarm.connect(nodeBId.addresses[0])
 
       await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())
 
-    it.only('should put a value to the DHT', async function () { // eslint-disable-line no-only-tests/no-only-tests
+    it('should put a value to the DHT', async function () {
       const { cid } = await nodeA.add('should put a value to the DHT')
 
       const publish = await nodeA.name.publish(cid)
@@ -64,6 +57,8 @@ export function testPut (factory, options) {
       if (!peerResponse || peerResponse.name !== 'PEER_RESPONSE') {
         throw new Error('Did not get peer response')
       }
+
+      const nodeBId = await nodeB.id()
 
       expect(peerResponse.from).to.be.equal(nodeBId.id)
     })

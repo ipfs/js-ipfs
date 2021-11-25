@@ -5,6 +5,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import drain from 'it-drain'
 import testTimeout from '../utils/test-timeout.js'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -27,26 +28,14 @@ export function testFindProvs (factory, options) {
     let nodeB
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeC
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeAId
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeCId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
       nodeC = (await factory.spawn()).api
 
-      nodeAId = await nodeA.id()
-      nodeBId = await nodeB.id()
-      nodeCId = await nodeC.id()
-
-      await Promise.all([
-        nodeB.swarm.connect(nodeAId.addresses[0]),
-        nodeC.swarm.connect(nodeBId.addresses[0])
-      ])
+      await ensureReachable(nodeB, nodeA)
+      await ensureReachable(nodeC, nodeB)
     })
 
     after(() => factory.clean())
@@ -84,6 +73,9 @@ export function testFindProvs (factory, options) {
           providerIds.push(...event.providers.map(prov => prov.id))
         }
       }
+
+      const nodeBId = await nodeB.id()
+      const nodeCId = await nodeC.id()
 
       expect(providerIds).to.include(nodeBId.id)
       expect(providerIds).to.include(nodeCId.id)

@@ -4,6 +4,7 @@ import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import drain from 'it-drain'
 import testTimeout from '../utils/test-timeout.js'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -24,20 +25,19 @@ export function testQuery (factory, options) {
     let nodeA
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
-      const nodeAId = await nodeA.id()
-      nodeBId = await nodeB.id()
-      await nodeB.swarm.connect(nodeAId.addresses[0])
+
+      await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())
 
-    it('should respect timeout option when querying the DHT', () => {
+    it('should respect timeout option when querying the DHT', async () => {
+      const nodeBId = await nodeB.id()
+
       return testTimeout(() => drain(nodeA.dht.query(nodeBId.id, {
         timeout: 1
       })))
@@ -46,6 +46,7 @@ export function testQuery (factory, options) {
     it('should return the other node in the query', async function () {
       /** @type {string[]} */
       const peers = []
+      const nodeBId = await nodeB.id()
 
       for await (const event of nodeA.dht.query(nodeBId.id)) {
         if (event.name === 'PEER_RESPONSE') {

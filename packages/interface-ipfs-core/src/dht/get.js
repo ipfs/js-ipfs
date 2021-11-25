@@ -6,6 +6,7 @@ import testTimeout from '../utils/test-timeout.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import drain from 'it-drain'
 import all from 'it-all'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -26,15 +27,12 @@ export function testGet (factory, options) {
     let nodeA
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
-      nodeBId = await nodeB.id()
 
-      await nodeA.swarm.connect(nodeBId.addresses[0])
+      await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())

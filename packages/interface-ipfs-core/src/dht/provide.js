@@ -5,6 +5,7 @@ import { CID } from 'multiformats/cid'
 import all from 'it-all'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -27,8 +28,8 @@ export function testProvide (factory, options) {
     before(async () => {
       ipfs = (await factory.spawn()).api
       const nodeB = (await factory.spawn()).api
-      const nodeBId = await nodeB.id()
-      await ipfs.swarm.connect(nodeBId.addresses[0])
+
+      await ensureReachable(ipfs, nodeB)
     })
 
     after(() => factory.clean())
