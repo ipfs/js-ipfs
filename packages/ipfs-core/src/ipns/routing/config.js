@@ -2,8 +2,7 @@ import { TieredDatastore } from 'datastore-core/tiered'
 import get from 'dlv'
 import { IpnsPubsubDatastore } from './pubsub-datastore.js'
 import { OfflineDatastore } from './offline-datastore.js'
-import drain from 'it-drain'
-import { notFoundError } from 'datastore-core/errors'
+import { DHTDatastore } from './dht-datastore.js'
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
@@ -41,35 +40,4 @@ export function createRouting ({ libp2p, repo, peerId, options }) {
 
   // Create ipns routing with a set of datastores
   return new TieredDatastore(ipnsStores)
-}
-
-class DHTDatastore {
-  /**
-   *
-   * @param {import('libp2p-kad-dht/src/types').DHT} dht
-   */
-  constructor (dht) {
-    this._dht = dht
-  }
-
-  /**
-   * @param {Uint8Array} key - identifier of the value.
-   * @param {Uint8Array} value - value to be stored.
-   */
-  async put (key, value) {
-    await drain(this._dht.put(key, value))
-  }
-
-  /**
-   * @param {Uint8Array} key - identifier of the value to be obtained.
-   */
-  async get (key) {
-    for await (const event of this._dht.get(key)) {
-      if (event.name === 'VALUE') {
-        return event.value
-      }
-    }
-
-    throw notFoundError()
-  }
 }
