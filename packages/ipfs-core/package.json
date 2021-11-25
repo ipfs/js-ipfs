@@ -110,7 +110,7 @@
     "it-tar": "^4.0.0",
     "it-to-buffer": "^2.0.0",
     "just-safe-set": "^2.2.1",
-    "libp2p": "libp2p/js-libp2p#feat/update-dht",
+    "libp2p": "^0.34.0",
     "libp2p-bootstrap": "^0.13.0",
     "libp2p-crypto": "^0.19.7",
     "libp2p-delegated-content-routing": "^0.11.0",
