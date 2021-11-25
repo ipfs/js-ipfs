@@ -3,6 +3,7 @@
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -34,6 +35,8 @@ export function testPut (factory, options) {
       console.info(nodeBId.addresses.map(addr => addr.toString())) // eslint-disable-line no-console
 
       await nodeA.swarm.connect(nodeBId.addresses[0])
+
+      await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())
