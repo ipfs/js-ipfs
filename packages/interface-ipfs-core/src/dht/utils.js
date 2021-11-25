@@ -26,8 +26,8 @@ export async function ensureReachable (nodeA, nodeB) {
   async function canFindOnDHT (source, target) {
     const { id } = await target.id()
 
-    for await (const event of source.dht.findPeer(id)) {
-      if (event.name === 'FINAL_PEER') {
+    for await (const event of source.dht.query(id)) {
+      if (event.name === 'PEER_RESPONSE' && event.from === id) {
         return
       }
     }
