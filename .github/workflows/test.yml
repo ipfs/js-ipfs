@@ -277,8 +277,6 @@ jobs:
           npm run build
           npm run link
       - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
-        env:
-          DEBUG: ipfs:*,libp2p:kad*
 
   # test-interface-message-port-client:
   #   name: Interface tests test:interface:message-port-client browser
