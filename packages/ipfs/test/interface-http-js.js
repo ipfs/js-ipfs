@@ -11,14 +11,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
   this.timeout(20000)
 
   const commonFactory = factory({
-    type: 'js',
-    ipfsOptions: {
-      config: {
-        Routing: {
-          Type: 'dhtserver'
-        }
-      }
-    }
+    type: 'js'
   })
 
   tests.root(commonFactory, {
