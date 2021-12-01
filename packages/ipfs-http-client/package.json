@@ -58,6 +58,7 @@
     "@ipld/dag-pb": "^2.1.3",
     "abort-controller": "^3.0.0",
     "any-signal": "^2.1.2",
+    "dag-jose": "^1.0.0",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.8.4",
