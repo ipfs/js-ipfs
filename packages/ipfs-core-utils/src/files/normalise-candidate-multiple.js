@@ -32,7 +32,7 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
   // fs.ReadStream
   // @ts-expect-error _readableState is a property of a node fs.ReadStream
   if (typeof input === 'string' || input instanceof String || isBytes(input) || isBlob(input) || input._readableState) {
-    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
+    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.addAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
   }
 
   // Browser ReadableStream
@@ -60,7 +60,7 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
     // (Async)Iterable<Number>
     // (Async)Iterable<Bytes>
     if (Number.isInteger(value)) {
-      throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
+      throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.addAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
     }
 
     // (Async)Iterable<fs.ReadStream>
@@ -89,7 +89,7 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
   // Note: Detected _after_ (Async)Iterable<?> because Node.js fs.ReadStreams have a
   // `path` property that passes this check.
   if (isFileObject(input)) {
-    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.allAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
+    throw errCode(new Error('Unexpected input: single item passed - if you are using ipfs.addAll, please use ipfs.add instead'), 'ERR_UNEXPECTED_INPUT')
   }
 
   throw errCode(new Error('Unexpected input: ' + typeof input), 'ERR_UNEXPECTED_INPUT')

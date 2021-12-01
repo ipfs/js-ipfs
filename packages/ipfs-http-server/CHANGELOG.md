@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.9.1...ipfs-http-server@0.9.2) (2021-11-24)
+
+**Note:** Version bump only for package ipfs-http-server
+
+
+
+
+
+## [0.9.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.9.0...ipfs-http-server@0.9.1) (2021-11-19)
+
+**Note:** Version bump only for package ipfs-http-server
+
+
+
+
+
+# [0.9.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.8.1...ipfs-http-server@0.9.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* do not accept single items for ipfs.add ([#3900](https://github.com/ipfs/js-ipfs/issues/3900)) ([04e3cf3](https://github.com/ipfs/js-ipfs/commit/04e3cf3f46b585c4644cba70516f375e95361f52))
+
+
+### BREAKING CHANGES
+
+* errors will now be thrown if multiple items are passed to `ipfs.add` or single items to `ipfs.addAll` (n.b. you can still pass a list of a single item to `ipfs.addAll`)
+
+
+
+
+
 ## [0.8.1](https://github.com/ipfs/js-ipfs/compare/ipfs-http-server@0.8.0...ipfs-http-server@0.8.1) (2021-09-28)
 
 **Note:** Version bump only for package ipfs-http-server

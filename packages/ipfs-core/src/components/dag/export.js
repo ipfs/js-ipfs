@@ -60,7 +60,7 @@ export function createExport ({ repo, preload, codecs }) {
           writer,
           codecs)
         writer.close()
-      } catch (e) {
+      } catch (/** @type {any} */ e) {
         err = e
       }
     })()

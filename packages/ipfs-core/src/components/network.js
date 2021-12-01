@@ -14,6 +14,7 @@ import { BlockStorage } from '../block-storage.js'
  * @property {Repo} options.repo
  * @property {Print} options.print
  * @property {IPFSOptions} options.options
+ * @property {import('ipfs-core-utils/multihashes').Multihashes} options.hashers
  *
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  * @typedef {import('../types').Options} IPFSOptions
@@ -44,7 +45,7 @@ export class Network {
   /**
    * @param {Options} options
    */
-  static async start ({ peerId, repo, print, options }) {
+  static async start ({ peerId, repo, print, hashers, options }) {
     // Need to ensure that repo is open as it could have been closed between
     // `init` and `start`.
     if (repo.closed) {
@@ -73,7 +74,10 @@ export class Network {
       print(`Swarm listening on ${ma}/p2p/${peerId.toB58String()}`)
     }
 
-    const bitswap = createBitswap(libp2p, repo.blocks, { statsEnabled: true })
+    const bitswap = createBitswap(libp2p, repo.blocks, {
+      statsEnabled: true,
+      hashLoader: hashers
+    })
     await bitswap.start()
 
     const blockstore = new BlockStorage(repo.blocks, bitswap)

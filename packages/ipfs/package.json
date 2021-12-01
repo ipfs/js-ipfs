@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.59.1",
+  "version": "0.60.2",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -71,24 +71,24 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.9.1",
-    "ipfs-core": "^0.11.1",
+    "ipfs-cli": "^0.10.2",
+    "ipfs-core": "^0.12.2",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
     "@types/semver": "^7.3.4",
     "@types/update-notifier": "^5.0.0",
-    "aegir": "^35.1.1",
+    "aegir": "^36.0.1",
     "assert": "^2.0.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "0.11.0-rc1",
-    "interface-ipfs-core": "^0.151.1",
-    "ipfs-client": "^0.7.1",
-    "ipfs-core-types": "^0.8.1",
-    "ipfs-http-client": "^53.0.1",
+    "interface-ipfs-core": "^0.152.2",
+    "ipfs-client": "^0.7.4",
+    "ipfs-core-types": "^0.8.4",
+    "ipfs-http-client": "^54.0.2",
     "ipfs-interop": "ipfs/interop#feat/pubsub-require-multibase",
     "ipfs-utils": "^9.0.2",
     "ipfsd-ctl": "^10.0.4",

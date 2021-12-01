@@ -128,7 +128,7 @@ export class Service {
       // and try again. That way
       case 'starting': {
         // We do not want to error stop if start failed.
-        try { await state.ready } catch (_) {}
+        try { await state.ready } catch (/** @type {any} */ _) {}
         return await Service.stop(service)
       }
       // if service is stopping we just await for it to complete.

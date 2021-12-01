@@ -347,7 +347,7 @@ jobs:
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs browser service worker
             repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-message-port-client/dist@$PWD/packages/ipfs-message-port-client/dist,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol/dist,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server/dist
+            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client/dist,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol/dist,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server/dist
           - name: ipfs browser sharing across tabs
             repo: https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client/dist,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server/dist
@@ -365,7 +365,7 @@ jobs:
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs custom ipfs repo
             repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
-            deps: ipfs@$PWD/packages/ipfs/dist
+            deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs custom ipld formats
             repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-daemon@$PWD/packages/ipfs-daemon/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
@@ -380,7 +380,7 @@ jobs:
             deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist,ipfs@$PWD/packages/ipfs/dist
           - name: ipfs-http-client name api
             repo: https://github.com/ipfs-examples/js-ipfs-http-client-name-api.git
-            deps: ipfs@$PWD/packages/ipfs/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
+            deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist
           - name: ipfs-http-client upload file
             repo: https://github.com/ipfs-examples/js-ipfs-http-client-upload-file.git
             deps: ipfs@$PWD/packages/ipfs/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
