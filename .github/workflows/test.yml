@@ -71,6 +71,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         node: [16]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
         with:
@@ -109,6 +110,7 @@ jobs:
         type:
           - browser
           - webworker
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
         with:
@@ -210,6 +212,7 @@ jobs:
           - browser
           #- electron-main
           #- electron-renderer
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
         with:
@@ -252,6 +255,7 @@ jobs:
           - test:interface:client
           - test:interface:http-go
           - test:interface:http-js
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
         with:
@@ -451,6 +455,7 @@ jobs:
           - name: ipfs-log
             repo: https://github.com/orbitdb/ipfs-log.git
             deps: ipfs@$PWD/packages/ipfs/dist,orbit-db-io@next
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
