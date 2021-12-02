@@ -40,8 +40,8 @@ export default () => ({
   },
   Swarm: {
     ConnMgr: {
-      LowWater: 200,
-      HighWater: 500
+      LowWater: 5,
+      HighWater: 20
     },
     DisableNatPortMap: true
   },

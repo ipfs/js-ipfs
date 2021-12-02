@@ -82,7 +82,7 @@
     "it-split": "^1.0.0",
     "it-tar": "^4.0.0",
     "jsondiffpatch": "^0.4.1",
-    "libp2p-crypto": "^0.19.7",
+    "libp2p-crypto": "^0.21.0",
     "mafmt": "^10.0.0",
     "multiaddr": "^10.0.0",
     "multiaddr-to-uri": "^8.0.0",
@@ -103,9 +103,9 @@
     "nanoid": "^3.1.23",
     "ncp": "^2.0.0",
     "pako": "^2.0.4",
-    "peer-id": "^0.15.1",
+    "peer-id": "^0.16.0",
     "rimraf": "^3.0.2",
-    "sinon": "^11.1.1",
+    "sinon": "^12.0.01",
     "string-argv": "^0.3.1",
     "temp-write": "^4.0.0"
   }
