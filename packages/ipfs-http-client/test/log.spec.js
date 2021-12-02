@@ -22,7 +22,7 @@ describe('.log', function () {
     const i = setInterval(async () => {
       try {
         await ipfs.add(uint8ArrayFromString('just adding some data to generate logs'))
-      } catch (_) {
+      } catch (/** @type {any} */ _) {
         // this can error if the test has finished and we're shutting down the node
       }
     }, 1000)

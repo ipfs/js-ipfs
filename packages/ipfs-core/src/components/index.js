@@ -156,6 +156,7 @@ class IPFS {
       mfsPreload,
       print,
       keychain,
+      hashers: this.hashers,
       options
     })
 

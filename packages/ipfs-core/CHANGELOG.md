@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.12.1...ipfs-core@0.12.2) (2021-11-24)
+
+**Note:** Version bump only for package ipfs-core
+
+
+
+
+
+## [0.12.1](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.12.0...ipfs-core@0.12.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* pass hasher loader to bitswap ([#3944](https://github.com/ipfs/js-ipfs/issues/3944)) ([f419553](https://github.com/ipfs/js-ipfs/commit/f419553b9dccc0a1172f399c41b766a754a3ac56))
+
+
+
+
+
 # [0.12.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core@0.11.1...ipfs-core@0.12.0) (2021-11-12)
 
 
