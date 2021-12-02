@@ -1,5 +1,5 @@
 import debug from 'debug'
- import set from 'just-safe-set'
+import set from 'just-safe-set'
 // @ts-expect-error - no types
 import WebRTCStar from 'libp2p-webrtc-star'
 import { create } from 'ipfs-core'
