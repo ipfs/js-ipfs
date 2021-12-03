@@ -336,9 +336,9 @@ jobs:
           - name: ipfs browser mfs
             repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          # - name: ipfs browser nextjs
-          #   repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
-          #   deps: ipfs-core@$PWD/packages/ipfs-core/dist
+          - name: ipfs browser nextjs
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
+            deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs browser parceljs
             repo: https://github.com/ipfs-examples/js-ipfs-browser-parceljs.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
