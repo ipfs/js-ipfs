@@ -73,7 +73,7 @@ export function testGet (factory, options) {
         Data: uint8ArrayFromString('I am inside a Protobuf'),
         Links: []
       }
-      cidPb = CID.createV0(await sha256.digest(dagPB.encode(nodePb)))
+      cidPb = CID.createV1(dagPB.code, await sha256.digest(dagPB.encode(nodePb)))
       nodeCbor = {
         someData: 'I am inside a Cbor object',
         pb: cidPb
@@ -81,8 +81,8 @@ export function testGet (factory, options) {
 
       cidCbor = CID.createV1(dagCBOR.code, await sha256.digest(dagCBOR.encode(nodeCbor)))
 
-      await ipfs.dag.put(nodePb, { format: 'dag-pb', hashAlg: 'sha2-256' })
-      await ipfs.dag.put(nodeCbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      await ipfs.dag.put(nodePb, { storeCodec: 'dag-pb', hashAlg: 'sha2-256' })
+      await ipfs.dag.put(nodeCbor, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
     })
 
     it('should respect timeout option when getting a DAG node', () => {
@@ -93,7 +93,7 @@ export function testGet (factory, options) {
 
     it('should get a dag-pb node', async () => {
       const cid = await ipfs.dag.put(pbNode, {
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         hashAlg: 'sha2-256'
       })
 
@@ -105,7 +105,7 @@ export function testGet (factory, options) {
 
     it('should get a dag-cbor node', async () => {
       const cid = await ipfs.dag.put(cborNode, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-256'
       })
 
@@ -122,7 +122,7 @@ export function testGet (factory, options) {
 
       const node = result.value
 
-      const cid = CID.createV0(await sha256.digest(dagPB.encode(node)))
+      const cid = CID.createV1(dagPB.code, await sha256.digest(dagPB.encode(node)))
       expect(cid.equals(cidPb)).to.be.true()
     })
 
@@ -192,7 +192,7 @@ export function testGet (factory, options) {
       }
 
       const cid = await ipfs.dag.put(node, {
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         hashAlg: 'sha2-256',
         version: 0
       })
@@ -226,7 +226,7 @@ export function testGet (factory, options) {
         foo: 'dag-cbor-bar'
       }
 
-      const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put(cbor, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
       expect(cid.code).to.equal(dagCBOR.code)
       expect(cid.toString(base32)).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
 
@@ -241,10 +241,10 @@ export function testGet (factory, options) {
         foo: 'dag-cbor-bar'
       }
 
-      const cid1 = await ipfs.dag.put(cbor1, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid1 = await ipfs.dag.put(cbor1, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
       const cbor2 = { other: cid1 }
 
-      const cid2 = await ipfs.dag.put(cbor2, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid2 = await ipfs.dag.put(cbor2, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.get(cid2, {
         path: 'other/foo'
@@ -256,7 +256,7 @@ export function testGet (factory, options) {
       const buf = Uint8Array.from([0, 1, 2, 3])
 
       const cid = await ipfs.dag.put(buf, {
-        format: 'raw',
+        storeCodec: 'raw',
         hashAlg: 'sha2-256'
       })
 

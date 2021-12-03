@@ -37,35 +37,35 @@ export function testPut (factory, options) {
 
     it('should put dag-pb with default hash func (sha2-256)', () => {
       return ipfs.dag.put(pbNode, {
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         hashAlg: 'sha2-256'
       })
     })
 
     it('should put dag-pb with non-default hash func (sha2-512)', () => {
       return ipfs.dag.put(pbNode, {
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         hashAlg: 'sha2-512'
       })
     })
 
     it('should put dag-cbor with default hash func (sha2-256)', () => {
       return ipfs.dag.put(cborNode, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-256'
       })
     })
 
     it('should put dag-cbor with non-default hash func (sha2-512)', () => {
       return ipfs.dag.put(cborNode, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-512'
       })
     })
 
     it('should return the cid', async () => {
       const cid = await ipfs.dag.put(cborNode, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-256'
       })
       expect(cid).to.exist()
@@ -90,7 +90,7 @@ export function testPut (factory, options) {
 
     it('should override hash algorithm default and resolve with it', async () => {
       const cid = await ipfs.dag.put(cborNode, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-512'
       })
       expect(cid.code).to.equal(dagCBOR.code)

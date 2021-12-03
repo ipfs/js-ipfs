@@ -20,9 +20,9 @@ export const createPut = (codecs, options) => {
     async function put (obj, options = {}) {
       return dagPut(obj, {
         ...options,
-        format: 'dag-pb',
+        storeCodec: 'dag-pb',
         hashAlg: 'sha2-256',
-        version: 0
+        version: 1
       })
     }
     return put

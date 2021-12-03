@@ -5,6 +5,7 @@ import { Multicodecs } from 'ipfs-core-utils/multicodecs'
 import { Multihashes } from 'ipfs-core-utils/multihashes'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
+import * as dagJSON from '@ipld/dag-json'
 import { identity } from 'multiformats/hashes/identity'
 import { bases, hashes, codecs } from 'multiformats/basics'
 import { createBitswap } from './bitswap/index.js'
@@ -79,7 +80,7 @@ export function create (options = {}) {
   /** @type {BlockCodec[]} */
   const blockCodecs = Object.values(codecs);
 
-  [dagPB, dagCBOR, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
+  [dagPB, dagCBOR, dagJSON, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
 
   const multicodecs = new Multicodecs({
     codecs: blockCodecs,
