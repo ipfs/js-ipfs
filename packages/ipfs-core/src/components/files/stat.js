@@ -33,7 +33,7 @@ const defaultOptions = {
  */
 export function createStat (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["stat"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["stat"]}
    */
   async function mfsStat (path, options = {}) {
     /** @type {DefaultOptions} */

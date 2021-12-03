@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createConnect ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/swarm').API["connect"]}
+   * @type {import('ipfs-core-types/src/swarm').API<{}>["connect"]}
    */
   async function connect (addr, options = {}) {
     const { libp2p } = await network.use(options)

@@ -7,7 +7,7 @@ import { Multiaddr } from 'multiaddr'
  */
 export function createClear ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/bootstrap').API["clear"]}
+   * @type {import('ipfs-core-types/src/bootstrap').API<{}>["clear"]}
    */
   async function clear (options = {}) {
     /** @type {import('ipfs-core-types/src/config').Config} */

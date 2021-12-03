@@ -7,7 +7,7 @@ import { Multiaddr } from 'multiaddr'
  */
 export function createList ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/bootstrap').API["list"]}
+   * @type {import('ipfs-core-types/src/bootstrap').API<{}>["list"]}
    */
   async function list (options = {}) {
     /** @type {string[]|null} */

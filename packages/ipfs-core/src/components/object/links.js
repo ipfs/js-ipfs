@@ -61,7 +61,7 @@ function findLinks (node, links = []) {
  */
 export function createLinks ({ repo, codecs }) {
   /**
-   * @type {import('ipfs-core-types/src/object').API["links"]}
+   * @type {import('ipfs-core-types/src/object').API<{}>["links"]}
    */
   async function links (cid, options = {}) {
     const codec = await codecs.getCodec(cid.code)

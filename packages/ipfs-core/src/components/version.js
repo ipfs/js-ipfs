@@ -7,7 +7,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createVersion ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["version"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["version"]}
    */
   async function version (_options = {}) {
     const repoVersion = await repo.version.get()

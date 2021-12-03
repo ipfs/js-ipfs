@@ -47,7 +47,7 @@ const defaultOptions = {
  */
 export function createCp (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["cp"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["cp"]}
    */
   async function mfsCp (from, to, opts = {}) {
     /** @type {DefaultOptions} */

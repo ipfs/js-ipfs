@@ -43,7 +43,7 @@ const defaultOptions = {
  */
 export function createTouch (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["touch"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["touch"]}
    */
   async function mfsTouch (path, options = {}) {
     /** @type {DefaultOptions} */

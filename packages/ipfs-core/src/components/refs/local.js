@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createLocal ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/refs').API["local"]}
+   * @type {import('ipfs-core-types/src/refs').API<{}>["local"]}
    */
   async function * refsLocal (options = {}) {
     for await (const cid of repo.blocks.queryKeys({}, { signal: options.signal })) {

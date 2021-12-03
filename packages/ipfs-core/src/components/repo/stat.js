@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createStat ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/repo').API["stat"]}
+   * @type {import('ipfs-core-types/src/repo').API<{}>["stat"]}
    */
   async function stat (options = {}) {
     const stats = await repo.stat()

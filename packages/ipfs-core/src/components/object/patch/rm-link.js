@@ -12,7 +12,7 @@ export function createRmLink ({ repo, preload }) {
   const put = createPut({ repo, preload })
 
   /**
-   * @type {import('ipfs-core-types/src/object/patch').API["rmLink"]}
+   * @type {import('ipfs-core-types/src/object/patch').API<{}>["rmLink"]}
    */
   async function rmLink (multihash, linkRef, options = {}) {
     const node = await get(multihash, options)

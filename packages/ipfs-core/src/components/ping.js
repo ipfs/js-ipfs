@@ -39,7 +39,7 @@ const basePacket = { success: true, time: 0, text: '' }
  */
 export function createPing ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["ping"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["ping"]}
    */
   async function * ping (peerId, options = {}) {
     const { libp2p } = await network.use()

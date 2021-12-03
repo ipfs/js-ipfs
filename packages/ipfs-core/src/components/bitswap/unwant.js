@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createUnwant ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/bitswap').API["unwant"]}
+   * @type {import('ipfs-core-types/src/bitswap').API<{}>["unwant"]}
    */
   async function unwant (cids, options = {}) {
     const { bitswap } = await network.use(options)

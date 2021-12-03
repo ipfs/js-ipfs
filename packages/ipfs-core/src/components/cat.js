@@ -12,7 +12,7 @@ import { CID } from 'multiformats/cid'
  */
 export function createCat ({ repo, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["cat"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["cat"]}
    */
   async function * cat (ipfsPath, options = {}) {
     ipfsPath = normalizeCidPath(ipfsPath)

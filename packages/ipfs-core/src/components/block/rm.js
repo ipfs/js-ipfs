@@ -14,7 +14,7 @@ const BLOCK_RM_CONCURRENCY = 8
  */
 export function createRm ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/block').API["rm"]}
+   * @type {import('ipfs-core-types/src/block').API<{}>["rm"]}
    */
   async function * rm (cids, options = {}) {
     if (!Array.isArray(cids)) {
