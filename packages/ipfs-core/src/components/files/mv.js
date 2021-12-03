@@ -34,7 +34,7 @@ const defaultOptions = {
  */
 export function createMv (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["mv"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["mv"]}
    */
   async function mfsMv (from, to, options = {}) {
     /** @type {DefaultOptions} */

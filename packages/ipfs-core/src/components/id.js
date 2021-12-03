@@ -12,7 +12,7 @@ import { NotStartedError } from '../errors.js'
  */
 export function createId ({ peerId, network }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["id"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["id"]}
    */
   async function id (options = {}) { // eslint-disable-line require-await
     if (options.peerId === peerId.toB58String()) {

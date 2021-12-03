@@ -10,7 +10,7 @@ import defer from 'p-defer'
  */
 export function grpcPubsubSubscribe (grpc, service, opts) {
   /**
-   * @type {import('ipfs-core-types/src/pubsub').API["subscribe"]}
+   * @type {import('ipfs-core-types/src/pubsub').API<{}>["subscribe"]}
    */
   async function pubsubSubscribe (topic, handler, options = {}) {
     const request = {

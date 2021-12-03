@@ -11,7 +11,7 @@ import { CID } from 'multiformats/cid'
  */
 export function createNew ({ repo, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/object').API["new"]}
+   * @type {import('ipfs-core-types/src/object').API<{}>["new"]}
    */
   async function _new (options = {}) {
     let data

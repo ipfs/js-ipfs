@@ -9,7 +9,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 export function createStat ({ repo, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/block').API["stat"]}
+   * @type {import('ipfs-core-types/src/block').API<{}>["stat"]}
    */
   async function stat (cid, options = {}) {
     cid = cleanCid(cid)

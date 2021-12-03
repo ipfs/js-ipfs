@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createExport ({ keychain }) {
   /**
-   * @type {import('ipfs-core-types/src/key').API["export"]}
+   * @type {import('ipfs-core-types/src/key').API<{}>["export"]}
    */
   const exportKey = (name, password) =>
     keychain.exportKey(name, password)

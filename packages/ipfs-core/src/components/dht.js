@@ -157,7 +157,7 @@ function mapEvent (event) {
 export function createDht ({ network, repo, peerId }) {
   const { get, put, findProvs, findPeer, provide, query } = {
     /**
-     * @type {import('ipfs-core-types/src/dht').API["get"]}
+     * @type {import('ipfs-core-types/src/dht').API<{}>["get"]}
      */
     async * get (key, options = {}) {
       const { libp2p } = await use(network, peerId, options)
@@ -168,7 +168,7 @@ export function createDht ({ network, repo, peerId }) {
     },
 
     /**
-     * @type {import('ipfs-core-types/src/dht').API["put"]}
+     * @type {import('ipfs-core-types/src/dht').API<{}>["put"]}
      */
     async * put (key, value, options) {
       const { libp2p } = await use(network, peerId, options)
@@ -179,9 +179,9 @@ export function createDht ({ network, repo, peerId }) {
     },
 
     /**
-     * @type {import('ipfs-core-types/src/dht').API["findProvs"]}
+     * @type {import('ipfs-core-types/src/dht').API<{}>["findProvs"]}
      */
-    async * findProvs (cid, options = { numProviders: 20 }) {
+    async * findProvs (cid, options = {}) {
       const { libp2p } = await use(network, peerId, options)
 
       yield * map(libp2p._dht.findProviders(cid, {
@@ -190,7 +190,7 @@ export function createDht ({ network, repo, peerId }) {
     },
 
     /**
-     * @type {import('ipfs-core-types/src/dht').API["findPeer"]}
+     * @type {import('ipfs-core-types/src/dht').API<{}>["findPeer"]}
      */
     async * findPeer (peerIdToFind, options = {}) {
       const { libp2p } = await use(network, peerId, options)
@@ -201,7 +201,7 @@ export function createDht ({ network, repo, peerId }) {
     },
 
     /**
-     * @type {import('ipfs-core-types/src/dht').API["provide"]}
+     * @type {import('ipfs-core-types/src/dht').API<{}>["provide"]}
      */
     async * provide (cid, options = { recursive: false }) {
       const { libp2p } = await use(network, peerId, options)
@@ -222,7 +222,7 @@ export function createDht ({ network, repo, peerId }) {
     },
 
     /**
-     * @type {import('ipfs-core-types/src/dht').API["query"]}
+     * @type {import('ipfs-core-types/src/dht').API<{}>["query"]}
      */
     async * query (peerIdToQuery, options = {}) {
       const { libp2p } = await use(network, peerId, options)

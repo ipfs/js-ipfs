@@ -20,7 +20,7 @@ export function createPubsub ({ network, config }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/pubsub').API["subscribe"]}
+   * @type {import('ipfs-core-types/src/pubsub').API<{}>["subscribe"]}
    */
   async function subscribe (topic, handler, options = {}) {
     const { libp2p } = await network.use(options)
@@ -29,7 +29,7 @@ export function createPubsub ({ network, config }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/pubsub').API["unsubscribe"]}
+   * @type {import('ipfs-core-types/src/pubsub').API<{}>["unsubscribe"]}
    */
   async function unsubscribe (topic, handler, options = {}) {
     const { libp2p } = await network.use(options)
@@ -38,7 +38,7 @@ export function createPubsub ({ network, config }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/pubsub').API["publish"]}
+   * @type {import('ipfs-core-types/src/pubsub').API<{}>["publish"]}
    */
   async function publish (topic, data, options = {}) {
     const { libp2p } = await network.use(options)
@@ -49,7 +49,7 @@ export function createPubsub ({ network, config }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/pubsub').API["ls"]}
+   * @type {import('ipfs-core-types/src/pubsub').API<{}>["ls"]}
    */
   async function ls (options = {}) {
     const { libp2p } = await network.use(options)
@@ -57,7 +57,7 @@ export function createPubsub ({ network, config }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/pubsub').API["peers"]}
+   * @type {import('ipfs-core-types/src/pubsub').API<{}>["peers"]}
    */
   async function peers (topic, options = {}) {
     const { libp2p } = await network.use(options)

@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createRm ({ keychain }) {
   /**
-   * @type {import('ipfs-core-types/src/key').API["rm"]}
+   * @type {import('ipfs-core-types/src/key').API<{}>["rm"]}
    */
   const rm = (name) => keychain.removeKey(name)
 

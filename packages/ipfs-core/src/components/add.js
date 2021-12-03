@@ -3,11 +3,11 @@ import { normaliseInput } from 'ipfs-core-utils/files/normalise-input-single'
 
 /**
  * @param {Object} context
- * @param {import('ipfs-core-types/src/root').API["addAll"]} context.addAll
+ * @param {import('ipfs-core-types/src/root').API<{}>["addAll"]} context.addAll
  */
 export function createAdd ({ addAll }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["add"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["add"]}
    */
   async function add (entry, options = {}) {
     // @ts-ignore TODO: https://github.com/ipfs/js-ipfs/issues/3290

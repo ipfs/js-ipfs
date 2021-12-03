@@ -10,7 +10,7 @@ export function createData ({ repo, preload }) {
   const get = createGet({ repo, preload })
 
   /**
-   * @type {import('ipfs-core-types/src/object').API["data"]}
+   * @type {import('ipfs-core-types/src/object').API<{}>["data"]}
    */
   async function data (multihash, options = {}) {
     const node = await get(multihash, options)

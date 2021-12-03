@@ -10,7 +10,7 @@ import { Multiaddr } from 'multiaddr'
  */
 export function grpcId (grpc, service, opts) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["id"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["id"]}
    */
   async function id (options = {}) {
     const request = {}

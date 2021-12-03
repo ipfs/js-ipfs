@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createLocalAddrs ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/swarm').API["localAddrs"]}
+   * @type {import('ipfs-core-types/src/swarm').API<{}>["localAddrs"]}
    */
   async function localAddrs (options = {}) {
     const { libp2p } = await network.use(options)

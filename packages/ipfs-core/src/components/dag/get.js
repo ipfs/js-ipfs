@@ -12,7 +12,7 @@ import errCode from 'err-code'
  */
 export function createGet ({ codecs, repo, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/dag').API["get"]}
+   * @type {import('ipfs-core-types/src/dag').API<{}>["get"]}
    */
   const get = async function get (cid, options = {}) {
     if (options.preload !== false) {

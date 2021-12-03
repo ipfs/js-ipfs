@@ -21,11 +21,11 @@ const DEFAULT_COMPRESSION_LEVEL = 6
  */
 export function createGet ({ repo, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["get"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["get"]}
    */
   async function * get (ipfsPath, options = {}) {
-    if (options.compressionLevel < 0 || options.compressionLevel > 9) {
-      throw errCode(new Error('Compression level must be between 1 and 9'), 'ERR_INVALID_PARAMS')
+    if (options.compressionLevel != null && (options.compressionLevel < -1 || options.compressionLevel > 9)) {
+      throw errCode(new Error('Compression level must be between -1 and 9'), 'ERR_INVALID_PARAMS')
     }
 
     if (options.preload !== false) {

@@ -11,7 +11,7 @@ export function createStat ({ repo, preload }) {
   const get = createGet({ repo, preload })
 
   /**
-   * @type {import('ipfs-core-types/src/object').API["stat"]}
+   * @type {import('ipfs-core-types/src/object').API<{}>["stat"]}
    */
   async function stat (cid, options = {}) {
     const node = await get(cid, options)

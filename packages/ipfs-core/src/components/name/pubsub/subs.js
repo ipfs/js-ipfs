@@ -10,7 +10,7 @@ export function createSubs ({ ipns, options }) {
   const experimental = options.EXPERIMENTAL
 
   /**
-   * @type {import('ipfs-core-types/src/name/pubsub').API["subs"]}
+   * @type {import('ipfs-core-types/src/name/pubsub').API<{}>["subs"]}
    */
   async function subs (options = {}) { // eslint-disable-line require-await
     const pubsub = getPubsubRouting(ipns, experimental)
