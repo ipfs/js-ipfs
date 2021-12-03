@@ -67,7 +67,6 @@ jobs:
     name: Unit tests ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
     needs: build
     runs-on: ${{ matrix.os }}
-    concurrency: js-ipfs-test-${{ github.ref }}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -103,7 +102,6 @@ jobs:
     name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     strategy:
       matrix:
         browser:
@@ -143,7 +141,6 @@ jobs:
     name: Unit tests electron-main
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -176,7 +173,6 @@ jobs:
     name: Unit tests electron-renderer
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -209,7 +205,6 @@ jobs:
     name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     strategy:
       matrix:
         type:
@@ -248,7 +243,6 @@ jobs:
     name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     strategy:
       matrix:
         type:
@@ -292,7 +286,6 @@ jobs:
     name: Interface tests test:interface:message-port-client browser
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -323,7 +316,6 @@ jobs:
     name: Test example ${{ matrix.example.name }}
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     strategy:
       matrix:
         example:
@@ -448,7 +440,6 @@ jobs:
     name: Test external ${{ matrix.external.name }}
     needs: build
     runs-on: ubuntu-latest
-    concurrency: js-ipfs-test-${{ github.ref }}
     strategy:
       matrix:
         external:
