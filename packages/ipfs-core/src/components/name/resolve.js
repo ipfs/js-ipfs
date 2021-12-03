@@ -31,15 +31,15 @@ const appendRemainder = (result, remainder) =>
  * IPNS - Inter-Planetary Naming System
  *
  * @param {Object} config
- * @param {import('ipfs-core-types/src/root').API["dns"]} config.dns
+ * @param {import('ipfs-core-types/src/root').API<{}>["dns"]} config.dns
  * @param {import('../ipns').IPNSAPI} config.ipns
  * @param {import('peer-id')} config.peerId
- * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
+ * @param {import('ipfs-core-types/src/root').API<{}>["isOnline"]} config.isOnline
  * @param {import('../../types').Options} config.options
  */
 export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline } }) {
   /**
-   * @type {import('ipfs-core-types/src/name').API["resolve"]}
+   * @type {import('ipfs-core-types/src/name').API<{}>["resolve"]}
    */
   async function * resolve (name, options = {}) { // eslint-disable-line require-await
     options = mergeOptions({

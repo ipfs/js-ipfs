@@ -5,7 +5,7 @@ import assets from './init-files/init-docs/index.js'
  * Add the default assets to the repo.
  *
  * @param {object} arg
- * @param {import('ipfs-core-types/src/root').API["addAll"]} arg.addAll
+ * @param {import('ipfs-core-types/src/root').API<{}>["addAll"]} arg.addAll
  * @param {(msg: string) => void} arg.print
  */
 export async function initAssets ({ addAll, print }) {

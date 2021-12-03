@@ -8,7 +8,7 @@ import { Multiaddr } from 'multiaddr'
  */
 export function createReset ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/bootstrap').API["reset"]}
+   * @type {import('ipfs-core-types/src/bootstrap').API<{}>["reset"]}
    */
   async function reset (options = {}) {
     /** @type {import('ipfs-core-types/src/config').Config} */

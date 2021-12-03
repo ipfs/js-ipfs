@@ -19,7 +19,7 @@ const log = debug('ipfs:components:dag:import')
  */
 export function createImport ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/dag').API["import"]}
+   * @type {import('ipfs-core-types/src/dag').API<{}>["import"]}
    */
   async function * dagImport (sources, options = {}) {
     const release = await repo.gcLock.readLock()

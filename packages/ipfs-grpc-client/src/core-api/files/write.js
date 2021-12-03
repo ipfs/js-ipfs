@@ -23,7 +23,7 @@ async function * stream (path, content) {
  */
 export function grpcMfsWrite (grpc, service, opts) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["write"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["write"]}
    */
   async function mfsWrite (path, content, options = {}) {
     /**

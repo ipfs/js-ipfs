@@ -111,7 +111,7 @@ async function sendFiles (stream, sink) {
  */
 export function grpcAddAll (grpc, service, opts) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["addAll"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["addAll"]}
    */
   async function * addAll (stream, options = {}) {
     const {

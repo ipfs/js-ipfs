@@ -28,7 +28,7 @@ const defaultOptions = {
  */
 export function createRead (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["read"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["read"]}
    */
   function mfsRead (path, options = {}) {
     /** @type {DefaultOptions} */

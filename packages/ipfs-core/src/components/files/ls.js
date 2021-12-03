@@ -33,7 +33,7 @@ const toOutput = (fsEntry) => {
  */
 export function createLs (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["ls"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["ls"]}
    */
   async function * mfsLs (path, options = {}) {
     const mfsPath = await toMfsPath(context, path, options)

@@ -10,7 +10,7 @@ export function createState ({ ipns, options }) {
   const experimental = options.EXPERIMENTAL
 
   /**
-   * @type {import('ipfs-core-types/src/name/pubsub').API["state"]}
+   * @type {import('ipfs-core-types/src/name/pubsub').API<{}>["state"]}
    */
   async function state (_options = {}) { // eslint-disable-line require-await
     try {

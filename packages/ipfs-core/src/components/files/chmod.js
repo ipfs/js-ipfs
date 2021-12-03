@@ -214,7 +214,7 @@ function calculateMode (mode, metadata) {
  */
 export function createChmod (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["chmod"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["chmod"]}
    */
   async function mfsChmod (path, mode, options = {}) {
     /** @type {DefaultOptions} */

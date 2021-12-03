@@ -22,7 +22,7 @@ export function createAddAll ({ repo, preload, options }) {
   const isShardingEnabled = options && options.sharding
 
   /**
-   * @type {import('ipfs-core-types/src/root').API["addAll"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["addAll"]}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({

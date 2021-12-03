@@ -259,7 +259,7 @@ export interface CatOptions extends AbortOptions, PreloadOptions {
 export interface GetOptions extends AbortOptions, PreloadOptions {
   archive?: boolean
   compress?: boolean
-  compressionLevel?: number
+  compressionLevel?: -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6| 7 | 8| 9
 }
 
 export interface ListOptions extends AbortOptions, PreloadOptions {

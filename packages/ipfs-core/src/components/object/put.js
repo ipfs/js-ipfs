@@ -10,7 +10,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createPut ({ repo, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/object').API["put"]}
+   * @type {import('ipfs-core-types/src/object').API<{}>["put"]}
    */
   async function put (obj, options = {}) {
     const release = await repo.gcLock.readLock()

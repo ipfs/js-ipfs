@@ -38,7 +38,7 @@ const defaultOptions = {
  */
 export function createRm (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["rm"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["rm"]}
    */
   async function mfsRm (paths, opts = {}) {
     /** @type {DefaultOptions} */
