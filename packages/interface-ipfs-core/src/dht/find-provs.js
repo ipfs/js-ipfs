@@ -4,8 +4,8 @@ import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import drain from 'it-drain'
-import { fakeCid } from './utils.js'
 import testTimeout from '../utils/test-timeout.js'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -20,7 +20,7 @@ export function testFindProvs (factory, options) {
   const it = getIt(options)
 
   describe('.dht.findProvs', function () {
-    this.timeout(20000)
+    this.timeout(80 * 1000)
 
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeA
@@ -28,26 +28,14 @@ export function testFindProvs (factory, options) {
     let nodeB
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeC
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeAId
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeCId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
       nodeC = (await factory.spawn()).api
 
-      nodeAId = await nodeA.id()
-      nodeBId = await nodeB.id()
-      nodeCId = await nodeC.id()
-
-      await Promise.all([
-        nodeB.swarm.connect(nodeAId.addresses[0]),
-        nodeC.swarm.connect(nodeBId.addresses[0])
-      ])
+      await ensureReachable(nodeB, nodeA)
+      await ensureReachable(nodeC, nodeB)
     })
 
     after(() => factory.clean())
@@ -57,8 +45,6 @@ export function testFindProvs (factory, options) {
      */
     let providedCid
     before('add providers for the same cid', async function () {
-      this.timeout(10 * 1000)
-
       const cids = await Promise.all([
         nodeB.object.new('unixfs-dir'),
         nodeC.object.new('unixfs-dir')
@@ -79,38 +65,20 @@ export function testFindProvs (factory, options) {
     })
 
     it('should be able to find providers', async function () {
-      // @ts-ignore this is mocha
-      this.timeout(20 * 1000)
+      /** @type {string[]} */
+      const providerIds = []
 
-      const provs = await all(nodeA.dht.findProvs(providedCid, { numProviders: 2 }))
-      const providerIds = provs.map((p) => p.id.toString())
-
-      expect(providerIds).to.have.members([
-        nodeBId.id,
-        nodeCId.id
-      ])
-    })
-
-    it('should take options to override timeout config', async function () {
-      const options = {
-        timeout: 1
+      for await (const event of nodeA.dht.findProvs(providedCid)) {
+        if (event.name === 'PROVIDER') {
+          providerIds.push(...event.providers.map(prov => prov.id))
+        }
       }
 
-      const cidV0 = await fakeCid()
-      const start = Date.now()
-      let res
+      const nodeBId = await nodeB.id()
+      const nodeCId = await nodeC.id()
 
-      try {
-        res = await all(nodeA.dht.findProvs(cidV0, options))
-      } catch (/** @type {any} */ err) {
-        // rejected by http client
-        expect(err).to.have.property('name', 'TimeoutError')
-        return
-      }
-
-      // rejected by the server, errors don't work over http - https://github.com/ipfs/js-ipfs/issues/2519
-      expect(res).to.be.an('array').with.lengthOf(0)
-      expect(Date.now() - start).to.be.lessThan(100)
+      expect(providerIds).to.include(nodeBId.id)
+      expect(providerIds).to.include(nodeCId.id)
     })
   })
 }

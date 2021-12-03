@@ -10,7 +10,7 @@ import { subscriptions } from './subscriptions.js'
  */
 export function grpcPubsubUnsubscribe (grpc, service, opts) {
   /**
-   * @type {import('ipfs-core-types/src/pubsub').API["unsubscribe"]}
+   * @type {import('ipfs-core-types/src/pubsub').API<{}>["unsubscribe"]}
    */
   async function pubsubUnsubscribe (topic, handler, options = {}) {
     const handlers = []

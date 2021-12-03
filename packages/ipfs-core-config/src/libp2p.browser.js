@@ -5,7 +5,7 @@ import WS from 'libp2p-websockets'
 import WebRTCStar from 'libp2p-webrtc-star'
 // @ts-expect-error - no types
 import Multiplex from 'libp2p-mplex'
-import { NOISE } from '@chainsafe/libp2p-noise'
+import { NOISE } from '@achingbrain/libp2p-noise'
 import KadDHT from 'libp2p-kad-dht'
 import GossipSub from 'libp2p-gossipsub'
 import { validator, selector } from './utils/ipns.js'
@@ -47,11 +47,8 @@ export function libp2pConfig () {
       },
       dht: {
         kBucketSize: 20,
-        enabled: false,
+        enabled: true,
         clientMode: true,
-        randomWalk: {
-          enabled: false
-        },
         validators: {
           ipns: validator
         },

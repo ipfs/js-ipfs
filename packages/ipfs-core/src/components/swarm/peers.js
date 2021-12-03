@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createPeers ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/swarm').API["peers"]}
+   * @type {import('ipfs-core-types/src/swarm').API<{}>["peers"]}
    */
   async function peers (options = {}) {
     const { libp2p } = await network.use(options)

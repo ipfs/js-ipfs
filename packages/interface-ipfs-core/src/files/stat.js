@@ -156,7 +156,7 @@ export function testStat (factory, options) {
       const path = '/cbor.node'
       const node = {}
       const cid = await ipfs.dag.put(node, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-256'
       })
       await ipfs.files.cp(`/ipfs/${cid}`, path)

@@ -7,7 +7,7 @@ import { repoVersion } from 'ipfs-repo/constants'
  */
 export function createVersion ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/repo').API["version"]}
+   * @type {import('ipfs-core-types/src/repo').API<{}>["version"]}
    */
   async function version (options = {}) {
     try {

@@ -31,11 +31,25 @@ export default {
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, numProviders, timeout }) {
-    for await (const prov of ipfs.dht.findProvs(key, {
-      numProviders,
+    const providers = new Set()
+
+    for await (const event of ipfs.dht.findProvs(key, {
       timeout
     })) {
-      print(prov.id.toString())
+      if (event.name === 'PROVIDER') {
+        event.providers.forEach(peerData => {
+          if (providers.has(peerData.id)) {
+            return
+          }
+
+          providers.add(peerData.id)
+          print(peerData.id.toString())
+        })
+
+        if (providers.size >= numProviders) {
+          break
+        }
+      }
     }
   }
 }

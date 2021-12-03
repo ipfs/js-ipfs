@@ -299,18 +299,16 @@ describe('name', function () {
         // @ts-expect-error sinon.stub() is not complete implementation
         peerId: sinon.stub(),
         options: {
-          libp2p: {
-            config: {
-              dht: {
-                enabled: true
-              }
+          config: {
+            Routing: {
+              Type: 'dhtclient'
             }
           }
         }
       })
 
       expect(config.stores).to.have.lengthOf(1)
-      expect(config.stores[0]).to.eql(dht)
+      expect(config.stores).to.have.deep.nested.property('[0]._dht', dht)
     })
   })
 })

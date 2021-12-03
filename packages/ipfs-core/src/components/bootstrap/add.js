@@ -7,7 +7,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createAdd ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/bootstrap').API["add"]}
+   * @type {import('ipfs-core-types/src/bootstrap').API<{}>["add"]}
    */
   async function add (multiaddr, options = {}) {
     if (!isValidMultiaddr(multiaddr)) {

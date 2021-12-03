@@ -82,7 +82,7 @@ const defaultOptions = {
  */
 export function createWrite (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["write"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["write"]}
    */
   async function mfsWrite (path, content, opts = {}) {
     /** @type {DefaultOptions} */

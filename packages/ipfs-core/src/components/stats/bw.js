@@ -1,10 +1,11 @@
 import parseDuration from 'parse-duration'
 import errCode from 'err-code'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
+import PeerId from 'peer-id'
 
 /**
  * @typedef {Object} BWOptions
- * @property {PeerId} [peer] - Specifies a peer to print bandwidth for
+ * @property {string} [peer] - Specifies a peer to print bandwidth for
  * @property {string} [proto] - Specifies a protocol to print bandwidth for
  * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
  * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
@@ -16,7 +17,6 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  * @property {number} rateOut
  *
  * @typedef {import('libp2p')} libp2p
- * @typedef {import('peer-id')} PeerId
  * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
@@ -32,7 +32,7 @@ function getBandwidthStats (libp2p, opts) {
   if (!libp2p.metrics) {
     stats = undefined
   } else if (opts.peer) {
-    stats = libp2p.metrics.forPeer(opts.peer)
+    stats = libp2p.metrics.forPeer(PeerId.parse(opts.peer))
   } else if (opts.proto) {
     stats = libp2p.metrics.forProtocol(opts.proto)
   } else {
@@ -64,7 +64,7 @@ function getBandwidthStats (libp2p, opts) {
  */
 export function createBw ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/stats').API["bw"]}
+   * @type {import('ipfs-core-types/src/stats').API<{}>["bw"]}
    */
   const bw = async function * (options = {}) {
     const { libp2p } = await network.use(options)

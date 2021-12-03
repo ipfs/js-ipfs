@@ -67,7 +67,7 @@ export function testResolve (factory, options) {
 
     it('should resolve up to the last node', async () => {
       const content = { path: { to: { file: nanoid() } } }
-      const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
+      const options = { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' }
       const cid = await ipfs.dag.put(content, options)
       const path = `/ipfs/${cid}/path/to/file`
       const resolved = await ipfs.resolve(path)
@@ -76,7 +76,7 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve up to the last node across multiple nodes', async () => {
-      const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
+      const options = { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' }
       const childCid = await ipfs.dag.put({ node: { with: { file: nanoid() } } }, options)
       const parentCid = await ipfs.dag.put({ path: { to: childCid } }, options)
       const resolved = await ipfs.resolve(`/ipfs/${parentCid}/path/to/node/with/file`)

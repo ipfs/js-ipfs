@@ -16,14 +16,13 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
  * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../../types').Preload} preload
  * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
- *
  * @param {Context} context
  */
 export function createAddAll ({ repo, preload, options }) {
   const isShardingEnabled = options && options.sharding
 
   /**
-   * @type {import('ipfs-core-types/src/root').API["addAll"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["addAll"]}
    */
   async function * addAll (source, options = {}) {
     const opts = mergeOptions({

@@ -47,7 +47,7 @@ const defaultOptions = {
  */
 export function createMkdir (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["mkdir"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["mkdir"]}
    */
   async function mfsMkdir (path, options = {}) {
     /** @type {DefaultOptions} */

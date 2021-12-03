@@ -7,7 +7,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createWantlistForPeer ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/bitswap').API["wantlistForPeer"]}
+   * @type {import('ipfs-core-types/src/bitswap').API<{}>["wantlistForPeer"]}
    */
   async function wantlistForPeer (peerId, options = {}) {
     const { bitswap } = await network.use(options)
