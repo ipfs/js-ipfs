@@ -242,7 +242,7 @@ const addEmptyDir = async (ipfs) => {
 
   const cid = await ipfs.block.put(buf, {
     mhtype: 'sha2-256',
-    storeCodec: 'dag-pb'
+    format: 'dag-pb'
   })
 
   await ipfs.pin.add(cid)
