@@ -243,6 +243,11 @@ export class HttpApi {
         request.app.signal = controller.signal
 
         // abort the request if the client disconnects
+        request.raw.res.once('close', () => {
+          controller.abort()
+        })
+
+        // abort the request if the client disconnects
         request.events.once('disconnect', () => {
           controller.abort()
         })

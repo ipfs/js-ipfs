@@ -34,9 +34,14 @@ export class IpnsPubsubDatastore {
    * @param {Uint8Array} key - identifier of the value.
    * @param {Uint8Array} value - value to be stored.
    */
-  put (key, value) {
-    // @ts-ignore datastores take Key keys, this one takes Uint8Array keys
-    return this._pubsubDs.put(key, value)
+  async put (key, value) {
+    try {
+      // @ts-ignore datastores take Key keys, this one takes Uint8Array keys
+      await this._pubsubDs.put(key, value)
+    } catch (/** @type {any} */ err) {
+      log.error(err)
+      throw err
+    }
   }
 
   /**

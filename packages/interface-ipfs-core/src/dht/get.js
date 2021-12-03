@@ -3,8 +3,10 @@
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import testTimeout from '../utils/test-timeout.js'
-import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import drain from 'it-drain'
+import all from 'it-all'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -19,19 +21,18 @@ export function testGet (factory, options) {
   const it = getIt(options)
 
   describe('.dht.get', function () {
+    this.timeout(80 * 1000)
+
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeA
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
-      nodeBId = await nodeB.id()
 
-      await nodeA.swarm.connect(nodeBId.addresses[0])
+      await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())
@@ -40,23 +41,33 @@ export function testGet (factory, options) {
       const data = await nodeA.add('should put a value to the DHT')
       const publish = await nodeA.name.publish(data.cid)
 
-      await testTimeout(() => nodeB.dht.get(uint8ArrayFromString(`/ipns/${publish.name}`), {
+      await testTimeout(() => drain(nodeB.dht.get(`/ipns/${publish.name}`, {
         timeout: 1
-      }))
+      })))
     })
 
-    it('should error when getting a non-existent key from the DHT', () => {
-      return expect(nodeA.dht.get(uint8ArrayFromString('non-existing'), { timeout: 100 }))
-        .to.eventually.be.rejected
-        .and.be.an.instanceOf(Error)
+    it('should error when getting a non-existent key from the DHT', async () => {
+      const key = '/ipns/k51qzi5uqu5dl0dbfddy2wb42nvbc6anyxnkrguy5l0h0bv9kaih6j6vqdskqk'
+      const events = await all(nodeA.dht.get(key))
+
+      // no value events found
+      expect(events.filter(event => event.name === 'VALUE')).to.be.empty()
+
+      // queryError events found
+      expect(events.filter(event => event.name === 'QUERY_ERROR')).to.not.be.empty()
     })
 
     it('should get a value after it was put on another node', async () => {
       const data = await nodeA.add('should put a value to the DHT')
       const publish = await nodeA.name.publish(data.cid)
-      const record = await nodeA.dht.get(uint8ArrayFromString(`/ipns/${publish.name}`))
+      const events = await all(nodeA.dht.get(`/ipns/${publish.name}`))
+      const valueEvent = events.filter(event => event.name === 'VALUE').pop()
 
-      expect(uint8ArrayToString(record)).to.contain(data.cid.toString())
+      if (!valueEvent || valueEvent.name !== 'VALUE') {
+        throw new Error('Value event not found')
+      }
+
+      expect(uint8ArrayToString(valueEvent.value)).to.contain(data.cid.toString())
     })
   })
 }

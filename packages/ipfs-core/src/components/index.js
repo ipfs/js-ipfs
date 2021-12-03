@@ -168,7 +168,7 @@ class IPFS {
       repo
     })
 
-    this.dht = createDht({ network, repo })
+    this.dht = createDht({ network, repo, peerId })
     this.pubsub = createPubsub({ network, config: options.config })
     this.dns = dns
     this.isOnline = isOnline

@@ -5,6 +5,7 @@ import { CID } from 'multiformats/cid'
 import all from 'it-all'
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -27,8 +28,8 @@ export function testProvide (factory, options) {
     before(async () => {
       ipfs = (await factory.spawn()).api
       const nodeB = (await factory.spawn()).api
-      const nodeBId = await nodeB.id()
-      await ipfs.swarm.connect(nodeBId.addresses[0])
+
+      await ensureReachable(ipfs, nodeB)
     })
 
     after(() => factory.clean())
@@ -48,28 +49,14 @@ export function testProvide (factory, options) {
         .that.include('not found locally')
     })
 
-    it('should allow multiple CIDs to be passed', async () => {
-      const res = await all(ipfs.addAll([
-        { content: uint8ArrayFromString('t0') },
-        { content: uint8ArrayFromString('t1') }
-      ]))
-
-      await all(ipfs.dht.provide(res.map(f => f.cid)))
-    })
-
     it('should provide a CIDv1', async () => {
       const res = await ipfs.add(uint8ArrayFromString('test'), { cidVersion: 1 })
       await all(ipfs.dht.provide(res.cid))
     })
 
-    it('should error on non CID arg', () => {
+    it('should error on non CID arg', async () => {
       // @ts-expect-error invalid arg
       return expect(all(ipfs.dht.provide({}))).to.eventually.be.rejected()
-    })
-
-    it('should error on array containing non CID arg', () => {
-      // @ts-expect-error invalid arg
-      return expect(all(ipfs.dht.provide([{}]))).to.eventually.be.rejected()
     })
   })
 }

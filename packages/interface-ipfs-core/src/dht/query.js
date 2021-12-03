@@ -2,9 +2,9 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import all from 'it-all'
 import drain from 'it-drain'
 import testTimeout from '../utils/test-timeout.js'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -25,44 +25,36 @@ export function testQuery (factory, options) {
     let nodeA
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
-      const nodeAId = await nodeA.id()
-      nodeBId = await nodeB.id()
-      await nodeB.swarm.connect(nodeAId.addresses[0])
+
+      await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())
 
-    it('should respect timeout option when querying the DHT', () => {
+    it('should respect timeout option when querying the DHT', async () => {
+      const nodeBId = await nodeB.id()
+
       return testTimeout(() => drain(nodeA.dht.query(nodeBId.id, {
         timeout: 1
       })))
     })
 
     it('should return the other node in the query', async function () {
-      const timeout = 150 * 1000
-      // @ts-ignore this is mocha
-      this.timeout(timeout)
+      /** @type {string[]} */
+      const peers = []
+      const nodeBId = await nodeB.id()
 
-      try {
-        const peers = await all(nodeA.dht.query(nodeBId.id, { timeout: timeout - 1000 }))
-        expect(peers.map(p => p.id.toString())).to.include(nodeBId.id)
-      } catch (/** @type {any} */ err) {
-        if (err.name === 'TimeoutError') {
-          // This test is meh. DHT works best with >= 20 nodes. Therefore a
-          // failure might happen, but we don't want to report it as such.
-          // Hence skip the test before the timeout is reached
-          // @ts-ignore this is mocha
-          this.skip()
-        } else {
-          throw err
+      for await (const event of nodeA.dht.query(nodeBId.id)) {
+        if (event.name === 'PEER_RESPONSE') {
+          peers.push(...event.closer.map(data => data.id))
         }
       }
+
+      expect(peers).to.include(nodeBId.id)
     })
   })
 }
