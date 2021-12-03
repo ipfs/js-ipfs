@@ -25,9 +25,12 @@ export default {
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, key, timeout }) {
-    const value = await ipfs.dht.get(key.bytes, {
+    for await (const event of await ipfs.dht.get(key.bytes, {
       timeout
-    })
-    print(uint8ArrayToString(value, 'base58btc'))
+    })) {
+      if (event.name === 'VALUE') {
+        print(uint8ArrayToString(event.value, 'base58btc'))
+      }
+    }
   }
 }

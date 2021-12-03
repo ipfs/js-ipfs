@@ -12,7 +12,7 @@ export function createAddLink ({ repo, preload }) {
   const put = createPut({ repo, preload })
 
   /**
-   * @type {import('ipfs-core-types/src/object/patch').API["addLink"]}
+   * @type {import('ipfs-core-types/src/object/patch').API<{}>["addLink"]}
    */
   async function addLink (cid, link, options = {}) {
     const node = await get(cid, options)

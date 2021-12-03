@@ -253,14 +253,14 @@ describe('preload', () => {
   it('should preload content added with dag.put', async function () {
     this.timeout(50 * 1000)
     const obj = { test: nanoid() }
-    const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+    const cid = await ipfs.dag.put(obj, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
     await waitForCids(cid)
   })
 
   it('should preload content retrieved with dag.get', async function () {
     this.timeout(50 * 1000)
     const obj = { test: nanoid() }
-    const opts = { format: 'dag-cbor', hashAlg: 'sha2-256', preload: false }
+    const opts = { storeCodec: 'dag-cbor', hashAlg: 'sha2-256', preload: false }
     const cid = await ipfs.dag.put(obj, opts)
     await clearPreloadCids()
     await ipfs.dag.get(cid)

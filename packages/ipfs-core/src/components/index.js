@@ -5,6 +5,7 @@ import errCode from 'err-code'
 import { UnixFS } from 'ipfs-unixfs'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
+import * as dagJSON from '@ipld/dag-json'
 import { identity } from 'multiformats/hashes/identity'
 import { bases, hashes, codecs } from 'multiformats/basics'
 import { initAssets } from 'ipfs-core-config/init-assets'
@@ -167,7 +168,7 @@ class IPFS {
       repo
     })
 
-    this.dht = createDht({ network, repo })
+    this.dht = createDht({ network, repo, peerId })
     this.pubsub = createPubsub({ network, config: options.config })
     this.dns = dns
     this.isOnline = isOnline
@@ -286,7 +287,7 @@ export async function create (options = {}) {
   /** @type {BlockCodec[]} */
   const blockCodecs = Object.values(codecs);
 
-  [dagPB, dagCBOR, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
+  [dagPB, dagCBOR, dagJSON, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
 
   const multicodecs = new Multicodecs({
     codecs: blockCodecs,

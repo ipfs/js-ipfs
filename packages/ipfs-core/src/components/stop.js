@@ -10,7 +10,7 @@ import { Service } from '../utils/service.js'
  */
 export function createStop ({ network, preload, ipns, repo, mfsPreload }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["stop"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["stop"]}
    */
   const stop = async () => {
     await Promise.all([

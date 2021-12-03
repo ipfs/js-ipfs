@@ -4,7 +4,7 @@
   "description": "JavaScript implementation of the IPFS specification",
   "scripts": {
     "link": "lerna link",
-    "reset": "lerna run clean && rimraf packages/*/node_modules node_modules",
+    "reset": "lerna run clean && rimraf packages/*/node_modules node_modules package-lock.json packages/*/package-lock.json",
     "test": "lerna run test",
     "test:node": "lerna run test:node",
     "test:browser": "lerna run test:browser",

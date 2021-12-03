@@ -10,7 +10,7 @@ import { resolvePath } from '../../utils.js'
  */
 export function createResolve ({ repo, codecs, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/dag').API["resolve"]}
+   * @type {import('ipfs-core-types/src/dag').API<{}>["resolve"]}
    */
   async function dagResolve (ipfsPath, options = {}) {
     const {

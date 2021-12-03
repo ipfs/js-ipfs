@@ -39,7 +39,7 @@ export function testRm (factory, options) {
 
     it('should remove by CID object', async () => {
       const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
+        storeCodec: 'raw',
         hashAlg: 'sha2-256'
       })
 
@@ -61,15 +61,15 @@ export function testRm (factory, options) {
     it('should remove multiple CIDs', async () => {
       const cids = await Promise.all([
         ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-          format: 'raw',
+          storeCodec: 'raw',
           hashAlg: 'sha2-256'
         }),
         ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-          format: 'raw',
+          storeCodec: 'raw',
           hashAlg: 'sha2-256'
         }),
         ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-          format: 'raw',
+          storeCodec: 'raw',
           hashAlg: 'sha2-256'
         })
       ])
@@ -86,7 +86,7 @@ export function testRm (factory, options) {
 
     it('should error when removing non-existent blocks', async () => {
       const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
+        storeCodec: 'raw',
         hashAlg: 'sha2-256'
       })
 
@@ -102,7 +102,7 @@ export function testRm (factory, options) {
 
     it('should not error when force removing non-existent blocks', async () => {
       const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
+        storeCodec: 'raw',
         hashAlg: 'sha2-256'
       })
 
@@ -119,7 +119,7 @@ export function testRm (factory, options) {
 
     it('should return empty output when removing blocks quietly', async () => {
       const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
+        storeCodec: 'raw',
         hashAlg: 'sha2-256'
       })
       const result = await all(ipfs.block.rm(cid, { quiet: true }))
@@ -129,7 +129,7 @@ export function testRm (factory, options) {
 
     it('should error when removing pinned blocks', async () => {
       const cid = await ipfs.dag.put(uint8ArrayFromString(nanoid()), {
-        format: 'raw',
+        storeCodec: 'raw',
         hashAlg: 'sha2-256'
       })
       await ipfs.pin.add(cid)

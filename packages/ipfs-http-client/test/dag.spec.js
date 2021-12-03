@@ -6,7 +6,6 @@ import { expect } from 'aegir/utils/chai.js'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
 import * as raw from 'multiformats/codecs/raw'
-import { base58btc } from 'multiformats/bases/base58'
 import { base32 } from 'multiformats/bases/base32'
 import { create as httpClient } from '../src/index.js'
 import { factory } from './utils/factory.js'
@@ -22,25 +21,25 @@ describe('.dag', function () {
 
   after(() => f.clean())
 
-  it('should be able to put and get a DAG node with format dag-pb', async () => {
+  it('should be able to put and get a DAG node with dag-pb codec', async () => {
     const data = uint8ArrayFromString('some data')
     const node = {
       Data: data,
       Links: []
     }
 
-    const cid = await ipfs.dag.put(node, { format: 'dag-pb', hashAlg: 'sha2-256', cidVersion: 0 })
+    const cid = await ipfs.dag.put(node, { storeCodec: 'dag-pb', hashAlg: 'sha2-256' })
     expect(cid.code).to.equal(dagPB.code)
-    expect(cid.toString(base58btc)).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
+    expect(cid.toV0().toString()).to.equal('Qmd7xRhW5f29QuBFtqu3oSD27iVy35NRB91XFjmKFhtgMr')
 
     const result = await ipfs.dag.get(cid)
 
     expect(result.value.Data).to.deep.equal(data)
   })
 
-  it('should be able to put and get a DAG node with format dag-cbor', async () => {
+  it('should be able to put and get a DAG node with dag-cbor codec', async () => {
     const cbor = { foo: 'dag-cbor-bar' }
-    const cid = await ipfs.dag.put(cbor, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+    const cid = await ipfs.dag.put(cbor, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
     expect(cid.code).to.equal(dagCBOR.code)
     expect(cid.toString(base32)).to.equal('bafyreic6f672hnponukaacmk2mmt7vs324zkagvu4hcww6yba6kby25zce')
@@ -50,9 +49,9 @@ describe('.dag', function () {
     expect(result.value).to.deep.equal(cbor)
   })
 
-  it('should be able to put and get a DAG node with format raw', async () => {
+  it('should be able to put and get a DAG node with raw codec', async () => {
     const node = uint8ArrayFromString('some data')
-    const cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
+    const cid = await ipfs.dag.put(node, { storeCodec: 'raw', hashAlg: 'sha2-256' })
 
     expect(cid.code).to.equal(raw.code)
     expect(cid.toString(base32)).to.equal('bafkreiata6mq425fzikf5m26temcvg7mizjrxrkn35swuybmpah2ajan5y')
@@ -70,19 +69,28 @@ describe('.dag', function () {
     await expect(ipfs.dag.get(cid)).to.eventually.be.rejectedWith(/No codec found/)
   })
 
-  it('should error when putting node with esoteric format', () => {
+  it('should error when putting node with esoteric codec', () => {
     const node = uint8ArrayFromString('some data')
 
-    return expect(ipfs.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/No codec found/)
+    return expect(ipfs.dag.put(node, { storeCodec: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/No codec found/)
   })
 
-  it('should attempt to load an unsupported format', async () => {
-    let askedToLoadFormat
+  it('should pass through raw bytes with inputCodec', async () => {
+    const node = uint8ArrayFromString('blob 9\0some data')
+    // we don't support git-raw in the HTTP client, but inputCodec and a Uint8Array should make
+    // the raw data pass through to go-ipfs, which does talk git-raw
+    const cid = await ipfs.dag.put(node, { inputCodec: 'git-raw', storeCodec: 'git-raw', hashAlg: 'sha1' })
+    expect(cid.code).to.equal(0x78)
+    expect(cid.toString(base32)).to.equal('baf4bcfd4azdl7vj4d4hnix75qfld6mabo4l4uwa')
+  })
+
+  it('should attempt to load an unsupported codec', async () => {
+    let askedToLoadCodec
     const ipfs2 = httpClient({
       url: `http://${ipfs.apiHost}:${ipfs.apiPort}`,
       ipld: {
-        loadCodec: (format) => {
-          askedToLoadFormat = format === 'git-raw'
+        loadCodec: (codec) => {
+          askedToLoadCodec = codec === 'boop'
           return {
             encode: (buf) => buf
           }
@@ -93,9 +101,9 @@ describe('.dag', function () {
     const node = uint8ArrayFromString('some data')
 
     // error is from go-ipfs, this means the client serialized it ok
-    await expect(ipfs2.dag.put(node, { format: 'git-raw', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/no parser for format "git-raw"/)
+    await expect(ipfs2.dag.put(node, { storeCodec: 'boop', hashAlg: 'sha2-256' })).to.eventually.be.rejectedWith(/unknown multicodec: "boop"/)
 
-    expect(askedToLoadFormat).to.be.true()
+    expect(askedToLoadCodec).to.be.true()
   })
 
   it('should allow formats to be specified without overwriting others', async () => {
@@ -115,7 +123,7 @@ describe('.dag', function () {
       hello: 'world'
     }
     const cid1 = await ipfs2.dag.put(dagCborNode, {
-      format: 'dag-cbor',
+      storeCodec: 'dag-cbor',
       hashAlg: 'sha2-256'
     })
 
@@ -124,7 +132,7 @@ describe('.dag', function () {
       Links: []
     }
     const cid2 = await ipfs2.dag.put(dagPbNode, {
-      format: 'dag-pb',
+      storeCodec: 'dag-pb',
       hashAlg: 'sha2-256'
     })
 

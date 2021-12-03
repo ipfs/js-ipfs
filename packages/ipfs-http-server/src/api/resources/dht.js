@@ -1,8 +1,68 @@
 import Joi from '../../utils/joi.js'
-import Boom from '@hapi/boom'
-import { pipe } from 'it-pipe'
-import map from 'it-map'
 import { streamResponse } from '../../utils/stream-response.js'
+import { TimeoutController } from 'timeout-abort-controller'
+import { anySignal } from 'any-signal'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
+import all from 'it-all'
+import Boom from '@hapi/boom'
+
+/**
+ * @typedef {import('ipfs-core-types/src/dht').QueryEvent} QueryEvent
+ * @typedef {import('peer-id')} PeerId
+ */
+
+/**
+ * @param {string} id
+ * @param {QueryEvent} event
+ */
+function mapQueryEvent (id, event) {
+  let extra = ''
+  const type = event.type
+  let responses = null
+
+  if (event.name === 'SENDING_QUERY') {
+    id = event.to
+  } else if (event.name === 'PEER_RESPONSE') {
+    id = event.from
+    responses = event.closer.map(peerData => ({
+      ID: peerData.id,
+      Addrs: peerData.multiaddrs
+    }))
+  } else if (event.name === 'QUERY_ERROR') {
+    id = event.from
+    extra = event.error.message
+  } else if (event.name === 'PROVIDER') {
+    id = event.from
+    responses = event.providers.map(peerData => ({
+      ID: peerData.id,
+      Addrs: peerData.multiaddrs
+    }))
+  } else if (event.name === 'VALUE') {
+    id = event.from
+    extra = uint8ArrayToString(event.value, 'base64pad')
+  } else if (event.name === 'ADDING_PEER') {
+    responses = [{
+      ID: event.peer,
+      Addrs: []
+    }]
+  } else if (event.name === 'DIALING_PEER') {
+    id = event.peer
+  } else if (event.name === 'FINAL_PEER') {
+    id = event.peer.id
+    responses = [{
+      ID: event.peer.id,
+      Addrs: event.peer.multiaddrs
+    }]
+  }
+
+  return {
+    Extra: extra,
+    ID: id,
+    Type: type,
+    Responses: responses
+  }
+}
 
 export const findPeerResource = {
   options: {
@@ -42,27 +102,32 @@ export const findPeerResource = {
       }
     } = request
 
-    let res
+    const signals = [signal]
+    /** @type {TimeoutController | undefined} */
+    let timeoutController
 
-    try {
-      res = await ipfs.dht.findPeer(peerId, {
-        signal,
-        timeout
-      })
-    } catch (/** @type {any} */ err) {
-      if (err.code === 'ERR_LOOKUP_FAILED') {
-        throw Boom.notFound(err.toString())
-      } else {
-        throw Boom.boomify(err, { message: err.toString() })
-      }
+    if (timeout != null) {
+      timeoutController = new TimeoutController(timeout)
+      signals.push(timeoutController.signal)
     }
 
-    return h.response({
-      Responses: [{
-        ID: res.id.toString(),
-        Addrs: (res.addrs || []).map(a => a.toString())
-      }],
-      Type: 2
+    const id = await ipfs.id({
+      signal,
+      timeout
+    })
+
+    return streamResponse(request, h, () => {
+      return (async function * () {
+        for await (const event of ipfs.dht.findPeer(peerId, {
+          signal: anySignal(signals)
+        })) {
+          yield mapQueryEvent(id.id, event)
+        }
+
+        if (timeoutController) {
+          timeoutController.clear()
+        }
+      }())
     })
   }
 }
@@ -94,7 +159,7 @@ export const findProvsResource = {
    * @param {import('../../types').Request} request
    * @param {import('@hapi/hapi').ResponseToolkit} h
    */
-  handler (request, h) {
+  async handler (request, h) {
     const {
       app: {
         signal
@@ -111,25 +176,44 @@ export const findProvsResource = {
       }
     } = request
 
+    const signals = [signal]
+    /** @type {TimeoutController | undefined} */
+    let timeoutController
+
+    if (timeout != null) {
+      timeoutController = new TimeoutController(timeout)
+      signals.push(timeoutController.signal)
+    }
+
+    const id = await ipfs.id({
+      signal,
+      timeout
+    })
+
+    const providers = new Set()
+
     return streamResponse(request, h, () => {
-      return pipe(
-        ipfs.dht.findProvs(cid, {
-          numProviders,
-          signal,
-          timeout
-        }),
-        async function * (source) {
-          yield * map(source, ({ id, addrs }) => {
-            return {
-              Responses: [{
-                ID: id.toString(),
-                Addrs: (addrs || []).map(a => a.toString())
-              }],
-              Type: 4
-            }
-          })
+      return (async function * () {
+        for await (const event of ipfs.dht.findProvs(cid, {
+          signal: anySignal(signals)
+        })) {
+          if (event.name === 'PROVIDER') {
+            event.providers.forEach(peerData => {
+              providers.add(peerData.id)
+            })
+          }
+
+          yield mapQueryEvent(id.id, event)
+
+          if (providers.size >= numProviders) {
+            break
+          }
         }
-      )
+
+        if (timeoutController) {
+          timeoutController.clear()
+        }
+      }())
     })
   }
 }
@@ -142,10 +226,10 @@ export const getResource = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        buffer: Joi.binary().required(),
+        key: Joi.string().required(),
         timeout: Joi.timeout()
       })
-        .rename('arg', 'buffer', {
+        .rename('arg', 'key', {
           override: true,
           ignoreUndefined: true
         })
@@ -167,19 +251,37 @@ export const getResource = {
         }
       },
       query: {
-        buffer,
+        key,
         timeout
       }
     } = request
 
-    const res = await ipfs.dht.get(buffer, {
+    const signals = [signal]
+    /** @type {TimeoutController | undefined} */
+    let timeoutController
+
+    if (timeout != null) {
+      timeoutController = new TimeoutController(timeout)
+      signals.push(timeoutController.signal)
+    }
+
+    const id = await ipfs.id({
       signal,
       timeout
     })
 
-    return h.response({
-      Extra: res.toString(),
-      Type: 5
+    return streamResponse(request, h, () => {
+      return (async function * () {
+        for await (const event of ipfs.dht.get(key, {
+          signal: anySignal(signals)
+        })) {
+          yield mapQueryEvent(id.id, event)
+        }
+
+        if (timeoutController) {
+          timeoutController.clear()
+        }
+      }())
     })
   }
 }
@@ -222,16 +324,146 @@ export const provideResource = {
       }
     } = request
 
-    await ipfs.dht.provide(cid, {
+    const signals = [signal]
+    /** @type {TimeoutController | undefined} */
+    let timeoutController
+
+    if (timeout != null) {
+      timeoutController = new TimeoutController(timeout)
+      signals.push(timeoutController.signal)
+    }
+
+    const id = await ipfs.id({
       signal,
       timeout
     })
 
-    return h.response()
+    return streamResponse(request, h, () => {
+      return (async function * () {
+        for await (const event of ipfs.dht.provide(cid, {
+          signal: anySignal(signals)
+        })) {
+          yield mapQueryEvent(id.id, event)
+        }
+
+        if (timeoutController) {
+          timeoutController.clear()
+        }
+      }())
+    })
   }
 }
 
 export const putResource = {
+  options: {
+    payload: {
+      parse: false,
+      output: 'stream'
+    },
+    pre: [{
+      assign: 'args',
+      /**
+       * @param {import('../../types').Request} request
+       * @param {import('@hapi/hapi').ResponseToolkit} _h
+       */
+      method: async (request, _h) => {
+        if (!request.payload) {
+          throw Boom.badRequest("Argument 'file' is required")
+        }
+
+        let value
+
+        for await (const part of multipartRequestParser(request.raw.req)) {
+          if (part.type !== 'file') {
+            continue
+          }
+
+          value = Buffer.concat(await all(part.content))
+        }
+
+        if (!value) {
+          throw Boom.badRequest("Argument 'file' is required")
+        }
+
+        try {
+          return { value }
+        } catch (/** @type {any} */ err) {
+          throw Boom.boomify(err, { message: 'Failed to decode file as config' })
+        }
+      }
+    }],
+    validate: {
+      options: {
+        allowUnknown: true,
+        stripUnknown: true
+      },
+      query: Joi.object().keys({
+        key: Joi.string().required(),
+        timeout: Joi.timeout()
+      })
+        .rename('arg', 'key', {
+          override: true,
+          ignoreUndefined: true
+        })
+    }
+  },
+
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  async handler (request, h) {
+    const {
+      app: {
+        signal
+      },
+      server: {
+        app: {
+          ipfs
+        }
+      },
+      pre: {
+        args: {
+          value
+        }
+      },
+      query: {
+        key,
+        timeout
+      }
+    } = request
+
+    const signals = [signal]
+    /** @type {TimeoutController | undefined} */
+    let timeoutController
+
+    if (timeout != null) {
+      timeoutController = new TimeoutController(timeout)
+      signals.push(timeoutController.signal)
+    }
+
+    const id = await ipfs.id({
+      signal,
+      timeout
+    })
+
+    return streamResponse(request, h, () => {
+      return (async function * () {
+        for await (const event of ipfs.dht.put(key, value, {
+          signal: anySignal(signals)
+        })) {
+          yield mapQueryEvent(id.id, event)
+        }
+
+        if (timeoutController) {
+          timeoutController.clear()
+        }
+      }())
+    })
+  }
+}
+
+export const queryResource = {
   options: {
     validate: {
       options: {
@@ -239,9 +471,13 @@ export const putResource = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        arg: Joi.array().length(2).items(Joi.binary()).required(),
+        key: Joi.string().required(),
         timeout: Joi.timeout()
       })
+        .rename('arg', 'key', {
+          override: true,
+          ignoreUndefined: true
+        })
     }
   },
 
@@ -260,71 +496,37 @@ export const putResource = {
         }
       },
       query: {
-        arg: [
-          key,
-          value
-        ],
+        key,
         timeout
       }
     } = request
 
-    await ipfs.dht.put(key, value, {
+    const signals = [signal]
+    /** @type {TimeoutController | undefined} */
+    let timeoutController
+
+    if (timeout != null) {
+      timeoutController = new TimeoutController(timeout)
+      signals.push(timeoutController.signal)
+    }
+
+    const id = await ipfs.id({
       signal,
       timeout
     })
 
-    return h.response()
-  }
-}
-
-export const queryResource = {
-  options: {
-    validate: {
-      options: {
-        allowUnknown: true,
-        stripUnknown: true
-      },
-      query: Joi.object().keys({
-        peerId: Joi.string().required(),
-        timeout: Joi.timeout()
-      })
-        .rename('arg', 'peerId', {
-          override: true,
-          ignoreUndefined: true
-        })
-    }
-  },
-
-  /**
-   * @param {import('../../types').Request} request
-   * @param {import('@hapi/hapi').ResponseToolkit} h
-   */
-  handler (request, h) {
-    const {
-      app: {
-        signal
-      },
-      server: {
-        app: {
-          ipfs
-        }
-      },
-      query: {
-        peerId,
-        timeout
-      }
-    } = request
-
     return streamResponse(request, h, () => {
-      return pipe(
-        ipfs.dht.query(peerId, {
-          signal,
-          timeout
-        }),
-        async function * (source) {
-          yield * map(source, ({ id }) => ({ ID: id.toString() }))
+      return (async function * () {
+        for await (const event of ipfs.dht.query(key, {
+          signal: anySignal(signals)
+        })) {
+          yield mapQueryEvent(id.id, event)
         }
-      )
+
+        if (timeoutController) {
+          timeoutController.clear()
+        }
+      }())
     })
   }
 }

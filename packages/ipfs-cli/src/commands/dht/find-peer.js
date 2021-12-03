@@ -22,9 +22,12 @@ export default {
    * @param {number} argv.timeout
    */
   async handler ({ ctx: { ipfs, print }, peerId, timeout }) {
-    const peer = await ipfs.dht.findPeer(peerId, {
+    for await (const event of ipfs.dht.findPeer(peerId, {
       timeout
-    })
-    peer.addrs.forEach(addr => print(`${addr}`))
+    })) {
+      if (event.name === 'FINAL_PEER') {
+        event.peer.multiaddrs.forEach(addr => print(`${addr}`))
+      }
+    }
   }
 }

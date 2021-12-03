@@ -2,8 +2,7 @@ import * as dagPB from '@ipld/dag-pb'
 import { notFoundError } from 'datastore-core/errors'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import { CID } from 'multiformats/cid'
-// @ts-expect-error no types
-import TimeoutController from 'timeout-abort-controller'
+import { TimeoutController } from 'timeout-abort-controller'
 import { anySignal } from 'any-signal'
 
 const ERR_NOT_FOUND = notFoundError().code
@@ -30,12 +29,12 @@ export const Format = {
  * @param {Object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
- * @param {import('ipfs-core-types/src/root').API["resolve"]} config.resolve
+ * @param {import('ipfs-core-types/src/root').API<{}>["resolve"]} config.resolve
  * @param {import('../../types').Preload} config.preload
  */
 export function createRefs ({ repo, codecs, resolve, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/refs').API["refs"]}
+   * @type {import('ipfs-core-types/src/refs').API<{}>["refs"]}
    */
   async function * refs (ipfsPath, options = {}) {
     if (options.maxDepth === 0) {
@@ -54,8 +53,13 @@ export function createRefs ({ repo, codecs, resolve, preload }) {
 
     if (options.timeout) {
       const controller = new TimeoutController(options.timeout)
+      const signals = [controller.signal]
 
-      options.signal = anySignal([options.signal, controller.signal])
+      if (options.signal) {
+        signals.push(options.signal)
+      }
+
+      options.signal = anySignal(signals)
     }
 
     /** @type {(string|CID)[]} */
@@ -99,7 +103,7 @@ function getFullPath (preload, ipfsPath, options) {
 /**
  * Get a stream of refs at the given path
  *
- * @param {import('ipfs-core-types/src/root').API["resolve"]} resolve
+ * @param {import('ipfs-core-types/src/root').API<{}>["resolve"]} resolve
  * @param {import('ipfs-repo').IPFSRepo} repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
  * @param {string} path

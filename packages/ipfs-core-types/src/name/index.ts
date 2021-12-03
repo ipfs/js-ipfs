@@ -27,7 +27,7 @@ export interface API<OptionExtension = {}> {
    *
    * @example
    * ```js
-   * // The IPNS address you want to resolve.
+   * // The IPNS address you want to resolve
    * const addr = '/ipns/ipfs.io'
    *
    * for await (const name of ipfs.name.resolve(addr)) {

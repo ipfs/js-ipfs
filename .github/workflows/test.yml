@@ -366,9 +366,9 @@ jobs:
           - name: ipfs custom ipfs repo
             repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs custom ipld formats
-            repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-daemon@$PWD/packages/ipfs-daemon/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
+          #- name: ipfs custom ipld formats
+          #  repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-daemon@$PWD/packages/ipfs-daemon/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
           - name: ipfs custom libp2p
             repo: https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
@@ -396,9 +396,9 @@ jobs:
           - name: ipfs running multiple nodes
             repo: https://github.com/ipfs-examples/js-ipfs-running-multiple-nodes.git
             deps: ipfs@$PWD/packages/ipfs/dist
-          - name: ipfs traverse ipld graphs
-            repo: https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
+          #- name: ipfs traverse ipld graphs
+          #  repo: https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: types with typescript
             repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist

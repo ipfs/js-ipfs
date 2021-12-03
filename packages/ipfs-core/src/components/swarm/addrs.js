@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createAddrs ({ network }) {
   /**
-   * @type {import('ipfs-core-types/src/swarm').API["addrs"]}
+   * @type {import('ipfs-core-types/src/swarm').API<{}>["addrs"]}
    */
   async function addrs (options = {}) { // eslint-disable-line require-await
     const peers = []

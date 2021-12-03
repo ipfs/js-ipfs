@@ -12,7 +12,7 @@ export function createSetData ({ repo, preload }) {
   const put = createPut({ repo, preload })
 
   /**
-   * @type {import('ipfs-core-types/src/object/patch').API["setData"]}
+   * @type {import('ipfs-core-types/src/object/patch').API<{}>["setData"]}
    */
   async function setData (cid, data, options = {}) {
     const node = await get(cid, options)

@@ -1,7 +1,6 @@
 /* eslint-disable no-unreachable */
 
-// @ts-expect-error no types
-import TimeoutController from 'timeout-abort-controller'
+import { TimeoutController } from 'timeout-abort-controller'
 import { anySignal } from 'any-signal'
 import parseDuration from 'parse-duration'
 import { TimeoutError } from './errors.js'

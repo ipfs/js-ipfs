@@ -3,7 +3,7 @@
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
-import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { ensureReachable } from './utils.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -18,31 +18,49 @@ export function testPut (factory, options) {
   const it = getIt(options)
 
   describe('.dht.put', function () {
+    this.timeout(80 * 1000)
+
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeA
     /** @type {import('ipfs-core-types').IPFS} */
     let nodeB
-    /** @type {import('ipfs-core-types/src/root').IDResult} */
-    let nodeBId
 
     before(async () => {
       nodeA = (await factory.spawn()).api
       nodeB = (await factory.spawn()).api
-      nodeBId = await nodeB.id()
 
-      await nodeA.swarm.connect(nodeBId.addresses[0])
+      await ensureReachable(nodeA, nodeB)
     })
 
     after(() => factory.clean())
 
     it('should put a value to the DHT', async function () {
       const { cid } = await nodeA.add('should put a value to the DHT')
+
       const publish = await nodeA.name.publish(cid)
-      const record = await nodeA.dht.get(uint8ArrayFromString(`/ipns/${publish.name}`))
-      const value = await all(nodeA.dht.put(uint8ArrayFromString(`/ipns/${publish.name}`), record, { verbose: true }))
-      expect(value).to.has.length(3)
-      expect(value[2].id.toString()).to.be.equal(nodeBId.id)
-      expect(value[2].type).to.be.equal(5)
+      let record
+
+      for await (const event of nodeA.dht.get(`/ipns/${publish.name}`)) {
+        if (event.name === 'VALUE') {
+          record = event.value
+          break
+        }
+      }
+
+      if (!record) {
+        throw new Error('Could not find value')
+      }
+
+      const events = await all(nodeA.dht.put(`/ipns/${publish.name}`, record, { verbose: true }))
+      const peerResponse = events.filter(event => event.name === 'PEER_RESPONSE').pop()
+
+      if (!peerResponse || peerResponse.name !== 'PEER_RESPONSE') {
+        throw new Error('Did not get peer response')
+      }
+
+      const nodeBId = await nodeB.id()
+
+      expect(peerResponse.from).to.be.equal(nodeBId.id)
     })
   })
 }

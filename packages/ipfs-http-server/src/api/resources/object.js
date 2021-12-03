@@ -70,7 +70,7 @@ export const newResource = {
       },
       query: Joi.object().keys({
         template: Joi.string().valid('unixfs-dir'),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -121,16 +121,17 @@ export const newResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     const answer = {
       Data: node.Data ? uint8ArrayToString(node.Data, 'base64pad') : '',
-      Hash: cid.toString(base.encoder),
+      Hash: cid.toString(cid.version === 1 ? base.encoder : base58.encoder),
       Size: block.length,
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     }
@@ -148,7 +149,7 @@ export const getResource = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -205,16 +206,17 @@ export const getResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     return h.response({
       Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
-      Hash: cid.toString(base.encoder),
+      Hash: cid.toString(cid.version === 1 ? base.encoder : base58.encoder),
       Size: block.length,
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     })
@@ -237,7 +239,7 @@ export const putResource = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -325,16 +327,17 @@ export const putResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     const answer = {
       Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
-      Hash: cid.toString(base.encoder),
+      Hash: cid.toString(cid.version === 1 ? base.encoder : base58.encoder),
       Size: block.length,
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     }
@@ -352,7 +355,7 @@ export const statResource = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -397,10 +400,11 @@ export const statResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     return h.response({
       ...stats,
-      Hash: stats.Hash.toString(base.encoder)
+      Hash: stats.Hash.toString(stats.Hash.version === 1 ? base.encoder : base58.encoder)
     })
   }
 }
@@ -414,7 +418,7 @@ export const dataResource = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -470,7 +474,7 @@ export const linksResource = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -510,14 +514,15 @@ export const linksResource = {
     })
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     const response = {
-      Hash: cid.toString(base.encoder),
+      Hash: cid.toString(cid.version === 1 ? base.encoder : base58.encoder),
       Links: (links || []).map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     }
@@ -543,7 +548,7 @@ export const patchAppendDataResource = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -609,16 +614,17 @@ export const patchAppendDataResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     const answer = {
       Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
-      Hash: newCid.toString(base.encoder),
+      Hash: newCid.toString(newCid.version === 1 ? base.encoder : base58.encoder),
       Size: block.length,
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     }
@@ -644,7 +650,7 @@ export const patchSetDataResource = {
       },
       query: Joi.object().keys({
         cid: Joi.cid().required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         timeout: Joi.timeout()
       })
         .rename('cid-base', 'cidBase', {
@@ -697,14 +703,15 @@ export const patchSetDataResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     return h.response({
-      Hash: newCid.toString(base.encoder),
+      Hash: newCid.toString(newCid.version === 1 ? base.encoder : base58.encoder),
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     })
@@ -724,7 +731,7 @@ export const patchAddLinkResource = {
           Joi.string().required(),
           Joi.cid().required()
         ).required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -790,16 +797,17 @@ export const patchAddLinkResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     const answer = {
       Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
-      Hash: cid.toString(base.encoder),
+      Hash: cid.toString(cid.version === 1 ? base.encoder : base58.encoder),
       Size: block.length,
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     }
@@ -820,7 +828,7 @@ export const patchRmLinkResource = {
           Joi.cid().required(),
           Joi.string().required()
         ).required(),
-        cidBase: Joi.string().default('base58btc'),
+        cidBase: Joi.string().default('base32'),
         dataEncoding: Joi.string()
           .valid('ascii', 'base64pad', 'base16', 'utf8')
           .replace(/text/, 'ascii')
@@ -880,16 +888,17 @@ export const patchRmLinkResource = {
     }
 
     const base = await ipfs.bases.getBase(cidBase)
+    const base58 = await ipfs.bases.getBase('base58btc')
 
     const answer = {
       Data: node.Data ? uint8ArrayToString(node.Data, dataEncoding) : '',
-      Hash: cid.toString(base.encoder),
+      Hash: cid.toString(cid.version === 1 ? base.encoder : base58.encoder),
       Size: block.length,
       Links: node.Links.map((l) => {
         return {
           Name: l.Name,
           Size: l.Tsize,
-          Hash: l.Hash.toString(base.encoder)
+          Hash: l.Hash.toString(l.Hash.version === 1 ? base.encoder : base58.encoder)
         }
       })
     }
