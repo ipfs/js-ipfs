@@ -9,6 +9,9 @@ import errCode from 'err-code'
 import { CID } from 'multiformats/cid'
 import { AbortSignal } from 'native-abort-controller'
 import { allNdjson } from '../utils/all-ndjson.js'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import FormData from 'form-data'
+import streamToPromise from 'stream-to-promise'
 
 describe('/dht', () => {
   const peerId = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
@@ -17,6 +20,7 @@ describe('/dht', () => {
 
   beforeEach(() => {
     ipfs = {
+      id: sinon.stub().resolves({ id: 'Qmfoo' }),
       dht: {
         findPeer: sinon.stub(),
         findProvs: sinon.stub(),
@@ -30,8 +34,7 @@ describe('/dht', () => {
 
   describe('/findpeer', () => {
     const defaultOptions = {
-      signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      signal: sinon.match.instanceOf(AbortSignal)
     }
 
     it('only accepts POST', () => {
@@ -48,7 +51,7 @@ describe('/dht', () => {
       expect(res).to.have.nested.property('result.Code', 1)
     })
 
-    it('returns 404 if peerId is provided and there are no peers in the routing table', async () => {
+    it('returns 500 if peerId is provided and there are no peers in the routing table', async () => {
       ipfs.dht.findPeer.withArgs(peerId, defaultOptions).throws(errCode(new Error('Nope'), 'ERR_LOOKUP_FAILED'))
 
       const res = await http({
@@ -56,34 +59,15 @@ describe('/dht', () => {
         url: `/api/v0/dht/findpeer?arg=${peerId}`
       }, { ipfs })
 
-      expect(res).to.have.property('statusCode', 404)
+      expect(res).to.have.property('statusCode', 500)
       expect(ipfs.dht.findPeer.called).to.be.true()
       expect(ipfs.dht.findPeer.getCall(0).args[0]).to.equal(peerId)
-    })
-
-    it('accepts a timeout', async () => {
-      ipfs.dht.findPeer.withArgs(peerId, {
-        ...defaultOptions,
-        timeout: 1000
-      }).returns({
-        id: peerId,
-        addrs: []
-      })
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/dht/findpeer?arg=${peerId}&timeout=1s`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
     })
   })
 
   describe('/findprovs', () => {
     const defaultOptions = {
-      numProviders: 20,
-      signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      signal: sinon.match.instanceOf(AbortSignal)
     }
 
     it('only accepts POST', async () => {
@@ -107,10 +91,14 @@ describe('/dht', () => {
 
     it('returns 200 if key is provided', async () => {
       ipfs.dht.findProvs.withArgs(cid, defaultOptions).returns([{
-        id: peerId,
-        addrs: [
-          'addr'
-        ]
+        name: 'PROVIDER',
+        type: 4,
+        providers: [{
+          id: peerId,
+          multiaddrs: [
+            'addr'
+          ]
+        }]
       }])
 
       const res = await http({
@@ -120,6 +108,7 @@ describe('/dht', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(allNdjson(res)).to.deep.equal([{
+        Extra: '',
         Type: 4,
         Responses: [{
           ID: peerId,
@@ -129,14 +118,31 @@ describe('/dht', () => {
     })
 
     it('overrides num-providers', async () => {
-      ipfs.dht.findProvs.withArgs(cid, {
-        ...defaultOptions,
-        numProviders: 10
-      }).returns([{
-        id: peerId,
-        addrs: [
+      const providers = new Array(20).fill(0).map((val, i) => ({
+        id: peerId + i,
+        multiaddrs: [
           'addr'
         ]
+      }))
+
+      ipfs.dht.findProvs.withArgs(cid, {
+        ...defaultOptions
+      }).returns([{
+        name: 'PROVIDER',
+        type: 4,
+        providers: providers.slice(0, 4)
+      }, {
+        name: 'PROVIDER',
+        type: 4,
+        providers: providers.slice(4, 8)
+      }, {
+        name: 'PROVIDER',
+        type: 4,
+        providers: providers.slice(8, 12)
+      }, {
+        name: 'PROVIDER',
+        type: 4,
+        providers: providers.slice(12)
       }])
 
       const res = await http({
@@ -145,46 +151,19 @@ describe('/dht', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(allNdjson(res)).to.deep.equal([{
-        Type: 4,
-        Responses: [{
-          ID: peerId,
-          Addrs: ['addr']
-        }]
-      }])
-    })
 
-    it('accepts a timeout', async () => {
-      ipfs.dht.findProvs.withArgs(cid, {
-        ...defaultOptions,
-        timeout: 1000
-      }).returns([{
-        id: peerId,
-        addrs: [
-          'addr'
-        ]
-      }])
+      const provs = allNdjson(res).map(event => event.Responses).reduce((acc, curr) => {
+        return acc.concat(...curr)
+      }, [])
 
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/dht/findprovs?arg=${cid}&timeout=1s`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(allNdjson(res)).to.deep.equal([{
-        Type: 4,
-        Responses: [{
-          ID: peerId,
-          Addrs: ['addr']
-        }]
-      }])
+      // should ignore subsequent providers after reaching limit
+      expect(provs).to.have.lengthOf(12)
     })
   })
 
   describe('/get', () => {
     const defaultOptions = {
-      signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      signal: sinon.match.instanceOf(AbortSignal)
     }
 
     it('only accepts POST', async () => {
@@ -208,8 +187,12 @@ describe('/dht', () => {
 
     it('returns 200 if key is provided', async () => {
       const key = 'key'
-      const value = 'value'
-      ipfs.dht.get.withArgs(Buffer.from(key), defaultOptions).returns(value)
+      const value = Buffer.from('hello world')
+      ipfs.dht.get.withArgs(key, defaultOptions).returns([{
+        type: 5,
+        name: 'VALUE',
+        value: value
+      }])
 
       const res = await http({
         method: 'POST',
@@ -217,33 +200,17 @@ describe('/dht', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Type', 5)
-      expect(res).to.have.nested.property('result.Extra', value)
-    })
-
-    it('accepts a timeout', async () => {
-      const key = 'key'
-      const value = 'value'
-      ipfs.dht.get.withArgs(Buffer.from(key), {
-        ...defaultOptions,
-        timeout: 1000
-      }).returns(value)
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/dht/get?arg=${key}&timeout=1s`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.nested.property('result.Type', 5)
-      expect(res).to.have.nested.property('result.Extra', value)
+      expect(allNdjson(res)).to.deep.equal([{
+        Extra: uint8ArrayToString(value, 'base64pad'),
+        Type: 5,
+        Responses: null
+      }])
     })
   })
 
   describe('/provide', () => {
     const defaultOptions = {
-      signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      signal: sinon.match.instanceOf(AbortSignal)
     }
 
     it('only accepts POST', async () => {
@@ -276,7 +243,7 @@ describe('/dht', () => {
     })
 
     it('returns 500 if key is provided as the file was not added', async () => {
-      ipfs.dht.provide.withArgs(cid).throws(new Error('wut'))
+      ipfs.dht.provide.withArgs(cid, defaultOptions).throws(new Error('wut'))
 
       const res = await http({
         method: 'POST',
@@ -287,33 +254,50 @@ describe('/dht', () => {
     })
 
     it('returns 200 if key is provided', async () => {
+      ipfs.dht.provide.withArgs(cid, defaultOptions).returns([{
+        name: 'DIALING_PEER',
+        type: 7,
+        peer: peerId
+      }, {
+        name: 'SENDING_QUERY',
+        type: 0,
+        to: peerId
+      }, {
+        name: 'PEER_RESPONSE',
+        type: 1,
+        from: peerId,
+        closer: [],
+        providers: []
+      }])
+
       const res = await http({
         method: 'POST',
         url: `/api/v0/dht/provide?arg=${cid}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200) // needs file add
-      expect(ipfs.dht.provide.calledWith(cid, defaultOptions)).to.be.true()
-    })
-
-    it('accepts a timeout', async () => {
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/dht/provide?arg=${cid}&timeout=1s`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200) // needs file add
-      expect(ipfs.dht.provide.calledWith(cid, {
-        ...defaultOptions,
-        timeout: 1000
-      })).to.be.true()
+      expect(allNdjson(res)).to.deep.equal([{
+        Extra: '',
+        ID: peerId,
+        Type: 7,
+        Responses: null
+      }, {
+        Extra: '',
+        ID: peerId,
+        Type: 0,
+        Responses: null
+      }, {
+        Extra: '',
+        ID: peerId,
+        Type: 1,
+        Responses: []
+      }])
     })
   })
 
   describe('/put', () => {
     const defaultOptions = {
-      signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      signal: sinon.match.instanceOf(AbortSignal)
     }
 
     it('only accepts POST', async () => {
@@ -337,38 +321,60 @@ describe('/dht', () => {
 
     it('returns 200 if key and value is provided', async function () {
       const key = 'key'
-      const value = 'value'
+      const value = Buffer.from('value')
+
+      ipfs.dht.put.withArgs(key, value, defaultOptions).returns([{
+        name: 'DIALING_PEER',
+        type: 7,
+        peer: peerId
+      }, {
+        name: 'SENDING_QUERY',
+        type: 0,
+        to: peerId
+      }, {
+        name: 'PEER_RESPONSE',
+        type: 1,
+        from: peerId,
+        closer: [],
+        providers: []
+      }])
+
+      const form = new FormData()
+      form.append('data', value)
+      const headers = form.getHeaders()
+
+      const payload = await streamToPromise(form)
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/dht/put?arg=${key}&arg=${value}`
+        url: `/api/v0/dht/put?arg=${key}`,
+        headers,
+        payload
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(ipfs.dht.put.calledWith(Buffer.from(key), Buffer.from(value), defaultOptions)).to.be.true()
-    })
-
-    it('accepts a timeout', async function () {
-      const key = 'key'
-      const value = 'value'
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/dht/put?arg=${key}&arg=${value}&timeout=1s`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(ipfs.dht.put.calledWith(Buffer.from(key), Buffer.from(value), {
-        ...defaultOptions,
-        timeout: 1000
-      })).to.be.true()
+      expect(allNdjson(res)).to.deep.equal([{
+        Extra: '',
+        ID: peerId,
+        Type: 7,
+        Responses: null
+      }, {
+        Extra: '',
+        ID: peerId,
+        Type: 0,
+        Responses: null
+      }, {
+        Extra: '',
+        ID: peerId,
+        Type: 1,
+        Responses: []
+      }])
     })
   })
 
   describe('/query', () => {
     const defaultOptions = {
-      signal: sinon.match.instanceOf(AbortSignal),
-      timeout: undefined
+      signal: sinon.match.instanceOf(AbortSignal)
     }
 
     it('only accepts POST', async () => {
@@ -392,7 +398,19 @@ describe('/dht', () => {
 
     it('returns 200 if key is provided', async function () {
       ipfs.dht.query.withArgs(peerId, defaultOptions).returns([{
-        id: 'id'
+        name: 'DIALING_PEER',
+        type: 7,
+        peer: peerId
+      }, {
+        name: 'SENDING_QUERY',
+        type: 0,
+        to: peerId
+      }, {
+        name: 'PEER_RESPONSE',
+        type: 1,
+        from: peerId,
+        closer: [],
+        providers: []
       }])
 
       const res = await http({
@@ -401,24 +419,22 @@ describe('/dht', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(JSON.parse(res.result)).to.have.property('ID', 'id')
-    })
-
-    it('accepts a timeout', async function () {
-      ipfs.dht.query.withArgs(peerId, {
-        ...defaultOptions,
-        timeout: 1000
-      }).returns([{
-        id: 'id'
+      expect(allNdjson(res)).to.deep.equal([{
+        Extra: '',
+        ID: peerId,
+        Type: 7,
+        Responses: null
+      }, {
+        Extra: '',
+        ID: peerId,
+        Type: 0,
+        Responses: null
+      }, {
+        Extra: '',
+        ID: peerId,
+        Type: 1,
+        Responses: []
       }])
-
-      const res = await http({
-        method: 'POST',
-        url: `/api/v0/dht/query?arg=${peerId}&timeout=1s`
-      }, { ipfs })
-
-      expect(res).to.have.property('statusCode', 200)
-      expect(JSON.parse(res.result)).to.have.property('ID', 'id')
     })
   })
 })

@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import all from 'it-all'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -42,8 +42,9 @@ export function testDisabled (factory, options) {
     after(() => factory.clean())
 
     it('should error when DHT not available', async () => {
-      await expect(nodeA.dht.get(uint8ArrayFromString('/ipns/Qme6KJdKcp85TYbLxuLV7oQzMiLremD7HMoXLZEmgo6Rnh')))
-        .to.eventually.be.rejected()
+      const events = await all(nodeA.dht.get('/ipns/12D3KooWQMSMXmsBvs5YDEQ6tXsaFv9tjuzmDmEvusaiQSFdrJdN'))
+
+      expect(events.filter(event => event.name === 'QUERY_ERROR')).to.not.be.empty()
     })
   })
 }

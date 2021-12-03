@@ -53,7 +53,7 @@ export function createRm ({ repo }) {
             return result
           }
         }),
-        source => parallel(source, BLOCK_RM_CONCURRENCY),
+        source => parallel(source, { concurrency: BLOCK_RM_CONCURRENCY }),
         source => filter(source, () => !options.quiet)
       )
     } finally {

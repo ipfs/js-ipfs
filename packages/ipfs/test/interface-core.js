@@ -31,11 +31,7 @@ describe('interface-ipfs-core tests', function () {
 
   tests.dag(commonFactory)
 
-  tests.dht(commonFactory, {
-    skip: {
-      reason: 'TODO: unskip when DHT is enabled: https://github.com/ipfs/js-ipfs/pull/1994'
-    }
-  })
+  tests.dht(commonFactory)
 
   tests.files(factory(), {
     skip: isNode
