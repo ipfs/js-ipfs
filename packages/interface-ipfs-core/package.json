@@ -78,7 +78,7 @@
     "ipfs-utils": "^9.0.2",
     "ipns": "^0.16.0",
     "is-ipfs": "^6.0.1",
-    "iso-random-stream": "^2.0.0",
+    "iso-random-stream": "^2.0.2",
     "it-all": "^1.0.4",
     "it-buffer-stream": "^2.0.0",
     "it-concat": "^2.0.0",

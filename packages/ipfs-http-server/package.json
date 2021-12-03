@@ -87,7 +87,7 @@
     "aegir": "^36.0.1",
     "form-data": "^4.0.0",
     "ipfs-http-client": "^54.0.2",
-    "iso-random-stream": "^2.0.0",
+    "iso-random-stream": "^2.0.2",
     "it-to-buffer": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "qs": "^6.9.4",
