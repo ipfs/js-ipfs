@@ -100,12 +100,12 @@ describe('add', () => {
     expect(out).to.include(`added ${cid} bitswap\n`)
 
     const files = await all(map(ipfs.addAll.getCall(0).args[0], (file) => file.path))
-    expect(files).to.deep.equal([
+    expect(files.sort()).to.deep.equal([
       'bitswap/index.js',
       'bitswap/unwant.js',
       'bitswap/wantlist.js',
       'bitswap/stat.js'
-    ])
+    ].sort())
   })
 
   it('should strip control characters from paths when add a file', async () => {
