@@ -7,7 +7,7 @@ import { CID } from 'multiformats/cid'
  */
 export function createAdd ({ addAll }) {
   /**
-   * @type {import('ipfs-core-types/src/pin').API["add"]}
+   * @type {import('ipfs-core-types/src/pin').API<{}>["add"]}
    */
   return (path, options = {}) => {
     let iter

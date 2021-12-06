@@ -55,6 +55,7 @@ export function testId (factory, options) {
         '/ipfs/bitswap/1.2.0',
         '/ipfs/id/1.0.0',
         '/ipfs/id/push/1.0.0',
+        '/ipfs/lan/kad/1.0.0',
         '/ipfs/ping/1.0.0',
         '/libp2p/circuit/relay/0.1.0',
         '/meshsub/1.0.0',

@@ -13,7 +13,7 @@ import { resolve as res } from '../utils.js'
  */
 export function createResolve ({ repo, codecs, bases, name }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["resolve"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["resolve"]}
    */
   async function resolve (path, opts = {}) {
     if (!isIpfs.path(path)) {

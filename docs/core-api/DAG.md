@@ -88,12 +88,13 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| format | `String` | `'dag-cbor'` | The IPLD format multicodec |
+| storeCodec | `String` | `'dag-cbor'` | The codec that the stored object will be encoded with |
+| inputCodec | `String` | `undefined` | If an already encoded object is provided (as a `Uint8Array`), the codec that the object is encoded with, otherwise it is assumed the `dagNode` argument is an object to be encoded |
 | hashAlg | `String` | `'sha2-256'` | The hash algorithm to be used over the serialized DAG node |
 | cid | [CID][] | `'dag-cbor'` | The IPLD format multicodec |
 | pin | `boolean` | `false` | Pin this node when adding to the blockstore |
 | timeout | `Number` | `undefined` | A timeout in ms |
-| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+| signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
 
 **Note**: You should pass `cid` or the `format` & `hashAlg` pair but _not both_.
 
@@ -107,7 +108,7 @@ An optional object which may have the following keys:
 
 ```JavaScript
 const obj = { simple: 'object' }
-const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-512' })
+const cid = await ipfs.dag.put(obj, { storeCodec: 'dag-cbor', hashAlg: 'sha2-512' })
 
 console.log(cid.toString())
 // zBwWX9ecx5F4X54WAjmFLErnBT6ByfNxStr5ovowTL7AhaUR98RWvXPS1V3HqV1qs3r5Ec5ocv7eCdbqYQREXNUfYNuKG
@@ -160,7 +161,7 @@ const obj = {
   }
 }
 
-const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+const cid = await ipfs.dag.put(obj, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 console.log(cid.toString())
 // zdpuAmtur968yprkhG9N5Zxn6MFVoqAWBbhUAkNLJs2UtkTq5
 
@@ -272,7 +273,7 @@ const obj = {
   }
 }
 
-const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+const cid = await ipfs.dag.put(obj, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 console.log(cid.toString())
 // bafyreicyer3d34cutdzlsbe2nqu5ye62mesuhwkcnl2ypdwpccrsecfmjq
 

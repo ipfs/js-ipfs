@@ -7,7 +7,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createGet ({ preload, repo }) {
   /**
-   * @type {import('ipfs-core-types/src/block').API["get"]}
+   * @type {import('ipfs-core-types/src/block').API<{}>["get"]}
    */
   async function get (cid, options = {}) { // eslint-disable-line require-await
     if (options.preload !== false) {

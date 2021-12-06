@@ -2,6 +2,8 @@ import debug from 'debug'
 import errcode from 'err-code'
 import mergeOpts from 'merge-options'
 import { CID } from 'multiformats/cid'
+import * as Digest from 'multiformats/hashes/digest'
+import { base36 } from 'multiformats/bases/base36'
 import PeerId from 'peer-id'
 // @ts-expect-error no types
 import isDomain from 'is-domain-name'
@@ -29,15 +31,15 @@ const appendRemainder = (result, remainder) =>
  * IPNS - Inter-Planetary Naming System
  *
  * @param {Object} config
- * @param {import('ipfs-core-types/src/root').API["dns"]} config.dns
+ * @param {import('ipfs-core-types/src/root').API<{}>["dns"]} config.dns
  * @param {import('../ipns').IPNSAPI} config.ipns
  * @param {import('peer-id')} config.peerId
- * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
+ * @param {import('ipfs-core-types/src/root').API<{}>["isOnline"]} config.isOnline
  * @param {import('../../types').Options} config.options
  */
 export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline } }) {
   /**
-   * @type {import('ipfs-core-types/src/name').API["resolve"]}
+   * @type {import('ipfs-core-types/src/name').API<{}>["resolve"]}
    */
   async function * resolve (name, options = {}) { // eslint-disable-line require-await
     options = mergeOptions({
@@ -50,6 +52,11 @@ export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline
       throw errcode(new Error('cannot specify both offline and nocache'), 'ERR_NOCACHE_AND_OFFLINE')
     }
 
+    // IPNS resolve needs a online daemon
+    if (!isOnline() && !offline) {
+      throw errcode(new Error(OFFLINE_ERROR), 'OFFLINE_ERROR')
+    }
+
     // Set node id as name for being resolved, if it is not received
     if (!name) {
       name = peerId.toB58String()
@@ -59,12 +66,20 @@ export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline
       name = `/ipns/${name}`
     }
 
-    const [namespace, hash, ...remainder] = name.slice(1).split('/')
+    let [namespace, hash, ...remainder] = name.slice(1).split('/')
+
     try {
       if (hash.substring(0, 1) === '1') {
-        PeerId.parse(hash)
+        const id = PeerId.parse(hash)
+        const digest = Digest.decode(id.toBytes())
+        const libp2pKey = CID.createV1(0x72, digest)
+        hash = libp2pKey.toString(base36)
       } else {
-        CID.parse(hash)
+        const cid = CID.parse(hash)
+
+        if (cid.version === 1) {
+          hash = cid.toString(base36)
+        }
       }
     } catch (/** @type {any} */ err) {
       // lets check if we have a domain ex. /ipns/ipfs.io and resolve with dns
@@ -78,11 +93,6 @@ export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline
     }
 
     // multihash is valid lets resolve with IPNS
-    // IPNS resolve needs a online daemon
-    if (!isOnline() && !offline) {
-      throw errcode(new Error(OFFLINE_ERROR), 'OFFLINE_ERROR')
-    }
-
     // TODO: convert ipns.resolve to return an iterator
     const value = await ipns.resolve(`/${namespace}/${hash}`, options)
     yield appendRemainder(value instanceof Uint8Array ? uint8ArrayToString(value) : value, remainder)

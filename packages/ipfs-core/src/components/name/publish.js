@@ -20,7 +20,7 @@ const log = Object.assign(debug('ipfs:name:publish'), {
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('peer-id')} config.peerId
- * @param {import('ipfs-core-types/src/root').API["isOnline"]} config.isOnline
+ * @param {import('ipfs-core-types/src/root').API<{}>["isOnline"]} config.isOnline
  * @param {import('libp2p/src/keychain')} config.keychain
  */
 export function createPublish ({ ipns, repo, codecs, peerId, isOnline, keychain }) {
@@ -44,7 +44,7 @@ export function createPublish ({ ipns, repo, codecs, peerId, isOnline, keychain 
   }
 
   /**
-   * @type {import('ipfs-core-types/src/name').API["publish"]}
+   * @type {import('ipfs-core-types/src/name').API<{}>["publish"]}
    */
   async function publish (value, options = {}) {
     const resolve = !(options.resolve === false)

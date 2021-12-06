@@ -12,6 +12,7 @@ import { ipfsCore as pkgversion } from '../version.js'
 import { libp2pConfig as getEnvLibp2pOptions } from 'ipfs-core-config/libp2p'
 import bootstrap from 'libp2p-bootstrap'
 import Libp2p from 'libp2p'
+import * as ipns from 'ipns'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
@@ -129,7 +130,10 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
       dht: {
         enabled: get(config, 'Routing.Type', 'none') !== 'none',
         clientMode: get(config, 'Routing.Type', 'dht') !== 'dhtserver',
-        kBucketSize: get(options, 'dht.kBucketSize', 20)
+        kBucketSize: get(options, 'dht.kBucketSize', 20),
+        validators: {
+          ipns: ipns.validator
+        }
       },
       pubsub: {
         enabled: get(options, 'config.Pubsub.Enabled', get(config, 'Pubsub.Enabled', true))

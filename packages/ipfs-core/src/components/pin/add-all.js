@@ -24,7 +24,7 @@ import { PinTypes } from 'ipfs-repo/pin-types'
  */
 export function createAddAll ({ repo, codecs }) {
   /**
-   * @type {import('ipfs-core-types/src/pin').API["addAll"]}
+   * @type {import('ipfs-core-types/src/pin').API<{}>["addAll"]}
    */
   async function * addAll (source, options = {}) {
     /**

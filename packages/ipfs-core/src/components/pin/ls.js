@@ -36,7 +36,7 @@ function toPin (type, cid, metadata) {
  */
 export function createLs ({ repo, codecs }) {
   /**
-   * @type {import('ipfs-core-types/src/pin').API["ls"]}
+   * @type {import('ipfs-core-types/src/pin').API<{}>["ls"]}
    */
   async function * ls (options = {}) {
     /** @type {import('ipfs-core-types/src/pin').PinQueryType} */

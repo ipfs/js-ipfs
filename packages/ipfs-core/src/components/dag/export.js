@@ -31,7 +31,7 @@ const NO_LINKS_CODECS = [
  */
 export function createExport ({ repo, preload, codecs }) {
   /**
-   * @type {import('ipfs-core-types/src/dag').API["export"]}
+   * @type {import('ipfs-core-types/src/dag').API<{}>["export"]}
    */
   async function * dagExport (root, options = {}) {
     if (options.preload !== false) {

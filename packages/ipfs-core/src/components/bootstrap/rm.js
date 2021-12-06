@@ -7,7 +7,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createRm ({ repo }) {
   /**
-   * @type {import('ipfs-core-types/src/bootstrap').API["rm"]}
+   * @type {import('ipfs-core-types/src/bootstrap').API<{}>["rm"]}
    */
   async function rm (multiaddr, options = {}) {
     if (!isValidMultiaddr(multiaddr)) {

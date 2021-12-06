@@ -15,7 +15,7 @@ import { Service } from '../utils/service.js'
  */
 export function createStart ({ network, preload, peerId, keychain, repo, ipns, mfsPreload, print, hashers, options }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["start"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["start"]}
    */
   const start = async () => {
     const { libp2p } = await Service.start(network, {

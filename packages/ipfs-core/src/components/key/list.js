@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createList ({ keychain }) {
   /**
-   * @type {import('ipfs-core-types/src/key').API["list"]}
+   * @type {import('ipfs-core-types/src/key').API<{}>["list"]}
    */
   const list = () => keychain.listKeys()
 
