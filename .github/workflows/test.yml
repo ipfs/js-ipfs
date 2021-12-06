@@ -424,6 +424,7 @@ jobs:
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
+          npm install -g @mapbox/node-pre-gyp
           npm install
           npm run build
           npm run link
