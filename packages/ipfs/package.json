@@ -89,7 +89,7 @@
     "ipfs-client": "^0.7.4",
     "ipfs-core-types": "^0.8.4",
     "ipfs-http-client": "^54.0.2",
-    "ipfs-interop": "ipfs/interop#feat/pubsub-require-multibase",
+    "ipfs-interop": "ipfs/interop#feat/js-pubsub-and-dht",
     "ipfs-utils": "^9.0.2",
     "ipfsd-ctl": "^10.0.4",
     "iso-url": "^1.0.0",
