@@ -283,5 +283,27 @@ export function testGet (factory, options) {
       return expect(ipfs.dag.get(uint8ArrayFromString('INVALID CID')))
         .to.eventually.be.rejected()
     })
+
+    it('should return nested content when getting a CID with a path', async () => {
+      const regularContent = { test: '123' }
+      const cid1 = await ipfs.dag.put(regularContent)
+      const linkedContent = { link: cid1 }
+      const cid2 = await ipfs.dag.put(linkedContent)
+
+      const atPath = await ipfs.dag.get(cid2, { path: '/link' })
+
+      expect(atPath).to.have.deep.property('value', regularContent)
+    })
+
+    it('should not return nested content when getting a CID with a path and localResolve is true', async () => {
+      const regularContent = { test: '123' }
+      const cid1 = await ipfs.dag.put(regularContent)
+      const linkedContent = { link: cid1 }
+      const cid2 = await ipfs.dag.put(linkedContent)
+
+      const atPath = await ipfs.dag.get(cid2, { path: '/link', localResolve: true })
+
+      expect(atPath).to.have.deep.property('value').that.is.an.instanceOf(CID)
+    })
   })
 }
