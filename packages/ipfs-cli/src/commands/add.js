@@ -14,6 +14,8 @@ import {
 import globSource from 'ipfs-utils/src/files/glob-source.js'
 import parseDuration from 'parse-duration'
 import merge from 'it-merge'
+import fs from 'fs'
+import path from 'path'
 
 const getFolderSize = promisify(getFolderSizeCb)
 
@@ -23,6 +25,64 @@ const getFolderSize = promisify(getFolderSizeCb)
 async function getTotalBytes (paths) {
   const sizes = await Promise.all(paths.map(p => getFolderSize(p)))
   return sizes.reduce((total, size) => total + size, 0)
+}
+
+/**
+ * @param {string} target
+ * @param {object} options
+ * @param {boolean} [options.recursive]
+ * @param {boolean} [options.hidden]
+ * @param {boolean} [options.preserveMode]
+ * @param {boolean} [options.preserveMtime]
+ * @param {number} [options.mode]
+ * @param {import('ipfs-unixfs').MtimeLike} [options.mtime]
+ */
+async function * getSource (target, options = {}) {
+  const absolutePath = path.resolve(target)
+  const stats = await fs.promises.stat(absolutePath)
+
+  if (stats.isFile()) {
+    let mtime = options.mtime
+    let mode = options.mode
+
+    if (options.preserveMtime) {
+      mtime = stats.mtime
+    }
+
+    if (options.preserveMode) {
+      mode = stats.mode
+    }
+
+    yield {
+      path: path.basename(target),
+      content: fs.createReadStream(absolutePath),
+      mtime,
+      mode
+    }
+
+    return
+  }
+
+  const dirName = path.basename(absolutePath)
+
+  let pattern = '*'
+
+  if (options.recursive) {
+    pattern = '**/*'
+  }
+
+  for await (const content of globSource(target, pattern, {
+    hidden: options.hidden,
+    preserveMode: options.preserveMode,
+    preserveMtime: options.preserveMtime,
+    mode: options.mode,
+    mtime: options.mtime
+  })) {
+    yield {
+      ...content,
+      path: `${dirName}${content.path}`
+    }
+  }
 }
 
 export default {
@@ -287,15 +347,10 @@ export default {
       date = { secs: mtime, nsecs: mtimeNsecs }
     }
 
-    let pattern = '*'
-
-    if (recursive) {
-      pattern = '**/*'
-    }
-
     const source = file
-      ? merge(...file.map(file => globSource(file, pattern, {
+      ? merge(...file.map(file => getSource(file, {
         hidden,
+        recursive,
         preserveMode,
         preserveMtime,
         mode,
