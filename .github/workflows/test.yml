@@ -430,7 +430,9 @@ jobs:
       - uses: GabrielBB/xvfb-action@v1
         name: Run npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
         with:
-          run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
+          run: |
+            npm install -g @mapbox/node-pre-gyp
+            npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
 
   test-externals:
     name: Test external ${{ matrix.external.name }}
