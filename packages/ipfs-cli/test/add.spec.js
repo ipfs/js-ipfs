@@ -9,6 +9,8 @@ import { cli } from './utils/cli.js'
 import sinon from 'sinon'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { matchIterable } from './utils/match-iterable.js'
+import all from 'it-all'
+import map from 'it-map'
 
 // TODO: Test against all algorithms Object.keys(mh.names)
 // This subset is known to work with both go-ipfs and js-ipfs as of 2017-09-05
@@ -62,6 +64,48 @@ describe('add', () => {
 
     const out = await cli('add --progress false README.md', { ipfs })
     expect(out).to.equal(`added ${cid} README.md\n`)
+
+    const files = await all(map(ipfs.addAll.getCall(0).args[0], (file) => file.path))
+    expect(files).to.deep.equal([
+      'README.md'
+    ])
+  })
+
+  it('should add a directory', async () => {
+    const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+
+    ipfs.addAll.withArgs(matchIterable(), defaultOptions).returns([{
+      cid,
+      path: 'bitswap/index.js'
+    }, {
+      cid,
+      path: 'bitswap/unwant.js'
+    }, {
+      cid,
+      path: 'bitswap/wantlist.js'
+    }, {
+      cid,
+      path: 'bitswap/stat.js'
+    }, {
+      cid,
+      path: 'bitswap'
+    }])
+    ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
+
+    const out = await cli('add --recursive src/commands/bitswap', { ipfs })
+    expect(out).to.include(`added ${cid} bitswap/index.js\n`)
+    expect(out).to.include(`added ${cid} bitswap/unwant.js\n`)
+    expect(out).to.include(`added ${cid} bitswap/wantlist.js\n`)
+    expect(out).to.include(`added ${cid} bitswap/stat.js\n`)
+    expect(out).to.include(`added ${cid} bitswap\n`)
+
+    const files = await all(map(ipfs.addAll.getCall(0).args[0], (file) => file.path))
+    expect(files.sort()).to.deep.equal([
+      'bitswap/index.js',
+      'bitswap/unwant.js',
+      'bitswap/wantlist.js',
+      'bitswap/stat.js'
+    ].sort())
   })
 
   it('should strip control characters from paths when add a file', async () => {

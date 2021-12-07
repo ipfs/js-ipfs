@@ -6,7 +6,7 @@ import PeerId from 'peer-id'
 import Libp2p from 'libp2p'
 import { EventEmitter } from 'events'
 import { createLibp2p as libp2pComponent } from '../src/components/libp2p.js'
-import { NOISE as Crypto } from '@achingbrain/libp2p-noise'
+import { NOISE as Crypto } from '@chainsafe/libp2p-noise'
 import gossipsub from 'libp2p-gossipsub'
 
 /**

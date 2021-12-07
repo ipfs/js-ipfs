@@ -78,8 +78,8 @@ export function testRm (factory, options) {
 
       expect(result).to.have.lengthOf(3)
 
-      result.forEach((res, index) => {
-        expect(res.cid.toString()).to.equal(cids[index].toString())
+      result.forEach((res) => {
+        expect(cids.map(cid => cid.toString())).to.include(res.cid.toString())
         expect(res).to.not.have.property('error')
       })
     })

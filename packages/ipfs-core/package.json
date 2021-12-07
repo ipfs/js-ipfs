@@ -65,7 +65,7 @@
     "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i abort-controller -i npm-run-all --i interface-blockstore"
   },
   "dependencies": {
-    "@achingbrain/libp2p-noise": "^5.0.0",
+    "@chainsafe/libp2p-noise": "^5.0.0",
     "@ipld/car": "^3.1.0",
     "@ipld/dag-cbor": "^6.0.5",
     "@ipld/dag-json": "^8.0.1",
