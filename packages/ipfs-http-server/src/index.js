@@ -171,9 +171,16 @@ export class HttpApi {
           return h.continue
         }
 
-        if (request.method === 'get' && (request.path.startsWith('/ipfs') || request.path.startsWith('/webui') || request.path.startsWith('/debug'))) {
-          // allow requests to the gateway, webui and prometheus stats
-          return h.continue
+        if (request.method === 'get') {
+          if (request.path.startsWith('/ipfs') || request.path.startsWith('/webui')) {
+            // allow requests to the gateway and webui
+            return h.continue
+          }
+
+          if (process.env.IPFS_MONITORING && request.path.startsWith('/debug')) {
+            // allow requests to prometheus stats when monitoring is enabled
+            return h.continue
+          }
         }
 
         throw Boom.methodNotAllowed()
