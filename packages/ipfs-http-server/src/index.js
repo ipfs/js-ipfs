@@ -171,8 +171,8 @@ export class HttpApi {
           return h.continue
         }
 
-        if (request.method === 'get' && (request.path.startsWith('/ipfs') || request.path.startsWith('/webui'))) {
-          // allow requests to the webui
+        if (request.method === 'get' && (request.path.startsWith('/ipfs') || request.path.startsWith('/webui') || request.path.startsWith('/debug'))) {
+          // allow requests to the gateway, webui and prometheus stats
           return h.continue
         }
 
