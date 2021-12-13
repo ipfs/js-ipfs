@@ -7,7 +7,7 @@ const gauge = new client.Gauge({ name: 'number_of_peers', help: 'the_number_of_c
 
 // Endpoint for handling debug metrics
 export default [{
-  method: 'POST',
+  method: 'GET',
   path: '/debug/metrics/prometheus',
   /**
    * @param {import('../../types').Request} request
@@ -23,7 +23,9 @@ export default [{
 
     gauge.set(peers.length)
 
-    return h.response(client.register.metrics())
+    const metrics = await client.register.metrics()
+
+    return h.response(metrics)
       .type(client.register.contentType)
   }
 }]
