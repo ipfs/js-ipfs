@@ -104,7 +104,7 @@ async function findPeer (peerId, libp2p, options) {
  * @param {Libp2p} libp2p
  * @param {AbortOptions} options
  */
- async function findPeerOnDht (peerId, libp2p, options) {
+async function findPeerOnDht (peerId, libp2p, options) {
   for await (const event of libp2p._dht.findPeer(peerId, options)) {
     if (event.name === 'FINAL_PEER') {
       break
