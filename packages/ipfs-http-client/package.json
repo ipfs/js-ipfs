@@ -54,7 +54,7 @@
     "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller"
   },
   "dependencies": {
-    "@ipld/dag-cbor": "^6.0.5",
+    "@ipld/dag-cbor": "^7.0.0",
     "@ipld/dag-json": "^8.0.1",
     "@ipld/dag-pb": "^2.1.3",
     "abort-controller": "^3.0.0",
