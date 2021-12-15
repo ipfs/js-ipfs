@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.6](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.5...ipfs-http-response@1.0.6) (2021-12-15)
+
+**Note:** Version bump only for package ipfs-http-response
+
+
+
+
+
 ## [1.0.5](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.4...ipfs-http-response@1.0.5) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-http-response

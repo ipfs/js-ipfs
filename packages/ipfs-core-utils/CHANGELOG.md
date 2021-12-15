@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.12.2...ipfs-core-utils@0.13.0) (2021-12-15)
+
+
+### Features
+
+* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
+
+
+### BREAKING CHANGES
+
+* The DHT API has been refactored to return async iterators of query events
+
+
+
+
+
 ## [0.12.2](https://github.com/ipfs/js-ipfs/compare/ipfs-core-utils@0.12.1...ipfs-core-utils@0.12.2) (2021-11-24)
 
 

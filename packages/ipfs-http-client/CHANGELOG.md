@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [55.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@54.0.2...ipfs-http-client@55.0.0) (2021-12-15)
+
+
+### Bug Fixes
+
+* **pubsub:** multibase in pubsub http rpc ([#3922](https://github.com/ipfs/js-ipfs/issues/3922)) ([6eeaca4](https://github.com/ipfs/js-ipfs/commit/6eeaca452c36fa13be42d704575c577e4ca938f1))
+* return nested value from dag.get ([#3966](https://github.com/ipfs/js-ipfs/issues/3966)) ([45ac973](https://github.com/ipfs/js-ipfs/commit/45ac9730d6484e8324acfbc3579fce052b8452d7)), closes [#3957](https://github.com/ipfs/js-ipfs/issues/3957)
+
+
+### chore
+
+* Bump @ipld/dag-cbor to v7 ([#3977](https://github.com/ipfs/js-ipfs/issues/3977)) ([73476f5](https://github.com/ipfs/js-ipfs/commit/73476f55e39ecfb01eb2b4880637aad658f51bc2))
+
+
+### Features
+
+* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
+* update DAG API to match go-ipfs@0.10 changes ([#3917](https://github.com/ipfs/js-ipfs/issues/3917)) ([38c01be](https://github.com/ipfs/js-ipfs/commit/38c01be03b4fd5f401cd9b698cfdb4237d835b01))
+
+
+### BREAKING CHANGES
+
+* **pubsub:** We had to make breaking changes to `pubsub` commands sent over HTTP RPC  to fix data corruption caused by topic names and payload bytes that included `\n`. More details in https://github.com/ipfs/go-ipfs/issues/7939 and https://github.com/ipfs/go-ipfs/pull/8183 
+* On decode of CBOR blocks, `undefined` values will be coerced to `null`
+* `ipfs.dag.put` no longer accepts a `format` arg, it is now `storeCodec` and `inputCodec`.  `'json'` has become `'dag-json'`, `'cbor'` has become `'dag-cbor'` and so on
+* The DHT API has been refactored to return async iterators of query events
+
+
+
+
+
 ## [54.0.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@54.0.1...ipfs-http-client@54.0.2) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-http-client

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-core-config@0.1.4...ipfs-core-config@0.2.0) (2021-12-15)
+
+
+### Features
+
+* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
+* improve collected metrics ([#3978](https://github.com/ipfs/js-ipfs/issues/3978)) ([33f1034](https://github.com/ipfs/js-ipfs/commit/33f1034a6fc257f1a87de7bb38d876925f61cb5f))
+
+
+### BREAKING CHANGES
+
+* The DHT API has been refactored to return async iterators of query events
+
+
+
+
+
 ## [0.1.4](https://github.com/ipfs/js-ipfs/compare/ipfs-core-config@0.1.3...ipfs-core-config@0.1.4) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-core-config
