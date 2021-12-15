@@ -59,9 +59,10 @@ export function createExport ({ repo, preload, codecs }) {
           cid,
           writer,
           codecs)
-        writer.close()
       } catch (/** @type {any} */ e) {
         err = e
+      } finally {
+        writer.close()
       }
     })()
 
