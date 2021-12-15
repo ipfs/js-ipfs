@@ -331,9 +331,9 @@ jobs:
           - name: ipfs browser exchange files
             repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs@$PWD/packages/ipfs/dist,ipfs-core-types@$PWD/packages/ipfs-core-types/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
-          - name: ipfs browser ipns publish
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
+          #- name: ipfs browser ipns publish TODO: re-enable after example bumped to go-ipfs 0.11 and ipfs-http-client from https://github.com/ipfs/js-ipfs/pull/3922
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
           - name: ipfs browser mfs
             repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
@@ -373,9 +373,9 @@ jobs:
           - name: ipfs custom libp2p
             repo: https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs-http-client browser pubsub
-            repo: https://github.com/ipfs-examples/js-ipfs-http-client-browser-pubsub.git
-            deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist,ipfs@$PWD/packages/ipfs/dist
+          #- name: ipfs-http-client browser pubsub TODO: re-enable after example bumped to go-ipfs 0.11 and ipfs-http-client from https://github.com/ipfs/js-ipfs/pull/3922
+          #  repo: https://github.com/ipfs-examples/js-ipfs-http-client-browser-pubsub.git
+          #  deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist,ipfs@$PWD/packages/ipfs/dist
           - name: ipfs-http-client bundle webpack
             repo: https://github.com/ipfs-examples/js-ipfs-http-client-bundle-webpack.git
             deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist,ipfs@$PWD/packages/ipfs/dist
