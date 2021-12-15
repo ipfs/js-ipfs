@@ -1,9 +1,11 @@
 import client from 'prom-client'
 import Boom from '@hapi/boom'
+import debug from 'debug'
 
 // Clear the register to make sure we're not registering multiple ones
 client.register.clear()
-const gauge = new client.Gauge({ name: 'number_of_peers', help: 'the_number_of_currently_connected_peers' })
+
+const gauges = {}
 
 // Endpoint for handling debug metrics
 export default [{
@@ -19,13 +21,43 @@ export default [{
     }
 
     const { ipfs } = request.server.app
-    const peers = await ipfs.swarm.peers()
+    const metrics = ipfs.libp2p.metrics
 
-    gauge.set(peers.length)
+    if (metrics) {
+      for (const [component, componentMetrics] of metrics.getComponentMetrics().entries()) {
+        for (const [metricName, metricValue] of componentMetrics.entries()) {
+          const name = `libp2p-${component}-${metricName}`.replace(/-/g, '_')
 
-    const metrics = await client.register.metrics()
+          if (!gauges[name]) {
+            gauges[name] = new client.Gauge({ name, help: name })
+          }
 
-    return h.response(metrics)
+          gauges[name].set(metricValue)
+        }
+      }
+    }
+
+    return h.response(await client.register.metrics())
       .type(client.register.contentType)
+  }
+}, {
+  method: 'POST',
+  path: '/debug/logs',
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} h
+   */
+  async handler (request, h) {
+    if (!process.env.IPFS_MONITORING) {
+      throw Boom.notImplemented('Monitoring is disabled. Enable it by setting environment variable IPFS_MONITORING')
+    }
+
+    if (!request.query.debug) {
+      debug.disable()
+    } else {
+      debug.enable(request.query.debug)
+    }
+
+    return h.response()
   }
 }]
