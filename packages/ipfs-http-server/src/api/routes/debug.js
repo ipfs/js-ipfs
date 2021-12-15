@@ -5,6 +5,7 @@ import debug from 'debug'
 // Clear the register to make sure we're not registering multiple ones
 client.register.clear()
 
+/** @type {Record<string, client.Gauge<any>>} */
 const gauges = {}
 
 // Endpoint for handling debug metrics
@@ -21,6 +22,7 @@ export default [{
     }
 
     const { ipfs } = request.server.app
+    // @ts-expect-error libp2p does not exist on ipfs
     const metrics = ipfs.libp2p.metrics
 
     if (metrics) {
