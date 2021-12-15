@@ -52,7 +52,7 @@
     "ipfs-http-server": "^0.9.2",
     "ipfs-utils": "^9.0.2",
     "just-safe-set": "^2.2.1",
-    "libp2p": "^0.35.0",
+    "libp2p": "^0.35.4",
     "libp2p-webrtc-star": "^0.25.0"
   },
   "devDependencies": {
