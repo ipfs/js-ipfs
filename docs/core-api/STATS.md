@@ -34,12 +34,10 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| peer | [PeerId][], [CID][] or `String` | `undefined` | Specifies a peer to print bandwidth for |
-| proto | `String` | `undefined` | Specifies a protocol to print bandwidth for |
-| poll | `boolean` | `undefined` | Is used to yield bandwidth info at an interval |
-| interval | `Number` | `undefined` | The time interval to wait between updating output, if `poll` is `true` |
-| timeout | `Number` | `undefined` | A timeout in ms |
-| signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+| peer | [PeerId][], [CID][] or `String` | `undefined` | Specify a peer to print bandwidth for. |
+| proto | `String` | `undefined` | Specify a protocol to print bandwidth for. |
+| poll | `boolean` | `undefined` | Yield bandwidth at an interval. |
+| interval | `String` | `1s` | Time interval to wait between updating output, if 'poll' is true. This accepts durations such as "300s", "1.5h" or "2h45m". <br/><br/> Valid time units are: "ns", "us" (or "µs"), "ms", "s", "m", "h". |
 
 ### Returns
 
