@@ -34,6 +34,7 @@ export function testPut (factory, options) {
     const cborNode = {
       data: uint8ArrayFromString('some other data')
     }
+    const joseNode = 'eyJhbGciOiJFUzI1NksifQ.AXESICjDGMg3fEBSX7_fpbBUYF4E61TXLysmLJgfGEpFG8Pu.z7a2MvPWLsd7leOeHyfeA1OcAFC9yy5rn1HD8xCeHz3nFrwyn_Su5xXUoaIxAre3fXhGjPkVSNiCE36AKiaMng'
 
     it('should put dag-pb with default hash func (sha2-256)', () => {
       return ipfs.dag.put(pbNode, {
@@ -59,6 +60,20 @@ export function testPut (factory, options) {
     it('should put dag-cbor with non-default hash func (sha2-512)', () => {
       return ipfs.dag.put(cborNode, {
         storeCodec: 'dag-cbor',
+        hashAlg: 'sha2-512'
+      })
+    })
+
+    it('should put dag-jose with default hash func (sha2-256)', () => {
+      return ipfs.dag.put(joseNode, {
+        storeCodec: 'dag-jose',
+        hashAlg: 'sha2-256'
+      })
+    })
+
+    it('should put dag-jose with non-default hash func (sha2-512)', () => {
+      return ipfs.dag.put(joseNode, {
+        storeCodec: 'dag-jose',
         hashAlg: 'sha2-512'
       })
     })

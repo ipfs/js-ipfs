@@ -82,7 +82,6 @@ export function create (options = {}) {
   const blockCodecs = Object.values(codecs);
 
   [dagPB, dagCBOR, dagJSON, dagJOSE, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
-  [dagPB, dagCBOR, id].concat((options.ipld && options.ipld.codecs) || []).forEach(codec => blockCodecs.push(codec))
 
   const multicodecs = new Multicodecs({
     codecs: blockCodecs,
