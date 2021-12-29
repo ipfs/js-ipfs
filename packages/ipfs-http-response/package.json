@@ -63,7 +63,7 @@
   "dependencies": {
     "debug": "^4.3.1",
     "ejs": "^3.1.6",
-    "file-type": "^16.0.0",
+    "file-type": "^17.1.1",
     "filesize": "^8.0.0",
     "it-buffer": "^0.1.1",
     "it-concat": "^2.0.0",
