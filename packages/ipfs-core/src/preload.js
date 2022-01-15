@@ -3,7 +3,6 @@
 import toUri from 'multiaddr-to-uri'
 import debug from 'debug'
 import shuffle from 'array-shuffle'
-import { AbortController } from 'native-abort-controller'
 import { preload } from 'ipfs-core-config/preload'
 /** @type {typeof import('hashlru').default} */
 // @ts-ignore - hashlru has incorrect typedefs

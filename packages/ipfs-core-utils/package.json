@@ -112,7 +112,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "any-signal": "^2.1.2",
+    "any-signal": "^3.0.0",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
     "debug": "^4.1.1",
@@ -130,7 +130,7 @@
     "multiformats": "^9.4.13",
     "nanoid": "^3.1.23",
     "parse-duration": "^1.0.0",
-    "timeout-abort-controller": "^2.0.0",
+    "timeout-abort-controller": "^3.0.0",
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {

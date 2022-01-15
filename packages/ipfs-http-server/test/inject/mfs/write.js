@@ -6,7 +6,6 @@ import { matchIterable } from '../../utils/match-iterable.js'
 import sinon from 'sinon'
 import FormData from 'form-data'
 import streamToPromise from 'stream-to-promise'
-import { AbortSignal } from 'native-abort-controller'
 
 const defaultOptions = {
   offset: undefined,
