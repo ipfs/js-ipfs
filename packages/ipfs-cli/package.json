@@ -83,7 +83,7 @@
     "it-split": "^1.0.0",
     "it-tar": "^4.0.0",
     "jsondiffpatch": "^0.4.1",
-    "libp2p-crypto": "^0.21.0",
+    "libp2p-crypto": "^0.21.1",
     "mafmt": "^10.0.0",
     "multiaddr": "^10.0.0",
     "multiaddr-to-uri": "^8.0.0",
