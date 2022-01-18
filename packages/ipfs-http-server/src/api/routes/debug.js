@@ -26,15 +26,17 @@ export default [{
     const metrics = ipfs.libp2p.metrics
 
     if (metrics) {
-      for (const [component, componentMetrics] of metrics.getComponentMetrics().entries()) {
-        for (const [metricName, metricValue] of componentMetrics.entries()) {
-          const name = `libp2p-${component}-${metricName}`.replace(/-/g, '_')
+      for (const [system, components] of metrics.getComponentMetrics().entries()) {
+        for (const [component, componentMetrics] of components.entries()) {
+          for (const [metricName, metricValue] of componentMetrics.entries()) {
+            const name = `${system}-${component}-${metricName}`.replace(/-/g, '_')
 
-          if (!gauges[name]) {
-            gauges[name] = new client.Gauge({ name, help: name })
+            if (!gauges[name]) { // eslint-disable-line max-depth
+              gauges[name] = new client.Gauge({ name, help: name })
+            }
+
+            gauges[name].set(metricValue)
           }
-
-          gauges[name].set(metricValue)
         }
       }
     }

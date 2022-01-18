@@ -4,7 +4,7 @@ import MulticastDNS from 'libp2p-mdns'
 // @ts-expect-error - no types
 import WS from 'libp2p-websockets'
 import KadDHT from 'libp2p-kad-dht'
-import GossipSub from 'libp2p-gossipsub'
+import GossipSub from '@achingbrain/libp2p-gossipsub'
 // @ts-expect-error - no types
 import Multiplex from 'libp2p-mplex'
 import { NOISE } from '@chainsafe/libp2p-noise'
