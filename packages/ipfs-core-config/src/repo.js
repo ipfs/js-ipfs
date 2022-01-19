@@ -7,6 +7,9 @@ import { BlockstoreDatastoreAdapter } from 'blockstore-datastore-adapter'
 import { ShardingDatastore } from 'datastore-core/sharding'
 import { NextToLast } from 'datastore-core/shard'
 import { FSLock } from 'ipfs-repo/locks/fs'
+import { MountDatastore } from 'datastore-core/mount'
+import { Key } from 'interface-datastore/key'
+import { LRUDatastore } from './utils/lru-datastore.js'
 
 /**
  * @typedef {import('ipfs-repo-migrations').ProgressCallback} MigrationProgressCallback
@@ -19,9 +22,11 @@ import { FSLock } from 'ipfs-repo/locks/fs'
  * @param {string} [options.path]
  * @param {boolean} [options.autoMigrate]
  * @param {MigrationProgressCallback} [options.onMigrationProgress]
+ * @param {number} [options.peerStoreCacheSize]
  */
 export function createRepo (print, codecs, options = {}) {
   const repoPath = options.path || path.join(os.homedir(), '.jsipfs')
+  const peerStoreCacheSize = options.peerStoreCacheSize || 1024
   /**
    * @type {number}
    */
@@ -40,6 +45,8 @@ export function createRepo (print, codecs, options = {}) {
     print(`${percentComplete.toString().padStart(6, ' ')}% ${message}`)
   }
 
+  const defaultDatastore = new LevelDatastore(`${repoPath}/datastore`)
+
   return create(repoPath, (codeOrName) => codecs.getCodec(codeOrName), {
     root: new FsDatastore(repoPath, {
       extension: ''
@@ -52,7 +59,13 @@ export function createRepo (print, codecs, options = {}) {
         new NextToLast(2)
       )
     ),
-    datastore: new LevelDatastore(`${repoPath}/datastore`),
+    datastore: new MountDatastore([{
+      prefix: new Key('/peers'),
+      datastore: new LRUDatastore(peerStoreCacheSize, defaultDatastore)
+    }, {
+      prefix: new Key('/'),
+      datastore: defaultDatastore
+    }]),
     keys: new FsDatastore(`${repoPath}/keys`),
     pins: new LevelDatastore(`${repoPath}/pins`)
   }, {
