@@ -88,6 +88,7 @@
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "hashlru": "^2.3.0",
+    "interface-datastore": "^6.0.2",
     "ipfs-repo": "^14.0.1",
     "ipfs-utils": "^9.0.2",
     "ipns": "^0.16.0",
