@@ -3,7 +3,6 @@ import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../../lib/configure.js'
 import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
 import { abortSignal } from '../../lib/abort-signal.js'
-import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions

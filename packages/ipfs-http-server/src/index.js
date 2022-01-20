@@ -5,7 +5,6 @@ import { Multiaddr } from 'multiaddr'
 // @ts-expect-error no types
 import toMultiaddr from 'uri-to-multiaddr'
 import Boom from '@hapi/boom'
-import { AbortController } from 'native-abort-controller'
 import { routes } from './api/routes/index.js'
 import { errorHandler } from './error-handler.js'
 // @ts-expect-error setMaxListeners is missing from the types
