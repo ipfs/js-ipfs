@@ -13,24 +13,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-           npm install
-           npm run build
-           npm run link
+          build: |
+            npm run link
 
   check:
     name: Check
@@ -40,24 +27,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - run: |
           npm run lint
           npm run dep-check -- -- -- -p
@@ -78,23 +52,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   test-browser:
@@ -115,24 +76,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - run: npm run test:browser -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- --browser ${{ matrix.browser }}
 
   test-electron-main:
@@ -145,24 +93,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
@@ -177,24 +112,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
@@ -216,24 +138,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
 
   test-interface:
@@ -258,24 +167,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
 
   test-interface-message-port-client:
@@ -288,24 +184,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   test-examples:
@@ -410,24 +293,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - uses: GabrielBB/xvfb-action@v1
         name: Run npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
         with:
@@ -456,24 +326,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - uses: actions/cache@v2
-        id: cache
-        env:
-          CACHE_NAME: cache-node-modules
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./packages/*/node_modules
-            ./packages/*/dist
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install
-          npm run build
-          npm run link
+          build: |
+            npm run link
       - uses: GabrielBB/xvfb-action@v1
         name: Run npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
         continue-on-error: true
