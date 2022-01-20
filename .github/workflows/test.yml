@@ -391,9 +391,9 @@ jobs:
           - name: ipfs-client add files
             repo: https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
             deps: ipfs@$PWD/packages/ipfs/dist,ipfs-client@$PWD/packages/ipfs-client/dist
-          - name: ipfs electron js
-            repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
+          #- name: ipfs electron js
+          #  repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs running multiple nodes
             repo: https://github.com/ipfs-examples/js-ipfs-running-multiple-nodes.git
             deps: ipfs@$PWD/packages/ipfs/dist
