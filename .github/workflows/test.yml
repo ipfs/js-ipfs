@@ -244,9 +244,9 @@ jobs:
           - name: ipfs browser webpack
             repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs circuit relaying
-            repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
+          #- name: ipfs circuit relaying
+          #  repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
           - name: ipfs custom ipfs repo
             repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
