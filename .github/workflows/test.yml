@@ -355,9 +355,9 @@ jobs:
           - name: ipfs browser video streaming
             repo: https://github.com/ipfs-examples/js-ipfs-browser-video-streaming.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser vue
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
+          #- name: ipfs browser vue
+          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs browser webpack
             repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
             deps: ipfs-core@$PWD/packages/ipfs-core/dist
@@ -391,21 +391,21 @@ jobs:
           - name: ipfs-client add files
             repo: https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
             deps: ipfs@$PWD/packages/ipfs/dist,ipfs-client@$PWD/packages/ipfs-client/dist
-          - name: ipfs electron js
-            repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
+          #- name: ipfs electron js
+          #  repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist
           - name: ipfs running multiple nodes
             repo: https://github.com/ipfs-examples/js-ipfs-running-multiple-nodes.git
             deps: ipfs@$PWD/packages/ipfs/dist
           #- name: ipfs traverse ipld graphs
           #  repo: https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
           #  deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: types with typescript
-            repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: types with typed js
-            repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-core-types@$PWD/packages/ipfs-core-types/dist
+          #- name: types with typescript
+          #  repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist
+          #- name: types with typed js
+          #  repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
+          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-core-types@$PWD/packages/ipfs-core-types/dist
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

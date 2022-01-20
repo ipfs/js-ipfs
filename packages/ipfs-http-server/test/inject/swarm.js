@@ -4,7 +4,6 @@ import { expect } from 'aegir/utils/chai.js'
 import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import sinon from 'sinon'
-import { AbortSignal } from 'native-abort-controller'
 
 describe('/swarm', () => {
   const multiaddr = '/ip4/127.0.0.1/tcp/4002/p2p/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr'
