@@ -26,7 +26,7 @@ export const create = createImport
 export const crypto = cryptoImport
 export const isIPFS = isIPFSImport
 export { CID } from 'multiformats/cid'
-export { Multiaddr } from 'multiaddr'
+export { Multiaddr as multiaddr } from 'multiaddr'
 export const PeerId = PeerIdImport
 export const globSource = globSourceImport
 export const urlSource = urlSourceImport
