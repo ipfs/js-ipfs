@@ -38,6 +38,7 @@ describe('create node', function () {
 
     const config = await node.config.getAll()
     expect(config.Identity).to.exist()
+
     await node.stop()
   })
 
