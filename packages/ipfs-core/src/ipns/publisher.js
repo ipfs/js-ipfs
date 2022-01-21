@@ -112,7 +112,7 @@ export class IpnsPublisher {
 
       return res
     } catch (/** @type {any} */err) {
-      const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base32')} could not be stored in the routing`
+      const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base32')} could not be stored in the routing - ${err.message}`
       log.error(errMsg)
       log.error(err)
 
