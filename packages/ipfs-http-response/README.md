@@ -8,10 +8,6 @@
 
 > Creates an HTTP response from an IPFS Hash
 
-## Lead Maintainer
-
-[Vasco Santos](https://github.com/vasco-santos).
-
 ### Installation
 
 > npm install ipfs-http-response

@@ -11,11 +11,6 @@
 > A library for providing IPFS node over [message channel][]. This library enables
 applications running in the different JS context to use [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) (subset) via `ipfs-message-port-client`.
 
-
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](https://github.com/achingbrain)
-
 ## Table of Contentens <!-- omit in toc -->
 
 - [Install](#install)

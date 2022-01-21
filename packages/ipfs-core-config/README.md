@@ -10,10 +10,6 @@
 
 > This package serves as a repository code shared between the core `ipfs` core implementation and the `ipfs-http-client`
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](https://github.com/achingbrain)
-
 ## Table of Contents <!-- omit in toc -->
 
 - [Install](#install)

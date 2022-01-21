@@ -8,10 +8,6 @@
 
 > A test suite and interface you can use to implement an IPFS core interface.
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](http://github.com/achingbrain)
-
 ## Table of Contents <!-- omit in toc -->
 
 - [Background](#background)
