@@ -7,7 +7,7 @@ import WebRTCStar from 'libp2p-webrtc-star'
 import Multiplex from 'libp2p-mplex'
 import { NOISE } from '@chainsafe/libp2p-noise'
 import KadDHT from 'libp2p-kad-dht'
-import GossipSub from '@achingbrain/libp2p-gossipsub'
+import GossipSub from 'libp2p-gossipsub'
 import { validator, selector } from './utils/ipns.js'
 
 export function libp2pConfig () {
