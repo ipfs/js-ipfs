@@ -157,7 +157,7 @@ describe('name', function () {
       // @ts-expect-error invalid argument
       await expect(publisher.publish(peerId.privKey, ipfsRef))
         .to.eventually.be.rejected()
-        .with.property('code', 'ERR_CREATING_IPNS_RECORD')
+        .with.property('code', 'ERR_STORING_IN_DATASTORE')
     })
   })
 
