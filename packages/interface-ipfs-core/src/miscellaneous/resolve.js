@@ -32,13 +32,16 @@ export function testResolve (factory, options) {
     let ipfsId
 
     before(async () => {
-      ipfs = (await factory.spawn({ type: 'proc', ipfsOptions: merge(ipfsOptions, {
-        config: {
-          Routing: {
-            Type: 'none'
+      ipfs = (await factory.spawn({
+        type: 'proc',
+        ipfsOptions: merge(ipfsOptions, {
+          config: {
+            Routing: {
+              Type: 'none'
+            }
           }
-        }
-      })})).api
+        })
+      })).api
       ipfsId = await ipfs.id()
     })
 
@@ -104,13 +107,16 @@ export function testResolve (factory, options) {
       // @ts-ignore this is mocha
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
-      const node = (await factory.spawn({ type: isWebWorker ? 'go' : undefined, ipfsOptions: {
-        config: {
-          Routing: {
-            Type: 'none'
+      const node = (await factory.spawn({
+        type: isWebWorker ? 'go' : undefined,
+        ipfsOptions: {
+          config: {
+            Routing: {
+              Type: 'none'
+            }
           }
         }
-      } })).api
+      })).api
       const nodeId = await node.id()
       await ipfs.swarm.connect(nodeId.addresses[0])
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
@@ -127,13 +133,16 @@ export function testResolve (factory, options) {
       // @ts-ignore this is mocha
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
-      const node = (await factory.spawn({ type: isWebWorker ? 'go' : undefined, ipfsOptions: {
-        config: {
-          Routing: {
-            Type: 'none'
+      const node = (await factory.spawn({
+        type: isWebWorker ? 'go' : undefined,
+        ipfsOptions: {
+          config: {
+            Routing: {
+              Type: 'none'
+            }
           }
         }
-      } })).api
+      })).api
       const nodeId = await node.id()
       await ipfs.swarm.connect(nodeId.addresses[0])
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve an IPNS key if recursive === false'))
