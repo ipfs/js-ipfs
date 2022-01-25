@@ -111,7 +111,7 @@
     "it-tar": "^4.0.0",
     "it-to-buffer": "^2.0.0",
     "just-safe-set": "^2.2.1",
-    "libp2p": "^0.36.0",
+    "libp2p": "^0.36.1",
     "libp2p-bootstrap": "^0.14.0",
     "libp2p-crypto": "^0.21.1",
     "libp2p-delegated-content-routing": "^0.11.1",
