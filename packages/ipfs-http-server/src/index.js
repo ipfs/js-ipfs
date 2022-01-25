@@ -7,7 +7,6 @@ import toMultiaddr from 'uri-to-multiaddr'
 import Boom from '@hapi/boom'
 import { routes } from './api/routes/index.js'
 import { errorHandler } from './error-handler.js'
-// @ts-expect-error setMaxListeners is missing from the types
 import { setMaxListeners } from 'events'
 
 const LOG = 'ipfs:http-api'
