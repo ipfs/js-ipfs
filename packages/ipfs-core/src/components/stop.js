@@ -16,7 +16,7 @@ export function createStop ({ network, preload, ipns, repo, mfsPreload }) {
     await Promise.all([
       preload.stop(),
       ipns.stop(),
-      mfsPreload.stop(),
+      mfsPreload.stop()
     ])
 
     await Service.stop(network)
