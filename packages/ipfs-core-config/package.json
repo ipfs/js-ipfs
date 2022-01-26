@@ -79,7 +79,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@chainsafe/libp2p-noise": "^5.0.0",
+    "@chainsafe/libp2p-noise": "^5.0.1",
     "blockstore-datastore-adapter": "^2.0.2",
     "datastore-core": "^6.0.7",
     "datastore-fs": "^6.0.1",

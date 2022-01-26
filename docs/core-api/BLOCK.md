@@ -71,7 +71,6 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| cid  | [CID][] | `undefined` | A CID to store the block under |
 | format | `String` | `'dag-pb'` | The codec to use to create the CID |
 | mhtype | `String` | `sha2-256` | The hashing algorithm to use to create the CID |
 | mhlen | `Number` | | |

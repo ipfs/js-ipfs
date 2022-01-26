@@ -2,7 +2,6 @@ import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { abortSignal } from '../lib/abort-signal.js'
-import { AbortController } from 'native-abort-controller'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { mapEvent } from './map-event.js'
 
