@@ -292,20 +292,17 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs: [
-      build
+      test-node,
+      test-chrome,
+      test-chrome-webworker,
+      test-firefox,
+      test-firefox-webworker,
+      test-electron-main,
+      test-electron-renderer,
+      test-interop,
+      test-interface,
+      test-interface-message-port-client
     ]
-    # needs: [
-    #   test-node,
-    #   test-chrome,
-    #   test-chrome-webworker,
-    #   test-firefox,
-    #   test-firefox-webworker,
-    #   test-electron-main,
-    #   test-electron-renderer,
-    #   test-interop,
-    #   test-interface,
-    #   test-interface-message-port-client
-    # ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
