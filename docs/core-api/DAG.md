@@ -203,7 +203,7 @@ within the CARs.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| sources | `AsyncIterable<Uint8Array>` | `AsyncIterable<AsyncIterable<Uint8Array>>` | One or more [CAR file][] streams |
+| sources | `AsyncIterable<Uint8Array>` | One or more [CAR file][] streams |
 
 ### Options
 
