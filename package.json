@@ -35,7 +35,7 @@
     "docker:release:push-latest": "docker push ipfs/js-ipfs:latest",
     "docker:release:push-version": "docker push ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
     "release:rc": "run-s npm:rc docker:rc",
-    "npm:rc": "lerna publish --canary --preid rc --dist-tag next --force-publish --yes",
+    "npm:rc": "lerna ls -l && git diff && lerna publish --canary --preid rc --dist-tag next --force-publish --yes",
     "docker:rc": "run-s docker:rc:*",
     "docker:rc:build": "docker build . --no-cache --tag js-ipfs:next --file ./Dockerfile.next",
     "docker:rc:tag-next": "docker tag js-ipfs:next docker.io/ipfs/js-ipfs:next",
