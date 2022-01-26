@@ -1,2 +1,2 @@
 
-export const ipfsHttpClient = '^55.0.0'
+export const ipfsHttpClient = ''

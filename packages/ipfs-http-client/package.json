@@ -44,21 +44,21 @@
   "scripts": {
     "build": "aegir build",
     "test": "aegir test",
-    "test:node": "aegir test -t node",
-    "test:browser": "aegir test -t browser",
-    "test:webworker": "aegir test -t webworker",
-    "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
+    "test:node": "aegir test -t node --cov",
+    "test:chrome": "aegir test -t browser --cov",
+    "test:chrome-webworker": "aegir test -t webworker",
+    "test:firefox": "aegir test -t browser -- --browser firefox",
+    "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
     "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i abort-controller"
+    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
     "@ipld/dag-cbor": "^7.0.0",
     "@ipld/dag-json": "^8.0.1",
     "@ipld/dag-pb": "^2.1.3",
-    "abort-controller": "^3.0.0",
-    "any-signal": "^2.1.2",
+    "any-signal": "^3.0.0",
     "dag-jose": "^1.0.0",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
@@ -70,7 +70,6 @@
     "merge-options": "^3.0.4",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.4.13",
-    "native-abort-controller": "^1.0.3",
     "parse-duration": "^1.0.0",
     "stream-to-it": "^0.2.2",
     "uint8arrays": "^3.0.0"
@@ -87,7 +86,7 @@
     "rimraf": "^3.0.2"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=15.0.0",
     "npm": ">=3.0.0"
   },
   "contributors": [

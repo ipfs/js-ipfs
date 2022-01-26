@@ -1,4 +1,3 @@
-import { AbortController } from 'native-abort-controller'
 
 /**
  * @typedef {import('ipfs-core-types/src/pubsub').MessageHandlerFn} MessageHandlerFn

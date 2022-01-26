@@ -5,7 +5,6 @@ import { http } from '../../utils/http.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import sinon from 'sinon'
 import { testHttpMethod } from '../../utils/test-http-method.js'
-import { AbortSignal } from 'native-abort-controller'
 
 const defaultOptions = {
   offset: undefined,
