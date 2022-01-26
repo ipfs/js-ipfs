@@ -89,7 +89,7 @@
     "ipfs-client": "^0.7.5",
     "ipfs-core-types": "^0.9.0",
     "ipfs-http-client": "^55.0.0",
-    "ipfs-interop": "^8.0.0",
+    "ipfs-interop": "^8.0.1",
     "ipfs-utils": "^9.0.2",
     "ipfsd-ctl": "^10.0.4",
     "iso-url": "^1.0.0",
