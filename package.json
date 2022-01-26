@@ -26,7 +26,7 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "dep-check": "lerna run dep-check",
-    "release": "run-s npm:release docker:release",
+    "release": "run-s build npm:release docker:release",
     "npm:release": "lerna publish from-package --no-push --no-private --yes",
     "docker:release": "run-s docker:release:*",
     "docker:release:build": "docker build . --no-cache --tag js-ipfs:latest --file ./Dockerfile.latest",

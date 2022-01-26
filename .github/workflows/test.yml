@@ -331,7 +331,9 @@ jobs:
           docker-username: ${{ secrets.DOCKER_USERNAME }}
       - if: ${{ steps.release.outputs.release_created }}
         name: Run release version
-        run: npm run --if-present release
+        run: |
+          git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
+          npm run --if-present release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ !steps.release.outputs.release_created }}
@@ -339,6 +341,7 @@ jobs:
         run: |
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             git config --global user.name "github-actions[bot]"
+            git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
             npm run --if-present release:rc
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
