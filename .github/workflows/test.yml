@@ -413,9 +413,10 @@ jobs:
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          command: manifest
           release-type: node
-          bump-minor-pre-major: true
-          monorepo-tags: true
+          manifest-file: .release-please-manifest.json
+          config-file: .release-please.json
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
