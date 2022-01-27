@@ -8,7 +8,6 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
-  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
