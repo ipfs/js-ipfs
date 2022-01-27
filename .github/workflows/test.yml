@@ -22,222 +22,222 @@ jobs:
           build: |
             npm run link
 
-  check:
-    name: Check
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: |
-          npm run lint
-          npm run dep-check -- -- -- -p
-          npm run dep-check -- -- -- -- --unused
+  # check:
+  #   name: Check
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: |
+  #         npm run lint
+  #         npm run dep-check -- -- -- -p
+  #         npm run dep-check -- -- -- -- --unused
 
-  test-node:
-    name: Unit tests ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
-    needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        node: [16]
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: node
+  # test-node:
+  #   name: Unit tests ${{ matrix.project }} node ${{ matrix.node }} ${{ matrix.os }}
+  #   needs: build
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-latest, ubuntu-latest, macos-latest]
+  #       node: [16]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: ${{ matrix.node }}
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: node
 
-  test-chrome:
-    name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: chrome
+  # test-chrome:
+  #   name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: chrome
 
-  test-chrome-webworker:
-    name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser:
-          - chromium
-          - firefox
-        type:
-          - browser
-          - webworker
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: chrome-webworker
+  # test-chrome-webworker:
+  #   name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       browser:
+  #         - chromium
+  #         - firefox
+  #       type:
+  #         - browser
+  #         - webworker
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: chrome-webworker
 
-  test-firefox:
-    name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: firefox
+  # test-firefox:
+  #   name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: firefox
 
-  test-firefox-webworker:
-    name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser:
-          - chromium
-          - firefox
-        type:
-          - browser
-          - webworker
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: firefox-webworker
+  # test-firefox-webworker:
+  #   name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       browser:
+  #         - chromium
+  #         - firefox
+  #       type:
+  #         - browser
+  #         - webworker
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: firefox-webworker
 
-  test-electron-main:
-    name: Unit tests electron-main
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: electron-main
+  # test-electron-main:
+  #   name: Unit tests electron-main
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - uses: GabrielBB/xvfb-action@v1
+  #       with:
+  #         run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: electron-main
 
-  test-electron-renderer:
-    name: Unit tests electron-renderer
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: electron-renderer
+  # test-electron-renderer:
+  #   name: Unit tests electron-renderer
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - uses: GabrielBB/xvfb-action@v1
+  #       with:
+  #         run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: electron-renderer
 
-  test-interop:
-    name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type:
-          - node
-          - browser
-          #- electron-main
-          #- electron-renderer
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          directory: '**/.nyc_output'
-          flags: interop-${{ matrix.type }}
+  # test-interop:
+  #   name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       type:
+  #         - node
+  #         - browser
+  #         #- electron-main
+  #         #- electron-renderer
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
+  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+  #       with:
+  #         directory: '**/.nyc_output'
+  #         flags: interop-${{ matrix.type }}
 
   test-interface:
     name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
@@ -246,15 +246,15 @@ jobs:
     strategy:
       matrix:
         type:
-          - node
+          #- node
           - browser
           #- electron-main
           #- electron-renderer
         suite:
-          - test:interface:core
+          #- test:interface:core
           - test:interface:client
-          - test:interface:http-go
-          - test:interface:http-js
+          #- test:interface:http-go
+          #- test:interface:http-js
     steps:
       - uses: actions/checkout@v2
         with:
@@ -266,79 +266,81 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }} --grep 'should require a path'
+        env:
+          DEBUG: ipfs*
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           directory: '**/.nyc_output'
           flags: interface-${{ matrix.type }}
 
-  test-interface-message-port-client:
-    name: Interface tests test:interface:message-port-client browser
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+  # test-interface-message-port-client:
+  #   name: Interface tests test:interface:message-port-client browser
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
-  release:
-    runs-on: ubuntu-latest
-    needs: [
-      test-node,
-      test-chrome,
-      test-chrome-webworker,
-      test-firefox,
-      test-firefox-webworker,
-      test-electron-main,
-      test-electron-renderer,
-      test-interop,
-      test-interface,
-      test-interface-message-port-client
-    ]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    steps:
-      - uses: GoogleCloudPlatform/release-please-action@v2
-        id: release
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          command: manifest
-          release-type: node
-          manifest-file: .release-please-manifest.json
-          config-file: .release-please.json
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-          registry-url: 'https://registry.npmjs.org'
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - uses: ipfs/aegir/actions/docker-login@master
-        with:
-          docker-token: ${{ secrets.DOCKER_TOKEN }}
-          docker-username: ${{ secrets.DOCKER_USERNAME }}
-      - if: ${{ steps.release.outputs.release_created }}
-        name: Run release version
-        run: |
-          git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
-          npm run --if-present release
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ !steps.release.outputs.release_created }}
-        name: Run release rc
-        run: |
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git config --global user.name "github-actions[bot]"
-            git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
-            npm run --if-present release:rc
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  # release:
+  #   runs-on: ubuntu-latest
+  #   needs: [
+  #     test-node,
+  #     test-chrome,
+  #     test-chrome-webworker,
+  #     test-firefox,
+  #     test-firefox-webworker,
+  #     test-electron-main,
+  #     test-electron-renderer,
+  #     test-interop,
+  #     test-interface,
+  #     test-interface-message-port-client
+  #   ]
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  #   steps:
+  #     - uses: GoogleCloudPlatform/release-please-action@v2
+  #       id: release
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         command: manifest
+  #         release-type: node
+  #         manifest-file: .release-please-manifest.json
+  #         config-file: .release-please.json
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #         registry-url: 'https://registry.npmjs.org'
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
+  #     - uses: ipfs/aegir/actions/docker-login@master
+  #       with:
+  #         docker-token: ${{ secrets.DOCKER_TOKEN }}
+  #         docker-username: ${{ secrets.DOCKER_USERNAME }}
+  #     - if: ${{ steps.release.outputs.release_created }}
+  #       name: Run release version
+  #       run: |
+  #         git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
+  #         npm run --if-present release
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #     - if: ${{ !steps.release.outputs.release_created }}
+  #       name: Run release rc
+  #       run: |
+  #           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+  #           git config --global user.name "github-actions[bot]"
+  #           git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
+  #           npm run --if-present release:rc
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
