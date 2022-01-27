@@ -93,14 +93,6 @@ jobs:
     name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser:
-          - chromium
-          - firefox
-        type:
-          - browser
-          - webworker
     steps:
       - uses: actions/checkout@v2
         with:
@@ -149,14 +141,6 @@ jobs:
     name: Unit tests ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser:
-          - chromium
-          - firefox
-        type:
-          - browser
-          - webworker
     steps:
       - uses: actions/checkout@v2
         with:
