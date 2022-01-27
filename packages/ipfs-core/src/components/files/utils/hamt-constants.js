@@ -1,4 +1,4 @@
-import * as murmur3128 from '@multiformats/murmur3/murmur128.js'
+import { murmur3128 } from '@multiformats/murmur3'
 
 export const hamtHashCode = murmur3128.code
 export const hamtBucketBits = 8

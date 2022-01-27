@@ -9,18 +9,18 @@ on:
 
 jobs:
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
+  # build:
+  #   name: Build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #       with:
+  #         build: |
+  #           npm run link
 
   # check:
   #   name: Check
@@ -241,7 +241,7 @@ jobs:
 
   test-interface:
     name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -265,6 +265,7 @@ jobs:
       - uses: ipfs/aegir/actions/cache-node-modules@master
         with:
           build: |
+            npx playwright install-deps
             npm run link
       - run: |
           cd packages/ipfs
