@@ -2,10 +2,6 @@
 
 > The implementation of the js-IPFS CLI
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](http://github.com/achingbrain)
-
 ## Table of Contents <!-- omit in toc -->
 
 - [Install](#install)

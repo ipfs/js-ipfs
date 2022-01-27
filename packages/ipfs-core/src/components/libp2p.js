@@ -32,6 +32,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p')} LibP2P
  * @typedef {import('libp2p').Libp2pOptions & import('libp2p').CreateOptions} Libp2pOptions
+ * @typedef {import('libp2p').Libp2pConfig} Libp2pConfig
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  */
 
@@ -128,7 +129,7 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
         }
       },
       dht: {
-        enabled: get(config, 'Routing.Type', 'none') !== 'none',
+        enabled: get(config, 'Routing.Type', 'dhtclient') !== 'none',
         clientMode: get(config, 'Routing.Type', 'dht') !== 'dhtserver',
         kBucketSize: get(options, 'dht.kBucketSize', 20),
         validators: {

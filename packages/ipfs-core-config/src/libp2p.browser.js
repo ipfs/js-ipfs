@@ -68,8 +68,7 @@ export function libp2pConfig () {
       enabled: true
     },
     peerStore: {
-      persistence: true,
-      threshold: 1
+      persistence: true
     }
   }
 

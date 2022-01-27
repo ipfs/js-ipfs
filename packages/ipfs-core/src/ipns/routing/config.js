@@ -30,12 +30,15 @@ export function createRouting ({ libp2p, repo, peerId, options }) {
     ipnsStores.push(pubsubDs)
   }
 
-  // DHT should not be added as routing if we are offline or it is disabled
-  if (get(options, 'offline') || get(options, 'config.Routing.Type', 'none') === 'none') {
+  // Add DHT datastore if enabled
+  if (!get(options, 'offline', false) && libp2p._config && libp2p._config.dht && libp2p._config.dht.enabled) {
+    ipnsStores.push(new DHTDatastore(libp2p._dht))
+  }
+
+  // Add an offline datastore if we are offline or no other datastores are configured
+  if (get(options, 'offline', false) || ipnsStores.length === 0) {
     const offlineDatastore = new OfflineDatastore(repo)
     ipnsStores.push(offlineDatastore)
-  } else {
-    ipnsStores.push(new DHTDatastore(libp2p._dht))
   }
 
   // Create ipns routing with a set of datastores

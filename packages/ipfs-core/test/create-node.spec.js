@@ -38,6 +38,7 @@ describe('create node', function () {
 
     const config = await node.config.getAll()
     expect(config.Identity).to.exist()
+
     await node.stop()
   })
 
@@ -101,7 +102,7 @@ describe('create node', function () {
       repo: tempRepo,
       init: {
         algorithm: 'RSA',
-        bits: 256
+        bits: 1
       }, // Too few bits will cause error on boot
       config: { Addresses: { Swarm: [] } }
     })).to.eventually.be.rejected()

@@ -7,6 +7,7 @@ import toMultiaddr from 'uri-to-multiaddr'
 import Boom from '@hapi/boom'
 import { routes } from './api/routes/index.js'
 import { errorHandler } from './error-handler.js'
+import { setMaxListeners } from 'events'
 
 const LOG = 'ipfs:http-api'
 const LOG_ERROR = 'ipfs:http-api:error'
@@ -247,6 +248,8 @@ export class HttpApi {
       type: 'onRequest',
       method: function (request, h) {
         const controller = new AbortController()
+        // make sure we don't cause warnings to be logged for 'abort' event listeners
+        setMaxListeners && setMaxListeners(Infinity, controller.signal)
         request.app.signal = controller.signal
 
         // abort the request if the client disconnects

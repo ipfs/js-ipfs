@@ -5,6 +5,11 @@ import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import PeerId from 'peer-id'
 import { NotStartedError } from '../errors.js'
 import errCode from 'err-code'
+import debug from 'debug'
+
+const log = Object.assign(debug('ipfs:components:id'), {
+  error: debug('ipfs:components:id:error')
+})
 
 /**
  * @typedef {import('libp2p')} Libp2p
@@ -46,10 +51,11 @@ export function createId ({ peerId, network }) {
     const agentVersion = uint8ArrayToString(peer.metadata.get('AgentVersion') || new Uint8Array())
     const protocolVersion = uint8ArrayToString(peer.metadata.get('ProtocolVersion') || new Uint8Array())
     const idStr = peer.id.toB58String()
+    const publicKeyStr = peer.publicKey ? uint8ArrayToString(peer.publicKey.bytes, 'base64pad') : ''
 
     return {
       id: idStr,
-      publicKey: uint8ArrayToString(peer.publicKey.bytes, 'base64pad'),
+      publicKey: publicKeyStr,
       addresses: (peer.addresses || [])
         .map(ma => {
           const str = ma.toString()
@@ -78,16 +84,20 @@ export function createId ({ peerId, network }) {
  * @param {AbortOptions} options
  */
 async function findPeer (peerId, libp2p, options) {
-  let peer = libp2p.peerStore.get(peerId)
+  let peer = await libp2p.peerStore.get(peerId)
 
   if (!peer) {
     peer = await findPeerOnDht(peerId, libp2p, options)
   }
 
-  let publicKey = peerId.pubKey ? peerId.pubKey : libp2p.peerStore.keyBook.get(peerId)
+  let publicKey = peerId.pubKey ? peerId.pubKey : await libp2p.peerStore.keyBook.get(peerId)
 
   if (!publicKey) {
-    publicKey = await libp2p._dht.getPublicKey(peerId, options)
+    try {
+      publicKey = await libp2p._dht.getPublicKey(peerId, options)
+    } catch (err) {
+      log.error('Could not load public key for', peerId.toB58String(), err)
+    }
   }
 
   return {
@@ -111,7 +121,7 @@ async function findPeerOnDht (peerId, libp2p, options) {
     }
   }
 
-  const peer = libp2p.peerStore.get(peerId)
+  const peer = await libp2p.peerStore.get(peerId)
 
   if (!peer) {
     throw errCode(new Error('Could not find peer'), 'ERR_NOT_FOUND')

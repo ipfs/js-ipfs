@@ -10,11 +10,6 @@
 
 > A client library for the IPFS API over [message channel][]. This client library provides (subset) of [IPFS API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) enabling applications to work with js-ipfs running in the different JS e.g. [SharedWorker][].
 
-
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](https://github.com/achingbrain)
-
 ## Table of Contentens <!-- omit in toc -->
 
 - [Install](#install)

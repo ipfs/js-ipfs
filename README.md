@@ -36,10 +36,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
 * See https://blog.ipfs.io for news and more
 * Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](http://github.com/achingbrain)
-
 ## Table of Contents <!-- omit in toc -->
 
 - [Getting started](#getting-started)

@@ -35,10 +35,6 @@
 
 If you want to run IPFS as a standalone daemon process, see the [ipfs](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs) module.
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](http://github.com/achingbrain)
-
 ## Table of Contents <!-- omit in toc -->
 
 - [Getting Started](#getting-started)

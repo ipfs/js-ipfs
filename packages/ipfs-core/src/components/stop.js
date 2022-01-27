@@ -16,10 +16,14 @@ export function createStop ({ network, preload, ipns, repo, mfsPreload }) {
     await Promise.all([
       preload.stop(),
       ipns.stop(),
-      mfsPreload.stop(),
-      Service.stop(network),
-      repo.close()
+      mfsPreload.stop()
     ])
+
+    await Service.stop(network)
+
+    // must be closed after stopping services as some of them
+    // will write into the datastore
+    await repo.close()
   }
 
   return stop
