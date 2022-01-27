@@ -305,14 +305,14 @@ jobs:
         with:
           docker-token: ${{ secrets.DOCKER_TOKEN }}
           docker-username: ${{ secrets.DOCKER_USERNAME }}
-      - if: ${{ steps.release.outputs.release_created }}
+      - if: ${{ steps.release.outputs.releases_created }}
         name: Run release version
         run: |
           git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
           npm run --if-present release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ !steps.release.outputs.release_created }}
+      - if: ${{ !steps.release.outputs.releases_created }}
         name: Run release rc
         run: |
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
