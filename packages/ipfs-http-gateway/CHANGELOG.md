@@ -19,6 +19,25 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.10.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-gateway-v0.9.0...ipfs-http-gateway-v0.10.0) (2022-01-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* peerstore methods are now all async, the repo is migrated to v12
+
+### Features
+
+* libp2p async peerstore ([#4018](https://www.github.com/ipfs/js-ipfs/issues/4018)) ([a6b201a](https://www.github.com/ipfs/js-ipfs/commit/a6b201af2c3697430ab0ebe002dd573d185f1ac0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.10.0 to ^0.11.0
+    * ipfs-http-response bumped from ^2.0.0 to ^3.0.0
+
 ## [0.9.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-gateway-v0.8.0...ipfs-http-gateway-v0.9.0) (2022-01-27)
 
 

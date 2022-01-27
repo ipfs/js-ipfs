@@ -34,6 +34,28 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.13.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-cli-v0.12.0...ipfs-cli-v0.13.0) (2022-01-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* peerstore methods are now all async, the repo is migrated to v12
+
+### Features
+
+* libp2p async peerstore ([#4018](https://www.github.com/ipfs/js-ipfs/issues/4018)) ([a6b201a](https://www.github.com/ipfs/js-ipfs/commit/a6b201af2c3697430ab0ebe002dd573d185f1ac0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core bumped from ^0.14.0 to ^0.15.0
+    * ipfs-core-types bumped from ^0.10.0 to ^0.11.0
+    * ipfs-core-utils bumped from ^0.14.0 to ^0.15.0
+    * ipfs-daemon bumped from ^0.12.0 to ^0.13.0
+    * ipfs-http-client bumped from ^56.0.0 to ^57.0.0
+
 ## [0.12.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-cli-v0.11.0...ipfs-cli-v0.12.0) (2022-01-27)
 
 
