@@ -113,12 +113,6 @@ export interface PreloadOptions {
   preload?: boolean
 }
 
-export type ToJSON =
-  | null
-  | string
-  | number
-  | boolean
-
 /**
  * An IPFS path or CID
  */
