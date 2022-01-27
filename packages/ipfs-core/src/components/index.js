@@ -320,10 +320,11 @@ export async function create (options = {}) {
     await initAssets({ addAll: ipfs.addAll, print })
 
     log('initializing IPNS keyspace')
+    // do not wait for this to finish because it can make startup slow
     ipfs.ipns.initializeKeyspace(storage.peerId.privKey, uint8ArrayFromString(`/ipfs/${cid}`))
-        .catch(err => {
-          log.error('error initializing IPNS keyspace', err)
-        })
+      .catch(err => {
+        log.error('error initializing IPNS keyspace', err)
+      })
   }
 
   if (options.start !== false) {
