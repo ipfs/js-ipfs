@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-types",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "types": "types/src/index.d.ts",
