@@ -210,11 +210,10 @@ jobs:
         with:
           build: |
             npm run link
-      - run: |
-          npm install
-          npm run build
-          npm run link
-          npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
+      - run: npm install
+      - run: npm run build
+      - run: npm run link
+      - run: run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: interop-${{ matrix.type }}
@@ -241,11 +240,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: lts/*
-      - run: |
-          npm install
-          npm run build
-          npm run link
-          npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+      - run: npm install
+      - run: npm run build
+      - run: npm run link
+      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: interface-${{ matrix.type }}
