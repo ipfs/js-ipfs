@@ -80,7 +80,9 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: |
+          playwright install-deps
+          npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           directory: '**/.nyc_output'
@@ -109,7 +111,9 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: |
+          playwright install-deps
+          npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           directory: '**/.nyc_output'
@@ -130,7 +134,9 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: |
+          playwright install-deps
+          npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           directory: '**/.nyc_output'
@@ -159,7 +165,9 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: |
+          playwright install-deps
+          npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           directory: '**/.nyc_output'
@@ -233,7 +241,9 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
+      - run: |
+          playwright install-deps
+          npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           directory: '**/.nyc_output'
@@ -266,7 +276,9 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+      - run: |
+          playwright install-deps
+          npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           directory: '**/.nyc_output'
@@ -287,7 +299,9 @@ jobs:
         with:
           build: |
             npm run link
-      - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: |
+          playwright install-deps
+          npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   release:
     runs-on: ubuntu-latest
