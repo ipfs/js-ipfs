@@ -1,0 +1,57 @@
+name: Externals
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+
+  test-externals:
+    name: Test external ${{ matrix.external.name }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        external:
+          - name: ipfs webui
+            repo: https://github.com/ipfs-shipyard/ipfs-webui.git
+            deps: ipfs@$PWD/packages/ipfs/dist
+          - name: ipfs companion
+            repo: https://github.com/ipfs-shipyard/ipfs-companion.git
+            deps: ipfs@$PWD/packages/ipfs/dist
+          - name: orbit-db-io
+            repo: https://github.com/orbitdb/orbit-db-io.git
+            deps: ipfs@$PWD/packages/ipfs/dist
+          - name: ipfs-log
+            repo: https://github.com/orbitdb/ipfs-log.git
+            deps: ipfs@$PWD/packages/ipfs/dist,orbit-db-io@next
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - uses: GabrielBB/xvfb-action@v1
+        name: Run npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
+        continue-on-error: true
+        with:
+          run: npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}
