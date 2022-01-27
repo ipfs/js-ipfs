@@ -49,7 +49,9 @@ import { Multihashes } from 'ipfs-core-utils/multihashes'
 import { Multibases } from 'ipfs-core-utils/multibases'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs')
+const log = Object.assign(debug('ipfs'), {
+  error: debug('ipfs:error')
+})
 
 /**
  * @typedef {import('../types').Options} Options
@@ -318,7 +320,10 @@ export async function create (options = {}) {
     await initAssets({ addAll: ipfs.addAll, print })
 
     log('initializing IPNS keyspace')
-    await ipfs.ipns.initializeKeyspace(storage.peerId.privKey, uint8ArrayFromString(`/ipfs/${cid}`))
+    ipfs.ipns.initializeKeyspace(storage.peerId.privKey, uint8ArrayFromString(`/ipfs/${cid}`))
+        .catch(err => {
+          log.error('error initializing IPNS keyspace', err)
+        })
   }
 
   if (options.start !== false) {
