@@ -9,277 +9,277 @@ on:
 
 jobs:
 
-  # build:
-  #   name: Build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
 
-  # check:
-  #   name: Check
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: |
-  #         npm run lint
-  #         npm run dep-check -- -- -- -p
-  #         npm run dep-check -- -- -- -- --unused
+  check:
+    name: Check
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: |
+          npm run lint
+          npm run dep-check -- -- -- -p
+          npm run dep-check -- -- -- -- --unused
 
-  # test-node:
-  #   name: Unit tests node ${{ matrix.node }} ${{ matrix.os }}
-  #   needs: build
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [windows-latest, ubuntu-latest, macos-latest]
-  #       node: [16]
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: ${{ matrix.node }}
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: node
+  test-node:
+    name: Unit tests node ${{ matrix.node }} ${{ matrix.os }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        node: [16]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: node
 
-  # test-chrome:
-  #   name: Unit tests chrome
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: chrome
+  test-chrome:
+    name: Unit tests chrome
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: chrome
 
-  # test-chrome-webworker:
-  #   name: Unit tests chrome-webworker
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: chrome-webworker
+  test-chrome-webworker:
+    name: Unit tests chrome-webworker
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: chrome-webworker
 
-  # test-firefox:
-  #   name: Unit tests firefox
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: firefox
+  test-firefox:
+    name: Unit tests firefox
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: firefox
 
-  # test-firefox-webworker:
-  #   name: Unit tests firefox-webworker
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: npx playwright install --with-deps
-  #     - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: firefox-webworker
+  test-firefox-webworker:
+    name: Unit tests firefox-webworker
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: npx playwright install --with-deps
+      - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: firefox-webworker
 
-  # test-electron-main:
-  #   name: Unit tests electron-main
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - uses: GabrielBB/xvfb-action@v1
-  #       with:
-  #         run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: electron-main
+  test-electron-main:
+    name: Unit tests electron-main
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: electron-main
 
-  # test-electron-renderer:
-  #   name: Unit tests electron-renderer
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - uses: GabrielBB/xvfb-action@v1
-  #       with:
-  #         run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: electron-renderer
+  test-electron-renderer:
+    name: Unit tests electron-renderer
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: electron-renderer
 
-  # test-interop:
-  #   name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       type:
-  #         - node
-  #         - browser
-  #         #- electron-main
-  #         #- electron-renderer
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: npm install
-  #     - run: npm run build
-  #     - run: npm run link
-  #     - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: interop-${{ matrix.type }}
+  test-interop:
+    name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type:
+          - node
+          - browser
+          #- electron-main
+          #- electron-renderer
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: npm install
+      - run: npm run build
+      - run: npm run link
+      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: interop-${{ matrix.type }}
 
-  # test-interface:
-  #   name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       type:
-  #         - node
-  #         - browser
-  #         #- electron-main
-  #         #- electron-renderer
-  #       suite:
-  #         - test:interface:core
-  #         - test:interface:client
-  #         - test:interface:http-go
-  #         - test:interface:http-js
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - run: npm install
-  #     - run: npm run build
-  #     - run: npm run link
-  #     - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
-  #     - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-  #       with:
-  #         flags: interface-${{ matrix.type }}
+  test-interface:
+    name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type:
+          - node
+          - browser
+          #- electron-main
+          #- electron-renderer
+        suite:
+          - test:interface:core
+          - test:interface:client
+          - test:interface:http-go
+          - test:interface:http-js
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - run: npm install
+      - run: npm run build
+      - run: npm run link
+      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        with:
+          flags: interface-${{ matrix.type }}
 
-  # test-interface-message-port-client:
-  #   name: Interface tests test:interface:message-port-client browser
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: lts/*
-  #     - uses: ipfs/aegir/actions/cache-node-modules@master
-  #       with:
-  #         build: |
-  #           npm run link
-  #     - run: npx playwright install --with-deps
-  #     - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+  test-interface-message-port-client:
+    name: Interface tests test:interface:message-port-client browser
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+        with:
+          build: |
+            npm run link
+      - run: npx playwright install --with-deps
+      - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
   release:
     runs-on: ubuntu-latest
-    # needs: [
-    #   test-node,
-    #   test-chrome,
-    #   test-chrome-webworker,
-    #   test-firefox,
-    #   test-firefox-webworker,
-    #   test-electron-main,
-    #   test-electron-renderer,
-    #   test-interop,
-    #   test-interface,
-    #   test-interface-message-port-client
-    # ]
+    needs: [
+      test-node,
+      test-chrome,
+      test-chrome-webworker,
+      test-firefox,
+      test-firefox-webworker,
+      test-electron-main,
+      test-electron-renderer,
+      test-interop,
+      test-interface,
+      test-interface-message-port-client
+    ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
