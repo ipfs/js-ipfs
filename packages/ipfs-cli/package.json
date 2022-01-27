@@ -1,6 +1,6 @@
 {
   "name": "ipfs-cli",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -66,11 +66,11 @@
     "err-code": "^3.0.1",
     "execa": "^5.0.0",
     "get-folder-size": "^2.0.1",
-    "ipfs-core": "^0.13.0",
-    "ipfs-core-types": "^0.9.0",
-    "ipfs-core-utils": "^0.13.0",
-    "ipfs-daemon": "^0.11.0",
-    "ipfs-http-client": "^55.0.0",
+    "ipfs-core": "^0.14.0",
+    "ipfs-core-types": "^0.10.0",
+    "ipfs-core-utils": "^0.14.0",
+    "ipfs-daemon": "^0.12.0",
+    "ipfs-http-client": "^56.0.0",
     "ipfs-repo": "^14.0.1",
     "ipfs-utils": "^9.0.2",
     "it-all": "^1.0.4",

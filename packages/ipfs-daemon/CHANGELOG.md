@@ -20,6 +20,28 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [0.12.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-daemon-v0.11.0...ipfs-daemon-v0.12.0) (2022-01-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* peerstore methods are now all async, the repo is migrated to v12
+
+### Features
+
+* libp2p async peerstore ([#4018](https://www.github.com/ipfs/js-ipfs/issues/4018)) ([a6b201a](https://www.github.com/ipfs/js-ipfs/commit/a6b201af2c3697430ab0ebe002dd573d185f1ac0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core bumped from ^0.13.0 to ^0.14.0
+    * ipfs-core-types bumped from ^0.9.0 to ^0.10.0
+    * ipfs-grpc-server bumped from ^0.8.0 to ^0.8.1
+    * ipfs-http-gateway bumped from ^0.8.0 to ^0.9.0
+    * ipfs-http-server bumped from ^0.10.0 to ^0.11.0
+
 ## [0.10.4](https://github.com/ipfs/js-ipfs/compare/ipfs-daemon@0.10.3...ipfs-daemon@0.10.4) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-daemon
