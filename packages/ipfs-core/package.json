@@ -72,7 +72,7 @@
     "@ipld/dag-cbor": "^7.0.0",
     "@ipld/dag-json": "^8.0.1",
     "@ipld/dag-pb": "^2.1.3",
-    "@multiformats/murmur3": "^1.0.1",
+    "@multiformats/murmur3": "^1.1.0",
     "any-signal": "^3.0.0",
     "array-shuffle": "^2.0.0",
     "blockstore-core": "^1.0.2",
