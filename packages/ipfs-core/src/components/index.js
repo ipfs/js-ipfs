@@ -50,7 +50,9 @@ import { Multihashes } from 'ipfs-core-utils/multihashes'
 import { Multibases } from 'ipfs-core-utils/multibases'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs')
+const log = Object.assign(debug('ipfs'), {
+  error: debug('ipfs:error')
+})
 
 /**
  * @typedef {import('../types').Options} Options
@@ -297,7 +299,11 @@ export async function create (options = {}) {
 
   // eslint-disable-next-line no-console
   const print = options.silent ? log : console.log
+
+  log('creating repo')
   const storage = await Storage.start(print, multicodecs, options)
+
+  log('getting repo config')
   const config = await storage.repo.config.getAll()
 
   const ipfs = new IPFS({
@@ -307,8 +313,10 @@ export async function create (options = {}) {
     options: { ...options, config }
   })
 
+  log('starting preload')
   await ipfs.preload.start()
 
+  log('starting storage')
   ipfs.ipns.startOffline(storage)
 
   if (storage.isNew && !initOptions.emptyRepo) {
@@ -319,10 +327,12 @@ export async function create (options = {}) {
     await initAssets({ addAll: ipfs.addAll, print })
 
     log('initializing IPNS keyspace')
+
     await ipfs.ipns.initializeKeyspace(storage.peerId.privKey, uint8ArrayFromString(`/ipfs/${cid}`))
   }
 
   if (options.start !== false) {
+    log('starting node')
     await ipfs.start()
   }
 

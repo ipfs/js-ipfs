@@ -10,10 +10,6 @@
 
 > This package serves as a repository code shared between the core `ipfs-message-port-client` and the `ipfs-message-port-server`
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](https://github.com/achingbrain)
-
 ## Table of Contentens <!-- omit in toc -->
 
 - [Install](#install)

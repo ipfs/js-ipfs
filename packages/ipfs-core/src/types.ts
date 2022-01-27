@@ -96,6 +96,13 @@ export interface Options {
   onMigrationProgress?: MigrationProgressCallback
 
   /**
+   * To speed up peers store access, the data associated with this many peers is kept in memory in
+   * a least-recently used cache. The default is 1024. To hold all peers in memory at all times set
+   * this to Infinity.
+   */
+  peerStoreCacheSize?: number
+
+  /**
    * Modify the default IPLD config. This object
    * will be *merged* with the default config; it will not replace it. Check IPLD
    * [docs](https://github.com/ipld/js-ipld#ipld-constructor) for more information

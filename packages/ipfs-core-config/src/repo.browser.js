@@ -14,6 +14,7 @@ import { MemoryLock } from 'ipfs-repo/locks/memory'
  * @param {string} [options.path]
  * @param {boolean} [options.autoMigrate]
  * @param {MigrationProgressCallback} [options.onMigrationProgress]
+ * @param {number} [options.peerStoreCacheSize]
  */
 export function createRepo (print, codecs, options) {
   const repoPath = options.path || 'ipfs'

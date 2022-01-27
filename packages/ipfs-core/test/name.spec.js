@@ -283,9 +283,8 @@ describe('name', function () {
         }
       })
 
-      expect(config.stores).to.have.lengthOf(2)
+      expect(config.stores).to.have.lengthOf(1)
       expect(config.stores[0] instanceof IpnsPubsubDatastore).to.eql(true)
-      expect(config.stores[1] instanceof OfflineDatastore).to.eql(true)
     })
 
     it('should use the dht if enabled', () => {
@@ -293,7 +292,7 @@ describe('name', function () {
 
       const config = createRouting({
         // @ts-expect-error sinon.stub() is not complete implementation
-        libp2p: { _dht: dht },
+        libp2p: { _dht: dht, _config: { dht: { enabled: true } } },
         // @ts-expect-error sinon.stub() is not complete implementation
         repo: sinon.stub(),
         // @ts-expect-error sinon.stub() is not complete implementation

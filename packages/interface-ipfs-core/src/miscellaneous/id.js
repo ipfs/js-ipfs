@@ -48,7 +48,7 @@ export function testId (factory, options) {
 
       expect(res).to.have.a.property('protocols').that.is.an('array')
 
-      expect(res.protocols).to.have.members([
+      expect(res.protocols).to.include.members([
         '/floodsub/1.0.0',
         '/ipfs/bitswap/1.0.0',
         '/ipfs/bitswap/1.1.0',
