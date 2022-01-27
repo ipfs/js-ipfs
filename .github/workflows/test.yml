@@ -251,8 +251,8 @@ jobs:
           #- electron-main
           #- electron-renderer
         suite:
-          #- test:interface:core
-          - test:interface:client
+          - test:interface:core
+          #- test:interface:client
           #- test:interface:http-go
           #- test:interface:http-js
     steps:
