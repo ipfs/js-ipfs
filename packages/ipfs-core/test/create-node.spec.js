@@ -102,7 +102,7 @@ describe('create node', function () {
       repo: tempRepo,
       init: {
         algorithm: 'RSA',
-        bits: 256
+        bits: 1
       }, // Too few bits will cause error on boot
       config: { Addresses: { Swarm: [] } }
     })).to.eventually.be.rejected()
