@@ -118,8 +118,6 @@ export type ToJSON =
   | string
   | number
   | boolean
-  | ToJSON[]
-  | { toJSON?: () => ToJSON } & { [key: string]: ToJSON }
 
 /**
  * An IPFS path or CID
