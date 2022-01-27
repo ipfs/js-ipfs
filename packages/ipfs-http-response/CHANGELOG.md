@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v1.0.6...ipfs-http-response-v2.0.0) (2022-01-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* peerstore methods are now all async, the repo is migrated to v12
+
+### Features
+
+* libp2p async peerstore ([#4018](https://www.github.com/ipfs/js-ipfs/issues/4018)) ([a6b201a](https://www.github.com/ipfs/js-ipfs/commit/a6b201af2c3697430ab0ebe002dd573d185f1ac0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.13.0 to ^0.14.0
+
 ## [1.0.6](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.5...ipfs-http-response@1.0.6) (2021-12-15)
 
 **Note:** Version bump only for package ipfs-http-response
