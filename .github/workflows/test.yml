@@ -213,7 +213,7 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run link
-      - run: run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
+      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: interop-${{ matrix.type }}
