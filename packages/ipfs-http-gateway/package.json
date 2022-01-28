@@ -68,7 +68,7 @@
     "it-last": "^1.0.4",
     "it-to-stream": "^1.0.0",
     "joi": "^17.2.1",
-    "multiformats": "^9.4.13",
+    "multiformats": "^9.5.1",
     "uint8arrays": "^3.0.0",
     "uri-to-multiaddr": "^6.0.0"
   },
