@@ -8,8 +8,6 @@ import { HttpGateway } from 'ipfs-http-gateway'
 import { createServer as gRPCServer } from 'ipfs-grpc-server'
 import { isElectron } from 'ipfs-utils/src/env.js'
 import prometheusClient from 'prom-client'
-// @ts-expect-error - no types
-import prometheusGcStats from 'prometheus-gc-stats'
 import Libp2p from 'libp2p'
 
 const log = debug('ipfs:daemon')
@@ -23,10 +21,7 @@ export class Daemon {
 
     if (process.env.IPFS_MONITORING) {
       // Setup debug metrics collection
-      const collectDefaultMetrics = prometheusClient.collectDefaultMetrics
-      // @ts-ignore - timeout isn't in typedefs
-      collectDefaultMetrics({ timeout: 5000 })
-      prometheusGcStats(prometheusClient.register)()
+      prometheusClient.collectDefaultMetrics()
     }
 
     /** @type {import('ipfs-core-types').IPFS} */

@@ -1,5 +1,6 @@
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { rpcArrayToTextArray } from '../lib/http-rpc-wire-format.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -17,7 +18,7 @@ export const createLs = configure(api => {
       headers: options.headers
     })).json()
 
-    return Strings || []
+    return rpcArrayToTextArray(Strings) || []
   }
   return ls
 })

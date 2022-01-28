@@ -5,7 +5,6 @@ import { http } from '../../utils/http.js'
 import sinon from 'sinon'
 import { CID } from 'multiformats/cid'
 import { testHttpMethod } from '../../utils/test-http-method.js'
-import { AbortSignal } from 'native-abort-controller'
 import { base58btc } from 'multiformats/bases/base58'
 
 const fileCid = CID.parse('bafybeigyov3nzxrqjismjpq7ghkkjorcmozy5rgaikvyieakoqpxfc3rvu')

@@ -36,7 +36,7 @@ const NO_LINKS_CODECS = [
  */
 export function createExport ({ repo, preload, codecs }) {
   /**
-   * @type {import('ipfs-core-types/src/dag').API["export"]}
+   * @type {import('ipfs-core-types/src/dag').API<{}>["export"]}
    */
   async function * dagExport (root, options = {}) {
     if (options.preload !== false) {
@@ -58,11 +58,16 @@ export function createExport ({ repo, preload, codecs }) {
     let err = null
     ;(async () => {
       try {
-        const load = makeLoader(repo, writer, { signal: options.signal, timeout: options.timeout }, codecs)
+        const load = makeLoader(repo, writer, {
+          signal: options.signal,
+          timeout: options.timeout
+        }, codecs)
         await walk({ cid, load })
         await writer.close()
       } catch (/** @type {any} */ e) {
         err = e
+      } finally {
+        writer.close()
       }
     })()
 

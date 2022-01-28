@@ -2,7 +2,7 @@
   <a href="https://ipfs.io"><img width="650px" src="https://ipfs.io/ipfs/QmQJ68PFMDdAsgCZvA1UVzzn18asVcf7HVvCDgpjiSCAse" alt="IPFS http client lib logo" /></a>
 </h1>
 
-<h3 align="center">The JavaScript HTTP client library for IPFS implementations.</h3>
+<h3 align="center">The JavaScript HTTP RPC API client library for IPFS implementations.</h3>
 
 <p align="center">
   <a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
@@ -27,11 +27,7 @@
   <br>
 </p>
 
-> A client library for the IPFS HTTP API, implemented in JavaScript. This client library implements the IPFS [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) enabling applications to change between an embedded js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
-
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](http://github.com/achingbrain)
+> A client library for the IPFS HTTP RPC API (`/api/v0/*`), implemented in JavaScript. This client library implements the IPFS [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) enabling applications to change between an embedded js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -108,7 +104,7 @@ Alternatively it can be an object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| url | `String` or `URL` or `Multiaddr` | `'http://localhost:5001/api/v0'` | A URL that resolves to a running instance of the IPFS HTTP API |
+| url | `String` or `URL` or `Multiaddr` | `'http://localhost:5001/api/v0'` | A URL that resolves to a running instance of the IPFS [HTTP RPC API](https://docs.ipfs.io/reference/http/api/) |
 | protocol | `String` | `'http'` | The protocol to used (ignored if url is specified) |
 | host | `String` | `'localhost'` | The host to used (ignored if url is specified) |
 | port | `number` | `5001` | The port to used (ignored if url is specified) |

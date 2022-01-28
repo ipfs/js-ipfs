@@ -16,7 +16,7 @@ const commonOptions = {
 
 const commonOverrides = {
   go: {
-    ipfsBin: isNode ? path() : undefined
+    ipfsBin: isNode ? (process.env.IPFS_GO_EXEC || path()) : undefined
   }
 }
 

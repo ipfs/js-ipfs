@@ -1,0 +1,26 @@
+{
+  "plugins": ["node-workspace"],
+  "bump-minor-pre-major": true,
+  "group-pull-request-title-pattern": "chore: release ${component}",
+  "packages": {
+    "packages/interface-ipfs-core": {},
+    "packages/ipfs": {},
+    "packages/ipfs-cli": {},
+    "packages/ipfs-client": {},
+    "packages/ipfs-core": {},
+    "packages/ipfs-core-config": {},
+    "packages/ipfs-core-types": {},
+    "packages/ipfs-core-utils": {},
+    "packages/ipfs-daemon": {},
+    "packages/ipfs-grpc-client": {},
+    "packages/ipfs-grpc-protocol": {},
+    "packages/ipfs-grpc-server": {},
+    "packages/ipfs-http-client": {},
+    "packages/ipfs-http-gateway": {},
+    "packages/ipfs-http-response": {},
+    "packages/ipfs-http-server": {},
+    "packages/ipfs-message-port-client": {},
+    "packages/ipfs-message-port-protocol": {},
+    "packages/ipfs-message-port-server": {}
+  }
+}

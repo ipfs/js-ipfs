@@ -235,9 +235,9 @@ export function testMkdir (factory, options) {
               sharding: true
             },
             config: {
-              // enable sharding for go
-              Experimental: {
-                ShardingEnabled: true
+              // enable sharding for go with automatic threshold dropped to the minimum so it shards everything
+              Internal: {
+                UnixFSShardingSizeThreshold: '1B'
               }
             }
           }

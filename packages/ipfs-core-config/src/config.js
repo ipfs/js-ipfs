@@ -45,12 +45,12 @@ export default () => ({
   },
   Swarm: {
     ConnMgr: {
-      LowWater: 200,
-      HighWater: 500
+      LowWater: 50,
+      HighWater: 200
     },
     DisableNatPortMap: false
   },
   Routing: {
-    Type: 'none'
+    Type: 'dhtclient'
   }
 })

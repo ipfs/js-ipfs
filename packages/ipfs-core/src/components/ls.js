@@ -13,7 +13,7 @@ import { CID } from 'multiformats/cid'
  */
 export function createLs ({ repo, preload }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["ls"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["ls"]}
    */
   async function * ls (ipfsPath, options = {}) {
     const legacyPath = normalizeCidPath(ipfsPath)

@@ -21,7 +21,7 @@ const defaultOptions = {}
  */
 export function createFlush (context) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["flush"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["flush"]}
    */
   async function mfsFlush (path, options = {}) {
     /** @type {DefaultOptions} */

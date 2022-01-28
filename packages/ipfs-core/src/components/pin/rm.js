@@ -2,11 +2,11 @@ import last from 'it-last'
 
 /**
  * @param {Object} config
- * @param {import('ipfs-core-types/src/pin').API["rmAll"]} config.rmAll
+ * @param {import('ipfs-core-types/src/pin').API<{}>["rmAll"]} config.rmAll
  */
 export function createRm ({ rmAll }) {
   /**
-   * @type {import('ipfs-core-types/src/pin').API["rm"]}
+   * @type {import('ipfs-core-types/src/pin').API<{}>["rm"]}
    */
   async function rm (path, options = {}) {
     // @ts-ignore return value of last can be undefined

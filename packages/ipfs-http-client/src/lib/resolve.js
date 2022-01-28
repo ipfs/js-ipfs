@@ -29,13 +29,6 @@ export async function * resolve (cid, path, codecs, getBlock, options) {
   let value = await load(cid)
   let lastCid = cid
 
-  if (!parts.length) {
-    yield {
-      value,
-      remainderPath: ''
-    }
-  }
-
   // End iteration if there isn't a CID to follow any more
   while (parts.length) {
     const key = parts.shift()
@@ -61,5 +54,10 @@ export async function * resolve (cid, path, codecs, getBlock, options) {
       lastCid = cid
       value = await load(value)
     }
+  }
+
+  yield {
+    value,
+    remainderPath: ''
   }
 }

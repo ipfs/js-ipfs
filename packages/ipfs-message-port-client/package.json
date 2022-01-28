@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-client",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "IPFS client library for accessing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -10,7 +10,6 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-message-port-client#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
-  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
@@ -47,21 +46,21 @@
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.8.4",
-    "ipfs-message-port-protocol": "^0.10.4",
+    "ipfs-core-types": "^0.10.0",
+    "ipfs-message-port-protocol": "^0.11.0",
     "ipfs-unixfs": "^6.0.3",
     "it-peekable": "^1.0.2",
     "multiformats": "^9.5.1"
   },
   "devDependencies": {
     "aegir": "^36.0.1",
-    "interface-ipfs-core": "^0.152.2",
-    "ipfs-core": "^0.12.2",
-    "ipfs-message-port-server": "^0.10.4",
+    "interface-ipfs-core": "^0.154.0",
+    "ipfs-core": "^0.14.0",
+    "ipfs-message-port-server": "^0.11.0",
     "rimraf": "^3.0.2"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=15.0.0",
     "npm": ">=3.0.0"
   }
 }

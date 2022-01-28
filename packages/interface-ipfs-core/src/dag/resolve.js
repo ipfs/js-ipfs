@@ -26,7 +26,7 @@ export function testResolve (factory, options) {
     after(() => factory.clean())
 
     it('should respect timeout option when resolving a path within a DAG node', async () => {
-      const cid = await ipfs.dag.put({}, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put({}, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       return testTimeout(() => ipfs.dag.resolve(cid, {
         timeout: 1
@@ -43,7 +43,7 @@ export function testResolve (factory, options) {
         }
       }
 
-      const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put(obj, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(`${cid}/c/cb`)
       expect(result).to.have.deep.property('cid', cid)
@@ -60,7 +60,7 @@ export function testResolve (factory, options) {
         }
       }
 
-      const cid = await ipfs.dag.put(obj, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put(obj, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(cid, { path: '/c/cb' })
       expect(result).to.have.deep.property('cid', cid)
@@ -72,7 +72,7 @@ export function testResolve (factory, options) {
         ca: [5, 6, 7],
         cb: 'foo'
       }
-      const cid0 = await ipfs.dag.put(obj0, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid0 = await ipfs.dag.put(obj0, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       const obj1 = {
         a: 1,
@@ -80,7 +80,7 @@ export function testResolve (factory, options) {
         c: cid0
       }
 
-      const cid1 = await ipfs.dag.put(obj1, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid1 = await ipfs.dag.put(obj1, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(`/ipfs/${cid1}/c/cb`)
       expect(result).to.have.deep.property('cid', cid0)
@@ -92,7 +92,7 @@ export function testResolve (factory, options) {
         ca: [5, 6, 7],
         cb: 'foo'
       }
-      const cid0 = await ipfs.dag.put(obj0, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid0 = await ipfs.dag.put(obj0, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       const obj1 = {
         a: 1,
@@ -100,7 +100,7 @@ export function testResolve (factory, options) {
         c: cid0
       }
 
-      const cid1 = await ipfs.dag.put(obj1, { format: 'dag-cbor', hashAlg: 'sha2-256' })
+      const cid1 = await ipfs.dag.put(obj1, { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(cid1, { path: '/c/cb' })
       expect(result).to.have.deep.property('cid', cid0)
@@ -109,7 +109,7 @@ export function testResolve (factory, options) {
 
     it('should resolve a raw node', async () => {
       const node = uint8ArrayFromString('hello world')
-      const cid = await ipfs.dag.put(node, { format: 'raw', hashAlg: 'sha2-256' })
+      const cid = await ipfs.dag.put(node, { storeCodec: 'raw', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(cid, { path: '/' })
       expect(result).to.have.deep.property('cid', cid)
@@ -122,7 +122,7 @@ export function testResolve (factory, options) {
         Data: someData,
         Links: []
       }
-      const childCid = await ipfs.dag.put(childNode, { format: 'dag-pb', hashAlg: 'sha2-256' })
+      const childCid = await ipfs.dag.put(childNode, { storeCodec: 'dag-pb', hashAlg: 'sha2-256' })
 
       const linkToChildNode = {
         Name: 'foo',
@@ -133,7 +133,7 @@ export function testResolve (factory, options) {
         Data: uint8ArrayFromString('derp'),
         Links: [linkToChildNode]
       }
-      const parentCid = await ipfs.dag.put(parentNode, { format: 'dag-pb', hashAlg: 'sha2-256' })
+      const parentCid = await ipfs.dag.put(parentNode, { storeCodec: 'dag-pb', hashAlg: 'sha2-256' })
 
       const result = await ipfs.dag.resolve(parentCid, { path: '/foo' })
       expect(result).to.have.deep.property('cid', childCid)

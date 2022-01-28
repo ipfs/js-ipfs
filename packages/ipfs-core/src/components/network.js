@@ -96,10 +96,8 @@ export class Network {
     // @ts-ignore private field
     network.repo.pins.blockstore = network.blockstore.unwrap()
 
-    await Promise.all([
-      network.bitswap.stop(),
-      network.libp2p.stop()
-    ])
+    await network.bitswap.stop()
+    await network.libp2p.stop()
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-protocol",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Protobuf definitions for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -29,7 +29,6 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-protocol#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
-  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"

@@ -9,7 +9,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function grpcMfsLs (grpc, service, opts) {
   /**
-   * @type {import('ipfs-core-types/src/files').API["ls"]}
+   * @type {import('ipfs-core-types/src/files').API<{}>["ls"]}
    */
   async function * mfsLs (path, options = {}) {
     const request = {

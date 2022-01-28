@@ -2,7 +2,7 @@ import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { abortSignal } from '../lib/abort-signal.js'
-import { AbortController } from 'native-abort-controller'
+import { textToUrlSafeRpc } from '../lib/http-rpc-wire-format.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -15,7 +15,7 @@ export const createPublish = configure(api => {
    */
   async function publish (topic, data, options = {}) {
     const searchParams = toUrlSearchParams({
-      arg: topic,
+      arg: textToUrlSafeRpc(topic),
       ...options
     })
 

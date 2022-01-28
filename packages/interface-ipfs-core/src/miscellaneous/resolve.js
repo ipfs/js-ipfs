@@ -9,6 +9,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
 import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
+import merge from 'merge-options'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -31,7 +32,16 @@ export function testResolve (factory, options) {
     let ipfsId
 
     before(async () => {
-      ipfs = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfs = (await factory.spawn({
+        type: 'proc',
+        ipfsOptions: merge(ipfsOptions, {
+          config: {
+            Routing: {
+              Type: 'none'
+            }
+          }
+        })
+      })).api
       ipfsId = await ipfs.id()
     })
 
@@ -67,7 +77,7 @@ export function testResolve (factory, options) {
 
     it('should resolve up to the last node', async () => {
       const content = { path: { to: { file: nanoid() } } }
-      const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
+      const options = { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' }
       const cid = await ipfs.dag.put(content, options)
       const path = `/ipfs/${cid}/path/to/file`
       const resolved = await ipfs.resolve(path)
@@ -76,7 +86,7 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve up to the last node across multiple nodes', async () => {
-      const options = { format: 'dag-cbor', hashAlg: 'sha2-256' }
+      const options = { storeCodec: 'dag-cbor', hashAlg: 'sha2-256' }
       const childCid = await ipfs.dag.put({ node: { with: { file: nanoid() } } }, options)
       const parentCid = await ipfs.dag.put({ path: { to: childCid } }, options)
       const resolved = await ipfs.resolve(`/ipfs/${parentCid}/path/to/node/with/file`)
@@ -97,7 +107,16 @@ export function testResolve (factory, options) {
       // @ts-ignore this is mocha
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
-      const node = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      const node = (await factory.spawn({
+        type: isWebWorker ? 'go' : undefined,
+        ipfsOptions: {
+          config: {
+            Routing: {
+              Type: 'none'
+            }
+          }
+        }
+      })).api
       const nodeId = await node.id()
       await ipfs.swarm.connect(nodeId.addresses[0])
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
@@ -106,15 +125,24 @@ export function testResolve (factory, options) {
       await ipfs.name.publish(path, { allowOffline: true })
       await ipfs.name.publish(`/ipns/${ipfsId.id}`, { allowOffline: true, key: 'key-name', resolve: false })
 
-      return expect(await ipfs.resolve(`/ipns/${keyId}`))
-        .to.eq(`/ipfs/${path}`)
+      return expect(ipfs.resolve(`/ipns/${keyId}`))
+        .to.eventually.equal(`/ipfs/${path}`)
     })
 
     it('should resolve IPNS link non-recursively if recursive==false', async function () {
       // @ts-ignore this is mocha
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
-      const node = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
+      const node = (await factory.spawn({
+        type: isWebWorker ? 'go' : undefined,
+        ipfsOptions: {
+          config: {
+            Routing: {
+              Type: 'none'
+            }
+          }
+        }
+      })).api
       const nodeId = await node.id()
       await ipfs.swarm.connect(nodeId.addresses[0])
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve an IPNS key if recursive === false'))
@@ -123,8 +151,8 @@ export function testResolve (factory, options) {
       await ipfs.name.publish(path, { allowOffline: true })
       await ipfs.name.publish(`/ipns/${ipfsId.id}`, { allowOffline: true, key: 'new-key-name', resolve: false })
 
-      return expect(await ipfs.resolve(`/ipns/${keyId}`, { recursive: false }))
-        .to.eq(`/ipns/${ipfsId.id}`)
+      return expect(ipfs.resolve(`/ipns/${keyId}`, { recursive: false }))
+        .to.eventually.equal(`/ipns/${ipfsId.id}`)
     })
   })
 }

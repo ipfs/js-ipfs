@@ -10,16 +10,20 @@ import { Service } from '../utils/service.js'
  */
 export function createStop ({ network, preload, ipns, repo, mfsPreload }) {
   /**
-   * @type {import('ipfs-core-types/src/root').API["stop"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["stop"]}
    */
   const stop = async () => {
     await Promise.all([
       preload.stop(),
       ipns.stop(),
-      mfsPreload.stop(),
-      Service.stop(network),
-      repo.close()
+      mfsPreload.stop()
     ])
+
+    await Service.stop(network)
+
+    // must be closed after stopping services as some of them
+    // will write into the datastore
+    await repo.close()
   }
 
   return stop

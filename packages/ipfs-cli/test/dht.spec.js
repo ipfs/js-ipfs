@@ -61,7 +61,10 @@ describe('dht', () => {
       const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
       const value = uint8ArrayFromString('testvalue')
 
-      ipfs.dht.get.withArgs(key.bytes, defaultOptions).resolves(value)
+      ipfs.dht.get.withArgs(key.bytes, defaultOptions).returns([{
+        name: 'VALUE',
+        value
+      }])
 
       const out = await cli(`dht get ${key}`, {
         ipfs
@@ -76,7 +79,10 @@ describe('dht', () => {
       ipfs.dht.get.withArgs(key.bytes, {
         ...defaultOptions,
         timeout: 1000
-      }).resolves(value)
+      }).returns([{
+        name: 'VALUE',
+        value
+      }])
 
       const out = await cli(`dht get ${key} --timeout=1s`, {
         ipfs
@@ -139,7 +145,6 @@ describe('dht', () => {
 
   describe('findprovs', () => {
     const defaultOptions = {
-      numProviders: 20,
       timeout: undefined
     }
     const key = CID.parse('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
@@ -148,9 +153,12 @@ describe('dht', () => {
     }
 
     it('should be able to find providers for data', async () => {
-      ipfs.dht.findProvs.withArgs(key, defaultOptions).returns([
-        prov
-      ])
+      ipfs.dht.findProvs.withArgs(key, defaultOptions).returns([{
+        name: 'PROVIDER',
+        providers: [
+          prov
+        ]
+      }])
 
       const out = await cli(`dht findprovs ${key}`, { ipfs })
       expect(out).to.equal(`${prov.id}\n`)
@@ -158,11 +166,13 @@ describe('dht', () => {
 
     it('should be able to find smaller number of providers for data', async () => {
       ipfs.dht.findProvs.withArgs(key, {
-        ...defaultOptions,
-        numProviders: 5
-      }).returns([
-        prov
-      ])
+        ...defaultOptions
+      }).returns([{
+        name: 'PROVIDER',
+        providers: [
+          prov
+        ]
+      }])
 
       const out = await cli(`dht findprovs ${key} --num-providers 5`, { ipfs })
       expect(out).to.equal(`${prov.id}\n`)
@@ -172,9 +182,12 @@ describe('dht', () => {
       ipfs.dht.findProvs.withArgs(key, {
         ...defaultOptions,
         timeout: 1000
-      }).returns([
-        prov
-      ])
+      }).returns([{
+        name: 'PROVIDER',
+        providers: [
+          prov
+        ]
+      }])
 
       const out = await cli(`dht findprovs ${key} --timeout=1s`, { ipfs })
       expect(out).to.equal(`${prov.id}\n`)
@@ -187,27 +200,33 @@ describe('dht', () => {
     }
     const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
     const peer = {
-      addrs: [
+      multiaddrs: [
         'addr'
       ]
     }
 
     it('should find a peer', async () => {
-      ipfs.dht.findPeer.withArgs(peerId, defaultOptions).returns(peer)
+      ipfs.dht.findPeer.withArgs(peerId, defaultOptions).returns([{
+        name: 'FINAL_PEER',
+        peer
+      }])
 
       const out = await cli(`dht findpeer ${peerId}`, { ipfs })
 
-      expect(out).to.equal(`${peer.addrs[0]}\n`)
+      expect(out).to.equal(`${peer.multiaddrs[0]}\n`)
     })
 
     it('should find a peer with a timeout', async () => {
       ipfs.dht.findPeer.withArgs(peerId.toString(), {
         ...defaultOptions,
         timeout: 1000
-      }).returns(peer)
+      }).returns([{
+        name: 'FINAL_PEER',
+        peer
+      }])
 
       const out = await cli(`dht findpeer ${peerId} --timeout=1s`, { ipfs })
-      expect(out).to.equal(`${peer.addrs[0]}\n`)
+      expect(out).to.equal(`${peer.multiaddrs[0]}\n`)
     })
   })
 
@@ -221,23 +240,27 @@ describe('dht', () => {
     }
 
     it('should query the DHT', async () => {
-      // https://github.com/libp2p/js-peer-id/issues/141
-      ipfs.dht.query.withArgs(peerId, defaultOptions).returns([
-        peer
-      ])
+      ipfs.dht.query.withArgs(peerId, defaultOptions).returns([{
+        name: 'PEER_RESPONSE',
+        closer: [
+          peer
+        ]
+      }])
 
       const out = await cli(`dht query ${peerId}`, { ipfs })
       expect(out).to.equal(`${peer.id}\n`)
     })
 
     it('should query the DHT with a timeout', async () => {
-      // https://github.com/libp2p/js-peer-id/issues/141
       ipfs.dht.query.withArgs(peerId, {
         ...defaultOptions,
         timeout: 1000
-      }).returns([
-        peer
-      ])
+      }).returns([{
+        name: 'PEER_RESPONSE',
+        closer: [
+          peer
+        ]
+      }])
 
       const out = await cli(`dht query ${peerId} --timeout=1s`, { ipfs })
       expect(out).to.equal(`${peer.id}\n`)

@@ -71,17 +71,11 @@ export class IpnsPublisher {
       throw errcode(new Error(errMsg), 'ERR_INVALID_PEER_ID')
     }
 
-    // @ts-ignore - accessing private property isn't allowed
-    const publicKey = peerId._pubKey
+    const publicKey = peerId.pubKey
     const embedPublicKeyRecord = await ipns.embedPublicKey(publicKey, record)
     const keys = ipns.getIdKeys(peerId.toBytes())
 
     await this._publishEntry(keys.routingKey, embedPublicKeyRecord || record)
-
-    // Publish the public key to support old go-ipfs nodes that are looking for it in the routing
-    // We will be able to deprecate this part in the future, since the public keys will be only
-    // in IPNS record and the peerId.
-    await this._publishPublicKey(keys.routingPubKey, publicKey)
 
     return embedPublicKeyRecord || record
   }
@@ -114,47 +108,11 @@ export class IpnsPublisher {
     // Add record to routing (buffer key)
     try {
       const res = await this._routing.put(k.uint8Array(), entryData)
-      log(`ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
+      log(`ipns record for ${uint8ArrayToString(k.uint8Array(), 'base32')} was stored in the routing`)
 
       return res
     } catch (/** @type {any} */err) {
-      const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base64')} could not be stored in the routing`
-      log.error(errMsg)
-      log.error(err)
-
-      throw errcode(new Error(errMsg), 'ERR_PUTTING_TO_ROUTING')
-    }
-  }
-
-  /**
-   * @param {Key} key
-   * @param {PublicKey} publicKey
-   */
-  async _publishPublicKey (key, publicKey) {
-    const k = Key.asKey(key)
-
-    if (!k) {
-      const errMsg = 'datastore key does not have a valid format'
-      log.error(errMsg)
-
-      throw errcode(new Error(errMsg), 'ERR_INVALID_DATASTORE_KEY')
-    }
-
-    if (!publicKey || !publicKey.bytes) {
-      const errMsg = 'one or more of the provided parameters are not defined'
-      log.error(errMsg)
-
-      throw errcode(new Error(errMsg), 'ERR_UNDEFINED_PARAMETER')
-    }
-
-    // Add public key to routing (buffer key)
-    try {
-      const res = await this._routing.put(k.uint8Array(), publicKey.bytes)
-      log(`public key for ${uint8ArrayToString(k.uint8Array(), 'base64')} was stored in the routing`)
-
-      return res
-    } catch (/** @type {any} */err) {
-      const errMsg = `public key for ${uint8ArrayToString(k.uint8Array(), 'base64')} could not be stored in the routing`
+      const errMsg = `ipns record for ${uint8ArrayToString(k.uint8Array(), 'base32')} could not be stored in the routing - ${err.stack}`
       log.error(errMsg)
       log.error(err)
 

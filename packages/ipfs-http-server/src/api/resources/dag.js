@@ -127,8 +127,6 @@ export const putResource = {
           throw Boom.badRequest("File argument 'object data' is required")
         }
 
-        const enc = request.query.inputEncoding
-
         if (!request.headers['content-type']) {
           throw Boom.badRequest("File argument 'object data' is required")
         }
@@ -147,43 +145,8 @@ export const putResource = {
           throw Boom.badRequest("File argument 'object data' is required")
         }
 
-        let format = request.query.format
-
-        if (format === 'cbor') {
-          format = 'dag-cbor'
-        }
-
-        let node
-
-        if (format === 'raw') {
-          node = data
-        } else if (enc === 'json') {
-          try {
-            node = JSON.parse(data.toString())
-          } catch (/** @type {any} */ err) {
-            throw Boom.badRequest('Failed to parse the JSON: ' + err)
-          }
-        } else {
-          // the node is an uncommon format which the client should have
-          // serialized so add it to the block store and fetch it deserialized
-          // before continuing
-          const cidVersion = format === 'dag-pb' && request.query.hashAlg === 'sha2-256' ? request.query.version : 1
-
-          const cid = await request.server.app.ipfs.block.put(data, {
-            version: cidVersion,
-            format,
-            mhtype: request.query.hash
-          })
-
-          const {
-            value
-          } = await request.server.app.ipfs.dag.get(cid)
-          node = value
-        }
-
         return {
-          node,
-          format,
+          data,
           hashAlg: request.query.hash
         }
       }
@@ -194,15 +157,19 @@ export const putResource = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        format: Joi.string().default('cbor'),
-        inputEncoding: Joi.string().default('json'),
+        storeCodec: Joi.string().default('dag-cbor'),
+        inputCodec: Joi.string().default('dag-json'),
         pin: Joi.boolean().default(false),
         hash: Joi.string().default('sha2-256'),
         cidBase: Joi.string().default('base32'),
         version: Joi.number().integer().valid(0, 1).default(1),
         timeout: Joi.timeout()
       })
-        .rename('input-enc', 'inputEncoding', {
+        .rename('store-codec', 'storeCodec', {
+          override: true,
+          ignoreUndefined: true
+        })
+        .rename('input-codec', 'inputCodec', {
           override: true,
           ignoreUndefined: true
         })
@@ -229,25 +196,28 @@ export const putResource = {
       },
       pre: {
         args: {
-          node,
-          format,
+          data,
           hashAlg
         }
       },
       query: {
+        inputCodec,
+        storeCodec,
         pin,
         cidBase,
-        timeout,
-        version
+        version,
+        timeout
       }
     } = request
 
-    const cidVersion = format === 'dag-pb' && hashAlg === 'sha2-256' ? version : 1
+    const cidVersion = storeCodec === 'dag-pb' && hashAlg === 'sha2-256' ? version : 1
+
     let cid
 
     try {
-      cid = await ipfs.dag.put(node, {
-        format,
+      cid = await ipfs.dag.put(data, {
+        inputCodec,
+        storeCodec,
         hashAlg,
         version: cidVersion,
         pin,

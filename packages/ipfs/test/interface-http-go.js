@@ -119,20 +119,12 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     skip: [
       // dag.get:
       {
-        name: 'should get a dag-pb node local value',
-        reason: 'FIXME vmx 2018-02-22: Currently not supported in go-ipfs, it might be possible once https://github.com/ipfs/go-ipfs/issues/4728 is done'
-      },
-      {
-        name: 'should get dag-pb value via dag-cbor node',
-        reason: 'FIXME vmx 2018-02-22: Currently not supported in go-ipfs, it might be possible once https://github.com/ipfs/go-ipfs/issues/4728 is done'
-      },
-      {
-        name: 'should get by CID with path option',
-        reason: 'FIXME vmx 2018-02-22: Currently not supported in go-ipfs, it might be possible once https://github.com/ipfs/go-ipfs/issues/4728 is done'
-      },
-      {
         name: 'should get only a CID, due to resolving locally only',
         reason: 'FIXME: go-ipfs does not support localResolve option'
+      },
+      {
+        name: 'should get a node added as CIDv0 with a CIDv1',
+        reason: 'go-ipfs doesn\'t use CIDv0 for DAG API anymore'
       }
     ]
   })

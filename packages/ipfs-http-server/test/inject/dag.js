@@ -10,7 +10,6 @@ import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import { matchIterable } from '../utils/match-iterable.js'
 import sinon from 'sinon'
-import { AbortSignal } from 'native-abort-controller'
 import { base58btc } from 'multiformats/bases/base58'
 import { base32 } from 'multiformats/bases/base32'
 import drain from 'it-drain'
@@ -221,7 +220,8 @@ describe('/dag', () => {
 
   describe('/put', () => {
     const defaultOptions = {
-      format: 'dag-cbor',
+      inputCodec: 'dag-json',
+      storeCodec: 'dag-cbor',
       hashAlg: 'sha2-256',
       version: 1,
       pin: false,
@@ -248,7 +248,8 @@ describe('/dag', () => {
       const node = {
         foo: 'bar'
       }
-      ipfs.dag.put.withArgs(node, defaultOptions).returns(cid.toV1())
+      const encoded = Buffer.from(JSON.stringify(node))
+      ipfs.dag.put.withArgs(encoded, defaultOptions).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
@@ -266,14 +267,15 @@ describe('/dag', () => {
         data: [],
         links: []
       }
-      ipfs.dag.put.withArgs(node, {
+      const encoded = Buffer.from(JSON.stringify(node))
+      ipfs.dag.put.withArgs(encoded, {
         ...defaultOptions,
-        format: 'dag-pb'
+        storeCodec: 'dag-pb'
       }).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
-        url: '/api/v0/dag/put?format=dag-pb',
+        url: '/api/v0/dag/put?storeCodec=dag-pb',
         ...await toHeadersAndPayload(JSON.stringify(node))
       }, { ipfs })
 
@@ -287,15 +289,17 @@ describe('/dag', () => {
         data: [],
         links: []
       }
-      ipfs.dag.put.withArgs(node, {
+      const encoded = Buffer.from(JSON.stringify(node))
+      ipfs.dag.put.withArgs(encoded, {
         ...defaultOptions,
         version: 0,
-        format: 'dag-pb'
+        inputCodec: 'dag-json',
+        storeCodec: 'dag-pb'
       }).returns(cid)
 
       const res = await http({
         method: 'POST',
-        url: '/api/v0/dag/put?format=dag-pb&version=0',
+        url: '/api/v0/dag/put?inputCodec=dag-json&storeCodec=dag-pb&version=0',
         ...await toHeadersAndPayload(JSON.stringify(node))
       }, { ipfs })
 
@@ -308,12 +312,12 @@ describe('/dag', () => {
       const node = Buffer.from([0, 1, 2, 3])
       ipfs.dag.put.withArgs(node, {
         ...defaultOptions,
-        format: 'raw'
+        storeCodec: 'raw'
       }).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
-        url: '/api/v0/dag/put?format=raw',
+        url: '/api/v0/dag/put?storeCodec=raw',
         ...await toHeadersAndPayload(node)
       }, { ipfs })
 
@@ -326,7 +330,8 @@ describe('/dag', () => {
       const node = {
         foo: 'bar'
       }
-      ipfs.dag.put.withArgs(node, {
+      const encoded = Buffer.from(JSON.stringify(node))
+      ipfs.dag.put.withArgs(encoded, {
         ...defaultOptions,
         pin: true
       }).returns(cid.toV1())
@@ -347,22 +352,19 @@ describe('/dag', () => {
       const data = Buffer.from('some data')
       const codec = 'git-raw'
 
-      ipfs.block.put.withArgs(data).returns(cid)
-      ipfs.dag.get.withArgs(cid).returns({
-        value: data
-      })
       ipfs.dag.put.withArgs(data, {
         ...defaultOptions,
-        format: codec
+        inputCodec: codec,
+        storeCodec: codec
       }).returns(cid.toV1())
 
       const res = await http({
         method: 'POST',
-        url: '/api/v0/dag/put?format=git-raw&input-enc=raw',
+        url: `/api/v0/dag/put?storeCodec=${codec}&inputCodec=${codec}`,
         ...await toHeadersAndPayload(data)
       }, { ipfs })
 
-      expect(ipfs.block.put.called).to.be.true()
+      expect(ipfs.dag.put.called).to.be.true()
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.deep.nested.property('result.Cid', { '/': cid.toV1().toString() })
     })
@@ -372,7 +374,8 @@ describe('/dag', () => {
       const node = {
         foo: 'bar'
       }
-      ipfs.dag.put.withArgs(node, {
+      const encoded = Buffer.from(JSON.stringify(node))
+      ipfs.dag.put.withArgs(encoded, {
         ...defaultOptions,
         timeout: 1000
       }).returns(cid.toV1())

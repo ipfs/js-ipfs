@@ -27,6 +27,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 ## Getting started
 
 * Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
+* Ensure CORS is [correctly configured](https://github.com/ipfs/js-ipfs/blob/master/docs/CORS.md) for use with the HTTP client
 * Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples/tree/master) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
@@ -34,10 +35,6 @@ We've come a long way, but this project is still in Alpha, lots of development i
 * Check out https://docs.ipfs.io for tips, how-tos and more
 * See https://blog.ipfs.io for news and more
 * Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
-
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](http://github.com/achingbrain)
 
 ## Table of Contents <!-- omit in toc -->
 

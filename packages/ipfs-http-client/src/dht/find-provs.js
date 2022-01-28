@@ -1,7 +1,6 @@
-import { Multiaddr } from 'multiaddr'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
-import { Provider } from './response-types.js'
+import { mapEvent } from './map-event.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -22,15 +21,8 @@ export const createFindProvs = configure(api => {
       headers: options.headers
     })
 
-    for await (const message of res.ndjson()) {
-      if (message.Type === Provider && message.Responses) {
-        for (const { ID, Addrs } of message.Responses) {
-          yield {
-            id: ID,
-            addrs: (Addrs || []).map((/** @type {string} **/ a) => new Multiaddr(a))
-          }
-        }
-      }
+    for await (const event of res.ndjson()) {
+      yield mapEvent(event)
     }
   }
 

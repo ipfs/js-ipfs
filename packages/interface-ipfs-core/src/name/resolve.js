@@ -28,7 +28,15 @@ export function testResolve (factory, options) {
     let nodeId
 
     before(async () => {
-      ipfs = (await factory.spawn()).api
+      ipfs = (await factory.spawn({
+        ipfsOptions: {
+          config: {
+            Routing: {
+              Type: 'none'
+            }
+          }
+        }
+      })).api
       const peerInfo = await ipfs.id()
       nodeId = peerInfo.id
     })

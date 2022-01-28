@@ -10,7 +10,7 @@ import { PinTypes } from 'ipfs-repo/pin-types'
  */
 export function createRmAll ({ repo, codecs }) {
   /**
-   * @type {import('ipfs-core-types/src/pin').API["rmAll"]}
+   * @type {import('ipfs-core-types/src/pin').API<{}>["rmAll"]}
    */
   async function * rmAll (source, _options = {}) {
     const release = await repo.gcLock.readLock()

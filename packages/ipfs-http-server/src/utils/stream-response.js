@@ -40,11 +40,6 @@ export async function streamResponse (request, h, getSource, options = {}) {
             if (options.onEnd) {
               options.onEnd()
             }
-
-            if (!started) { // Maybe it was an empty source?
-              started = true
-              resolve(stream)
-            }
           } catch (/** @type {any} */ err) {
             log(err)
 
@@ -61,7 +56,15 @@ export async function streamResponse (request, h, getSource, options = {}) {
               })
             }
 
-            throw err
+            reject(err)
+          } finally {
+            if (!started) { // Maybe it was an empty source?
+              started = true
+              resolve(stream)
+            }
+
+            // close the stream as we may have aborted execution during a yield
+            stream.end()
           }
         })(),
         toIterable.sink(stream)

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-client",
-  "version": "0.7.4",
+  "version": "0.7.6",
   "description": "A client library to talk to local IPFS daemons",
   "keywords": [
     "ipfs"
@@ -8,7 +8,6 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-client#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
-  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
@@ -41,8 +40,8 @@
     "dep-check": "aegir dep-check -i aegir -i rimraf"
   },
   "dependencies": {
-    "ipfs-grpc-client": "^0.8.2",
-    "ipfs-http-client": "^54.0.2",
+    "ipfs-grpc-client": "^0.9.1",
+    "ipfs-http-client": "^56.0.0",
     "merge-options": "^3.0.4"
   },
   "devDependencies": {

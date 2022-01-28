@@ -5,9 +5,10 @@ import { Multiaddr } from 'multiaddr'
 // @ts-expect-error no types
 import toMultiaddr from 'uri-to-multiaddr'
 import Boom from '@hapi/boom'
-import { AbortController } from 'native-abort-controller'
 import { routes } from './api/routes/index.js'
 import { errorHandler } from './error-handler.js'
+import { setMaxListeners } from 'events'
+
 const LOG = 'ipfs:http-api'
 const LOG_ERROR = 'ipfs:http-api:error'
 
@@ -171,9 +172,16 @@ export class HttpApi {
           return h.continue
         }
 
-        if (request.method === 'get' && (request.path.startsWith('/ipfs') || request.path.startsWith('/webui'))) {
-          // allow requests to the webui
-          return h.continue
+        if (request.method === 'get') {
+          if (request.path.startsWith('/ipfs') || request.path.startsWith('/webui')) {
+            // allow requests to the gateway and webui
+            return h.continue
+          }
+
+          if (process.env.IPFS_MONITORING && request.path.startsWith('/debug')) {
+            // allow requests to prometheus stats when monitoring is enabled
+            return h.continue
+          }
         }
 
         throw Boom.methodNotAllowed()
@@ -240,7 +248,14 @@ export class HttpApi {
       type: 'onRequest',
       method: function (request, h) {
         const controller = new AbortController()
+        // make sure we don't cause warnings to be logged for 'abort' event listeners
+        setMaxListeners && setMaxListeners(Infinity, controller.signal)
         request.app.signal = controller.signal
+
+        // abort the request if the client disconnects
+        request.raw.res.once('close', () => {
+          controller.abort()
+        })
 
         // abort the request if the client disconnects
         request.events.once('disconnect', () => {

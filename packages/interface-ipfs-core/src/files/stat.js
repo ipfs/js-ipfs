@@ -156,7 +156,7 @@ export function testStat (factory, options) {
       const path = '/cbor.node'
       const node = {}
       const cid = await ipfs.dag.put(node, {
-        format: 'dag-cbor',
+        storeCodec: 'dag-cbor',
         hashAlg: 'sha2-256'
       })
       await ipfs.files.cp(`/ipfs/${cid}`, path)
@@ -382,9 +382,9 @@ export function testStat (factory, options) {
               sharding: true
             },
             config: {
-              // enable sharding for go
-              Experimental: {
-                ShardingEnabled: true
+              // enable sharding for go with automatic threshold dropped to the minimum so it shards everything
+              Internal: {
+                UnixFSShardingSizeThreshold: '1B'
               }
             }
           }

@@ -21,7 +21,7 @@ export function createConfig ({ repo }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/config').API["getAll"]}
+   * @type {import('ipfs-core-types/src/config').API<{}>["getAll"]}
    */
   async function getAll (options = {}) { // eslint-disable-line require-await
     // @ts-ignore TODO: move config typedefs into ipfs-repo
@@ -29,7 +29,7 @@ export function createConfig ({ repo }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/config').API["get"]}
+   * @type {import('ipfs-core-types/src/config').API<{}>["get"]}
    */
   async function get (key, options) { // eslint-disable-line require-await
     if (!key) {
@@ -41,21 +41,21 @@ export function createConfig ({ repo }) {
   }
 
   /**
-   * @type {import('ipfs-core-types/src/config').API["set"]}
+   * @type {import('ipfs-core-types/src/config').API<{}>["set"]}
    */
   async function set (key, value, options) { // eslint-disable-line require-await
     return repo.config.set(key, value, options)
   }
 
   /**
-   * @type {import('ipfs-core-types/src/config').API["replace"]}
+   * @type {import('ipfs-core-types/src/config').API<{}>["replace"]}
    */
   async function replace (value, options) { // eslint-disable-line require-await
     return repo.config.replace(value, options)
   }
 
   /**
-   * @type {import('ipfs-core-types/src/config/profiles').API["apply"]}
+   * @type {import('ipfs-core-types/src/config/profiles').API<{}>["apply"]}
    */
   async function applyProfile (profileName, options = { dryRun: false }) {
     const { dryRun } = options
@@ -91,7 +91,7 @@ export function createConfig ({ repo }) {
 }
 
 /**
- * @type {import('ipfs-core-types/src/config/profiles').API["list"]}
+ * @type {import('ipfs-core-types/src/config/profiles').API<{}>["list"]}
  */
 async function listProfiles (_options) { // eslint-disable-line require-await
   return Object.keys(profiles).map(name => ({

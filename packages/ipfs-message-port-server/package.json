@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-server",
-  "version": "0.10.4",
+  "version": "0.11.0",
   "description": "IPFS server library for exposing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -10,7 +10,6 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-message-port-server#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
-  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
@@ -60,15 +59,17 @@
   "scripts": {
     "build": "aegir build",
     "test": "aegir test",
-    "test:browser": "aegir test -t browser",
-    "test:webworker": "aegir test -t webworker",
+    "test:chrome": "aegir test -t browser --cov",
+    "test:chrome-webworker": "aegir test -t webworker",
+    "test:firefox": "aegir test -t browser -- --browser firefox",
+    "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
     "lint": "aegir ts -p check && aegir lint",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.8.4",
-    "ipfs-message-port-protocol": "^0.10.4",
+    "ipfs-core-types": "^0.10.0",
+    "ipfs-message-port-protocol": "^0.11.0",
     "it-all": "^1.0.4",
     "multiformats": "^9.5.1"
   },
@@ -77,7 +78,7 @@
     "rimraf": "^3.0.2"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=15.0.0",
     "npm": ">=3.0.0"
   }
 }

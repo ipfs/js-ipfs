@@ -6,9 +6,10 @@ import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import FormData from 'form-data'
 import sinon from 'sinon'
-import { AbortSignal } from 'native-abort-controller'
 import { randomBytes } from 'iso-random-stream'
 import streamToPromise from 'stream-to-promise'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { base64url } from 'multiformats/bases/base64'
 
 const sendData = async (data) => {
   const form = new FormData()
@@ -20,11 +21,14 @@ const sendData = async (data) => {
     payload
   }
 }
+const textToUrlSafeRpc = text => base64url.encode(uint8ArrayFromString(text))
 
 describe('/pubsub', () => {
   const buf = Buffer.from('some message')
   const topic = 'nonScents'
+  const topicRpcEnc = textToUrlSafeRpc(topic)
   const topicNotSubscribed = 'somethingRandom'
+  const topicNotSubscribedRpcEnc = textToUrlSafeRpc(topicNotSubscribed)
 
   let ipfs
 
@@ -62,7 +66,7 @@ describe('/pubsub', () => {
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/sub?arg=${topic}`
+        url: `/api/v0/pubsub/sub?arg=${topicRpcEnc}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
@@ -92,7 +96,7 @@ describe('/pubsub', () => {
     it('returns 200 with topic and buffer', async () => {
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}`,
+        url: `/api/v0/pubsub/pub?arg=${topicRpcEnc}`,
         ...await sendData(buf)
       }, { ipfs })
 
@@ -104,7 +108,7 @@ describe('/pubsub', () => {
       const buf = randomBytes(10)
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}`,
+        url: `/api/v0/pubsub/pub?arg=${topicRpcEnc}`,
         ...await sendData(buf)
       }, { ipfs })
 
@@ -115,7 +119,7 @@ describe('/pubsub', () => {
     it('returns 400 with topic and empty buffer', async () => {
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}`,
+        url: `/api/v0/pubsub/pub?arg=${topicRpcEnc}`,
         ...await sendData(Buffer.from(''))
       }, { ipfs })
 
@@ -125,7 +129,7 @@ describe('/pubsub', () => {
     it('accepts a timeout', async () => {
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/pub?arg=${topic}&timeout=1s`,
+        url: `/api/v0/pubsub/pub?arg=${topicRpcEnc}&timeout=1s`,
         ...await sendData(buf)
       }, { ipfs })
 
@@ -158,7 +162,7 @@ describe('/pubsub', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.nested.property('result.Strings', [topic])
+      expect(res).to.have.deep.nested.property('result.Strings', [topicRpcEnc])
     })
 
     it('accepts a timeout', async () => {
@@ -175,7 +179,7 @@ describe('/pubsub', () => {
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
-      expect(res).to.have.deep.nested.property('result.Strings', [topic])
+      expect(res).to.have.deep.nested.property('result.Strings', [topicRpcEnc])
     })
   })
 
@@ -194,7 +198,7 @@ describe('/pubsub', () => {
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/peers?arg=${topicNotSubscribed}`
+        url: `/api/v0/pubsub/peers?arg=${topicNotSubscribedRpcEnc}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
@@ -208,7 +212,7 @@ describe('/pubsub', () => {
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/peers?arg=${topic}`
+        url: `/api/v0/pubsub/peers?arg=${topicRpcEnc}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
@@ -227,7 +231,7 @@ describe('/pubsub', () => {
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/pubsub/peers?arg=${topic}&timeout=1s`
+        url: `/api/v0/pubsub/peers?arg=${topicRpcEnc}&timeout=1s`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)

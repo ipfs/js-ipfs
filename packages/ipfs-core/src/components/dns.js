@@ -17,7 +17,7 @@ function fqdnFixups (domain) {
 
 export function createDns () {
   /**
-   * @type {import('ipfs-core-types/src/root').API["dns"]}
+   * @type {import('ipfs-core-types/src/root').API<{}>["dns"]}
    */
   const resolveDNS = async (domain, options = { recursive: true }) => { // eslint-disable-line require-await
     if (typeof domain !== 'string') {

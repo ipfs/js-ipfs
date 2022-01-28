@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.60.2",
+  "version": "0.62.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -8,7 +8,6 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
-  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
@@ -64,15 +63,15 @@
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
-    "test:interop": "cross-env IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client IPFS_REUSEPORT=false ipfs-interop",
+    "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client LIBP2P_TCP_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "ipfs-cli": "^0.10.2",
-    "ipfs-core": "^0.12.2",
+    "ipfs-cli": "^0.12.0",
+    "ipfs-core": "^0.14.0",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
@@ -84,16 +83,16 @@
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "0.9.1",
-    "interface-ipfs-core": "^0.152.2",
-    "ipfs-client": "^0.7.4",
-    "ipfs-core-types": "^0.8.4",
-    "ipfs-http-client": "^54.0.2",
-    "ipfs-interop": "^7.0.2",
+    "go-ipfs": "0.11.0",
+    "interface-ipfs-core": "^0.154.0",
+    "ipfs-client": "^0.7.6",
+    "ipfs-core-types": "^0.10.0",
+    "ipfs-http-client": "^56.0.0",
+    "ipfs-interop": "^8.0.8",
     "ipfs-utils": "^9.0.2",
     "ipfsd-ctl": "^10.0.4",
     "iso-url": "^1.0.0",
-    "libp2p-webrtc-star-signalling-server": "^0.1.0",
+    "libp2p-webrtc-star-signalling-server": "^0.1.1",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.1.2",
     "npm-run-all": "^4.1.5",
@@ -107,7 +106,7 @@
     "go-ipfs": false
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=15.0.0",
     "npm": ">=6.0.0"
   },
   "contributors": [

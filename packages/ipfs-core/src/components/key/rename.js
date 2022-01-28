@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  */
 export function createRename ({ keychain }) {
   /**
-   * @type {import('ipfs-core-types/src/key').API["rename"]}
+   * @type {import('ipfs-core-types/src/key').API<{}>["rename"]}
    */
   const rename = async (oldName, newName) => {
     const key = await keychain.renameKey(oldName, newName)

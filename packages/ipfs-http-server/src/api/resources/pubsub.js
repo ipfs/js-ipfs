@@ -6,6 +6,22 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { streamResponse } from '../../utils/stream-response.js'
 import pushable from 'it-pushable'
+import { base64url } from 'multiformats/bases/base64'
+
+const preDecodeTopicFromHttpRpc = {
+  assign: 'topic',
+  /**
+   * @param {import('../../types').Request} request
+   * @param {import('@hapi/hapi').ResponseToolkit} _h
+   */
+  method: async (request, _h) => {
+    try {
+      return uint8ArrayToString(base64url.decode(request.query.topic))
+    } catch (/** @type {any} */ err) {
+      throw Boom.boomify(err, { message: `Failed to decode topic  from HTTP RPC form ${request.query.topic}` })
+    }
+  }
+}
 
 export const subscribeResource = {
   options: {
@@ -24,7 +40,8 @@ export const subscribeResource = {
           override: true,
           ignoreUndefined: true
         })
-    }
+    },
+    pre: [preDecodeTopicFromHttpRpc]
   },
   /**
    * @param {import('../../types').Request} request
@@ -40,8 +57,8 @@ export const subscribeResource = {
           ipfs
         }
       },
-      query: {
-        topic
+      pre: {
+        topic // decoded version created by preDecodeTopicFromHttpRpc
       }
     } = request
 
@@ -57,10 +74,10 @@ export const subscribeResource = {
        */
       const handler = (msg) => {
         output.push({
-          from: uint8ArrayToString(uint8ArrayFromString(msg.from, 'base58btc'), 'base64pad'),
-          data: uint8ArrayToString(msg.data, 'base64pad'),
-          seqno: uint8ArrayToString(msg.seqno, 'base64pad'),
-          topicIDs: msg.topicIDs
+          from: msg.from, // TODO: switch to PeerId.parse(msg.from).toString() when go-ipfs defaults to CIDv1
+          data: base64url.encode(msg.data),
+          seqno: base64url.encode(msg.seqno),
+          topicIDs: msg.topicIDs.map(t => base64url.encode(uint8ArrayFromString(t)))
         })
       }
 
@@ -90,7 +107,7 @@ export const publishResource = {
       parse: false,
       output: 'stream'
     },
-    pre: [{
+    pre: [preDecodeTopicFromHttpRpc, {
       assign: 'data',
       /**
        * @param {import('../../types').Request} request
@@ -147,10 +164,10 @@ export const publishResource = {
         }
       },
       pre: {
+        topic,
         data
       },
       query: {
-        topic,
         timeout
       }
     } = request
@@ -209,7 +226,7 @@ export const lsResource = {
       throw Boom.boomify(err, { message: 'Failed to list subscriptions' })
     }
 
-    return h.response({ Strings: subscriptions })
+    return h.response({ Strings: subscriptions.map(s => base64url.encode(uint8ArrayFromString(s))) })
   }
 }
 
@@ -228,7 +245,8 @@ export const peersResource = {
           override: true,
           ignoreUndefined: true
         })
-    }
+    },
+    pre: [preDecodeTopicFromHttpRpc]
   },
   /**
    * @param {import('../../types').Request} request
@@ -244,8 +262,10 @@ export const peersResource = {
           ipfs
         }
       },
+      pre: {
+        topic
+      },
       query: {
-        topic,
         timeout
       }
     } = request

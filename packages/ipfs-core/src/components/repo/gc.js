@@ -22,7 +22,7 @@ const log = debug('ipfs:repo:gc')
  */
 export function createGc ({ repo, hashers }) {
   /**
-   * @type {import('ipfs-core-types/src/repo').API["gc"]}
+   * @type {import('ipfs-core-types/src/repo').API<{}>["gc"]}
    */
   async function * gc (options = {}) {
     const start = Date.now()

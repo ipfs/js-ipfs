@@ -5,7 +5,6 @@ import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import sinon from 'sinon'
 import { CID } from 'multiformats/cid'
-import { AbortSignal } from 'native-abort-controller'
 
 const defaultOptions = {
   recursive: true,

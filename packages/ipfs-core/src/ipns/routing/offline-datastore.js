@@ -89,6 +89,6 @@ export class OfflineDatastore {
    * @param {Uint8Array} key
    */
   _routingKey (key) {
-    return new Key('/' + uint8ArrayToString(key, 'base32upper'), false)
+    return new Key('/dht/record/' + uint8ArrayToString(key, 'base32'), false)
   }
 }

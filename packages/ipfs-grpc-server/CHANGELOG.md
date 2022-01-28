@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.7.4...ipfs-grpc-server@0.8.0) (2021-12-15)
+
+
+### Features
+
+* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
+
+
+### BREAKING CHANGES
+
+* The DHT API has been refactored to return async iterators of query events
+
+
+
+
+
+### [0.8.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-server-v0.8.0...ipfs-grpc-server-v0.8.1) (2022-01-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.9.0 to ^0.10.0
+  * devDependencies
+    * ipfs-core bumped from ^0.13.0 to ^0.14.0
+
 ## [0.7.4](https://github.com/ipfs/js-ipfs/compare/ipfs-grpc-server@0.7.3...ipfs-grpc-server@0.7.4) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-grpc-server

@@ -1,29 +1,22 @@
 import * as dagCBOR from '@ipld/dag-cbor'
 import * as dagPB from '@ipld/dag-pb'
+import * as dagJSON from '@ipld/dag-json'
+import * as raw from 'multiformats/codecs/raw'
 import concat from 'it-concat'
-import { CID } from 'multiformats/cid'
 import parseDuration from 'parse-duration'
 
 /**
- * @type {Record<string, (buf: Buffer) => any>}
+ * @template T
+ * @typedef {import('multiformats/codecs/interface').BlockCodec<number, T>} BlockCodec
  */
-const inputDecoders = {
-  json: (buf) => JSON.parse(buf.toString()),
-  cbor: (buf) => dagCBOR.decode(buf),
-  protobuf: (buf) => dagPB.decode(buf),
-  raw: (buf) => buf
-}
 
 /**
- * @type {Record<string, 'dag-cbor' | 'dag-pb' | 'raw'>}
+ * @type {Record<string, BlockCodec<any>>}
  */
-const formats = {
-  cbor: 'dag-cbor',
-  raw: 'raw',
-  protobuf: 'dag-pb',
-  'dag-cbor': 'dag-cbor',
-  'dag-pb': 'dag-pb'
-}
+const codecs = [dagCBOR, dagJSON, dagPB, raw].reduce((/** @type {Record<string, BlockCodec<any>>} */ m, codec) => {
+  m[codec.name] = codec
+  return m
+}, /** @type {Record<string, BlockCodec<any>>} */ {})
 
 export default {
   command: 'put [data]',
@@ -34,19 +27,17 @@ export default {
     data: {
       type: 'string'
     },
-    format: {
+    'store-codec': {
       type: 'string',
-      alias: 'f',
-      default: 'cbor',
-      describe: 'Format that the object will be added as',
-      choices: ['dag-cbor', 'dag-pb', 'raw', 'cbor', 'protobuf']
+      default: 'dag-cbor',
+      describe: 'The codec that the stored object will be encoded with',
+      choices: ['dag-cbor', 'dag-json', 'dag-pb', 'raw']
     },
-    'input-encoding': {
+    'input-codec': {
       type: 'string',
-      alias: 'input-enc',
-      default: 'json',
-      describe: 'Format that the input object will be',
-      choices: ['json', 'cbor', 'raw', 'protobuf']
+      default: 'dag-json',
+      describe: 'The codec that the input object is encoded with',
+      choices: ['dag-cbor', 'dag-json', 'dag-pb', 'raw']
     },
     pin: {
       type: 'boolean',
@@ -89,8 +80,8 @@ export default {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.data
-   * @param {'dag-cbor' | 'dag-pb' | 'raw' | 'cbor' | 'protobuf'} argv.format
-   * @param {'json' | 'cbor' | 'raw' | 'protobuf'} argv.inputEncoding
+   * @param {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} argv.inputCodec
+   * @param {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} argv.storeCodec
    * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
    * @param {boolean} argv.pin
    * @param {string} argv.hashAlg
@@ -99,16 +90,12 @@ export default {
    * @param {boolean} argv.onlyHash
    * @param {number} argv.timeout
    */
-  async handler ({ ctx: { ipfs, print, getStdin }, data, format, inputEncoding, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, timeout }) {
-    if (inputEncoding === 'cbor') {
-      format = 'dag-cbor'
-    } else if (inputEncoding === 'protobuf') {
-      format = 'dag-pb'
+  async handler ({ ctx: { ipfs, print, getStdin }, data, inputCodec, storeCodec, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, timeout }) {
+    if (!codecs[inputCodec]) {
+      throw new Error(`Unknown input-codec ${inputCodec}`)
     }
 
-    format = formats[format]
-
-    if (format !== 'dag-pb') {
+    if (storeCodec !== 'dag-pb') {
       cidVersion = 1
     }
 
@@ -122,16 +109,10 @@ export default {
       source = Buffer.from(data)
     }
 
-    source = inputDecoders[inputEncoding](source)
+    const node = codecs[inputCodec].decode(source)
 
-    // Support legacy { "/" : "<CID>" } format so dag put is actually useful
-    // on the command line: https://github.com/ipld/js-ipld-dag-cbor/issues/84
-    if (inputEncoding === 'json' && format === 'dag-cbor') {
-      source = objectSlashToCID(source)
-    }
-
-    const cid = await ipfs.dag.put(source, {
-      format,
+    const cid = await ipfs.dag.put(node, {
+      storeCodec,
       hashAlg,
       version: cidVersion,
       onlyHash,
@@ -143,31 +124,4 @@ export default {
 
     print(cid.toString(base.encoder))
   }
-}
-
-/**
- * @param {any} obj
- * @returns {any}
- */
-function objectSlashToCID (obj) {
-  if (Array.isArray(obj)) {
-    return obj.map(objectSlashToCID)
-  }
-
-  if (obj && typeof obj === 'object') {
-    const keys = Object.keys(obj)
-    if (keys.length === 1 && '/' in obj) {
-      if (typeof obj['/'] !== 'string') {
-        throw new Error('link should have been a string')
-      }
-      return CID.parse(obj['/']) // throws if not a CID - consistent with go-ipfs
-    }
-
-    return keys.reduce((obj, key) => {
-      obj[key] = objectSlashToCID(obj[key])
-      return obj
-    }, obj)
-  }
-
-  return obj
 }

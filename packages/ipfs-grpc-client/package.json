@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-client",
-  "version": "0.8.2",
+  "version": "0.9.1",
   "description": "A client library for the IPFS gRPC API",
   "keywords": [
     "ipfs"
@@ -8,7 +8,6 @@
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-client#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
-  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
@@ -41,8 +40,11 @@
   "scripts": {
     "build": "aegir build",
     "test": "aegir test",
-    "test:node": "aegir test -t node",
-    "test:browser": "aegir test -t browser",
+    "test:node": "aegir test -t node --cov",
+    "test:chrome": "aegir test -t browser --cov",
+    "test:chrome-webworker": "aegir test -t webworker",
+    "test:firefox": "aegir test -t browser -- --browser firefox",
+    "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
     "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
     "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
     "lint": "aegir ts -p check && aegir lint",
@@ -54,9 +56,9 @@
     "change-case": "^4.1.1",
     "debug": "^4.1.1",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.8.4",
-    "ipfs-core-utils": "^0.12.2",
-    "ipfs-grpc-protocol": "^0.5.4",
+    "ipfs-core-types": "^0.10.0",
+    "ipfs-core-utils": "^0.14.0",
+    "ipfs-grpc-protocol": "^0.5.5",
     "ipfs-unixfs": "^6.0.3",
     "it-first": "^1.0.4",
     "it-pushable": "^1.4.2",
@@ -71,6 +73,6 @@
     "aegir": "^36.0.1",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
-    "sinon": "^11.1.1"
+    "sinon": "^12.0.01"
   }
 }
