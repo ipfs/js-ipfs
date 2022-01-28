@@ -63,7 +63,6 @@ export function createExport ({ repo, preload, codecs }) {
           timeout: options.timeout
         }, codecs)
         await walk({ cid, load })
-        await writer.close()
       } catch (/** @type {any} */ e) {
         err = e
       } finally {
