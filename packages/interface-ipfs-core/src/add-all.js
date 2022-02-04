@@ -483,7 +483,7 @@ export function testAddAll (factory, options) {
     it('should add with sha2-256 by default', async function () {
       const content = String(Math.random() + Date.now())
 
-      const files = await all(ipfs.addAll(content))
+      const files = await all(ipfs.addAll([content]))
 
       expect(files).to.have.nested.property('[0].cid.multihash.code', sha256.code)
     })
@@ -491,7 +491,7 @@ export function testAddAll (factory, options) {
     it('should add with a different hashing algorithm', async function () {
       const content = String(Math.random() + Date.now())
 
-      const files = await all(ipfs.addAll(content))
+      const files = await all(ipfs.addAll([content]))
 
       expect(files).to.have.nested.property('[0].cid.multihash.code', sha512.code)
     })
