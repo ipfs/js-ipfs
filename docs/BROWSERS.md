@@ -54,8 +54,8 @@ You can find detailed information about running js-ipfs [here](https://github.co
   The default ones are under high load and should be used only for tests and development.
 - Make sure content added to js-ipfs running in the browser is persisted/cached somewhere on regular IPFS daemon
   - Manually `pin` or preload CIDs of interest with `refs -r` beforehand.
-  - Preload content on the fly using [preload](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/MODULE.md#optionspreload) feature and/or
-    configure [delegated routing](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs/docs/DELEGATE_ROUTERS.md).
+  - Preload content on the fly using [preload](https://github.com/ipfs/js-ipfs/blob/master/docs/MODULE.md#optionspreload) feature and/or
+    configure [delegated routing](https://github.com/ipfs/js-ipfs/blob/master/docs/DELEGATE_ROUTERS.md).
     - Avoid public instances in production environment. Make sure preload and delegate nodes used in config are self-hosted and under your control (expose a subset of go-ipfs APIs via reverse proxy such as Nginx).
 
 ## Code Examples
