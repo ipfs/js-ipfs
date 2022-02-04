@@ -24,7 +24,7 @@ Available delegate multiaddrs are:
 
 **Note**: If more than 1 delegate multiaddr is specified, the actual delegate will be randomly selected on startup.
 
-**Note**: If you wish to use delegated routing and are creating your node _programmatically_ in Node.js or the browser you must `npm install libp2p-delegated-content-routing` and/or `npm install libp2p-delegated-peer-routing` and provide configured instances of them in [`options.libp2p`](#optionslibp2p). See the module repos for further instructions:
+**Note**: If you wish to use delegated routing and are creating your node _programmatically_ in Node.js or the browser you must `npm install libp2p-delegated-content-routing` and/or `npm install libp2p-delegated-peer-routing` and provide configured instances of them in [`options.libp2p`](./MODULE.md#optionslibp2p). See the module repos for further instructions:
 
 - https://github.com/libp2p/js-libp2p-delegated-content-routing
 - https://github.com/libp2p/js-libp2p-delegated-peer-routing
