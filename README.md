@@ -30,9 +30,8 @@ We've come a long way, but this project is still in Alpha, lots of development i
 * Ensure CORS is [correctly configured](https://github.com/ipfs/js-ipfs/blob/master/docs/CORS.md) for use with the HTTP client
 * Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples/tree/master) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
-* Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
-* Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
-* Check out https://docs.ipfs.io for tips, how-tos and more
+* Head over to https://proto.school to take the [IPFS course](https://proto.school/course/ipfs) that covers core IPFS concepts and JS APIs
+* Check out https://docs.ipfs.io for [glossary](https://docs.ipfs.io/concepts/glossary), tips, how-tos and more
 * See https://blog.ipfs.io for news and more
 * Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
 
@@ -113,10 +112,9 @@ This project is broken into several modules, their purposes are:
 * [`/packages/ipfs-grpc-protocol`](./packages/ipfs-grpc-protocol) Shared module between the gRPC client and server
 * [`/packages/ipfs-grpc-server`](./packages/ipfs-grpc-server) A gRPC-over-websockets server for js-IPFS
 * [`/packages/ipfs-http-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
+* [`/packages/ipfs-http-server`](./packages/ipfs-http-server) JS implementation of the [IPFS RPC HTTP API](https://docs.ipfs.io/reference/http/api/)
 * [`/packages/ipfs-http-gateway`](./packages/ipfs-http-gateway) JS implementation of the [IPFS HTTP Gateway](https://docs.ipfs.io/concepts/ipfs-gateway/)
 * [`/packages/ipfs-http-response`](./packages/ipfs-http-response) Creates a HTTP response for a given IPFS Path
-* [`/packages/ipfs-http-server`](./packages/ipfs-http-server) JS implementation of the [IPFS HTTP API](https://docs.ipfs.io/reference/http/api/)
-* [`/packages/ipfs-message-port-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
 * [`/packages/ipfs-message-port-client`](./packages/ipfs-message-port-client) A client for the RPC-over-message-port API presented by js-ipfs running in a shared worker
 * [`/packages/ipfs-message-port-protocol`](./packages/ipfs-message-port-protocol) Code shared by the message port client & server
 * [`/packages/ipfs-message-port-server`](./packages/ipfs-message-port-server) The server that receives requests from ipfs-message-port-client
