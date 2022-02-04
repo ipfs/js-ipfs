@@ -65,7 +65,7 @@ console.info(cid)
 
 ## Next Steps
 
-* Look into the [examples](/examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+* Look into the [js-ipfs-examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
