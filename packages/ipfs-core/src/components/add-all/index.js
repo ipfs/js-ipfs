@@ -9,16 +9,19 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 /**
  * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-unixfs-importer').ImportResult} ImportResult
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ * @typedef {import('ipfs-core-utils/multihashes').Multihashes} Multihashes
  */
 
 /**
  * @typedef {Object} Context
  * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../../types').Preload} preload
+ * @property {Multihashes} hashers
  * @property {import('ipfs-core-types/src/root').ShardingOptions} [options]
  * @param {Context} context
  */
-export function createAddAll ({ repo, preload, options }) {
+export function createAddAll ({ repo, preload, hashers, options }) {
   const isShardingEnabled = options && options.sharding
 
   /**
@@ -81,6 +84,13 @@ export function createAddAll ({ repo, preload, options }) {
       }
     }
 
+    /** @type {MultihashHasher | undefined} */
+    let hasher
+
+    if (opts.hashAlg != null) {
+      hasher = await hashers.getHasher(opts.hashAlg)
+    }
+
     const iterator = pipe(
       normaliseInput(source),
       /**
@@ -88,6 +98,7 @@ export function createAddAll ({ repo, preload, options }) {
        */
       source => importer(source, repo.blocks, {
         ...opts,
+        hasher,
         pin: false
       }),
       transformFile(opts),

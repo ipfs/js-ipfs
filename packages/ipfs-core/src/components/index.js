@@ -126,7 +126,8 @@ class IPFS {
     const { add, addAll, cat, get, ls } = new RootAPI({
       preload,
       repo,
-      options: options.EXPERIMENTAL
+      options: options.EXPERIMENTAL,
+      hashers: this.hashers
     })
 
     const files = createFiles({
