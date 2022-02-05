@@ -15,11 +15,12 @@ export class RootAPI {
   /**
    * @param {Context} context
    */
-  constructor ({ preload, repo, options }) {
+  constructor ({ preload, repo, hashers, options }) {
     const addAll = createAddAll({
       preload,
       repo,
-      options
+      options,
+      hashers
     })
 
     this.addAll = addAll

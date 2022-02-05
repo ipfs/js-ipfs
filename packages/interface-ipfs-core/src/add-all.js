@@ -15,6 +15,7 @@ import bufferStream from 'it-buffer-stream'
 import * as raw from 'multiformats/codecs/raw'
 import * as dagPB from '@ipld/dag-pb'
 import resolve from 'aegir/utils/resolve.js'
+import { sha256, sha512 } from 'multiformats/hashes/sha2'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -477,6 +478,22 @@ export function testAddAll (factory, options) {
       await expect(ipfs.object.get(out[0].cid, { timeout: 500 }))
         .to.eventually.be.rejected()
         .and.to.have.property('name').that.equals('TimeoutError')
+    })
+
+    it('should add all with sha2-256 by default', async function () {
+      const content = String(Math.random() + Date.now())
+
+      const files = await all(ipfs.addAll([content]))
+
+      expect(files).to.have.nested.property('[0].cid.multihash.code', sha256.code)
+    })
+
+    it('should add all with a different hashing algorithm', async function () {
+      const content = String(Math.random() + Date.now())
+
+      const files = await all(ipfs.addAll([content], { hashAlg: 'sha2-512' }))
+
+      expect(files).to.have.nested.property('[0].cid.multihash.code', sha512.code)
     })
 
     it('should respect raw leaves when file is smaller than one block and no metadata is present', async () => {

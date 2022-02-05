@@ -11,6 +11,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import last from 'it-last'
 import * as raw from 'multiformats/codecs/raw'
 import * as dagPB from '@ipld/dag-pb'
+import { sha256, sha512 } from 'multiformats/hashes/sha2'
 
 const echoUrl = (/** @type {string} */ text) => `${process.env.ECHO_SERVER}/download?data=${encodeURIComponent(text)}`
 const redirectUrl = (/** @type {string} */ url) => `${process.env.ECHO_SERVER}/redirect?to=${encodeURI(url)}`
@@ -272,6 +273,22 @@ export function testAdd (factory, options) {
       await expect(ipfs.object.get(file.cid, { timeout: 4000 }))
         .to.eventually.be.rejected()
         .and.to.have.property('name').that.equals('TimeoutError')
+    })
+
+    it('should add with sha2-256 by default', async function () {
+      const content = String(Math.random() + Date.now())
+
+      const file = await ipfs.add(content)
+
+      expect(file).to.have.nested.property('cid.multihash.code', sha256.code)
+    })
+
+    it('should add with a different hashing algorithm', async function () {
+      const content = String(Math.random() + Date.now())
+
+      const file = await ipfs.add(content, { hashAlg: 'sha2-512' })
+
+      expect(file).to.have.nested.property('cid.multihash.code', sha512.code)
     })
 
     it('should add with mode as string', async function () {
