@@ -27,6 +27,21 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.62.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.62.0...ipfs-v0.62.1) (2022-02-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.12.0 to ^0.12.1
+    * ipfs-core bumped from ^0.14.0 to ^0.14.1
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.154.0 to ^0.154.1
+    * ipfs-client bumped from ^0.7.6 to ^0.7.7
+    * ipfs-core-types bumped from ^0.10.0 to ^0.10.1
+    * ipfs-http-client bumped from ^56.0.0 to ^56.0.1
+
 ## [0.62.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.61.0...ipfs-v0.62.0) (2022-01-27)
 
 
