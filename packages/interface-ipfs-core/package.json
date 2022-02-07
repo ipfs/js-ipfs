@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.154.0",
+  "version": "0.154.1",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "type": "module",
   "main": "src/index.js",
@@ -72,7 +72,7 @@
     "delay": "^5.0.0",
     "did-jwt": "^5.12.1",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.10.0",
+    "ipfs-core-types": "^0.10.1",
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
     "ipfs-utils": "^9.0.2",

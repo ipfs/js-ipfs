@@ -34,6 +34,21 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [56.0.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-client-v56.0.0...ipfs-http-client-v56.0.1) (2022-02-06)
+
+
+### Bug Fixes
+
+* **dag:** replace custom dag walk with multiformats/traversal ([#3950](https://www.github.com/ipfs/js-ipfs/issues/3950)) ([596b1f4](https://www.github.com/ipfs/js-ipfs/commit/596b1f48a014083b1736e4ad7e746c652d2583b1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.10.0 to ^0.10.1
+    * ipfs-core-utils bumped from ^0.14.0 to ^0.14.1
+
 ## [56.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-client-v55.0.0...ipfs-http-client-v56.0.0) (2022-01-27)
 
 
