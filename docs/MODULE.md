@@ -182,7 +182,7 @@ Enable and configure experimental features.
 
 | Type | Default |
 |------|---------|
-| object | [`config-nodejs.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config-nodejs.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config-browser.js) in browsers |
+| object | [`config.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config.js) in Node.js, [`config-browser.js`](https://github.com/ipfs/js-ipfs/blob/master/packages/ipfs-core-config/src/config.browser.js) in browsers |
 
 Modify the default IPFS node config. This object will be *merged* with the default config; it will not replace it. The default config is documented in [the js-ipfs config file docs](./CONFIG.md).
 
