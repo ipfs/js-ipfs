@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "lint": "aegir ts -p check && aegir lint",
-    "build": "aegir build && copyfiles src/* src/**/* package.json README.md CHANGELOG.md COPYRIGHT LICENSE-APACHE LICENSE-MIT dist"
+    "build": "aegir build && copyfiles 'src/**/*' package.json README.md CHANGELOG.md COPYRIGHT LICENSE-APACHE LICENSE-MIT dist"
   },
   "files": [
     "*",
