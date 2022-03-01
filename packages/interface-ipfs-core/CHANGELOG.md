@@ -34,6 +34,20 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.154.2](https://www.github.com/ipfs/js-ipfs/compare/interface-ipfs-core-v0.154.1...interface-ipfs-core-v0.154.2) (2022-03-01)
+
+
+### Bug Fixes
+
+* missing files on publish ([#4056](https://www.github.com/ipfs/js-ipfs/issues/4056)) ([125d42b](https://www.github.com/ipfs/js-ipfs/commit/125d42ba72f905bf95b66489c1b593cbf0a623cb)), closes [#3976](https://www.github.com/ipfs/js-ipfs/issues/3976)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.10.1 to ^0.10.2
+
 ### [0.154.1](https://www.github.com/ipfs/js-ipfs/compare/interface-ipfs-core-v0.154.0...interface-ipfs-core-v0.154.1) (2022-02-06)
 
 
