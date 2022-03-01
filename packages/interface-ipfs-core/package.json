@@ -47,7 +47,7 @@
   },
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "aegir build && copyfiles ./test/fixtures/**/*, ./dist/cjs && copyfiles ./test/fixtures/**/*, ./dist/esm",
+    "build": "aegir build && copyfiles './test/fixtures/**/*' ./dist/cjs && copyfiles './test/fixtures/**/*' ./dist/esm",
     "lint": "aegir ts -p check && aegir lint",
     "dep-check": "aegir dep-check -i ipfs-core-types -i rimraf -i copyfiles"
   },
