@@ -21,6 +21,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.10.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.10.1...ipfs-core-types-v0.10.2) (2022-03-01)
+
+
+### Bug Fixes
+
+* add deps used in ipfs-core-types ([#4058](https://www.github.com/ipfs/js-ipfs/issues/4058)) ([df1bd1b](https://www.github.com/ipfs/js-ipfs/commit/df1bd1bbf151543afb4ce41516248def77e8a225))
+* missing files on publish ([#4056](https://www.github.com/ipfs/js-ipfs/issues/4056)) ([125d42b](https://www.github.com/ipfs/js-ipfs/commit/125d42ba72f905bf95b66489c1b593cbf0a623cb)), closes [#3976](https://www.github.com/ipfs/js-ipfs/issues/3976)
+
 ### [0.10.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.10.0...ipfs-core-types-v0.10.1) (2022-02-06)
 
 
