@@ -14,9 +14,9 @@ export function createRmLink ({ repo, preload }) {
   /**
    * @type {import('ipfs-core-types/src/object/patch').API<{}>["rmLink"]}
    */
-  async function rmLink (multihash, linkRef, options = {}) {
-    const node = await get(multihash, options)
-    const name = (typeof linkRef === 'string' ? linkRef : linkRef.Name) || ''
+  async function rmLink (cid, link, options = {}) {
+    const node = await get(cid, options)
+    const name = (typeof link === 'string' ? link : link.Name) || ''
 
     node.Links = node.Links.filter(l => l.Name !== name)
 
