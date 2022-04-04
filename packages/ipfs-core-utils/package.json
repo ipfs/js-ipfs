@@ -138,7 +138,9 @@
   "devDependencies": {
     "@web-std/file": "^1.1.2",
     "aegir": "^36.0.1",
-    "fs": "^0.0.1-security",
     "rimraf": "^3.0.2"
+  },
+  "browser": {
+    "fs": false
   }
 }
