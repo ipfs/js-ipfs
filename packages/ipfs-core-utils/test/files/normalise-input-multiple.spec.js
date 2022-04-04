@@ -262,8 +262,7 @@ describe('normalise-input-multiple', function () {
     let fs
 
     before(async () => {
-      // otherwise esbuild tries to resolve 'fs'
-      fs = await import('node-fs'.substring(5))
+      fs = await import('fs')
     })
 
     describe('Node fs.ReadStream', () => {
