@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [0.11.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-message-port-server-v0.11.1...ipfs-message-port-server-v0.11.2) (2022-03-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.10.1 to ^0.10.2
+    * ipfs-message-port-protocol bumped from ^0.11.1 to ^0.11.2
+
 ### [0.11.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-message-port-server-v0.11.0...ipfs-message-port-server-v0.11.1) (2022-02-06)
 
 
