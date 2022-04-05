@@ -64,7 +64,7 @@
     "it-pushable": "^1.4.2",
     "multiaddr": "^10.0.0",
     "multiformats": "^9.5.1",
-    "p-defer": "^3.0.0",
+    "p-defer": "^4.0.0",
     "protobufjs": "^6.10.2",
     "wherearewe": "^1.0.0",
     "ws": "^7.3.1"
