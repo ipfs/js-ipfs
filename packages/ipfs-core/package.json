@@ -95,7 +95,7 @@
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-exporter": "^7.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
-    "ipfs-utils": "^9.0.2",
+    "ipfs-utils": "^9.0.6",
     "ipns": "^0.16.0",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^6.0.1",

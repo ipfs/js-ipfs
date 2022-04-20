@@ -121,7 +121,7 @@
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.10.2",
     "ipfs-unixfs": "^6.0.3",
-    "ipfs-utils": "^9.0.2",
+    "ipfs-utils": "^9.0.6",
     "it-all": "^1.0.4",
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.2",
