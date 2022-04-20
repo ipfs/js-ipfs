@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^5.0.0",
-    "@ipld/car": "^3.1.0",
+    "@ipld/car": "^4.1.0",
     "@ipld/dag-cbor": "^7.0.0",
     "@ipld/dag-json": "^8.0.1",
     "@ipld/dag-pb": "^2.1.3",
