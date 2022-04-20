@@ -89,7 +89,7 @@
     "ipfs-core-types": "^0.10.2",
     "ipfs-http-client": "^56.0.2",
     "ipfs-interop": "^8.0.9",
-    "ipfs-utils": "^9.0.2",
+    "ipfs-utils": "^9.0.6",
     "ipfsd-ctl": "^10.0.4",
     "iso-url": "^1.0.0",
     "libp2p-webrtc-star-signalling-server": "^0.1.1",
