@@ -16,8 +16,9 @@ export function createNode () {
 
   /** @type {ReturnType<http.createServer> & { start: (opts?: any) => Promise<void>, stop: () => Promise<any> }} */
   // @ts-ignore start/stop props are added later
+  const CORS = process.env.NODE_ENV === 'production' ? process.env.HOST : '*'
   const server = http.createServer((req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Origin', 'CORS')
     res.setHeader('Access-Control-Request-Method', '*')
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, DELETE')
     res.setHeader('Access-Control-Allow-Headers', '*')
