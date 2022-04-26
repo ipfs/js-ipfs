@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-types",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "types": "types/src/index.d.ts",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",

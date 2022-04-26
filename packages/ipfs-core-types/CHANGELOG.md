@@ -21,6 +21,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.10.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.10.2...ipfs-core-types-v0.10.3) (2022-04-20)
+
+
+### Bug Fixes
+
+* BWOptions.interval accepts number|string ([#4061](https://www.github.com/ipfs/js-ipfs/issues/4061)) ([e90b8f1](https://www.github.com/ipfs/js-ipfs/commit/e90b8f13dedace9fa4163e1ea5a61f8469491542)), closes [#3985](https://www.github.com/ipfs/js-ipfs/issues/3985)
+
 ### [0.10.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.10.1...ipfs-core-types-v0.10.2) (2022-03-01)
 
 
