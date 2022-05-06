@@ -1,6 +1,6 @@
 {
   "name": "ipfs-daemon",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"

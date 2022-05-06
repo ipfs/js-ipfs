@@ -398,9 +398,9 @@ An optional object which may have the following keys:
 ```JavaScript
 // cid is CID of the DAG node created by removing a link
 const cid = await ipfs.object.patch.rmLink(node, {
-  name: 'some-link',
-  size: 10,
-  cid: CID.parse('QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD')
+  Name: 'some-link',
+  Tsize: 10,
+  Hash: CID.parse('QmPTkMuuL6PD8L2SwTwbcs1NPg14U8mRzerB1ZrrBrkSDD')
 })
 ```
 

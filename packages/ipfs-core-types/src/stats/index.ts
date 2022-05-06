@@ -16,7 +16,7 @@ export interface BWOptions extends AbortOptions {
   peer?: string
   proto?: string
   poll?: boolean
-  interval?: number
+  interval?: number | string
 }
 
 export interface BWResult {
