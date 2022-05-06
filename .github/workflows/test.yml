@@ -18,9 +18,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
 
   check:
     name: Check
@@ -32,9 +29,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: |
           npm run lint
           npm run dep-check -- -- -- -p
@@ -56,9 +50,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
@@ -76,9 +67,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
@@ -96,9 +84,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
@@ -116,9 +101,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
@@ -136,9 +118,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: npx playwright install --with-deps
       - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
@@ -157,9 +136,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
@@ -179,9 +155,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
@@ -207,12 +180,8 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: npm install
       - run: npm run build
-      - run: npm run link
       - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
@@ -242,7 +211,6 @@ jobs:
           node-version: lts/*
       - run: npm install
       - run: npm run build
-      - run: npm run link
       - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
@@ -260,9 +228,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - run: npx playwright install --with-deps
       - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
 
@@ -298,9 +263,6 @@ jobs:
           node-version: lts/*
           registry-url: 'https://registry.npmjs.org'
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
       - uses: ipfs/aegir/actions/docker-login@master
         with:
           docker-token: ${{ secrets.DOCKER_TOKEN }}
