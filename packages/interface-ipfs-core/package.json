@@ -78,13 +78,8 @@
     "ipfs-core-types": "^0.10.3",
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
-<<<<<<< HEAD
-    "ipfs-utils": "^9.0.2",
-    "ipns": "^1.0.0",
-=======
     "ipfs-utils": "^9.0.6",
-    "ipns": "^0.16.0",
->>>>>>> origin/master
+    "ipns": "^1.0.0",
     "is-ipfs": "^6.0.1",
     "iso-random-stream": "^2.0.2",
     "it-all": "^1.0.4",
