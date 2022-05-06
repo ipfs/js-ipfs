@@ -42,6 +42,8 @@ export default {
    * @param {boolean} argv.repo
    * @param {boolean} argv.number
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { print, ipfs }, all, commit, repo, number, timeout }) {
     const data = await ipfs.version({
@@ -53,7 +55,7 @@ export default {
 
     if (repo) {
       // go-ipfs prints only the number, even without the --number flag.
-      // @ts-ignore version return type is implementation-specific
+      // @ts-expect-error version return type is implementation-specific
       print(data.repo)
     } else if (number) {
       print(parsedVersion)

@@ -49,7 +49,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "lint": "aegir ts -p check && aegir lint",
+    "lint": "aegir lint",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node --cov",
     "clean": "rimraf ./dist",
@@ -61,7 +61,7 @@
     "@hapi/boom": "^9.1.0",
     "@hapi/hapi": "^20.0.0",
     "debug": "^4.1.1",
-    "hapi-pino": "^8.3.0",
+    "hapi-pino": "^9.3.0",
     "ipfs-core-types": "^0.10.2",
     "ipfs-http-response": "^2.0.2",
     "is-ipfs": "^6.0.1",
@@ -69,15 +69,16 @@
     "it-to-stream": "^1.0.0",
     "joi": "^17.2.1",
     "multiformats": "^9.5.1",
+    "pino-pretty": "^7.6.1",
     "uint8arrays": "^3.0.0",
     "uri-to-multiaddr": "^6.0.0"
   },
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
     "@types/hapi__hapi": "^20.0.5",
-    "aegir": "^36.0.1",
-    "file-type": "^16.0.0",
+    "aegir": "^37.0.11",
+    "file-type": "^17.1.1",
     "rimraf": "^3.0.2",
-    "sinon": "^12.0.01"
+    "sinon": "^13.0.1"
   }
 }

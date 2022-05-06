@@ -16,6 +16,8 @@ export default {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {boolean} [argv.numeric]
+   *
+   * @returns {void}
    */
   handler ({ ctx: { ipfs, print }, numeric }) {
     for (const codec of ipfs.hashers.listHashers()) {

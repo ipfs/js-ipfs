@@ -1,17 +1,18 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import path from 'path'
 import fs from 'fs'
-import PeerId from 'peer-id'
 import { nanoid } from 'nanoid'
 import os from 'os'
-import { supportedKeys } from 'libp2p-crypto/src/keys/index.js'
+import { unmarshalPrivateKey, supportedKeys } from '@libp2p/crypto/keys'
 import { clean } from './utils/clean.js'
 import { ipfsExec } from './utils/ipfs-exec.js'
 import tempWrite from 'temp-write'
+import { peerIdFromKeys } from '@libp2p/peer-id'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
-describe.skip('init', function () {
+describe('init', function () {
   let repoPath
   let ipfs
 
@@ -51,7 +52,9 @@ describe.skip('init', function () {
 
   it('algorithm', async function () {
     await ipfs('init --algorithm ed25519')
-    const peerId = await PeerId.createFromPrivKey(repoConfSync().Identity.PrivKey)
+    const buf = uint8ArrayFromString(repoConfSync().Identity.PrivKey, 'base64pad')
+    const key = await unmarshalPrivateKey(buf)
+    const peerId = await peerIdFromKeys(key.public.bytes, key.bytes)
     expect(peerId.privKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
   })
 

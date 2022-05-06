@@ -32,6 +32,8 @@ export default {
    * @param {string} argv.passout
    * @param {string} argv.output
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, name, passout, output, timeout }) {
     const { ipfs } = ctx

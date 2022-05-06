@@ -2,7 +2,7 @@ import { getPubsubRouting } from './utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../../ipns').IPNSAPI} config.ipns
  * @param {import('../../../types').Options} config.options
  */

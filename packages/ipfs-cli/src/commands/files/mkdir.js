@@ -78,8 +78,10 @@ export default {
    * @param {number} argv.mtime
    * @param {number} argv.mtimeNsecs
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
-  handler ({
+  async handler ({
     ctx: { ipfs },
     path,
     parents,
@@ -92,7 +94,7 @@ export default {
     mtimeNsecs,
     timeout
   }) {
-    return ipfs.files.mkdir(path, {
+    await ipfs.files.mkdir(path, {
       parents,
       cidVersion,
       hashAlg,

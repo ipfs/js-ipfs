@@ -7,7 +7,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 /**
  * @typedef {import('ipfs-http-client').Options} HTTPOptions
  * @typedef {import('ipfs-grpc-client').Options} GRPCOptions
- * @typedef {string|URL|import('multiaddr').Multiaddr} Address
+ * @typedef {string|URL|import('@multiformats/multiaddr').Multiaddr} Address
  * @typedef {{http?: Address, grpc?: Address} & Partial<HTTPOptions & GRPCOptions>} Options
  *
  * @param {Options} [opts]

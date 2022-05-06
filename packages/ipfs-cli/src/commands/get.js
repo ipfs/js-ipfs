@@ -58,6 +58,8 @@ export default {
    * @param {boolean} argv.archive
    * @param {boolean} argv.compress
    * @param {-1 | 0 | 1 | 2 | 3 | 4 | 5 | 6| 7 | 8| 9} argv.compressionLevel
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, ipfsPath, output, force, timeout, archive, compress, compressionLevel }) {
     print(`Saving file(s) ${stripControlCharacters(ipfsPath)}`)
@@ -108,9 +110,6 @@ export default {
             await fs.promises.mkdir(path.dirname(outputPath), { recursive: true })
             await pipe(
               body,
-              /**
-               * @param {AsyncIterable<Uint8Array>} source
-               */
               (source) => map(source, buf => buf.slice()),
               toIterable.sink(fs.createWriteStream(outputPath))
             )

@@ -1,11 +1,11 @@
 import isIpfs from 'is-ipfs'
 import { CID } from 'multiformats/cid'
-import PeerId from 'peer-id'
+import { peerIdFromString } from '@libp2p/peer-id'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { resolve as res } from '../utils.js'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-core-utils/src/multibases').Multibases} config.bases
@@ -65,7 +65,7 @@ export function createResolve ({ repo, codecs, bases, name }) {
  */
 function parseBytes (str) {
   try {
-    return PeerId.parse(str).toBytes()
+    return peerIdFromString(str).toBytes()
   } catch {
     return CID.parse(str).bytes
   }

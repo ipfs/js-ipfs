@@ -16,6 +16,8 @@ export default {
    * @param {object} argv
    * @param {import('../../../types').Context} argv.ctx
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { print, ipfs, isDaemon }, timeout }) {
     if (!isDaemon) {

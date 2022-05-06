@@ -29,6 +29,8 @@ export default {
    * @param {number} argv.offset
    * @param {number} argv.length
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, ipfsPath, offset, length, timeout }) {
     for await (const buf of ipfs.cat(ipfsPath, { offset, length, timeout })) {

@@ -1,6 +1,6 @@
 import mergeOpts from 'merge-options'
 import { toMfsPath } from './utils/to-mfs-path.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import errCode from 'err-code'
 import { UnixFS } from 'ipfs-unixfs'
 import { toTrail } from './utils/to-trail.js'
@@ -19,7 +19,7 @@ import { persist } from './utils/persist.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:mfs:touch')
+const log = logger('ipfs:mfs:touch')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -199,7 +199,6 @@ function calculateMode (mode, metadata) {
     if (strMode.match(/^\d+$/g)) {
       mode = parseInt(strMode, 8)
     } else {
-      // @ts-ignore freaks out over the curr: number, acc: string thing
       mode = 0 + strMode.split(',').reduce((curr, acc) => {
         return parseSymbolicMode(acc, curr, metadata.isDirectory())
       }, metadata.mode || 0)
@@ -255,7 +254,7 @@ export function createChmod (context) {
             }
           }
         },
-        // @ts-ignore we account for the incompatible source type with our custom dag builder below
+        // @ts-expect-error we account for the incompatible source type with our custom dag builder below
         (source) => importer(source, context.repo.blocks, {
           ...opts,
           pin: false,
@@ -263,7 +262,7 @@ export function createChmod (context) {
             for await (const entry of source) {
               yield async function () {
                 /** @type {PBNode} */
-                // @ts-ignore - cannot derive type
+                // @ts-expect-error - cannot derive type
                 const node = entry.content
 
                 const buf = dagPB.encode(node)

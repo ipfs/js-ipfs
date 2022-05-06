@@ -9,7 +9,7 @@ import { createVersion } from './version.js'
 
 export class RepoAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {Multihashes} config.hashers
    */

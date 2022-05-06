@@ -1,17 +1,18 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import Progress from 'progress'
 // @ts-expect-error no types
 import byteman from 'byteman'
 import { create } from 'ipfs-core'
 import { CID } from 'multiformats/cid'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { create as httpClient } from 'ipfs-http-client'
+import { peerIdFromString } from '@libp2p/peer-id'
 
-const log = debug('ipfs:cli:utils')
+const log = logger('ipfs:cli:utils')
 
 export const getRepoPath = () => {
   return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')
@@ -247,6 +248,17 @@ export const coerceCIDs = (values) => {
   }
 
   return values.map(coerceCID).filter(Boolean)
+}
+
+/**
+ * @param {string} value
+ */
+export const coercePeerId = (value) => {
+  if (!value) {
+    return undefined
+  }
+
+  return peerIdFromString(value)
 }
 
 /**

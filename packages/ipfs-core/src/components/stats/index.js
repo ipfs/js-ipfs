@@ -4,7 +4,7 @@ import { createStat as createBitswap } from '../bitswap/stat.js'
 
 export class StatsAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {import('../../types').NetworkService} config.network
    */

@@ -4,7 +4,7 @@ import { sha256 } from 'multiformats/hashes/sha2'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
  */

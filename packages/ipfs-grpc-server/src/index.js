@@ -1,6 +1,6 @@
 import grpc from '@grpc/grpc-js'
 import first from 'it-first'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { webSocketServer } from './utils/web-socket-server.js'
 import { loadServices } from './utils/load-services.js'
 import { grpcAdd } from './endpoints/add.js'
@@ -10,7 +10,7 @@ import { grpcMfsWrite } from './endpoints/mfs/write.js'
 import { grpcPubsubSubscribe } from './endpoints/pubsub/subscribe.js'
 import { grpcPubsubUnsubscribe } from './endpoints/pubsub/unsubscribe.js'
 
-const log = debug('ipfs:grpc-server')
+const log = logger('ipfs:grpc-server')
 
 const {
   Root,
@@ -27,21 +27,21 @@ export async function createServer (ipfs, options = {}) {
 
   const server = new grpc.Server()
   server.addService(Root, {
-    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    // @ts-expect-error - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     add: grpcAdd(ipfs, options),
-    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    // @ts-expect-error - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     id: grpcId(ipfs, options)
   })
   server.addService(MFS, {
-    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    // @ts-expect-error - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     ls: grpcMfsLs(ipfs, options),
-    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    // @ts-expect-error - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     write: grpcMfsWrite(ipfs, options)
   })
   server.addService(PubSub, {
-    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    // @ts-expect-error - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     subscribe: grpcPubsubSubscribe(ipfs, options),
-    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    // @ts-expect-error - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     unsubscribe: grpcPubsubUnsubscribe(ipfs, options)
   })
 
@@ -50,7 +50,7 @@ export async function createServer (ipfs, options = {}) {
   socket.on('error', (error) => log(error))
 
   socket.on('data', async ({ path, metadata, channel }) => {
-    // @ts-ignore - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
+    // @ts-expect-error - types differ because we only invoke via websockets - https://github.com/ipfs/js-ipfs/issues/3594
     const handler = server.handlers.get(path)
 
     if (!handler) {
@@ -63,7 +63,7 @@ export async function createServer (ipfs, options = {}) {
     switch (handler.type) {
       case 'bidi':
         handler.func(channel.source, channel.sink, metadata)
-          // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
+          // @ts-expect-error - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
           .catch(err => {
             channel.end(err)
           })
@@ -78,7 +78,7 @@ export async function createServer (ipfs, options = {}) {
 
         break
       case 'unary':
-        // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
+        // @ts-expect-error - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
         handler.func(await first(channel.source), metadata, (err, value, metadata, flags) => {
           if (err) {
             return channel.end(err)
@@ -94,7 +94,7 @@ export async function createServer (ipfs, options = {}) {
         })
         break
       case 'clientStream':
-        // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
+        // @ts-expect-error - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
         handler.func(channel.source, metadata, (err, value, metadata, flags) => {
           if (err) {
             return channel.end(err)
@@ -110,10 +110,8 @@ export async function createServer (ipfs, options = {}) {
         })
         break
       case 'serverStream':
-        // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
         handler.func(await first(channel.source), channel.sink, metadata)
-          // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
-          .catch(err => {
+          .catch((/** @type {any} **/ err) => {
             channel.end(err)
           })
 

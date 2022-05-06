@@ -18,6 +18,8 @@ export default {
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.rootcid
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, rootcid, timeout }) {
     const options = { timeout }

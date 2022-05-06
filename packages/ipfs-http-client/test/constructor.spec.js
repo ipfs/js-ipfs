@@ -1,7 +1,7 @@
 /* eslint-env mocha, browser */
 
-import { Multiaddr } from 'multiaddr'
-import { expect } from 'aegir/utils/chai.js'
+import { Multiaddr } from '@multiformats/multiaddr'
+import { expect } from 'aegir/chai'
 import { factory } from './utils/factory.js'
 import { create as ipfsClient } from '../src/index.js'
 import { isBrowser } from 'ipfs-utils/src/env.js'

@@ -38,6 +38,8 @@ export default {
    * @param {boolean} argv.recursive
    * @param {boolean} argv.stream
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, nocache, recursive, name, stream, timeout }) {
     let bestValue

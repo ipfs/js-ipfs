@@ -28,6 +28,8 @@ export default {
    * @param {boolean} argv.human
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, cidBase, human, timeout }) {
     const { ipfs, print } = ctx

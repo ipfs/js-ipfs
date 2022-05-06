@@ -1,8 +1,9 @@
 
 /**
- * @typedef {import('ipfs-core-types/src/pubsub').MessageHandlerFn} MessageHandlerFn
+ * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interfaces/events').EventHandler<Message>} MessageHandlerFn
  *
- * @typedef {Object} Subscription
+ * @typedef {object} Subscription
  * @property {MessageHandlerFn} handler
  * @property {AbortController} controller
  */

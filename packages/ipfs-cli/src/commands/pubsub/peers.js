@@ -17,11 +17,13 @@ export default {
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.topic
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, topic, timeout }) {
     const peers = await ipfs.pubsub.peers(topic, {
       timeout
     })
-    peers.forEach(peer => print(peer))
+    peers.forEach(peer => print(peer.toString()))
   }
 }

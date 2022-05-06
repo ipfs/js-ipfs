@@ -1,5 +1,11 @@
-import libp2pGossipsub from 'libp2p-gossipsub'
+import { GossipSub } from '@achingbrain/libp2p-gossipsub'
 
-export const routers = {
-  gossipsub: libp2pGossipsub
-}
+/** @typedef {import('@libp2p/interfaces/pubsub').PubSub} PubSub */
+
+/** @type {() => Record<string, PubSub>}>} */
+export const routers = () => ({
+  gossipsub: new GossipSub({
+    allowPublishToZeroPeers: true,
+    emitSelf: true
+  })
+})

@@ -4,7 +4,7 @@
 import { CID } from 'multiformats/cid'
 import { encodeCID, decodeCID } from '../src/cid.js'
 import { ipc } from './util.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 
 describe('cid (browser)', function () {
   this.timeout(10 * 1000)

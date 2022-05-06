@@ -29,6 +29,8 @@ export default {
    * @param {import('multiformats/cid').CID} argv.key
    * @param {boolean} argv.recursive
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs }, key, recursive, timeout }) {
     await ipfs.dht.provide(key, {

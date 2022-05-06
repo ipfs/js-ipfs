@@ -1,6 +1,6 @@
 import { BaseBlockstore } from 'blockstore-core'
 import merge from 'it-merge'
-import pushable from 'it-pushable'
+import { pushable } from 'it-pushable'
 import filter from 'it-filter'
 
 /**

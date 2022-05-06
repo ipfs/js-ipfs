@@ -4,20 +4,20 @@ import { encodeError, decodeError } from './error.js'
 
 /**
  * @template T
- * @typedef {Object} RemoteIterable
+ * @typedef {object} RemoteIterable
  * @property {'RemoteIterable'} type
  * @property {MessagePort} port
  */
 
 /**
- * @typedef {Object} RemoteCallback
+ * @typedef {object} RemoteCallback
  * @property {'RemoteCallback'} type
  * @property {MessagePort} port
  */
 
 /**
  * @template T
- * @typedef {Object} RemoteYield
+ * @typedef {object} RemoteYield
  * @property {false} done
  * @property {T} value
  * @property {void} error
@@ -25,7 +25,7 @@ import { encodeError, decodeError } from './error.js'
 
 /**
  * @template T
- * @typedef {Object} RemoteDone
+ * @typedef {object} RemoteDone
  * @property {true} done
  * @property {T|void} value
  * @property {void} error
@@ -33,7 +33,7 @@ import { encodeError, decodeError } from './error.js'
 
 /**
  * @typedef {import('./error').EncodedError} EncodedError
- * @typedef {Object} RemoteError
+ * @typedef {object} RemoteError
  * @property {true} done
  * @property {void} value
  * @property {EncodedError} error

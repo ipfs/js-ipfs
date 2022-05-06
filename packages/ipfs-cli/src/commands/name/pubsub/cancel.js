@@ -17,6 +17,8 @@ export default {
    * @param {import('../../../types').Context} argv.ctx
    * @param {string} argv.name
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, name, timeout }) {
     const result = await ipfs.name.pubsub.cancel(name, {

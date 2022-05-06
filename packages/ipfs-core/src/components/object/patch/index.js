@@ -9,7 +9,7 @@ import { createSetData } from './set-data.js'
 
 export class ObjectPatchAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {Preload} config.preload
    */

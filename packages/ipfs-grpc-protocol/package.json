@@ -36,10 +36,10 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json && node ./scripts/update-index.js && npm run lint -- --fix && aegir build",
-    "lint": "aegir ts -p check && aegir lint"
+    "lint": "aegir lint"
   },
   "devDependencies": {
-    "aegir": "^36.0.1",
+    "aegir": "^37.0.11",
     "mkdirp": "^1.0.4",
     "protobufjs": "^6.10.2",
     "rimraf": "^3.0.2"

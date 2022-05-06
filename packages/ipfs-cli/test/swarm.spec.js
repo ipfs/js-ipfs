@@ -1,10 +1,10 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli, fail } from './utils/cli.js'
 import sinon from 'sinon'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 
 describe('swarm', () => {
   let ipfs

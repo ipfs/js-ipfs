@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import nock from 'nock'
 import { create as httpClient } from '../../src/index.js'
 

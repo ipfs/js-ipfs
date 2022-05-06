@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { nanoid } from 'nanoid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { sha512 } from 'multiformats/hashes/sha2'
 import { createShardedDirectory } from '../utils/create-sharded-directory.js'
@@ -14,7 +14,7 @@ import isShardAtPath from '../utils/is-shard-at-path.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testMkdir (factory, options) {
   const describe = getDescribe(options)

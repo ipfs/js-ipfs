@@ -43,7 +43,7 @@ export const idResource = {
       peerId
     })
     return h.response({
-      ID: id.id,
+      ID: id.id.toString(),
       PublicKey: id.publicKey,
       Addresses: id.addresses,
       AgentVersion: id.agentVersion,

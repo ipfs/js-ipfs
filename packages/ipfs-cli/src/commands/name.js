@@ -16,7 +16,7 @@ export default {
    */
   builder (yargs) {
     commands.forEach(command => {
-      // @ts-ignore types are wrong
+      // @ts-expect-error types are wrong
       yargs.command(command)
     })
 

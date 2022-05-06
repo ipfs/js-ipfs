@@ -2,7 +2,7 @@ import { ipfsCore, interfaceIpfsCore, commit } from '../version.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 export function createVersion ({ repo }) {

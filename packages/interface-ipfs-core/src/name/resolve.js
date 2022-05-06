@@ -1,21 +1,21 @@
 /* eslint-env mocha */
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import delay from 'delay'
-import PeerId from 'peer-id'
 import last from 'it-last'
 import { CID } from 'multiformats/cid'
 import * as Digest from 'multiformats/hashes/digest'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testResolve (factory, options) {
   const describe = getDescribe(options)
@@ -24,7 +24,7 @@ export function testResolve (factory, options) {
   describe('.name.resolve offline', function () {
     /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
-    /** @type {string} */
+    /** @type {PeerId} */
     let nodeId
 
     before(async () => {
@@ -44,21 +44,21 @@ export function testResolve (factory, options) {
     after(() => factory.clean())
 
     it('should resolve a record default options', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options'))
       const { id: keyId } = await ipfs.key.gen('key-name-default', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name-default' })
+      await ipfs.name.publish(`/ipns/${nodeId.toString()}`, { allowOffline: true, key: 'key-name-default' })
 
       expect(await last(ipfs.name.resolve(`/ipns/${keyId}`)))
         .to.eq(`/ipfs/${path}`)
     })
 
     it('should resolve a record from peerid as cidv1 in base32', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
       const { cid } = await ipfs.add(uint8ArrayFromString('should resolve a record from cidv1b32'))
       const { id: peerId } = await ipfs.id()
@@ -66,7 +66,7 @@ export function testResolve (factory, options) {
 
       // Represent Peer ID as CIDv1 Base32
       // https://github.com/libp2p/specs/blob/master/RFC/0001-text-peerid-cid.md
-      const keyCid = CID.createV1(0x72, Digest.decode(PeerId.parse(peerId).toBytes()))
+      const keyCid = CID.createV1(0x72, Digest.decode(peerId.toBytes()))
       const resolvedPath = await last(ipfs.name.resolve(`/ipns/${keyCid}`))
 
       expect(resolvedPath).to.equal(`/ipfs/${cid}`)
@@ -75,33 +75,33 @@ export function testResolve (factory, options) {
     it('should resolve a record recursive === false', async () => {
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === false'))
       await ipfs.name.publish(path, { allowOffline: true })
-      expect(await last(ipfs.name.resolve(`/ipns/${nodeId}`, { recursive: false })))
+      expect(await last(ipfs.name.resolve(`/ipns/${nodeId.toString()}`, { recursive: false })))
         .to.eq(`/ipfs/${path}`)
     })
 
     it('should resolve a record recursive === true', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
       const { id: keyId } = await ipfs.key.gen('key-name', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name' })
+      await ipfs.name.publish(`/ipns/${nodeId.toString()}`, { allowOffline: true, key: 'key-name' })
 
       expect(await last(ipfs.name.resolve(`/ipns/${keyId}`, { recursive: true })))
         .to.eq(`/ipfs/${path}`)
     })
 
     it('should resolve a record default options with remainder', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options with remainder'))
       const { id: keyId } = await ipfs.key.gen('key-name-remainder-default', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name-remainder-default' })
+      await ipfs.name.publish(`/ipns/${nodeId.toString()}`, { allowOffline: true, key: 'key-name-remainder-default' })
 
       expect(await last(ipfs.name.resolve(`/ipns/${keyId}/remainder/file.txt`)))
         .to.eq(`/ipfs/${path}/remainder/file.txt`)
@@ -110,19 +110,19 @@ export function testResolve (factory, options) {
     it('should resolve a record recursive === false with remainder', async () => {
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive = false with remainder'))
       await ipfs.name.publish(path, { allowOffline: true })
-      expect(await last(ipfs.name.resolve(`/ipns/${nodeId}/remainder/file.txt`, { recursive: false })))
+      expect(await last(ipfs.name.resolve(`/ipns/${nodeId.toString()}/remainder/file.txt`, { recursive: false })))
         .to.eq(`/ipfs/${path}/remainder/file.txt`)
     })
 
     it('should resolve a record recursive === true with remainder', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive = true with remainder'))
       const { id: keyId } = await ipfs.key.gen('key-name-remainder', { type: 'rsa', size: 2048 })
 
       await ipfs.name.publish(path, { allowOffline: true })
-      await ipfs.name.publish(`/ipns/${nodeId}`, { allowOffline: true, key: 'key-name-remainder' })
+      await ipfs.name.publish(`/ipns/${nodeId.toString()}`, { allowOffline: true, key: 'key-name-remainder' })
 
       expect(await last(ipfs.name.resolve(`/ipns/${keyId}/remainder/file.txt`, { recursive: true })))
         .to.eq(`/ipfs/${path}/remainder/file.txt`)

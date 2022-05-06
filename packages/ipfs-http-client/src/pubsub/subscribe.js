@@ -1,12 +1,12 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
-import { textToUrlSafeRpc, rpcArrayToTextArray, rpcToBytes } from '../lib/http-rpc-wire-format.js'
-const log = debug('ipfs-http-client:pubsub:subscribe')
+import { textToUrlSafeRpc, rpcToText, rpcToBytes, rpcToBigInt } from '../lib/http-rpc-wire-format.js'
+const log = logger('ipfs-http-client:pubsub:subscribe')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
- * @typedef {import('ipfs-core-types/src/pubsub').Message} Message
+ * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
  * @typedef {(err: Error, fatal: boolean, msg?: Message) => void} ErrorHandlerFn
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions & { onError?: ErrorHandlerFn }>} PubsubAPI
  * @typedef {import('../types').Options} Options
@@ -62,7 +62,20 @@ export const createSubscribe = (options, subsTracker) => {
           }
 
           readMessages(response, {
-            onMessage: handler,
+            onMessage: (message) => {
+              if (!handler) {
+                return
+              }
+
+              if (typeof handler === 'function') {
+                handler(message)
+                return
+              }
+
+              if (typeof handler.handleEvent === 'function') {
+                handler.handleEvent(message)
+              }
+            },
             onEnd: () => subsTracker.unsubscribe(topic, handler),
             onError: options.onError
           })
@@ -96,8 +109,8 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
         onMessage({
           from: msg.from,
           data: rpcToBytes(msg.data),
-          seqno: rpcToBytes(msg.seqno),
-          topicIDs: rpcArrayToTextArray(msg.topicIDs)
+          sequenceNumber: rpcToBigInt(msg.sequenceNumber),
+          topic: rpcToText(msg.topic)
         })
       } catch (/** @type {any} */ err) {
         err.message = `Failed to parse pubsub message: ${err.message}`

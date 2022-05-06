@@ -50,6 +50,8 @@ export default {
    * @param {boolean} argv.unique
    * @param {number} argv.maxDepth
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, key, keys, recursive, format, edges, unique, maxDepth, timeout }) {
     if (maxDepth === 0) {

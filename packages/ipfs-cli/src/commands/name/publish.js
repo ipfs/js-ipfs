@@ -50,6 +50,8 @@ export default {
    * @param {string} argv.key
    * @param {string} argv.ttl
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, ipfsPath, resolve, lifetime, key, ttl, timeout }) {
     const result = await ipfs.name.publish(ipfsPath, {

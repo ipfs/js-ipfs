@@ -19,6 +19,8 @@ export default {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const subscriptions = await ipfs.pubsub.ls({

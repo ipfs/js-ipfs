@@ -1,9 +1,7 @@
-// @ts-expect-error no types
-import WS from 'libp2p-websockets'
-// @ts-expect-error no types
-import filters from 'libp2p-websockets/src/filters.js'
+import { WebSockets } from '@libp2p/websockets'
+import { all } from '@libp2p/websockets/filters'
 
-const transportKey = WS.prototype[Symbol.toStringTag]
+const transportKey = WebSockets.prototype[Symbol.toStringTag]
 
 export function ipfsOptionsWebsocketsFilterAll () {
   return {
@@ -11,7 +9,7 @@ export function ipfsOptionsWebsocketsFilterAll () {
       config: {
         transport: {
           [transportKey]: {
-            filter: filters.all
+            filter: all
           }
         }
       }

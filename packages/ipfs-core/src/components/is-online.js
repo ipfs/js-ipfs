@@ -1,6 +1,6 @@
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../types').NetworkService} config.network
  */
 export function createIsOnline ({ network }) {

@@ -24,6 +24,8 @@ export default {
    * @param {string} argv.profile
    * @param {boolean} argv.dryRun
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, profile, dryRun, timeout }) {
     const { print, ipfs, isDaemon } = ctx

@@ -1,8 +1,8 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 export function createList ({ repo }) {

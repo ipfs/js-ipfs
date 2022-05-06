@@ -3,7 +3,7 @@
 
 import { nanoid } from 'nanoid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import createNode from './utils/create-node.js'
 
 describe('pubsub disabled', () => {

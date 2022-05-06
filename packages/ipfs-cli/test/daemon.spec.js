@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import os from 'os'
 import path from 'path'
 import { nanoid } from 'nanoid'

@@ -4,7 +4,7 @@ import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import drain from 'it-drain'
 import all from 'it-all'
 import { fixtures } from '../utils/index.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { createShardedDirectory } from '../utils/create-sharded-directory.js'
 import { randomBytes } from 'iso-random-stream'
@@ -15,7 +15,7 @@ import { randomBytes } from 'iso-random-stream'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testRead (factory, options) {
   const describe = getDescribe(options)

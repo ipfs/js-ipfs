@@ -1,7 +1,8 @@
 import type { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
 import type { CID, CIDVersion } from 'multiformats/cid'
 import type { Mtime } from 'ipfs-unixfs'
-import type { Multiaddr } from 'multiaddr'
+import type { Multiaddr } from '@multiformats/multiaddr'
+import type { PeerId } from '@libp2p/interfaces/peer-id'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -81,7 +82,7 @@ export interface API<OptionExtension = {}> {
    * }
    * ```
    */
-  ping: (peerId: string, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
+  ping: (peerId: PeerId, options?: PingOptions & OptionExtension) => AsyncIterable<PingResult>
 
   /**
    * Resolve the value of names to IPFS
@@ -267,11 +268,11 @@ export interface ListOptions extends AbortOptions, PreloadOptions {
 }
 
 export interface IDOptions extends AbortOptions {
-  peerId?: string
+  peerId?: PeerId
 }
 
 export interface IDResult {
-  id: string
+  id: PeerId
   publicKey: string
   addresses: Multiaddr[]
   agentVersion: string

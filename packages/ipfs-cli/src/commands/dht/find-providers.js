@@ -29,6 +29,8 @@ export default {
    * @param {import('multiformats/cid').CID} argv.key
    * @param {number} argv.numProviders
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, key, numProviders, timeout }) {
     const providers = new Set()

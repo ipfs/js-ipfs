@@ -21,7 +21,7 @@ export const createPublish = configure(api => {
       headers: options.headers
     })
 
-    // @ts-ignore server output is not typed
+    // @ts-expect-error server output is not typed
     return objectToCamel(await res.json())
   }
   return publish

@@ -2,6 +2,10 @@ import { subscriptions } from './subscriptions.js'
 import { nanoid } from 'nanoid'
 
 /**
+ * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ */
+
+/**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {import('../../types').Options} options
  */
@@ -18,7 +22,7 @@ export function grpcPubsubSubscribe (ipfs, options = {}) {
 
     const handlerId = nanoid()
     const handler = {
-      /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+      /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
       onMessage: (message) => {
         sink.push(message)
       },

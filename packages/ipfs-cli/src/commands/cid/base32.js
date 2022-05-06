@@ -11,6 +11,8 @@ export default {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {string[]} [argv.cids]
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { print, getStdin }, cids }) {
     let input

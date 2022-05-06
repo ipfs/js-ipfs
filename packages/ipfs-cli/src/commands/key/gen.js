@@ -34,10 +34,12 @@ export default {
    * @param {string} argv.type
    * @param {number} argv.size
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, name, type, size, timeout }) {
     const key = await ipfs.key.gen(name, {
-      type,
+      type: type.toLowerCase() === 'rsa' ? 'RSA' : 'Ed25519',
       size,
       timeout
     })

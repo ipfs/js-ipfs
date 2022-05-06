@@ -1,4 +1,4 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import Boom from '@hapi/boom'
 import Ammo from '@hapi/ammo'
@@ -13,9 +13,7 @@ import * as PathUtils from '../utils/path.js'
 
 const { detectContentType } = utils
 
-const log = Object.assign(debug('ipfs:http-gateway'), {
-  error: debug('ipfs:http-gateway:error')
-})
+const log = logger('ipfs:http-gateway')
 
 export const Gateway = {
 

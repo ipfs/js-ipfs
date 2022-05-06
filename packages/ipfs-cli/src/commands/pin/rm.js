@@ -30,6 +30,8 @@ export default {
    * @param {boolean} argv.recursive
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, ipfsPath, timeout, recursive, cidBase }) {
     const { ipfs, print } = ctx

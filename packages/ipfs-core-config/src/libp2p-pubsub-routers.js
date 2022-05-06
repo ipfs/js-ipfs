@@ -1,10 +1,15 @@
-import libp2pGossipsub from 'libp2p-gossipsub'
-import libp2pFloodsub from 'libp2p-floodsub'
+import { GossipSub } from '@achingbrain/libp2p-gossipsub'
+import { FloodSub } from '@libp2p/floodsub'
 
-/** @typedef {import('libp2p-interfaces/src/pubsub')} PubSub */
+/** @typedef {import('@libp2p/interfaces/pubsub').PubSub} PubSub */
 
-/** @type {Record<string, { new(...args: any[]): PubSub }>} */
-export const routers = {
-  gossipsub: libp2pGossipsub,
-  floodsub: libp2pFloodsub
-}
+/** @type {() => Record<string, PubSub>}>} */
+export const routers = () => ({
+  gossipsub: new GossipSub({
+    allowPublishToZeroPeers: true,
+    emitSelf: true
+  }),
+  floodsub: new FloodSub({
+    emitSelf: true
+  })
+})

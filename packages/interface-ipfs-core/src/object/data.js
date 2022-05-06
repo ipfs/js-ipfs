@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { nanoid } from 'nanoid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
@@ -11,7 +11,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testData (factory, options) {
   const describe = getDescribe(options)

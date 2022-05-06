@@ -1,7 +1,8 @@
 import { objectToCamel } from './lib/object-to-camel.js'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 import { configure } from './lib/configure.js'
 import { toUrlSearchParams } from './lib/to-url-search-params.js'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
  * @typedef {import('./types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -27,11 +28,13 @@ export const createId = configure(api => {
       ...objectToCamel(data)
     }
 
+    output.id = peerIdFromString(output.id)
+
     if (output.addresses) {
       output.addresses = output.addresses.map((/** @type {string} */ ma) => new Multiaddr(ma))
     }
 
-    // @ts-ignore server output is not typed
+    // @ts-expect-error server output is not typed
     return output
   }
   return id

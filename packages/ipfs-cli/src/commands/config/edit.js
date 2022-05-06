@@ -1,5 +1,5 @@
 import path from 'path'
-import execa from 'execa'
+import { execa } from 'execa'
 
 export default {
   command: 'edit',
@@ -9,6 +9,8 @@ export default {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
+   *
+   * @returns {Promise<void>}
    */
   async handler (argv) {
     const editor = process.env.EDITOR

@@ -5,14 +5,12 @@ import Joi from '../../utils/joi.js'
 import Boom from '@hapi/boom'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { CID } from 'multiformats/cid'
 import { base64pad } from 'multiformats/bases/base64'
 import { base16 } from 'multiformats/bases/base16'
 
-const log = Object.assign(debug('ipfs:http-api:object'), {
-  error: debug('ipfs:http-api:object:error')
-})
+const log = logger('ipfs:http-api:object')
 
 /**
  * @type {Record<string, (str: string) => Uint8Array>}

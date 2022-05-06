@@ -1,10 +1,11 @@
-'use strict'
+import getPort from 'aegir/get-port'
+import { createServer } from 'ipfsd-ctl'
+import EchoServer from 'aegir/echo-server'
+import { sigServer } from '@libp2p/webrtc-star-signalling-server'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const getPort = require('aegir/utils/get-port')
-const { createServer } = require('ipfsd-ctl')
-const EchoServer = require('aegir/utils/echo-server')
-const webRTCStarSigServer = require('libp2p-webrtc-star-signalling-server')
-const path = require('path')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
@@ -22,7 +23,7 @@ const esbuild = {
 }
 
 /** @type {import('aegir').PartialOptions} */
-module.exports = {
+export default {
   test: {
     browser: {
       config: {
@@ -47,13 +48,13 @@ module.exports = {
         const ipfsdPort = await getPort()
         const signalAPort = await getPort()
         const signalBPort = await getPort()
-        const sigServerA = await webRTCStarSigServer.start({
+        const sigServerA = await sigServer({
           host: '127.0.0.1',
           port: signalAPort,
           metrics: false
         })
         // the second signalling server is needed for the interface test 'should list peers only once even if they have multiple addresses'
-        const sigServerB = await webRTCStarSigServer.start({
+        const sigServerB = await sigServer({
           host: '127.0.0.1',
           port: signalBPort,
           metrics: false
@@ -75,7 +76,7 @@ module.exports = {
           }
         }, {
           go: {
-            ipfsBin: require('go-ipfs').path()
+            ipfsBin: (await import('go-ipfs')).default.path()
           },
           js: {
             ipfsClientModule: {

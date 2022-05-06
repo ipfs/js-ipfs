@@ -53,6 +53,8 @@ export default {
    * @param {boolean} argv.pin
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print, getStdin }, block, timeout, format, mhtype, mhlen, version, cidBase, pin }) {
     let data

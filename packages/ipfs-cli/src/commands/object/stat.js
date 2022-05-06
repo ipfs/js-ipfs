@@ -22,6 +22,8 @@ export default {
    * @param {import('../../types').Context} argv.ctx
    * @param {import('multiformats/cid').CID} argv.key
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, key, timeout }) {
     const stats = await ipfs.object.stat(key, { timeout })

@@ -1,9 +1,9 @@
 import fs from 'fs'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { ipfsPathHelp } from '../utils.js'
 import * as IPFS from 'ipfs-core'
 
-const log = debug('ipfs:cli:init')
+const log = logger('ipfs:cli:init')
 
 /** @type {Record<string, import('libp2p-crypto').KeyType>} */
 const keyTypes = {
@@ -73,6 +73,8 @@ export default {
    * @param {string} argv.privateKey
    * @param {string[]} argv.profile
    * @param {string} argv.pass
+   *
+   * @returns {Promise<void>}
    */
   async handler (argv) {
     const { print, repoPath } = argv.ctx
@@ -102,7 +104,6 @@ export default {
         },
         pass: argv.pass,
         start: false,
-        // @ts-ignore - Expects more than {}
         config
       })
     } catch (/** @type {any} */ err) {

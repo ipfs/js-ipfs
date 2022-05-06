@@ -42,11 +42,7 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
 
   // Iterable<?>
   if (Symbol.iterator in input || Symbol.asyncIterator in input) {
-    /** @type {any} */
-    // @ts-ignore it's (async)interable
     const peekable = itPeekable(input)
-
-    /** @type {any} value **/
     const { value, done } = await peekable.peek()
 
     if (done) {
@@ -64,13 +60,15 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
     }
 
     // (Async)Iterable<fs.ReadStream>
+    // @ts-expect-error private field
     if (value._readableState) {
-      // @ts-ignore Node fs.ReadStreams have a `.path` property so we need to pass it as the content
+      // @ts-expect-error Node fs.ReadStreams have a `.path` property so we need to pass it as the content
       yield * map(peekable, (/** @type {ImportCandidate} */ value) => toFileObject({ content: value }, normaliseContent))
       return
     }
 
     if (isBytes(value)) {
+      // @ts-expect-error peekable is still an iterable of ImportCandidates
       yield toFileObject({ content: peekable }, normaliseContent)
       return
     }
@@ -100,7 +98,7 @@ export async function * normaliseCandidateMultiple (input, normaliseContent) {
  * @param {(content:ToContent) => Promise<AsyncIterable<Uint8Array>>} normaliseContent
  */
 async function toFileObject (input, normaliseContent) {
-  // @ts-ignore - Those properties don't exist on most input types
+  // @ts-expect-error - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
 
   /** @type {ImporterImportCandidate} */
@@ -113,7 +111,7 @@ async function toFileObject (input, normaliseContent) {
   if (content) {
     file.content = await normaliseContent(content)
   } else if (!path) { // Not already a file object with path or content prop
-    // @ts-ignore - input still can be different ToContent
+    // @ts-expect-error - input still can be different ToContent
     file.content = await normaliseContent(input)
   }
 

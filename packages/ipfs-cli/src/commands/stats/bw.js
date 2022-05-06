@@ -37,6 +37,8 @@ export default {
    * @param {boolean} argv.poll
    * @param {number} argv.interval
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, peer, proto, poll, interval, timeout }) {
     for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval, timeout })) {

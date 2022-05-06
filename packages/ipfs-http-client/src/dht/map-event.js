@@ -9,34 +9,39 @@ import {
   AddingPeer,
   DialingPeer
 } from './response-types.js'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
+import { peerIdFromString } from '@libp2p/peer-id'
+
+/**
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ */
 
 /**
  * @param {{Type: number, ID: string, Extra: string, Responses: {ID: string, Addrs: string[]}[]}} event
- * @returns {import('ipfs-core-types/src/dht').QueryEvent}
+ * @returns {import('@libp2p/interfaces/dht').QueryEvent}
  */
 export const mapEvent = (event) => {
-  // console.info(JSON.stringify(event, null, 2))
-
   if (event.Type === SendingQuery) {
     return {
-      to: event.ID,
+      to: peerIdFromString(event.ID),
       name: 'SENDING_QUERY',
-      type: event.Type
+      type: event.Type,
+      messageName: 'PUT_VALUE',
+      messageType: 0
     }
   }
 
   if (event.Type === PeerResponse) {
     return {
-      from: event.ID,
+      from: peerIdFromString(event.ID),
       name: 'PEER_RESPONSE',
       type: event.Type,
       // TODO: how to infer this from the go-ipfs response
       messageType: 0,
       // TODO: how to infer this from the go-ipfs response
       messageName: 'PUT_VALUE',
-      closer: (event.Responses || []).map(({ ID, Addrs }) => ({ id: ID, multiaddrs: Addrs.map(addr => new Multiaddr(addr)) })),
-      providers: (event.Responses || []).map(({ ID, Addrs }) => ({ id: ID, multiaddrs: Addrs.map(addr => new Multiaddr(addr)) }))
+      closer: (event.Responses || []).map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => new Multiaddr(addr)), protocols: [] })),
+      providers: (event.Responses || []).map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => new Multiaddr(addr)), protocols: [] }))
       // TODO: how to infer this from the go-ipfs response
       // record: ???
     }
@@ -45,21 +50,23 @@ export const mapEvent = (event) => {
   if (event.Type === FinalPeer) {
     // dht.query ends with a FinalPeer event with no Responses
     let peer = {
-      id: event.ID,
+      id: peerIdFromString(event.ID),
       /** @type {Multiaddr[]} */
-      multiaddrs: []
+      multiaddrs: [],
+      protocols: []
     }
 
     if (event.Responses && event.Responses.length) {
       // dht.findPeer has the result in the Responses field
       peer = {
-        id: event.Responses[0].ID,
-        multiaddrs: event.Responses[0].Addrs.map(addr => new Multiaddr(addr))
+        id: peerIdFromString(event.Responses[0].ID),
+        multiaddrs: event.Responses[0].Addrs.map(addr => new Multiaddr(addr)),
+        protocols: []
       }
     }
 
     return {
-      from: event.ID,
+      from: peerIdFromString(event.ID),
       name: 'FINAL_PEER',
       type: event.Type,
       peer
@@ -68,7 +75,7 @@ export const mapEvent = (event) => {
 
   if (event.Type === QueryError) {
     return {
-      from: event.ID,
+      from: peerIdFromString(event.ID),
       name: 'QUERY_ERROR',
       type: event.Type,
       error: new Error(event.Extra)
@@ -77,16 +84,16 @@ export const mapEvent = (event) => {
 
   if (event.Type === Provider) {
     return {
-      from: event.ID,
+      from: peerIdFromString(event.ID),
       name: 'PROVIDER',
       type: event.Type,
-      providers: event.Responses.map(({ ID, Addrs }) => ({ id: ID, multiaddrs: Addrs.map(addr => new Multiaddr(addr)) }))
+      providers: event.Responses.map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => new Multiaddr(addr)), protocols: [] }))
     }
   }
 
   if (event.Type === Value) {
     return {
-      from: event.ID,
+      from: peerIdFromString(event.ID),
       name: 'VALUE',
       type: event.Type,
       value: uint8ArrayFromString(event.Extra, 'base64pad')
@@ -94,7 +101,7 @@ export const mapEvent = (event) => {
   }
 
   if (event.Type === AddingPeer) {
-    const peers = event.Responses.map(({ ID }) => ID)
+    const peers = event.Responses.map(({ ID }) => peerIdFromString(ID))
 
     if (!peers.length) {
       throw new Error('No peer found')
@@ -111,7 +118,7 @@ export const mapEvent = (event) => {
     return {
       name: 'DIALING_PEER',
       type: event.Type,
-      peer: event.ID
+      peer: peerIdFromString(event.ID)
     }
   }
 

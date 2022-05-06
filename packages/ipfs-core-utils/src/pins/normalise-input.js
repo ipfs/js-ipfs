@@ -2,7 +2,7 @@ import errCode from 'err-code'
 import { CID } from 'multiformats/cid'
 
 /**
- * @typedef {Object} Pinnable
+ * @typedef {object} Pinnable
  * @property {string | InstanceType<typeof window.String> | CID} [path]
  * @property {CID} [cid]
  * @property {boolean} [recursive]
@@ -11,7 +11,7 @@ import { CID } from 'multiformats/cid'
  * @typedef {CID|string|InstanceType<typeof window.String>|Pinnable} ToPin
  * @typedef {ToPin|Iterable<ToPin>|AsyncIterable<ToPin>} Source
  *
- * @typedef {Object} Pin
+ * @typedef {object} Pin
  * @property {string|CID} path
  * @property {boolean} recursive
  * @property {any} [metadata]
@@ -64,15 +64,15 @@ export async function * normaliseInput (input) {
   }
 
   // { cid: CID recursive, metadata }
-  // @ts-ignore - it still could be iterable or async iterable
+  // @ts-expect-error - it still could be iterable or async iterable
   if (input.cid != null || input.path != null) {
-    // @ts-ignore
+    // @ts-expect-error
     return yield toPin(input)
   }
 
   // Iterable<?>
   if (Symbol.iterator in input) {
-    // @ts-ignore
+    // @ts-expect-error
     const iterator = input[Symbol.iterator]()
     const first = iterator.next()
     if (first.done) return iterator
@@ -100,7 +100,7 @@ export async function * normaliseInput (input) {
 
   // AsyncIterable<?>
   if (Symbol.asyncIterator in input) {
-    // @ts-ignore
+    // @ts-expect-error
     const iterator = input[Symbol.asyncIterator]()
     const first = await iterator.next()
     if (first.done) return iterator

@@ -1,4 +1,5 @@
 import parseDuration from 'parse-duration'
+import { coercePeerId } from '../utils.js'
 
 export default {
   command: 'ping <peerId>',
@@ -6,6 +7,11 @@ export default {
   description: 'Measure the latency of a connection',
 
   builder: {
+    peer: {
+      describe: 'Specify which peer to show wantlist for.',
+      type: 'string',
+      coerce: coercePeerId
+    },
     count: {
       alias: 'n',
       type: 'integer',
@@ -21,8 +27,10 @@ export default {
    * @param {object} argv
    * @param {import('../types').Context} argv.ctx
    * @param {number} argv.count
-   * @param {string} argv.peerId
+   * @param {import('@libp2p/interfaces/peer-id').PeerId} argv.peerId
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, count, peerId, timeout }) {
     for await (const pong of ipfs.ping(peerId, { count, timeout })) {

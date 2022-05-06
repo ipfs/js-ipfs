@@ -24,7 +24,7 @@ export const createImport = configure(api => {
     })
     const data = await res.json()
 
-    // @ts-ignore server output is not typed
+    // @ts-expect-error server output is not typed
     return objectToCamel(data)
   }
   return importKey

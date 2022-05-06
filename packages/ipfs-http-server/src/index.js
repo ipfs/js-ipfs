@@ -1,7 +1,7 @@
 import Hapi from '@hapi/hapi'
 import Pino from 'hapi-pino'
-import debug from 'debug'
-import { Multiaddr } from 'multiaddr'
+import { logger, enabled } from '@libp2p/logger'
+import { Multiaddr } from '@multiformats/multiaddr'
 // @ts-expect-error no types
 import toMultiaddr from 'uri-to-multiaddr'
 import Boom from '@hapi/boom'
@@ -15,7 +15,7 @@ const LOG_ERROR = 'ipfs:http-api:error'
 /**
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('./types').Server} Server
- * @typedef {import('libp2p')} libp2p
+ * @typedef {import('libp2p').Libp2p} libp2p
  */
 
 /**
@@ -93,9 +93,7 @@ export class HttpApi {
    */
   constructor (ipfs) {
     this._ipfs = ipfs
-    this._log = Object.assign(debug(LOG), {
-      error: debug(LOG_ERROR)
-    })
+    this._log = logger(LOG)
     /** @type {Server[]} */
     this._apiServers = []
   }
@@ -118,7 +116,7 @@ export class HttpApi {
     })
 
     // for the CLI to know the whereabouts of the API
-    // @ts-ignore - ipfs.repo.setApiAddr is not part of the core api
+    // @ts-expect-error - ipfs.repo.setApiAddr is not part of the core api
     await ipfs.repo.setApiAddr(this._apiServers[0].info.ma)
 
     this._log('started')
@@ -158,9 +156,24 @@ export class HttpApi {
     await server.register({
       plugin: Pino,
       options: {
-        prettyPrint: process.env.NODE_ENV !== 'production',
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
-        level: debug.enabled(LOG) ? 'debug' : (debug.enabled(LOG_ERROR) ? 'error' : 'fatal')
+        level: enabled(LOG) ? 'debug' : (enabled(LOG_ERROR) ? 'error' : 'fatal'),
+        transport: process.env.NODE_ENV !== 'production'
+          ? {
+              target: 'pino-pretty',
+              options: {
+                colorize: true,
+                minimumLevel: 'info',
+                levelFirst: true,
+                messageFormat: true,
+                timestampKey: 'time',
+                translateTime: true,
+                singleLine: false,
+                mkdir: true,
+                append: true
+              }
+            }
+          : undefined
       }
     })
 

@@ -36,6 +36,8 @@ export default {
    * @param {boolean} argv.force
    * @param {boolean} argv.quiet
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, hash, force, quiet, timeout }) {
     const { ipfs, print } = ctx

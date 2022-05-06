@@ -17,7 +17,7 @@ export const createRmLink = configure(api => {
       searchParams: toUrlSearchParams({
         arg: [
           `${cid}`,
-          // @ts-ignore loose types
+          // @ts-expect-error loose types
           dLink.Name || dLink.name || null
         ],
         ...options

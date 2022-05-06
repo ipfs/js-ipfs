@@ -1,13 +1,13 @@
 import { CID } from 'multiformats/cid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import loadFixture from 'aegir/utils/fixtures.js'
+import loadFixture from 'aegir/fixtures'
 
 const ONE_MEG = Math.pow(2, 20)
 
 export const fixtures = Object.freeze({
   directory: Object.freeze({
     cid: CID.parse('QmVvjDy7yF7hdnqE8Hrf4MHo5ABDtb5AbX6hWbD3Y42bXP'),
-    /** @type {Record<string, Buffer>} */
+    /** @type {Record<string, Uint8Array>} */
     files: Object.freeze({
       'pp.txt': loadFixture('test/fixtures/test-folder/pp.txt', 'interface-ipfs-core'),
       'holmes.txt': loadFixture('test/fixtures/test-folder/holmes.txt', 'interface-ipfs-core'),

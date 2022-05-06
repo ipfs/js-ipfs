@@ -1,5 +1,4 @@
 
-// @ts-ignore
 import protocol from 'ipfs-grpc-protocol'
 import protobuf from 'protobufjs/light.js'
 
@@ -19,17 +18,17 @@ const CONVERSION_OPTS = {
  * service definition on both the server and the client.
  */
 export function loadServices () {
-  // @ts-ignore - recent protobufjs release changed the types
+  // @ts-expect-error - recent protobufjs release changed the types
   const root = protobuf.Root.fromJSON(protocol)
   /** @type {Record<string, any>} */
   const output = {}
 
   Object
-    // @ts-ignore
+    // @ts-expect-error
     .keys(root.nested.ipfs)
-    // @ts-ignore
+    // @ts-expect-error
     .filter(key => root.nested.ipfs[key] instanceof Service)
-    // @ts-ignore
+    // @ts-expect-error
     .map(key => root.nested.ipfs[key])
     .forEach(service => {
       /** @type {Record<string, any>} */

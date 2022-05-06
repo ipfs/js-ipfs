@@ -28,14 +28,16 @@ export default {
    * @param {string} argv.path
    * @param {boolean} argv.recursive
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
-  handler ({
+  async handler ({
     ctx: { ipfs },
     path,
     recursive,
     timeout
   }) {
-    return ipfs.files.rm(path, {
+    await ipfs.files.rm(path, {
       recursive,
       timeout
     })

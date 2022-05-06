@@ -58,8 +58,10 @@ export default {
    * @param {boolean} argv.flush
    * @param {number} argv.shardSplitThreshold
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
-  handler ({
+  async handler ({
     ctx: { ipfs },
     path,
     mode,
@@ -69,7 +71,7 @@ export default {
     shardSplitThreshold,
     timeout
   }) {
-    return ipfs.files.chmod(path, mode, {
+    await ipfs.files.chmod(path, mode, {
       recursive,
       hashAlg,
       flush,

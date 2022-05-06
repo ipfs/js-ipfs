@@ -2,7 +2,7 @@
 
 import http from 'http'
 import { URL } from 'iso-url'
-import getPort from 'aegir/utils/get-port.js'
+import getPort from 'aegir/get-port'
 
 export const defaultPort = 1138
 export const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
@@ -46,7 +46,7 @@ export function createNode () {
     res.end()
   })
 
-  // @ts-ignore
+  // @ts-expect-error
   server.start = async () => {
     const port = await getPort(defaultPort)
     return new Promise((resolve, reject) => {
@@ -58,7 +58,7 @@ export function createNode () {
       })
     })
   }
-  // @ts-ignore
+  // @ts-expect-error
   server.stop = () => new Promise(resolve => server.close(resolve))
 
   return server

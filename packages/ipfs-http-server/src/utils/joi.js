@@ -1,6 +1,6 @@
 import { CID } from 'multiformats/cid'
 import parseDuration from 'parse-duration'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import Joi from 'joi'
 
@@ -52,7 +52,7 @@ const requireIfRequired = (value, helpers) => {
 
 export default Joi
   .extend(
-    // @ts-ignore - according to typedefs coerce should always return
+    // @ts-expect-error - according to typedefs coerce should always return
     // { errors?: ErrorReport[], value?: any }
     (joi) => {
       return {

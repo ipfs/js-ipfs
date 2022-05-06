@@ -29,17 +29,16 @@ export default {
    * @param {boolean} argv.quiet
    * @param {boolean} argv.streamErrors
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, quiet, streamErrors, timeout }) {
     for await (const r of ipfs.repo.gc({
       timeout
     })) {
-      // @ts-ignore cannot derive type
       if (r.err != null) {
-        // @ts-ignore cannot derive type
         streamErrors && print(r.err.message, true, true)
       } else {
-        // @ts-ignore cannot derive type
         print((quiet ? '' : 'removed ') + r.cid)
       }
     }

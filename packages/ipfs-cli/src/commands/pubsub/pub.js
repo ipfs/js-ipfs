@@ -23,6 +23,8 @@ export default {
    * @param {string} argv.topic
    * @param {Uint8Array} argv.data
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs }, topic, data, timeout }) {
     await ipfs.pubsub.publish(topic, data, {

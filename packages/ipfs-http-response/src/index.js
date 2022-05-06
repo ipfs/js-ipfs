@@ -1,16 +1,16 @@
 /* global Response, Blob */
 
-// @ts-ignore no types
+// @ts-expect-error no types
 import toStream from 'it-to-stream'
 import concat from 'it-concat'
-// @ts-ignore no types
+// @ts-expect-error no types
 import toBuffer from 'it-buffer'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import * as ipfsResolver from './resolver.js'
 import * as pathUtils from './utils/path.js'
 import { detectContentType } from './utils/content-type.js'
 
-const log = debug('ipfs:http:response')
+const log = logger('ipfs:http:response')
 
 // TODO: pass path and add Etag and X-Ipfs-Path + tests
 const getHeader = (status = 200, statusText = 'OK', headers = {}) => ({

@@ -4,7 +4,7 @@ import os from 'os'
 import { promises as fs } from 'fs'
 import path, { dirname } from 'path'
 import { nanoid } from 'nanoid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { promisify } from 'util'
 import { fail } from './utils/cli.js'
 import sinon from 'sinon'
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'url'
 
 const ncp = promisify(ncpCb)
 
-// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
+// @ts-expect-error need to set module to es2020 to use import.meta.url, which we do,
 // but then the "--module" setting doesn't get used by the "--build" setting
 // which we use to build types from jsdoc
 const __dirname = dirname(fileURLToPath(import.meta.url))

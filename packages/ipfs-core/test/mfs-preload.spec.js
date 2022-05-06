@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import delay from 'delay'
 import { sha256 } from 'multiformats/hashes/sha2'
 import { nanoid } from 'nanoid'
@@ -52,7 +52,7 @@ describe('MFS preload', () => {
       updated: await fakeCid()
     }
 
-    // @ts-ignore not whole file api
+    // @ts-expect-error not whole file api
     mockFiles = { stat: createMockFilesStat([testCids.initial, testCids.same, testCids.same, testCids.updated]) }
   })
 

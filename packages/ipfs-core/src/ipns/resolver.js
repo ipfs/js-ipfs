@@ -1,13 +1,18 @@
 import * as ipns from 'ipns'
-import PeerId from 'peer-id'
+import { peerIdFromString } from '@libp2p/peer-id'
 import errcode from 'err-code'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import * as Errors from 'datastore-core/errors'
+import { ipnsValidator } from 'ipns/validator'
 
-const log = Object.assign(debug('ipfs:ipns:resolver'), {
-  error: debug('ipfs:ipns:resolver:error')
-})
+/**
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ */
+
+const log = logger('ipfs:ipns:resolver')
 
 const ERR_NOT_FOUND = Errors.notFoundError().code
 
@@ -88,12 +93,12 @@ export class IpnsResolver {
    * @param {string} name
    */
   async _resolveName (name) {
-    const peerId = PeerId.parse(name)
-    const { routingKey } = ipns.getIdKeys(peerId.toBytes())
+    const peerId = peerIdFromString(name)
+    const routingKey = ipns.peerIdToRoutingKey(peerId)
     let record
 
     try {
-      record = await this._routing.get(routingKey.uint8Array())
+      record = await this._routing.get(routingKey)
     } catch (/** @type {any} */ err) {
       log.error('could not get record from routing', err)
 
@@ -104,31 +109,24 @@ export class IpnsResolver {
       throw errcode(new Error(`unexpected error getting the ipns record ${peerId.toString()}`), 'ERR_UNEXPECTED_ERROR_GETTING_RECORD')
     }
 
-    // IPNS entry
-    let ipnsEntry
-    try {
-      ipnsEntry = ipns.unmarshal(record)
-    } catch (/** @type {any} */ err) {
-      log.error('could not unmarshal record', err)
-
-      throw errcode(new Error('found ipns record that we couldn\'t convert to a value'), 'ERR_INVALID_RECORD_RECEIVED')
-    }
-
     // We should have the public key by now (inline, or in the entry)
-    return this._validateRecord(peerId, ipnsEntry)
+    return this._validateRecord(peerId, record)
   }
 
   /**
    * Validate a resolved record
    *
    * @param {PeerId} peerId
-   * @param {import('ipns').IPNSEntry} ipnsEntry
+   * @param {Uint8Array} record
    */
-  async _validateRecord (peerId, ipnsEntry) {
-    const pubKey = await ipns.extractPublicKey(peerId, ipnsEntry)
-
+  async _validateRecord (peerId, record) {
     // IPNS entry validation
-    await ipns.validate(pubKey, ipnsEntry)
+    await ipnsValidator(uint8ArrayConcat([
+      uint8ArrayFromString('/ipns/'),
+      peerId.toBytes()
+    ]), record)
+
+    const ipnsEntry = ipns.unmarshal(record)
 
     return uint8ArrayToString(ipnsEntry.value)
   }

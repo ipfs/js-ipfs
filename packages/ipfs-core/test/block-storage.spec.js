@@ -28,7 +28,7 @@ describe('block-storage', () => {
         // use the same instance to represent both
         const blockstore = new MockBitswap(true)
 
-        // @ts-ignore MockBitswap is missing some properties
+        // @ts-expect-error MockBitswap is missing some properties
         return new BlockStorage(blockstore, blockstore)
       },
       teardown: () => {}
@@ -42,7 +42,7 @@ describe('block-storage', () => {
         // use the same instance to represent both
         const blockstore = new MockBitswap(false)
 
-        // @ts-ignore MockBitswap is missing some properties
+        // @ts-expect-error MockBitswap is missing some properties
         return new BlockStorage(blockstore, blockstore)
       },
       teardown: () => {}

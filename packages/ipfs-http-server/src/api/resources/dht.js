@@ -8,12 +8,12 @@ import all from 'it-all'
 import Boom from '@hapi/boom'
 
 /**
- * @typedef {import('ipfs-core-types/src/dht').QueryEvent} QueryEvent
- * @typedef {import('peer-id')} PeerId
+ * @typedef {import('@libp2p/interfaces/dht').QueryEvent} QueryEvent
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 
 /**
- * @param {string} id
+ * @param {PeerId} id
  * @param {QueryEvent} event
  */
 function mapQueryEvent (id, event) {

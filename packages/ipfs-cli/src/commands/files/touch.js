@@ -64,8 +64,10 @@ export default {
    * @param {number} argv.mtime
    * @param {number} argv.mtimeNsecs
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
-  handler ({
+  async handler ({
     ctx: { ipfs },
     path,
     flush,
@@ -76,7 +78,7 @@ export default {
     mtimeNsecs,
     timeout
   }) {
-    return ipfs.files.touch(path, {
+    await ipfs.files.touch(path, {
       mtime: asMtimeFromSeconds(mtime, mtimeNsecs),
       flush,
       cidVersion,

@@ -42,6 +42,8 @@ export default {
    * @param {boolean} argv.quiet
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, ipfsPath, type, quiet, cidBase, timeout }) {
     const base = await ipfs.bases.getBase(cidBase)

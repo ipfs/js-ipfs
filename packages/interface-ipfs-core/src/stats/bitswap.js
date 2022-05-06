@@ -9,7 +9,7 @@ import { expectIsBitswap } from './utils.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testBitswap (factory, options) {
   const describe = getDescribe(options)

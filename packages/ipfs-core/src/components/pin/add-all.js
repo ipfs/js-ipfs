@@ -18,7 +18,7 @@ import { PinTypes } from 'ipfs-repo/pin-types'
  */
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */

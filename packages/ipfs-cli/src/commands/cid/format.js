@@ -52,6 +52,8 @@ export default {
    * @param {string} [argv.format]
    * @param {import('multiformats/cid').CIDVersion} [argv.cidVersion]
    * @param {string} [argv.base]
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print, getStdin }, cids, format, cidVersion, base }) {
     let input

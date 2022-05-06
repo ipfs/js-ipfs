@@ -3,7 +3,7 @@
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { base58btc } from 'multiformats/bases/base58'
 import { CID } from 'multiformats/cid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import * as raw from 'multiformats/codecs/raw'
@@ -15,7 +15,7 @@ import { sha512 } from 'multiformats/hashes/sha2'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testPut (factory, options) {
   const describe = getDescribe(options)

@@ -1,5 +1,5 @@
-import mafmt from 'mafmt'
-import { Multiaddr } from 'multiaddr'
+import { IPFS } from '@multiformats/mafmt'
+import { Multiaddr } from '@multiformats/multiaddr'
 import parseDuration from 'parse-duration'
 
 export default {
@@ -18,6 +18,8 @@ export default {
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { print, ipfs, isDaemon }, timeout }) {
     if (!isDaemon) {
@@ -31,7 +33,7 @@ export default {
     result.forEach((item) => {
       let ma = new Multiaddr(`${item.addr}`)
 
-      if (!mafmt.IPFS.matches(ma)) {
+      if (!IPFS.matches(ma)) {
         ma = ma.encapsulate(`/ipfs/${item.peer}`)
       }
 

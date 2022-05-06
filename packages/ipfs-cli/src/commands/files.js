@@ -16,6 +16,8 @@ export default {
   /**
    * @param {object} argv
    * @param {import('../types').Context} argv.ctx
+   *
+   * @returns {void}
    */
   handler (argv) {
     argv.ctx.print('Type `jsipfs files --help` for more instructions')

@@ -4,11 +4,11 @@ import { modeToString } from './mode-to-string.js'
 import mergeOpts from 'merge-options'
 // @ts-expect-error no types
 import toStream from 'it-to-stream'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import itPeekable from 'it-peekable'
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:core-utils:multipart-request')
+const log = logger('ipfs:core-utils:multipart-request')
 
 /**
  * @typedef {import('ipfs-core-types/src/utils').ImportCandidateStream} ImportCandidateStream
@@ -28,7 +28,7 @@ export async function multipartRequest (source, abortController, headers = {}, b
     try {
       let index = 0
 
-      // @ts-ignore
+      // @ts-expect-error
       for await (const { content, path, mode, mtime } of source) {
         let fileSuffix = ''
         const type = content ? 'file' : 'dir'

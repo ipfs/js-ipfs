@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} QueryOptions
+ * @typedef {object} QueryOptions
  * @property {AbortSignal} [signal]
  * @property {number} [timeout]
  * @property {Set<Transferable>} [transfer]
@@ -40,7 +40,7 @@ export class Query {
   /**
    * Data that will be structure cloned over message channel.
    *
-   * @returns {Object}
+   * @returns {object}
    */
   toJSON () {
     return this.input

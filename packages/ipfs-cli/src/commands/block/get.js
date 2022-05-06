@@ -23,6 +23,8 @@ export default {
    * @param {import('../../types').Context} argv.ctx
    * @param {import('multiformats/cid').CID} argv.key
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, key, timeout }) {
     const { ipfs, print } = ctx

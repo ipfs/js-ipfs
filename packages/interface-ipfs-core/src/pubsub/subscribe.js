@@ -3,27 +3,28 @@
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { nanoid } from 'nanoid'
-import pushable from 'it-pushable'
+import { pushable } from 'it-pushable'
 import all from 'it-all'
 import { waitForPeers, getTopic } from './utils.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import delay from 'delay'
 import { isWebWorker, isNode } from 'ipfs-utils/src/env.js'
-import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
-import first from 'it-first'
 import sinon from 'sinon'
+import defer from 'p-defer'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
+ * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('it-pushable').Pushable<Message>} Pushable
+ * @typedef {import('p-defer').DeferredPromise<Message>} DeferredMessagePromise
  */
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testSubscribe (factory, options) {
-  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -43,17 +44,15 @@ export function testSubscribe (factory, options) {
     /** @type {import('ipfs-core-types/src/root').IDResult} */
     let ipfs2Id
 
-    before(async () => {
-      ipfs1 = (await factory.spawn({ ipfsOptions })).api
+    beforeEach(async () => {
+      ipfs1 = (await factory.spawn()).api
 
       // webworkers are not dialable because webrtc is not available
-      ipfs2 = (await factory.spawn({ type: isWebWorker ? 'js' : undefined, ipfsOptions })).api
+      ipfs2 = (await factory.spawn({ type: isWebWorker ? 'js' : undefined })).api
 
       ipfs1Id = await ipfs1.id()
       ipfs2Id = await ipfs2.id()
-    })
 
-    beforeEach(() => {
       topic = getTopic()
       subscribedTopics = [topic]
     })
@@ -66,28 +65,28 @@ export function testSubscribe (factory, options) {
       }
       subscribedTopics = []
       await delay(100)
-    })
 
-    after(() => factory.clean())
+      await factory.clean()
+    })
 
     describe('single node', () => {
       it('should subscribe to one topic', async () => {
-        const msgStream = pushable()
+        /** @type {import('p-defer').DeferredPromise<Message>} */
+        const deferred = defer()
 
         await ipfs1.pubsub.subscribe(topic, msg => {
-          msgStream.push(msg)
-          msgStream.end()
+          deferred.resolve(msg)
         })
 
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hi'))
 
-        const msg = await first(msgStream)
+        const msg = await deferred.promise
 
         expect(uint8ArrayToString(msg.data)).to.equal('hi')
-        expect(msg).to.have.property('seqno')
-        expect(msg.seqno).to.be.an.instanceof(Uint8Array)
-        expect(msg.topicIDs[0]).to.eq(topic)
-        expect(msg).to.have.property('from', ipfs1Id.id)
+        expect(msg).to.have.property('sequenceNumber')
+        expect(msg.sequenceNumber).to.be.a('BigInt')
+        expect(msg.topic).to.eq(topic)
+        expect(msg.from.toString()).to.equal(ipfs1Id.id.toString())
       })
 
       it('should subscribe to one topic with options', async () => {
@@ -102,26 +101,26 @@ export function testSubscribe (factory, options) {
 
         for await (const msg of msgStream) {
           expect(uint8ArrayToString(msg.data)).to.equal('hi')
-          expect(msg).to.have.property('seqno')
-          expect(msg.seqno).to.be.an.instanceof(Uint8Array)
-          expect(msg.topicIDs[0]).to.eq(topic)
-          expect(msg).to.have.property('from', ipfs1Id.id)
+          expect(msg).to.have.property('sequenceNumber')
+          expect(msg.sequenceNumber).to.be.a('bigint')
+          expect(msg.topic).to.eq(topic)
+          expect(msg.from.toString()).to.equal(ipfs1Id.id.toString())
         }
       })
 
       it('should subscribe to topic multiple times with different handlers', async () => {
-        const msgStream1 = pushable()
-        const msgStream2 = pushable()
+        /** @type {import('p-defer').DeferredPromise<Message>} */
+        const msgStream1 = defer()
+        /** @type {import('p-defer').DeferredPromise<Message>} */
+        const msgStream2 = defer()
 
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const handler1 = msg => {
-          msgStream1.push(msg)
-          msgStream1.end()
+          msgStream1.resolve(msg)
         }
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const handler2 = msg => {
-          msgStream2.push(msg)
-          msgStream2.end()
+          msgStream2.resolve(msg)
         }
 
         await Promise.all([
@@ -131,10 +130,10 @@ export function testSubscribe (factory, options) {
 
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hello'))
 
-        const [handler1Msg] = await all(msgStream1)
+        const handler1Msg = await msgStream1.promise
         expect(uint8ArrayToString(handler1Msg.data)).to.eql('hello')
 
-        const [handler2Msg] = await all(msgStream2)
+        const handler2Msg = await msgStream2.promise
         expect(uint8ArrayToString(handler2Msg.data)).to.eql('hello')
 
         await ipfs1.pubsub.unsubscribe(topic, handler1)
@@ -167,7 +166,7 @@ export function testSubscribe (factory, options) {
     })
 
     describe('multiple connected nodes', () => {
-      before(() => {
+      beforeEach(() => {
         if (ipfs1.pubsub.setMaxListeners) {
           ipfs1.pubsub.setMaxListeners(100)
         }
@@ -188,7 +187,7 @@ export function testSubscribe (factory, options) {
 
       it('should receive messages from a different node with floodsub', async function () {
         if (!isNode) {
-          // @ts-ignore this is mocha
+          // @ts-expect-error this is mocha
           return this.skip()
         }
         const expectedString = 'should receive messages from a different node with floodsub'
@@ -216,18 +215,18 @@ export function testSubscribe (factory, options) {
         const ipfs2Id = await ipfs2.id()
         await ipfs1.swarm.connect(ipfs2Id.addresses[0])
 
-        const msgStream1 = pushable()
-        const msgStream2 = pushable()
+        /** @type {DeferredMessagePromise} */
+        const msgStream1 = defer()
+        /** @type {DeferredMessagePromise} */
+        const msgStream2 = defer()
 
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub1 = msg => {
-          msgStream1.push(msg)
-          msgStream1.end()
+          msgStream1.resolve(msg)
         }
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub2 = msg => {
-          msgStream2.push(msg)
-          msgStream2.end()
+          msgStream2.resolve(msg)
         }
 
         const abort1 = new AbortController()
@@ -238,15 +237,17 @@ export function testSubscribe (factory, options) {
         ])
 
         await waitForPeers(ipfs2, topic, [ipfs1Id.id], 30000)
+
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
-        const [sub1Msg] = await all(msgStream1)
+        const sub1Msg = await msgStream1.promise
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
-        expect(sub1Msg.from).to.eql(ipfs2Id.id)
+        expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
-        const [sub2Msg] = await all(msgStream2)
+        const sub2Msg = await msgStream2.promise
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
-        expect(sub2Msg.from).to.eql(ipfs2Id.id)
+        expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
+
         abort1.abort()
         abort2.abort()
       })
@@ -254,18 +255,18 @@ export function testSubscribe (factory, options) {
       it('should receive messages from a different node', async () => {
         const expectedString = 'hello from the other side'
 
-        const msgStream1 = pushable()
-        const msgStream2 = pushable()
+        /** @type {DeferredMessagePromise} */
+        const msgStream1 = defer()
+        /** @type {DeferredMessagePromise} */
+        const msgStream2 = defer()
 
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub1 = msg => {
-          msgStream1.push(msg)
-          msgStream1.end()
+          msgStream1.resolve(msg)
         }
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub2 = msg => {
-          msgStream2.push(msg)
-          msgStream2.end()
+          msgStream2.resolve(msg)
         }
 
         await Promise.all([
@@ -277,31 +278,31 @@ export function testSubscribe (factory, options) {
         await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
-        const [sub1Msg] = await all(msgStream1)
+        const sub1Msg = await msgStream1.promise
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
-        expect(sub1Msg.from).to.eql(ipfs2Id.id)
+        expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
-        const [sub2Msg] = await all(msgStream2)
+        const sub2Msg = await msgStream2.promise
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
-        expect(sub2Msg.from).to.eql(ipfs2Id.id)
+        expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })
 
       it('should round trip a non-utf8 binary buffer', async () => {
         const expectedHex = 'a36161636179656162830103056164a16466666666f4'
         const buffer = uint8ArrayFromString(expectedHex, 'base16')
 
-        const msgStream1 = pushable()
-        const msgStream2 = pushable()
+        /** @type {DeferredMessagePromise} */
+        const msgStream1 = defer()
+        /** @type {DeferredMessagePromise} */
+        const msgStream2 = defer()
 
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub1 = msg => {
-          msgStream1.push(msg)
-          msgStream1.end()
+          msgStream1.resolve(msg)
         }
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub2 = msg => {
-          msgStream2.push(msg)
-          msgStream2.end()
+          msgStream2.resolve(msg)
         }
 
         await Promise.all([
@@ -313,13 +314,13 @@ export function testSubscribe (factory, options) {
         await delay(5000) // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
         await ipfs2.pubsub.publish(topic, buffer)
 
-        const [sub1Msg] = await all(msgStream1)
+        const sub1Msg = await msgStream1.promise
         expect(uint8ArrayToString(sub1Msg.data, 'base16')).to.be.eql(expectedHex)
-        expect(sub1Msg.from).to.eql(ipfs2Id.id)
+        expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
-        const [sub2Msg] = await all(msgStream2)
+        const sub2Msg = await msgStream2.promise
         expect(uint8ArrayToString(sub2Msg.data, 'base16')).to.be.eql(expectedHex)
-        expect(sub2Msg.from).to.eql(ipfs2Id.id)
+        expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })
 
       it('should receive multiple messages', async () => {
@@ -329,7 +330,7 @@ export function testSubscribe (factory, options) {
         const msgStream2 = pushable()
 
         let sub1Called = 0
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub1 = msg => {
           msgStream1.push(msg)
           sub1Called++
@@ -337,7 +338,7 @@ export function testSubscribe (factory, options) {
         }
 
         let sub2Called = 0
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub2 = msg => {
           msgStream2.push(msg)
           sub2Called++
@@ -357,18 +358,18 @@ export function testSubscribe (factory, options) {
         }
 
         const sub1Msgs = await all(msgStream1)
-        sub1Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2Id.id))
+        sub1Msgs.forEach(msg => expect(msg.from.toString()).to.eql(ipfs2Id.id.toString()))
         const inbox1 = sub1Msgs.map(msg => uint8ArrayToString(msg.data))
         expect(inbox1.sort()).to.eql(outbox.sort())
 
         const sub2Msgs = await all(msgStream2)
-        sub2Msgs.forEach(msg => expect(msg.from).to.eql(ipfs2Id.id))
+        sub2Msgs.forEach(msg => expect(msg.from.toString()).to.eql(ipfs2Id.id.toString()))
         const inbox2 = sub2Msgs.map(msg => uint8ArrayToString(msg.data))
         expect(inbox2.sort()).to.eql(outbox.sort())
       })
 
       it('should send/receive 100 messages', async function () {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         this.timeout(2 * 60 * 1000)
 
         const msgBase = 'msg - '
@@ -376,7 +377,7 @@ export function testSubscribe (factory, options) {
         const msgStream = pushable()
 
         let subCalled = 0
-        /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+        /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
         const sub = msg => {
           msgStream.push(msg)
           subCalled++
@@ -405,13 +406,12 @@ export function testSubscribe (factory, options) {
         console.log(`Send/Receive 100 messages took: ${duration} ms, ${opsPerSec} ops / s`)
 
         msgs.forEach(msg => {
-          expect(msg.from).to.eql(ipfs2Id.id)
+          expect(msg.from.toString()).to.eql(ipfs2Id.id.toString())
           expect(uint8ArrayToString(msg.data).startsWith(msgBase)).to.be.true()
         })
       })
 
       it('should receive messages from a different node on lots of topics', async () => {
-        // @ts-ignore this is mocha
         this.timeout(5 * 60 * 1000)
 
         const numTopics = 20
@@ -431,12 +431,12 @@ export function testSubscribe (factory, options) {
             msgStream2
           })
 
-          /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+          /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
           const sub1 = msg => {
             msgStream1.push(msg)
             msgStream1.end()
           }
-          /** @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn} */
+          /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
           const sub2 = msg => {
             msgStream2.push(msg)
             msgStream2.end()
@@ -462,16 +462,15 @@ export function testSubscribe (factory, options) {
         for (let i = 0; i < numTopics; i++) {
           const [sub1Msg] = await all(msgStreams[i].msgStream1)
           expect(uint8ArrayToString(sub1Msg.data)).to.equal(expectedStrings[i])
-          expect(sub1Msg.from).to.eql(ipfs2Id.id)
+          expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
           const [sub2Msg] = await all(msgStreams[i].msgStream2)
           expect(uint8ArrayToString(sub2Msg.data)).to.equal(expectedStrings[i])
-          expect(sub2Msg.from).to.eql(ipfs2Id.id)
+          expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
         }
       })
 
       it('should unsubscribe multiple handlers', async () => {
-        // @ts-ignore this is mocha
         this.timeout(2 * 60 * 1000)
 
         const topic = `topic-${Math.random()}`
@@ -508,7 +507,6 @@ export function testSubscribe (factory, options) {
       })
 
       it('should unsubscribe individual handlers', async () => {
-        // @ts-ignore this is mocha
         this.timeout(2 * 60 * 1000)
 
         const topic = `topic-${Math.random()}`

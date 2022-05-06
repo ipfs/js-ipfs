@@ -5,7 +5,7 @@ import { Readable } from 'readable-stream'
 import { supportsFileReader } from 'ipfs-utils/src/supports.js'
 import urlSource from 'ipfs-utils/src/files/url-source.js'
 import { isNode } from 'ipfs-utils/src/env.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from './utils/mocha.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import last from 'it-last'
@@ -23,7 +23,7 @@ const redirectUrl = (/** @type {string} */ url) => `${process.env.ECHO_SERVER}/r
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testAdd (factory, options) {
   const describe = getDescribe(options)
@@ -73,7 +73,7 @@ export function testAdd (factory, options) {
 
     it('should add a File', async function () {
       if (!supportsFileReader) {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         return this.skip('skip in node')
       }
 
@@ -83,7 +83,7 @@ export function testAdd (factory, options) {
 
     it('should add a File as tuple', async function () {
       if (!supportsFileReader) {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         return this.skip('skip in node')
       }
 
@@ -212,7 +212,7 @@ export function testAdd (factory, options) {
 
     it('should add readable stream', async function () {
       if (!isNode) {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         this.skip()
       }
       const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
@@ -264,7 +264,7 @@ export function testAdd (factory, options) {
     })
 
     it('should add with only-hash=true', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const content = String(Math.random() + Date.now())
 
@@ -292,21 +292,21 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mode as string', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mode = '0777'
       await testMode(mode, parseInt(mode, 8))
     })
 
     it('should add with mode as number', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mode = parseInt('0777', 8)
       await testMode(mode, mode)
     })
 
     it('should add with mtime as Date', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = new Date(5000)
       await testMtime(mtime, {
@@ -316,7 +316,7 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mtime as { nsecs, secs }', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = {
         secs: 5,
@@ -326,7 +326,7 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mtime as timespec', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       await testMtime({
         Seconds: 5,
@@ -338,7 +338,7 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mtime as hrtime', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = process.hrtime()
       await testMtime(mtime, {

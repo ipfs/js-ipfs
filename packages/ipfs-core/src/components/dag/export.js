@@ -2,12 +2,12 @@ import { CID } from 'multiformats/cid'
 import { createUnsafe } from 'multiformats/block'
 import { CarWriter } from '@ipld/car/writer'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import * as raw from 'multiformats/codecs/raw'
 import * as json from 'multiformats/codecs/json'
 import { walk } from 'multiformats/traversal'
 
-const log = debug('ipfs:components:dag:import')
+const log = logger('ipfs:components:dag:import')
 
 // blocks that we're OK with not inspecting for links
 /** @type {number[]} */
@@ -29,7 +29,7 @@ const NO_LINKS_CODECS = [
  */
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {IPFSRepo} config.repo
  * @param {Preload} config.preload
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs

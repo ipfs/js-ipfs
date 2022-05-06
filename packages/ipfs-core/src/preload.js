@@ -1,17 +1,12 @@
 
 // @ts-expect-error no types
 import toUri from 'multiaddr-to-uri'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import shuffle from 'array-shuffle'
 import { preload } from 'ipfs-core-config/preload'
-/** @type {typeof import('hashlru').default} */
-// @ts-ignore - hashlru has incorrect typedefs
 import hashlru from 'hashlru'
 
-const log = Object.assign(
-  debug('ipfs:preload'),
-  { error: debug('ipfs:preload:error') }
-)
+const log = logger('ipfs:preload')
 
 /**
  * @param {import('./types').PreloadOptions} [options]

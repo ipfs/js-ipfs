@@ -1,6 +1,6 @@
 import * as dagPB from '@ipld/dag-pb'
 import { CID } from 'multiformats/cid'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { UnixFS } from 'ipfs-unixfs'
 import { DirSharded } from './dir-sharded.js'
 import {
@@ -14,7 +14,7 @@ import {
 import errCode from 'err-code'
 import last from 'it-last'
 
-const log = debug('ipfs:mfs:core:utils:add-link')
+const log = logger('ipfs:mfs:core:utils:add-link')
 
 /**
  * @typedef {import('ipfs-unixfs').Mtime} Mtime

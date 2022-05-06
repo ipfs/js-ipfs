@@ -1,8 +1,8 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
- * @param {import('libp2p/src/keychain')} config.keychain
+ * @param {object} config
+ * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
  */
 export function createExport ({ keychain }) {
   /**

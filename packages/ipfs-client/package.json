@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "aegir build",
-    "lint": "aegir ts -p check && aegir lint",
+    "lint": "aegir lint",
     "clean": "rimraf ./dist",
     "dep-check": "aegir dep-check -i aegir -i rimraf"
   },
@@ -45,7 +45,7 @@
     "merge-options": "^3.0.4"
   },
   "devDependencies": {
-    "aegir": "^36.0.1",
+    "aegir": "^37.0.11",
     "rimraf": "^3.0.2"
   }
 }

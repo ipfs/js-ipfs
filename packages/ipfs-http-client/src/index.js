@@ -143,6 +143,6 @@ export function create (options = {}) {
 }
 
 export { CID } from 'multiformats/cid'
-export { Multiaddr as multiaddr } from 'multiaddr'
+export { Multiaddr as multiaddr } from '@multiformats/multiaddr'
 export { default as urlSource } from 'ipfs-utils/src/files/url-source.js'
 export const globSource = globSourceImport

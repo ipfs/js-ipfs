@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import PeerId from 'peer-id'
+import { peerIdFromString, peerIdFromKeys } from '@libp2p/peer-id'
 import { isNode } from 'ipfs-utils/src/env.js'
 import * as ipns from 'ipns'
 import delay from 'delay'
@@ -10,6 +10,7 @@ import last from 'it-last'
 import waitFor from '../utils/wait-for.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { ipnsValidator } from 'ipns/validator'
 
 const namespace = '/record/'
 const ipfsRef = '/ipfs/QmPFVLPmp9zv5Z5KUqLhe2EivAGccQW2r7M7jhVJGLZoZU'
@@ -24,11 +25,13 @@ const daemonsOptions = {
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
+ * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interfaces/events').EventHandler<Message>} EventHandler
  */
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testPubsub (factory, options) {
   const describe = getDescribe(options)
@@ -68,41 +71,25 @@ export function testPubsub (factory, options) {
       idB = ids[1]
 
       await nodeA.swarm.connect(idB.addresses[0])
+
+      await waitFor(async () => {
+        const res = await nodeB.swarm.peers()
+
+        return res.map(p => p.peer.toString()).includes(idA.id.toString())
+      }, { name: 'node A dialed node B' })
     })
 
     after(() => factory.clean())
 
     it('should publish and then resolve correctly', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(80 * 1000)
 
-      let subscribed = false
+      const routingKey = ipns.peerIdToRoutingKey(idA.id)
+      const topic = `${namespace}${uint8ArrayToString(routingKey, 'base64url')}`
 
-      /**
-       * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
-       */
-      function checkMessage () {
-        subscribed = true
-      }
-
-      const alreadySubscribed = () => {
-        return subscribed === true
-      }
-
-      const keys = ipns.getIdKeys(uint8ArrayFromString(idA.id, 'base58btc'))
-      const topic = `${namespace}${uint8ArrayToString(keys.routingKey.uint8Array(), 'base64url')}`
-
-      await expect(last(nodeB.name.resolve(idA.id)))
-        .to.eventually.be.rejected()
-        .with.property('message').that.matches(/not found/)
-
-      await waitFor(async () => {
-        const res = await nodeA.pubsub.peers(topic)
-        return Boolean(res && res.length)
-      }, { name: `node A to subscribe to ${topic}` })
-      await nodeB.pubsub.subscribe(topic, checkMessage)
+      await nodeB.pubsub.subscribe(topic, () => {})
       await nodeA.name.publish(ipfsRef, { resolve: false })
-      await waitFor(alreadySubscribed)
       await delay(1000) // guarantee record is written
 
       const res = await last(nodeB.name.resolve(idA.id))
@@ -111,7 +98,7 @@ export function testPubsub (factory, options) {
     })
 
     it('should self resolve, publish and then resolve correctly', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(6000)
       const emptyDirCid = '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
       const { path } = await nodeA.add(uint8ArrayFromString('pubsub records'))
@@ -119,13 +106,9 @@ export function testPubsub (factory, options) {
       const resolvesEmpty = await last(nodeB.name.resolve(idB.id))
       expect(resolvesEmpty).to.be.eq(emptyDirCid)
 
-      await expect(last(nodeA.name.resolve(idB.id)))
-        .to.eventually.be.rejected()
-        .with.property('message').that.matches(/not found/)
-
       const publish = await nodeB.name.publish(path)
       expect(publish).to.be.eql({
-        name: idB.id,
+        name: idB.id.toString(),
         value: `/ipfs/${path}`
       })
 
@@ -137,20 +120,20 @@ export function testPubsub (factory, options) {
     })
 
     it('should handle event on publish correctly', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(80 * 1000)
 
       const testAccountName = 'test-account'
 
       /**
-       * @type {import('ipfs-core-types/src/pubsub').Message}
+       * @type {import('@libp2p/interfaces/pubsub').Message}
        */
       let publishedMessage
 
       /**
-       * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
+       * @type {EventHandler}
        */
-      function checkMessage (msg) {
+      const checkMessage = (msg) => {
         publishedMessage = msg
       }
 
@@ -165,14 +148,14 @@ export function testPubsub (factory, options) {
         'ipns-base': 'b58mh'
       })
 
-      const keys = ipns.getIdKeys(uint8ArrayFromString(testAccount.id, 'base58btc'))
-      const topic = `${namespace}${uint8ArrayToString(keys.routingKey.uint8Array(), 'base64url')}`
+      const routingKey = ipns.peerIdToRoutingKey(peerIdFromString(testAccount.id))
+      const topic = `${namespace}${uint8ArrayToString(routingKey, 'base64url')}`
 
       await nodeB.pubsub.subscribe(topic, checkMessage)
       await nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName })
       await waitFor(alreadySubscribed)
 
-      // @ts-ignore publishedMessage is set in handler
+      // @ts-expect-error publishedMessage is set in handler
       if (!publishedMessage) {
         throw new Error('Pubsub handler not invoked')
       }
@@ -183,17 +166,17 @@ export function testPubsub (factory, options) {
         throw new Error('No public key found in message data')
       }
 
-      const messageKey = await PeerId.createFromB58String(publishedMessage.from)
-      const pubKeyPeerId = await PeerId.createFromPubKey(publishedMessageData.pubKey)
+      const messageKey = publishedMessage.from
+      const pubKeyPeerId = await peerIdFromKeys(publishedMessageData.pubKey)
 
-      expect(pubKeyPeerId.toB58String()).not.to.equal(messageKey.toB58String())
-      expect(pubKeyPeerId.toB58String()).to.equal(testAccount.id)
-      expect(publishedMessage.from).to.equal(idA.id)
-      expect(messageKey.toB58String()).to.equal(idA.id)
+      expect(pubKeyPeerId.toString()).not.to.equal(messageKey.toString())
+      expect(pubKeyPeerId.toString()).to.equal(testAccount.id)
+      expect(publishedMessage.from.toString()).to.equal(idA.id.toString())
+      expect(messageKey.toString()).to.equal(idA.id.toString())
       expect(uint8ArrayToString(publishedMessageData.value)).to.equal(ipfsRef)
 
       // Verify the signature
-      await ipns.validate(pubKeyPeerId.pubKey, publishedMessageData)
+      await ipnsValidator(ipns.peerIdToRoutingKey(pubKeyPeerId), publishedMessage.data)
     })
   })
 }

@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { formatMode } from '../../src/files/format-mode.js'
 
 describe('format-mode', function () {

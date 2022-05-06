@@ -27,6 +27,8 @@ export default {
    * @param {string} argv.domain
    * @param {boolean} argv.recursive
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, domain, recursive, timeout }) {
     const path = await ipfs.dns(domain, { recursive, timeout })

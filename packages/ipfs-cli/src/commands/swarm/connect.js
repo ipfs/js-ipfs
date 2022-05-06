@@ -22,8 +22,10 @@ export default {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiaddr').Multiaddr} argv.address
+   * @param {import('@multiformats/multiaddr').Multiaddr} argv.address
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, isDaemon, print }, address, timeout }) {
     if (!isDaemon) {

@@ -1,16 +1,14 @@
-import debug from 'debug'
-import set from 'just-safe-set'
-// @ts-expect-error - no types
-import WebRTCStar from 'libp2p-webrtc-star'
+import { logger } from '@libp2p/logger'
+import { WebRTCStar } from '@libp2p/webrtc-star'
 import { create } from 'ipfs-core'
 import { HttpApi } from 'ipfs-http-server'
 import { HttpGateway } from 'ipfs-http-gateway'
 import { createServer as gRPCServer } from 'ipfs-grpc-server'
 import { isElectron } from 'ipfs-utils/src/env.js'
 import prometheusClient from 'prom-client'
-import Libp2p from 'libp2p'
+import { createLibp2p } from 'libp2p'
 
-const log = debug('ipfs:daemon')
+const log = logger('ipfs:daemon')
 
 export class Daemon {
   /**
@@ -98,9 +96,14 @@ async function getLibp2p ({ libp2pOptions }) {
 
   if (wrtc || electronWebRTC) {
     log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
-    set(libp2pOptions, 'config.transport.WebRTCStar.wrtc', wrtc || electronWebRTC)
-    libp2pOptions.modules.transport.push(WebRTCStar)
+
+    const transport = new WebRTCStar({
+      wrtc: wrtc ?? electronWebRTC
+    })
+
+    libp2pOptions.transports = [...libp2pOptions.transports ?? [], transport]
+    libp2pOptions.peerDiscovery = [...libp2pOptions.peerDiscovery ?? [], transport.discovery]
   }
 
-  return Libp2p.create(libp2pOptions)
+  return createLibp2p(libp2pOptions)
 }

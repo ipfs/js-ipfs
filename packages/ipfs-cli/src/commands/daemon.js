@@ -4,10 +4,10 @@ import fs from 'fs'
 import toUri from 'multiaddr-to-uri'
 import { ipfsPathHelp } from '../utils.js'
 import { isTest } from 'ipfs-utils/src/env.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { Daemon } from 'ipfs-daemon'
 
-const log = debug('ipfs:cli:daemon')
+const log = logger('ipfs:cli:daemon')
 
 export default {
   command: 'daemon',
@@ -62,6 +62,8 @@ export default {
    * @param {boolean} argv.silent
    * @param {boolean} argv.migrate
    * @param {string} argv.pass
+   *
+   * @returns {Promise<void>}
    */
   async handler (argv) {
     const { print, repoPath } = argv.ctx
@@ -109,7 +111,6 @@ export default {
         })
       }
 
-      // @ts-ignore - _httpGateway is possibly undefined
       if (daemon._grpcServer && daemon._grpcServer) {
         print(`gRPC listening on ${daemon._grpcServer.info.ma}`)
       }

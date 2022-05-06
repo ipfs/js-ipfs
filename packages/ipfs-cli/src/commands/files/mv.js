@@ -57,8 +57,10 @@ export default {
    * @param {boolean} argv.flush
    * @param {number} argv.shardSplitThreshold
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
-  handler ({
+  async handler ({
     ctx: { ipfs },
     source,
     dest,
@@ -69,7 +71,7 @@ export default {
     shardSplitThreshold,
     timeout
   }) {
-    return ipfs.files.mv(source, dest, {
+    await ipfs.files.mv(source, dest, {
       parents,
       cidVersion,
       hashAlg,

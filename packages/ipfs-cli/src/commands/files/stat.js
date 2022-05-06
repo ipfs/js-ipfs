@@ -64,6 +64,8 @@ Mtime: <mtime>`,
    * @param {boolean} argv.withLocal
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({
     ctx: { ipfs, print },

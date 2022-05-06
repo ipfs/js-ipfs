@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { fixtures } from './utils/index.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from './utils/mocha.js'
 import all from 'it-all'
 import { importer } from 'ipfs-unixfs-importer'
@@ -16,7 +16,7 @@ import blockstore from './utils/blockstore-adapter.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testRefsLocal (factory, options) {
   const describe = getDescribe(options)

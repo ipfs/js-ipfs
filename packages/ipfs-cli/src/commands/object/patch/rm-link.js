@@ -29,6 +29,8 @@ export default {
    * @param {string} argv.link
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, root, link, cidBase, timeout }) {
     const cid = await ipfs.object.patch.rmLink(root, link, {

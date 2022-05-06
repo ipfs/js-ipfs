@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expectIsBandwidth } from './utils.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import last from 'it-last'
 import all from 'it-all'
@@ -12,7 +12,7 @@ import all from 'it-all'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testBw (factory, options) {
   const describe = getDescribe(options)

@@ -22,6 +22,8 @@ export default {
    * @param {import('../../types').Context} argv.ctx
    * @param {boolean} [argv.prefix]
    * @param {boolean} [argv.numeric]
+   *
+   * @returns {void}
    */
   handler ({ ctx: { ipfs, print }, prefix, numeric }) {
     for (const base of ipfs.bases.listBases()) {

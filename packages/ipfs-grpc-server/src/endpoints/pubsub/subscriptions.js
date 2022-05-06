@@ -1,7 +1,7 @@
-
 /**
+ * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
  * @typedef {object} Subscription
- * @property {import('ipfs-core-types/src/pubsub').MessageHandlerFn} onMessage
+ * @property {import('@libp2p/interfaces/events').EventHandler<Message>} onMessage
  * @property {() => void} onUnsubscribe
  */
 

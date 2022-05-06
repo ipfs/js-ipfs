@@ -1,8 +1,8 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { loadMfsRoot } from '../files/utils/with-mfs-root.js'
 
-const log = debug('ipfs:repo:gc')
+const log = logger('ipfs:repo:gc')
 
 /**
  * @typedef {import('ipfs-core-types/src/pin').API} PinAPI
@@ -16,7 +16,7 @@ const log = debug('ipfs:repo:gc')
 /**
  * Perform mark and sweep garbage collection
  *
- * @param {Object} config
+ * @param {object} config
  * @param {IPFSRepo} config.repo
  * @param {Multihashes} config.hashers
  */

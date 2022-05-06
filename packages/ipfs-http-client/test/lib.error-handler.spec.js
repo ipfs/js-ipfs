@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { throwsAsync } from './utils/throws-async.js'
 import { errorHandler, HTTPError } from '../src/lib/core.js'
 

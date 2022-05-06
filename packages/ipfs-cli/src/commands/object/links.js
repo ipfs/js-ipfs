@@ -31,6 +31,8 @@ export default {
    * @param {import('multiformats/cid').CID} argv.key
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, key, cidBase, timeout }) {
     const links = await ipfs.object.links(key, { timeout })

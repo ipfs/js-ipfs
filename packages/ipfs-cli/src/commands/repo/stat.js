@@ -29,6 +29,8 @@ export default {
    * @param {boolean} argv.human
    * @param {boolean} argv.sizeOnly
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, human, sizeOnly, timeout }) {
     const stats = await ipfs.repo.stat({

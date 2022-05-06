@@ -31,6 +31,8 @@ export default {
    * @param {string} argv.data
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print, getStdin }, root, data, cidBase, timeout }) {
     let buf

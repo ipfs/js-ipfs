@@ -1,4 +1,4 @@
-import pushable from 'it-pushable'
+import { pushable } from 'it-pushable'
 import errCode from 'err-code'
 import { toUrlString } from 'ipfs-core-utils/to-url-string'
 import { toHeaders } from './to-headers.js'

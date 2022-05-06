@@ -1,6 +1,6 @@
 /* eslint-env mocha */
-import { expect } from 'aegir/utils/chai.js'
-import loadFixture from 'aegir/utils/fixtures.js'
+import { expect } from 'aegir/chai'
+import loadFixture from 'aegir/fixtures'
 import { createFactory } from 'ipfsd-ctl'
 import getStream from 'get-stream'
 import all from 'it-all'

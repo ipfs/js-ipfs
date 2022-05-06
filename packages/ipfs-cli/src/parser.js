@@ -14,8 +14,7 @@ const args = yargs(process.argv.slice(2))
   })
   .option('pass', {
     desc: 'Pass phrase for the keys',
-    type: 'string',
-    default: ''
+    type: 'string'
   })
   .option('migrate', {
     desc: 'Enable/disable automatic repo migrations',
@@ -29,7 +28,7 @@ const args = yargs(process.argv.slice(2))
   .epilog(ipfsPathHelp)
   .demandCommand(1, 'Please specify a command')
   .showHelpOnFail(false)
-  // @ts-ignore types are wrong
+  // @ts-expect-error types are wrong
   .command(commandList)
   .help()
   .strict()

@@ -23,6 +23,8 @@ export default {
    * @param {'unixfs-dir'} argv.template
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, template, cidBase, timeout }) {
     const cid = await ipfs.object.new({

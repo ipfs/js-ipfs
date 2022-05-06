@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import delay from 'delay'
 import { create as httpClient } from '../../src/index.js'
 import http, { Agent } from 'http'

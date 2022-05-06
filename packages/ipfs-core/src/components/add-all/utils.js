@@ -1,9 +1,9 @@
 /**
- * @typedef {Object} FixedChunkerOptions
+ * @typedef {object} FixedChunkerOptions
  * @property {'fixed'} chunker
  * @property {number} [maxChunkSize]
  *
- * @typedef {Object} RabinChunkerOptions
+ * @typedef {object} RabinChunkerOptions
  * @property {'rabin'} chunker
  * @property {number} avgChunkSize
  * @property {number} [minChunkSize]
@@ -48,7 +48,7 @@ export const parseChunkerString = (chunker) => {
 }
 
 /**
- * @typedef {Object} RabinChunkerSettings
+ * @typedef {object} RabinChunkerSettings
  * @property {number} avgChunkSize
  * @property {number} [minChunkSize]
  * @property {number} [maxChunkSize]

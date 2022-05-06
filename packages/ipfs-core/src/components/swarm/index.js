@@ -6,7 +6,7 @@ import { createPeers } from './peers.js'
 
 export class SwarmAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('../../types').NetworkService} config.network
    */
   constructor ({ network }) {

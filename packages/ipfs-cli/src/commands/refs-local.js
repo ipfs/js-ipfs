@@ -26,6 +26,8 @@ export default {
    * @param {import('../types').Context} argv.ctx
    * @param {boolean} argv.multihash
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, timeout, multihash }) {
     for await (const { ref, err } of ipfs.refs.local({

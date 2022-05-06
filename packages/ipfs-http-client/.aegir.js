@@ -1,10 +1,8 @@
-'use strict'
-
-const { createServer } = require('ipfsd-ctl')
-const getPort = require('aegir/utils/get-port')
+import { createServer } from 'ipfsd-ctl'
+import getPort from 'aegir/get-port'
 
 /** @type {import('aegir').PartialOptions} */
-module.exports = {
+export default {
   build: {
     bundlesizeMax: '66KB'
   },
@@ -17,7 +15,7 @@ module.exports = {
       }, {
         type: 'go',
         ipfsHttpModule: await import('./src/index.js'),
-        ipfsBin: require('go-ipfs').path()
+        ipfsBin: (await import('go-ipfs')).default.path()
       })
 
       await server.start()

@@ -44,20 +44,14 @@ export function create (opts = { url: '' }) {
   normaliseUrls(options)
 
   const client = {
-    // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
     addAll: grpcAddAll(grpcWeb.grpc, service.Root.add, options),
-    // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
     id: grpcId(grpcWeb.grpc, service.Root.id, options),
     files: {
-      // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
       ls: grpcMfsLs(grpcWeb.grpc, service.MFS.ls, options),
-      // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
       write: grpcMfsWrite(grpcWeb.grpc, service.MFS.write, options)
     },
     pubsub: {
-      // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
       subscribe: grpcPubsubSubscribe(grpcWeb.grpc, service.PubSub.subscribe, options),
-      // @ts-ignore - TODO: fix after https://github.com/ipfs/js-ipfs/issues/3594
       unsubscribe: grpcPubsubUnsubscribe(grpcWeb.grpc, service.PubSub.unsubscribe, options)
     }
   }

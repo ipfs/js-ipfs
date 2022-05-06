@@ -1,11 +1,11 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { profiles } from './profiles.js'
 
-const log = debug('ipfs:core:config')
+const log = logger('ipfs:core:config')
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 export function createConfig ({ repo }) {
@@ -24,7 +24,6 @@ export function createConfig ({ repo }) {
    * @type {import('ipfs-core-types/src/config').API<{}>["getAll"]}
    */
   async function getAll (options = {}) { // eslint-disable-line require-await
-    // @ts-ignore TODO: move config typedefs into ipfs-repo
     return repo.config.getAll(options)
   }
 
@@ -36,7 +35,6 @@ export function createConfig ({ repo }) {
       return Promise.reject(new Error('key argument is required'))
     }
 
-    // @ts-ignore TODO: move config typedefs into ipfs-repo
     return repo.config.get(key, options)
   }
 
@@ -76,11 +74,10 @@ export function createConfig ({ repo }) {
       }
 
       // Scrub private key from output
-      // @ts-ignore `oldCfg.Identity` maybe undefined
+      // @ts-expect-error `oldCfg.Identity` maybe undefined
       delete oldCfg.Identity.PrivKey
       delete newCfg.Identity.PrivKey
 
-      // @ts-ignore TODO: move config typedefs into ipfs-repo
       return { original: oldCfg, updated: newCfg }
     } catch (/** @type {any} */ err) {
       log(err)

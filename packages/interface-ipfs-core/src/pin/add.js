@@ -2,7 +2,7 @@
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { fixtures, clearPins, expectPinned, expectNotPinned, pinTypes } from './utils.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import drain from 'it-drain'
@@ -13,7 +13,7 @@ import drain from 'it-drain'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testAdd (factory, options) {
   const describe = getDescribe(options)
@@ -102,9 +102,9 @@ export function testAdd (factory, options) {
     })
 
     it('should fail to pin a hash not in datastore', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(3 * 1000)
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(5 * 1000)
       const falseHash = `${`${fixtures.directory.cid}`.slice(0, -2)}ss`
 
@@ -113,9 +113,9 @@ export function testAdd (factory, options) {
     })
 
     it('needs all children in datastore to pin recursively', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(3 * 1000)
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(5 * 1000)
       await all(ipfs.block.rm(fixtures.directory.files[0].cid))
 

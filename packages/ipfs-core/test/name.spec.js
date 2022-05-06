@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import sinon from 'sinon'
 import delay from 'delay'
-import PeerId from 'peer-id'
+import { createEd25519PeerId } from '@libp2p/peer-id-factory'
 import errCode from 'err-code'
 import * as ipns from 'ipns'
 import { createRouting } from '../src/ipns/routing/config.js'
@@ -109,7 +109,7 @@ describe('name', function () {
       // @ts-expect-error constructor needs args
       const publisher = new IpnsPublisher()
       const err = new Error('error')
-      const peerId = await PeerId.create()
+      const peerId = await createEd25519PeerId()
 
       sinon.stub(publisher, '_updateOrCreateRecord').rejects(err)
 
@@ -134,7 +134,7 @@ describe('name', function () {
       }
       // @ts-expect-error routing is not complete implementation
       const publisher = new IpnsPublisher(routing, datastore)
-      const peerId = await PeerId.create()
+      const peerId = await createEd25519PeerId()
 
       // @ts-expect-error invalid argument
       await expect(publisher.publish(peerId.privKey, ipfsRef))
@@ -152,7 +152,7 @@ describe('name', function () {
       }
       // @ts-expect-error routing is not complete implementation
       const publisher = new IpnsPublisher(routing, datastore)
-      const peerId = await PeerId.create()
+      const peerId = await createEd25519PeerId()
 
       // @ts-expect-error invalid argument
       await expect(publisher.publish(peerId.privKey, ipfsRef))
@@ -163,9 +163,14 @@ describe('name', function () {
 
   describe('resolver', () => {
     it('should resolve an inlined public key', async () => {
-      const peerId = await PeerId.create({ keyType: 'Ed25519' })
-      const value = `/ipfs/${peerId.toB58String()}`
-      const record = await ipns.create(peerId.privKey, uint8ArrayFromString(value), 1, 10e3)
+      const peerId = await createEd25519PeerId()
+      const value = `/ipfs/${peerId.toString()}`
+
+      if (peerId.privateKey == null) {
+        throw new Error('Private key is missing')
+      }
+
+      const record = await ipns.create(peerId, uint8ArrayFromString(value), 1, 10e3)
 
       const routing = {
         get: sinon.stub().returns(ipns.marshal(record))
@@ -173,7 +178,7 @@ describe('name', function () {
       // @ts-expect-error routing is not complete implementation
       const resolver = new IpnsResolver(routing)
 
-      const resolved = await resolver.resolve(`/ipns/${peerId.toB58String()}`)
+      const resolved = await resolver.resolve(`/ipns/${peerId.toString()}`)
       expect(resolved).to.equal(value)
     })
 
@@ -200,9 +205,9 @@ describe('name', function () {
       }
       // @ts-expect-error routing is not complete implementation
       const resolver = new IpnsResolver(routing)
-      const peerId = await PeerId.create()
+      const peerId = await createEd25519PeerId()
 
-      await expect(resolver.resolve(`/ipns/${peerId.toB58String()}`))
+      await expect(resolver.resolve(`/ipns/${peerId.toString()}`))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_UNEXPECTED_ERROR_GETTING_RECORD')
     })
@@ -213,9 +218,9 @@ describe('name', function () {
       }
       // @ts-expect-error routing is not complete implementation
       const resolver = new IpnsResolver(routing)
-      const peerId = await PeerId.create()
+      const peerId = await createEd25519PeerId()
 
-      await expect(resolver.resolve(`/ipns/${peerId.toB58String()}`))
+      await expect(resolver.resolve(`/ipns/${peerId.toString()}`))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_NO_RECORD_FOUND')
     })
@@ -226,9 +231,9 @@ describe('name', function () {
       }
       // @ts-expect-error routing is not complete implementation
       const resolver = new IpnsResolver(routing)
-      const peerId = await PeerId.create()
+      const peerId = await createEd25519PeerId()
 
-      await expect(resolver.resolve(`/ipns/${peerId.toB58String()}`))
+      await expect(resolver.resolve(`/ipns/${peerId.toString()}`))
         .to.eventually.be.rejected()
         .with.property('code', 'ERR_INVALID_RECORD_RECEIVED')
     })
@@ -268,7 +273,7 @@ describe('name', function () {
     })
 
     it('should use the pubsub datastore if enabled', async () => {
-      const peerId = await PeerId.create()
+      const peerId = await createEd25519PeerId()
 
       const config = createRouting({
         // @ts-expect-error sinon.stub() is not complete implementation

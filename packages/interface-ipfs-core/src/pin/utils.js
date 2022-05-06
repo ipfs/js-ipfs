@@ -1,5 +1,5 @@
-import { expect } from 'aegir/utils/chai.js'
-import loadFixture from 'aegir/utils/fixtures.js'
+import { expect } from 'aegir/chai'
+import loadFixture from 'aegir/fixtures'
 import { CID } from 'multiformats/cid'
 import drain from 'it-drain'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'

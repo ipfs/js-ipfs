@@ -1,9 +1,13 @@
 import delay from 'delay'
 
 /**
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ */
+
+/**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {string} key
- * @param {{ timeout?: number, interval?: number, peerId?: string }} [opts]
+ * @param {{ timeout?: number, interval?: number, peerId?: PeerId }} [opts]
  */
 export async function waitForWantlistKey (ipfs, key, opts = {}) {
   opts.timeout = opts.timeout || 10000
@@ -33,7 +37,7 @@ export async function waitForWantlistKey (ipfs, key, opts = {}) {
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {string} key
- * @param {{ timeout?: number, interval?: number, peerId?: string }} [opts]
+ * @param {{ timeout?: number, interval?: number, peerId?: PeerId }} [opts]
  */
 export async function waitForWantlistKeyToBeRemoved (ipfs, key, opts = {}) {
   opts.timeout = opts.timeout || 10000

@@ -33,6 +33,8 @@ export default {
    * @param {boolean} argv.headers
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, key, headers, cidBase, timeout }) {
     // replace multiple slashes

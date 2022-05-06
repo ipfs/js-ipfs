@@ -1,10 +1,8 @@
 import HTTP from 'ipfs-utils/src/http.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import drain from 'it-drain'
 
-const log = Object.assign(debug('ipfs:preload'), {
-  error: debug('ipfs:preload:error')
-})
+const log = logger('ipfs:preload')
 
 /**
  * @param {string} url
@@ -17,7 +15,7 @@ export async function preload (url, options = {}) {
 
   if (res.body) {
     // Read to completion but do not cache
-    // @ts-ignore
+    // @ts-expect-error
     await drain(res.body)
   }
 }

@@ -33,7 +33,7 @@
     "directory": "dist"
   },
   "scripts": {
-    "lint": "aegir ts -p check && aegir lint",
+    "lint": "aegir lint",
     "clean": "rimraf ./dist",
     "build": "aegir build --no-bundle",
     "pretest": "aegir build --esm-tests",
@@ -63,18 +63,19 @@
   "dependencies": {
     "debug": "^4.3.1",
     "ejs": "^3.1.6",
-    "file-type": "^16.0.0",
+    "file-type": "^17.1.1",
     "filesize": "^8.0.0",
     "it-buffer": "^0.1.1",
     "it-concat": "^2.0.0",
-    "it-reader": "^3.0.0",
+    "it-reader": "^5.0.1",
     "it-to-stream": "^1.0.0",
     "mime-types": "^2.1.30",
     "p-try-each": "^1.0.1"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.0",
-    "aegir": "^36.0.1",
+    "@types/mime-types": "^2.1.1",
+    "aegir": "^37.0.11",
     "get-stream": "^6.0.0",
     "global": "^4.4.0",
     "ipfs-core": "^0.14.2",

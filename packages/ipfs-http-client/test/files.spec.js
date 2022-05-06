@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import * as dagPB from '@ipld/dag-pb'
 import { factory } from './utils/factory.js'
 const f = factory()

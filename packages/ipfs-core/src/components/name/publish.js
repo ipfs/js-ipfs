@@ -1,46 +1,49 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import parseDuration from 'parse-duration'
-import crypto from 'libp2p-crypto'
+import { importKey, unmarshalPrivateKey } from '@libp2p/crypto/keys'
 import errcode from 'err-code'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { OFFLINE_ERROR, normalizePath } from '../../utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { resolvePath } from './utils.js'
+import { peerIdFromKeys } from '@libp2p/peer-id'
 
-const log = Object.assign(debug('ipfs:name:publish'), {
-  error: debug('ipfs:name:publish:error')
-})
+const log = logger('ipfs:name:publish')
 
 /**
  * IPNS - Inter-Planetary Naming System
  *
- * @param {Object} config
+ * @param {object} config
  * @param {import('../ipns').IPNSAPI} config.ipns
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
- * @param {import('peer-id')} config.peerId
+ * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
  * @param {import('ipfs-core-types/src/root').API<{}>["isOnline"]} config.isOnline
- * @param {import('libp2p/src/keychain')} config.keychain
+ * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
  */
 export function createPublish ({ ipns, repo, codecs, peerId, isOnline, keychain }) {
   /**
    * @param {string} keyName
    */
   const lookupKey = async keyName => {
-    if (keyName === 'self') {
-      return peerId.privKey
+    /** @type {import('@libp2p/interfaces/keys').PrivateKey} */
+    let privateKey
+
+    if (keyName === 'self' && peerId.privateKey != null) {
+      privateKey = await unmarshalPrivateKey(peerId.privateKey)
+    } else {
+      try {
+        // We're exporting and immediately importing the key, so we can just use a throw away password
+        const pem = await keychain.exportKey(keyName, 'temp')
+        privateKey = await importKey(pem, 'temp')
+      } catch (/** @type {any} */ err) {
+        log.error(err)
+        throw errcode(err, 'ERR_CANNOT_GET_KEY')
+      }
     }
 
-    try {
-      // We're exporting and immediately importing the key, so we can just use a throw away password
-      const pem = await keychain.exportKey(keyName, 'temp')
-      const privateKey = await crypto.keys.import(pem, 'temp')
-      return privateKey
-    } catch (/** @type {any} */ err) {
-      log.error(err)
-      throw errcode(err, 'ERR_CANNOT_GET_KEY')
-    }
+    return peerIdFromKeys(privateKey.public.bytes, privateKey.bytes)
   }
 
   /**

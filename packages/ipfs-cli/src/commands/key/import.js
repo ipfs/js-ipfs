@@ -35,6 +35,8 @@ export default {
    * @param {string} argv.input
    * @param {string} argv.passin
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, name, input, passin, timeout }) {
     const key = await ipfs.key.import(name, input, passin, {

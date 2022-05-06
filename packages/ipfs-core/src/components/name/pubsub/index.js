@@ -4,7 +4,7 @@ import { createSubs } from './subs.js'
 
 export class PubSubAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('../../ipns').IPNSAPI} config.ipns
    * @param {import('../../../types').Options} config.options
    */

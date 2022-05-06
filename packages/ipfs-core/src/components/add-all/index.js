@@ -14,7 +14,13 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
  */
 
 /**
- * @typedef {Object} Context
+ * @template T
+ *
+ * @typedef {import('it-stream-types').Source<T>} Source<T>
+ */
+
+/**
+ * @typedef {object} Context
  * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../../types').Preload} preload
  * @property {Multihashes} hashers
@@ -94,7 +100,7 @@ export function createAddAll ({ repo, preload, hashers, options }) {
     const iterator = pipe(
       normaliseInput(source),
       /**
-       * @param {AsyncIterable<import('ipfs-unixfs-importer').ImportCandidate>} source
+       * @param {Source<import('ipfs-unixfs-importer').ImportCandidate>} source
        */
       source => importer(source, repo.blocks, {
         ...opts,
@@ -110,10 +116,15 @@ export function createAddAll ({ repo, preload, hashers, options }) {
 
     try {
       for await (const added of iterator) {
-        // do not keep file totals around forever
-        delete totals[added.path]
+        const path = added.path ?? added.cid.toString()
 
-        yield added
+        // do not keep file totals around forever
+        delete totals[path]
+
+        yield {
+          ...added,
+          path
+        }
       }
     } finally {
       releaseLock()
@@ -128,7 +139,7 @@ export function createAddAll ({ repo, preload, hashers, options }) {
  */
 function transformFile (opts) {
   /**
-   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   * @param {Source<ImportResult>} source
    */
   async function * transformFile (source) {
     for await (const file of source) {
@@ -163,7 +174,7 @@ function transformFile (opts) {
  */
 function preloadFile (preload, opts) {
   /**
-   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   * @param {Source<ImportResult>} source
    */
   async function * maybePreloadFile (source) {
     for await (const file of source) {
@@ -190,7 +201,7 @@ function preloadFile (preload, opts) {
  */
 function pinFile (repo, opts) {
   /**
-   * @param {AsyncGenerator<ImportResult, void, undefined>} source
+   * @param {Source<ImportResult>} source
    */
   async function * maybePinFile (source) {
     for await (const file of source) {

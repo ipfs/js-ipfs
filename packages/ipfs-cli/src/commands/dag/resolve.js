@@ -20,6 +20,8 @@ export default {
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.ref
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, ref, timeout }) {
     const options = {
@@ -36,7 +38,7 @@ export default {
           ref = ref.substring(6)
         }
 
-        // @ts-ignore we will toString this so it doesn't matter
+        // @ts-expect-error we will toString this so it doesn't matter
         lastCid = ref.split('/').shift()
       }
 

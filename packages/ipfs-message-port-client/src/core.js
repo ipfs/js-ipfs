@@ -10,7 +10,6 @@ import {
   encodeCallback
 } from 'ipfs-message-port-protocol/core'
 /** @type {<T>(stream:ReadableStream<T>) => AsyncIterable<T>} */
-// @ts-ignore - browser-stream-to-it has no types
 import iterateReadableStream from 'browser-readablestream-to-it'
 import {
   parseMode,
@@ -461,7 +460,6 @@ const asFileObject = (input) => {
  * @returns {Promise<AsyncIterable<T> | Iterable<T>>}
  */
 const ensureIsByteStream = async (input) => {
-  // @ts-ignore it's (async)iterable
   const peekable = itPeekable(input)
 
   /** @type {any} value **/

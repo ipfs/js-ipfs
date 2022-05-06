@@ -44,6 +44,7 @@ export class Client {
    */
   constructor (namespace, methods, transport) {
     /** @type {RemoteService<T>} */
+    // @ts-expect-error types again
     this.remote = (new Service(namespace, methods, transport))
   }
 }

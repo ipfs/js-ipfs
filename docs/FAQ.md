@@ -74,7 +74,7 @@ To add WebRTC support in a IPFS node instance, do:
 
 ```JavaScript
 import wrtc from 'wrtc' // or 'electron-webrtc'
-import WebRTCStar from 'libp2p-webrtc-star'
+import WebRTCStar from '@libp2p/webrtc-star'
 
 const node = await IPFS.create({
   repo: 'your-repo-path',

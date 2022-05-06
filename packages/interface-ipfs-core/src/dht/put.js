@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import { ensureReachable } from './utils.js'
@@ -11,7 +11,7 @@ import { ensureReachable } from './utils.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testPut (factory, options) {
   const describe = getDescribe(options)
@@ -60,7 +60,7 @@ export function testPut (factory, options) {
 
       const nodeBId = await nodeB.id()
 
-      expect(peerResponse.from).to.be.equal(nodeBId.id)
+      expect(peerResponse.from.toString()).to.be.equal(nodeBId.id.toString())
     })
   })
 }

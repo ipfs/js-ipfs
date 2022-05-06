@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
@@ -9,7 +9,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testDns (factory, options) {
   const describe = getDescribe(options)
@@ -36,7 +36,7 @@ export function testDns (factory, options) {
         expect(res).to.match(/\/ipns\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-ignore this is mocha
+          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -52,7 +52,7 @@ export function testDns (factory, options) {
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-ignore this is mocha
+          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -68,7 +68,7 @@ export function testDns (factory, options) {
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-ignore this is mocha
+          // @ts-expect-error this is mocha
           return this.skip()
         }
 

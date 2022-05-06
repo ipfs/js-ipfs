@@ -27,7 +27,7 @@ export async function ensureReachable (nodeA, nodeB) {
     const { id } = await target.id()
 
     for await (const event of source.dht.query(id)) {
-      if (event.name === 'PEER_RESPONSE' && event.from === id) {
+      if (event.name === 'PEER_RESPONSE' && event.from.equals(id)) {
         return
       }
     }

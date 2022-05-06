@@ -6,7 +6,7 @@ import { createResolve } from './resolve.js'
 
 export class DagAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-core-utils/multihashes').Multihashes} config.hashers
    * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
    * @param {import('../../types').Preload} config.preload

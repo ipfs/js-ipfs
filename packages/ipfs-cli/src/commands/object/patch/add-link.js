@@ -35,6 +35,8 @@ export default {
    * @param {import('multiformats/cid').CID} argv.ref
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, root, name, ref, cidBase, timeout }) {
     const nodeA = await ipfs.object.get(ref, { timeout })

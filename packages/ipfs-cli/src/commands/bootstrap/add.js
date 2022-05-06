@@ -25,9 +25,11 @@ export default {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiaddr').Multiaddr} argv.peer
+   * @param {import('@multiformats/multiaddr').Multiaddr} argv.peer
    * @param {boolean} argv.default
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, peer, default: defaultPeers, timeout }) {
     let list

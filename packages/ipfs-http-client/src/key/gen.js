@@ -11,7 +11,7 @@ export const createGen = configure(api => {
   /**
    * @type {KeyAPI["gen"]}
    */
-  async function gen (name, options = { type: 'rsa', size: 2048 }) {
+  async function gen (name, options = { type: 'Ed25519' }) {
     const res = await api.post('key/gen', {
       signal: options.signal,
       searchParams: toUrlSearchParams({
@@ -22,7 +22,7 @@ export const createGen = configure(api => {
     })
     const data = await res.json()
 
-    // @ts-ignore server output is not typed
+    // @ts-expect-error server output is not typed
     return objectToCamel(data)
   }
   return gen

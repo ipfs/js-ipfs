@@ -37,6 +37,8 @@ export default {
    * @param {boolean} argv.json
    * @param {string} argv.key
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, value, bool, json, key, timeout }) {
     if (!value) {

@@ -1,4 +1,5 @@
 import parseDuration from 'parse-duration'
+import { coercePeerId } from '../../utils.js'
 
 export default {
   command: 'wantlist [peer]',
@@ -9,7 +10,8 @@ export default {
     peer: {
       alias: 'p',
       describe: 'Specify which peer to show wantlist for.',
-      type: 'string'
+      type: 'string',
+      coerce: coercePeerId
     },
     'cid-base': {
       describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
@@ -25,9 +27,11 @@ export default {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.peer
+   * @param {import('@libp2p/interfaces/peer-id').PeerId} argv.peer
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, peer, cidBase, timeout }) {
     const { ipfs, print } = ctx

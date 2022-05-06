@@ -26,7 +26,7 @@ export const createGet = (codecs, options) => {
         const entry = options.localResolve
           ? await first(resolve(cid, options.path, codecs, getBlock, options))
           : await last(resolve(cid, options.path, codecs, getBlock, options))
-        /** @type {import('ipfs-core-types/src/dag').GetResult} - first and last will return undefined when empty */
+        /** @type {import('ipfs-core-types/src/dag').GetResult | undefined} - first and last will return undefined when empty */
         const result = (entry)
 
         if (!result) {

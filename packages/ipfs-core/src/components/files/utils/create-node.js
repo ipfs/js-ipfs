@@ -22,7 +22,6 @@ export async function createNode (context, type, options) {
   const metadata = new UnixFS({
     type,
     mode: options.mode,
-    // @ts-ignore TODO: restore hrtime support to ipfs-unixfs constructor - it's in the code, just not the signature
     mtime: options.mtime
   })
 

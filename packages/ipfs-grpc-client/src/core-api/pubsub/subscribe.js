@@ -34,12 +34,22 @@ export function grpcPubsubSubscribe (grpc, service, opts) {
 
             deferred.resolve()
           } else {
-            handler({
+            /** @type {import('@libp2p/interfaces/pubsub').Message} */
+            const msg = {
               from: result.from,
-              seqno: result.seqno,
+              sequenceNumber: result.sequenceNumber,
               data: result.data,
-              topicIDs: result.topicIDs
-            })
+              topic: result.topic
+            }
+
+            if (typeof handler === 'function') {
+              handler(msg)
+              continue
+            }
+
+            if (handler != null && typeof handler.handleEvent === 'function') {
+              handler.handleEvent(msg)
+            }
           }
         }
       } catch (/** @type {any} */ err) {

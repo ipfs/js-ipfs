@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
 
@@ -10,7 +10,7 @@ import { isWebWorker } from 'ipfs-utils/src/env.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testLocalAddrs (factory, options) {
   const describe = getDescribe(options)

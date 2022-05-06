@@ -52,11 +52,11 @@ export function withTimeoutOption (fn, optionsArgIndex) {
       }
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     if (fnRes[Symbol.asyncIterator]) {
-      // @ts-ignore
+      // @ts-expect-error
       return (async function * () {
-        // @ts-ignore
+        // @ts-expect-error
         const it = fnRes[Symbol.asyncIterator]()
 
         try {
@@ -85,7 +85,7 @@ export function withTimeoutOption (fn, optionsArgIndex) {
       })()
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     return (async () => {
       try {
         const res = await Promise.race([fnRes, timeoutPromise])

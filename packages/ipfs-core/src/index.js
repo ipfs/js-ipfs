@@ -1,7 +1,4 @@
 import { create as createImport } from './components/index.js'
-import cryptoImport from 'libp2p-crypto'
-import isIPFSImport from 'is-ipfs'
-import PeerIdImport from 'peer-id'
 import globSourceImport from 'ipfs-utils/src/files/glob-source.js'
 import urlSourceImport from 'ipfs-utils/src/files/url-source.js'
 
@@ -23,10 +20,5 @@ import urlSourceImport from 'ipfs-utils/src/files/url-source.js'
  */
 
 export const create = createImport
-export const crypto = cryptoImport
-export const isIPFS = isIPFSImport
-export { CID } from 'multiformats/cid'
-export { Multiaddr as multiaddr } from 'multiaddr'
-export const PeerId = PeerIdImport
 export const globSource = globSourceImport
 export const urlSource = urlSourceImport

@@ -28,6 +28,8 @@ export default {
    * @param {import('multiformats/cid').CID} argv.key
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, key, cidBase, timeout }) {
     const { ipfs, print } = ctx

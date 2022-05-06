@@ -1,4 +1,5 @@
 import parseDuration from 'parse-duration'
+import { coercePeerId } from '../utils.js'
 
 export default {
   command: 'id [peerId]',
@@ -8,7 +9,8 @@ export default {
   builder: {
     peerid: {
       type: 'string',
-      describe: 'Peer.ID of node to look up'
+      describe: 'Peer.ID of node to look up',
+      coerce: coercePeerId
     },
     format: {
       alias: 'f',
@@ -26,7 +28,9 @@ export default {
    * @param {import('../types').Context} argv.ctx
    * @param {string} argv.format
    * @param {number} argv.timeout
-   * @param {string} [argv.peerId]
+   * @param {import('@libp2p/interfaces/peer-id').PeerId} [argv.peerId]
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, format, timeout, peerId }) {
     const id = await ipfs.id({
@@ -36,7 +40,7 @@ export default {
 
     if (format) {
       print(format
-        .replace('<id>', id.id)
+        .replace('<id>', id.id.toString())
         .replace('<aver>', id.agentVersion)
         .replace('<pver>', id.protocolVersion)
         .replace('<pubkey>', id.publicKey)

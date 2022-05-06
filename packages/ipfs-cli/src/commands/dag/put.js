@@ -89,6 +89,8 @@ export default {
    * @param {boolean} argv.preload
    * @param {boolean} argv.onlyHash
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print, getStdin }, data, inputCodec, storeCodec, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, timeout }) {
     if (!codecs[inputCodec]) {

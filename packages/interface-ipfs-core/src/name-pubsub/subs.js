@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import all from 'it-all'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
@@ -10,7 +10,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testSubs (factory, options) {
   const describe = getDescribe(options)
@@ -27,7 +27,7 @@ export function testSubs (factory, options) {
     after(() => factory.clean())
 
     it('should get an empty array as a result of subscriptions before any resolve', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(60 * 1000)
 
       const res = await ipfs.name.pubsub.subs()
@@ -36,7 +36,7 @@ export function testSubs (factory, options) {
     })
 
     it('should get the list of subscriptions updated after a resolve', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(300 * 1000)
       const id = 'QmNP1ASen5ZREtiJTtVD3jhMKhoPb1zppET1tgpjHx2NGA'
 

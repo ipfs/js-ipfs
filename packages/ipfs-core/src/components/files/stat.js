@@ -1,13 +1,13 @@
 import mergeOpts from 'merge-options'
 import { toMfsPath } from './utils/to-mfs-path.js'
 import { exporter } from 'ipfs-unixfs-exporter'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import errCode from 'err-code'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import * as dagPB from '@ipld/dag-pb'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:mfs:stat')
+const log = logger('ipfs:mfs:stat')
 
 /**
  * @typedef {import('./').MfsContext} MfsContext

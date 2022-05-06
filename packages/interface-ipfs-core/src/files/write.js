@@ -3,7 +3,7 @@
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import { nanoid } from 'nanoid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { isNode } from 'ipfs-utils/src/env.js'
 import { sha512 } from 'multiformats/hashes/sha2'
@@ -22,7 +22,7 @@ import map from 'it-map'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testWrite (factory, options) {
   const describe = getDescribe(options)
@@ -188,7 +188,7 @@ export function testWrite (factory, options) {
 
     it('writes a small file using a Node stream (Node only)', async function () {
       if (!isNode) {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         this.skip()
       }
       const filePath = `/small-file-${Math.random()}.txt`
@@ -205,7 +205,7 @@ export function testWrite (factory, options) {
 
     it('writes a small file using an HTML5 Blob (Browser only)', async function () {
       if (!global.Blob) {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         return this.skip()
       }
 

@@ -1,10 +1,5 @@
 import {
   create as createImport,
-  crypto as cryptoImport,
-  isIPFS as isIPFSImport,
-  CID as CIDImport,
-  multiaddr as multiaddrImport,
-  PeerId as PeerIdImport,
   globSource as globSourceImport,
   urlSource as urlSourceImport
 } from 'ipfs-core'
@@ -17,11 +12,6 @@ import {
  */
 
 export const create = createImport
-export const crypto = cryptoImport
-export const isIPFS = isIPFSImport
-export const CID = CIDImport
-export const multiaddr = multiaddrImport
-export const PeerId = PeerIdImport
 export const globSource = globSourceImport
 export const urlSource = urlSourceImport
 export const path = pathImport

@@ -21,6 +21,8 @@ export default {
    * @param {string} argv.name
    * @param {string} argv.newName
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, name, newName, timeout }) {
     const res = await ipfs.key.rename(name, newName, {

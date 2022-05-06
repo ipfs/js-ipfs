@@ -30,7 +30,7 @@ function toPin (type, cid, metadata) {
 }
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  */
@@ -88,8 +88,6 @@ export function createLs ({ repo, codecs }) {
     }
 
     if (type === PinTypes.indirect || type === PinTypes.all) {
-      // @ts-ignore - LsSettings & AbortOptions have no properties in common
-      // with type { preload?: boolean }
       for await (const cid of repo.pins.indirectKeys(options)) {
         yield toPin(PinTypes.indirect, cid)
       }

@@ -15,7 +15,7 @@ export function createNode () {
   let cids = []
 
   /** @type {ReturnType<http.createServer> & { start: (opts?: any) => Promise<void>, stop: () => Promise<any> }} */
-  // @ts-ignore start/stop props are added later
+  // @ts-expect-error start/stop props are added later
   const server = http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Access-Control-Request-Method', '*')

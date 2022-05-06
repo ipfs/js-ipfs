@@ -19,6 +19,8 @@ export default {
    * @param {import('../../types').Context} argv.ctx
    * @param {string} argv.file
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   handler ({ ctx: { ipfs, isDaemon }, file, timeout }) {
     const filePath = path.resolve(process.cwd(), file)

@@ -1,22 +1,22 @@
 import parseDuration from 'parse-duration'
 import errCode from 'err-code'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import PeerId from 'peer-id'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
- * @typedef {Object} BWOptions
+ * @typedef {object} BWOptions
  * @property {string} [peer] - Specifies a peer to print bandwidth for
  * @property {string} [proto] - Specifies a protocol to print bandwidth for
  * @property {boolean} [poll] - Is used to yield bandwidth info at an interval
  * @property {number|string} [interval=1000] - The time interval to wait between updating output, if `poll` is `true`.
  *
- * @typedef {Object} BandwidthInfo
+ * @typedef {object} BandwidthInfo
  * @property {bigint} totalIn
  * @property {bigint} totalOut
  * @property {number} rateIn
  * @property {number} rateOut
  *
- * @typedef {import('libp2p')} libp2p
+ * @typedef {import('libp2p').Libp2p} libp2p
  * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
@@ -32,11 +32,11 @@ function getBandwidthStats (libp2p, opts) {
   if (!libp2p.metrics) {
     stats = undefined
   } else if (opts.peer) {
-    stats = libp2p.metrics.forPeer(PeerId.parse(opts.peer))
+    stats = libp2p.metrics.forPeer(peerIdFromString(opts.peer))
   } else if (opts.proto) {
     stats = libp2p.metrics.forProtocol(opts.proto)
   } else {
-    stats = libp2p.metrics.global
+    stats = libp2p.metrics.getGlobal()
   }
 
   if (!stats) {
@@ -48,18 +48,19 @@ function getBandwidthStats (libp2p, opts) {
     }
   }
 
-  const { movingAverages, snapshot } = stats
+  const movingAverages = stats.getMovingAverages()
+  const snapshot = stats.getSnapshot()
 
   return {
-    totalIn: BigInt(snapshot.dataReceived.integerValue().toString()),
-    totalOut: BigInt(snapshot.dataSent.integerValue().toString()),
-    rateIn: movingAverages.dataReceived[60000].movingAverage() / 60,
-    rateOut: movingAverages.dataSent[60000].movingAverage() / 60
+    totalIn: snapshot.dataReceived,
+    totalOut: snapshot.dataSent,
+    rateIn: movingAverages.dataReceived[60000].movingAverage / 60,
+    rateOut: movingAverages.dataSent[60000].movingAverage / 60
   }
 }
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../../types').NetworkService} config.network
  */
 export function createBw ({ network }) {

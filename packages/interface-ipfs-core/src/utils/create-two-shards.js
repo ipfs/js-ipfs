@@ -1,4 +1,4 @@
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import isShardAtPath from './is-shard-at-path.js'
 import last from 'it-last'
 

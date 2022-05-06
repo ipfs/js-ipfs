@@ -18,7 +18,7 @@ export function createAdd (config) {
      * @type {PinAPI["add"]}
      */
     async function add (path, options = {}) {
-      // @ts-ignore last can return undefined
+      // @ts-expect-error last can return undefined
       return last(all([{
         path,
         ...options

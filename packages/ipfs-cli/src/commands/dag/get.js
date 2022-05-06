@@ -51,6 +51,8 @@ export default {
    * @param {'base16' | 'base64' | 'base58btc'} argv.dataEnc
    * @param {boolean} argv.localResolve
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, cidpath, dataEnc, outputCodec, localResolve, timeout }) {
     const options = {

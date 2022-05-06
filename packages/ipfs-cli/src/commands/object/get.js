@@ -38,6 +38,8 @@ export default {
    * @param {'base64' | 'text' | 'hex'} argv.dataEncoding
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print }, key, dataEncoding, cidBase, timeout }) {
     const node = await ipfs.object.get(key, { timeout })
@@ -61,7 +63,7 @@ export default {
     const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
-      // @ts-ignore encoding type is wrong
+      // @ts-expect-error encoding type is wrong
       Data: node.Data ? uint8ArrayToString(node.Data, encoding) : '',
       Hash: key.toString(base.encoder),
       Size: buf.length,

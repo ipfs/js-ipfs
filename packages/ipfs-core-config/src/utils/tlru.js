@@ -1,5 +1,3 @@
-/** @type {typeof import('hashlru').default} */
-// @ts-ignore - hashlru has incorrect typedefs
 import hashlru from 'hashlru'
 
 /**

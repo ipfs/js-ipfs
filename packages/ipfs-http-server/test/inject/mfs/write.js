@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { http } from '../../utils/http.js'
 import { matchIterable } from '../../utils/match-iterable.js'
 import sinon from 'sinon'

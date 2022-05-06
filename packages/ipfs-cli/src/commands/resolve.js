@@ -32,6 +32,8 @@ export default {
    * @param {boolean} argv.recursive
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { print, ipfs }, name, recursive, cidBase, timeout }) {
     const res = await ipfs.resolve(name, { recursive, cidBase, timeout })

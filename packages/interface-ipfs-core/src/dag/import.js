@@ -4,12 +4,12 @@ import all from 'it-all'
 import drain from 'it-drain'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { CarWriter, CarReader } from '@ipld/car'
 import * as raw from 'multiformats/codecs/raw'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import loadFixture from 'aegir/utils/fixtures.js'
+import loadFixture from 'aegir/fixtures'
 
 /**
  *
@@ -55,7 +55,7 @@ async function createCar (blocks) {
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testImport (factory, options) {
   const describe = getDescribe(options)
@@ -76,7 +76,7 @@ export function testImport (factory, options) {
 
       const result = await all(ipfs.dag.import(car))
       expect(result).to.have.lengthOf(1)
-      // @ts-ignore chai types are messed up
+      // @ts-expect-error chai types are messed up
       expect(result).to.have.nested.deep.property('[0].root.cid', blocks[0].cid)
 
       for (const { cid } of blocks) {
@@ -155,7 +155,7 @@ export function testImport (factory, options) {
       expect(cids[0].toString()).to.equal('bafkqaaa')
 
       const result = await all(ipfs.dag.import(async function * () { yield input }()))
-      // @ts-ignore chai types are messed up
+      // @ts-expect-error chai types are messed up
       expect(result).to.have.nested.deep.property('[0].root.cid', cids[0])
     })
   })

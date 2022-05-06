@@ -1,7 +1,7 @@
 import { walkPath } from 'ipfs-unixfs-exporter'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 
-const log = debug('ipfs:mfs:utils:to-trail')
+const log = logger('ipfs:mfs:utils:to-trail')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext

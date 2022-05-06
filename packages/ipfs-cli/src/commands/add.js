@@ -254,6 +254,8 @@ export default {
    * @param {number} argv.mode
    * @param {string} argv.cidBase
    * @param {boolean} argv.enableShardingExperiment
+   *
+   * @returns {Promise<void>}
    */
   async handler ({
     ctx: { ipfs, print, isDaemon, getStdin },

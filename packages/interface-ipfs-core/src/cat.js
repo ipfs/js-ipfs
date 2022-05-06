@@ -7,7 +7,7 @@ import { fixtures } from './utils/index.js'
 import { CID } from 'multiformats/cid'
 import all from 'it-all'
 import drain from 'it-drain'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from './utils/mocha.js'
 import testTimeout from './utils/test-timeout.js'
 import { importer } from 'ipfs-unixfs-importer'
@@ -19,7 +19,7 @@ import blockstore from './utils/blockstore-adapter.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testCat (factory, options) {
   const describe = getDescribe(options)

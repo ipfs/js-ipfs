@@ -54,7 +54,7 @@ import { encodeError } from 'ipfs-message-port-protocol/error'
 
 /**
  * @template T
- * @typedef {Object} QueryMessage
+ * @typedef {object} QueryMessage
  * @property {'query'} type
  * @property {Namespace<T>} namespace
  * @property {Method<T>} method
@@ -63,13 +63,13 @@ import { encodeError } from 'ipfs-message-port-protocol/error'
  */
 
 /**
- * @typedef {Object} AbortMessage
+ * @typedef {object} AbortMessage
  * @property {'abort'} type
  * @property {string} id
  */
 
 /**
- * @typedef {Object} TransferOptions
+ * @typedef {object} TransferOptions
  * @property {Set<Transferable>} [transfer]
  */
 

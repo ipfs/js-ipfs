@@ -109,7 +109,7 @@ export default {
               type: 'string',
               id: 2
             },
-            seqno: {
+            sequenceNumber: {
               type: 'bytes',
               id: 3
             },
@@ -117,8 +117,7 @@ export default {
               type: 'bytes',
               id: 4
             },
-            topicIDs: {
-              rule: 'repeated',
+            topic: {
               type: 'string',
               id: 5
             }

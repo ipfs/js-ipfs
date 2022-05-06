@@ -1,8 +1,8 @@
 /* eslint-env mocha, browser */
 
 import { CID } from 'multiformats/cid'
-import { Multiaddr } from 'multiaddr'
-import { expect } from 'aegir/utils/chai.js'
+import { Multiaddr } from '@multiformats/multiaddr'
+import { expect } from 'aegir/chai'
 import * as IpfsHttpClient from '../src/index.js'
 
 describe('exports', () => {

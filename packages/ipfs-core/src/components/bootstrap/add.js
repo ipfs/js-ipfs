@@ -2,7 +2,7 @@ import { isValidMultiaddr } from './utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 export function createAdd ({ repo }) {
@@ -14,10 +14,7 @@ export function createAdd ({ repo }) {
       throw new Error(`${multiaddr} is not a valid Multiaddr`)
     }
 
-    /** @type {import('ipfs-core-types/src/config').Config} */
-    // @ts-ignore repo returns type unknown
     const config = await repo.config.getAll(options)
-
     const boostrappers = config.Bootstrap || []
     boostrappers.push(multiaddr.toString())
 

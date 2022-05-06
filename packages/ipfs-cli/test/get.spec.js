@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import fs from 'fs'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import path from 'path'
 import { CID } from 'multiformats/cid'
 import { cli } from './utils/cli.js'

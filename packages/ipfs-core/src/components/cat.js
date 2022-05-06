@@ -4,7 +4,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { CID } from 'multiformats/cid'
 
 /**
- * @typedef {Object} Context
+ * @typedef {object} Context
  * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../types').Preload} preload
  *

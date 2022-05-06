@@ -1,6 +1,6 @@
 import type { Pushable } from 'it-pushable'
 import type { EventEmitter } from 'events'
-import type { Multiaddr } from 'multiaddr'
+import type { Multiaddr } from '@multiformats/multiaddr'
 
 export interface Options {
   socket?: WebsocketServer

@@ -125,6 +125,8 @@ export default {
    * @param {number} argv.mtime
    * @param {number} argv.mtimeNsecs
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({
     ctx: { ipfs, getStdin },

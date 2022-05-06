@@ -1,4 +1,4 @@
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 // @ts-expect-error no types
 import multiAddrToUri from 'multiaddr-to-uri'
 

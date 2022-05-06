@@ -1,4 +1,5 @@
 import type { AbortOptions } from '../utils'
+import type { KeyType } from '@libp2p/interfaces/keychain'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -109,8 +110,8 @@ export interface API<OptionExtension = {}> {
 }
 
 export interface GenOptions extends AbortOptions {
-  type: string
-  size: number
+  type: KeyType
+  size?: number
 }
 
 export interface Key {

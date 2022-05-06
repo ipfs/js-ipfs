@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from './utils/mocha.js'
-import loadFixture from 'aegir/utils/fixtures.js'
+import loadFixture from 'aegir/fixtures'
 import { CID } from 'multiformats/cid'
 import all from 'it-all'
 import drain from 'it-drain'
@@ -16,7 +16,7 @@ import { UnixFS } from 'ipfs-unixfs'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testRefs (factory, options) {
   const describe = getDescribe(options)
@@ -50,7 +50,7 @@ export function testRefs (factory, options) {
       const { path, params, expected, expectError, expectTimeout } = options
       // eslint-disable-next-line no-loop-func
       it(name, async function () {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         this.timeout(20 * 1000)
 
         // Call out to IPFS
@@ -81,7 +81,7 @@ export function testRefs (factory, options) {
     })
 
     it('should get refs with cbor links', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       // Call out to IPFS

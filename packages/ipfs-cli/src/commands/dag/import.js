@@ -30,6 +30,8 @@ export default {
    * @param {boolean} argv.pinRoots
    * @param {number} argv.timeout
    * @param {string} argv.cidBase
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print, getStdin }, path, pinRoots, timeout, cidBase }) {
     const handleResult = async (/** @type {import('ipfs-core-types/src/dag').ImportResult} */ { root }) => {

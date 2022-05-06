@@ -33,6 +33,8 @@ export default {
    * @param {'json' | 'protobuf'} argv.inputEnc
    * @param {string} argv.cidBase
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs, print, getStdin }, data, inputEnc, cidBase, timeout }) {
     let buf

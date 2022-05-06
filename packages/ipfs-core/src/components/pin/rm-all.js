@@ -4,7 +4,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { PinTypes } from 'ipfs-repo/pin-types'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  */

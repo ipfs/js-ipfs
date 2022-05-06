@@ -19,6 +19,8 @@ export default {
    * @param {string} argv.key
    * @param {string} argv.value
    * @param {number} argv.timeout
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx: { ipfs }, key, value, timeout }) {
     await ipfs.dht.put(uint8ArrayFromString(key), uint8ArrayFromString(value), {

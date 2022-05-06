@@ -61,6 +61,8 @@ export default {
    * @param {number} argv.timeout
    * @param {Record<string, any>} argv.metadata
    * @param {Record<string, any>} argv.metadataJson
+   *
+   * @returns {Promise<void>}
    */
   async handler ({ ctx, ipfsPath, recursive, cidBase, timeout, metadata, metadataJson }) {
     const { ipfs, print } = ctx
