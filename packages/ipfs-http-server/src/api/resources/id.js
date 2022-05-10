@@ -9,7 +9,7 @@ export const idResource = {
       },
       query: Joi.object().keys({
         timeout: Joi.timeout(),
-        peerId: Joi.string()
+        peerId: Joi.peerId()
       })
         .rename('arg', 'peerId', {
           override: true,

@@ -8,7 +8,7 @@ export const wantlistResource = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.string(),
+        peer: Joi.peerId(),
         cidBase: Joi.string().default('base58btc'),
         timeout: Joi.timeout()
       })

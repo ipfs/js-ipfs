@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "aegir clean",
     "lint": "aegir lint",
-    "build": "aegir build && copyfiles 'src/**/*' package.json README.md CHANGELOG.md COPYRIGHT LICENSE-APACHE LICENSE-MIT dist"
+    "build": "aegir build"
   },
   "files": [
     "dist",
@@ -54,7 +54,6 @@
   },
   "devDependencies": {
     "aegir": "^37.0.11",
-    "copyfiles": "^2.4.1",
     "rimraf": "^3.0.2"
   },
   "contributors": [

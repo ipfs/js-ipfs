@@ -1,4 +1,5 @@
 import parseDuration from 'parse-duration'
+import { coercePeerId } from '../../utils.js'
 
 export default {
   command: 'bw',
@@ -8,7 +9,7 @@ export default {
   builder: {
     peer: {
       type: 'string',
-      default: ''
+      coerce: coercePeerId
     },
     proto: {
       type: 'string',
@@ -32,7 +33,7 @@ export default {
   /**
    * @param {object} argv
    * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.peer
+   * @param {import('@libp2p/interfaces/peer-id').PeerId} argv.peer
    * @param {string} argv.proto
    * @param {boolean} argv.poll
    * @param {number} argv.interval

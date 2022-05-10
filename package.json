@@ -308,5 +308,8 @@
     "Jacob Karlsson <jacob.karlsson95@gmail.com>",
     "Jorropo <jorropo.pgm@gmail.com>",
     "João Santos <joaosantos15@users.noreply.github.com>"
-  ]
+  ],
+  "dependencies": {
+    "import-meta-resolve": "^1.1.1"
+  }
 }

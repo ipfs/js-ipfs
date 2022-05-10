@@ -15,7 +15,7 @@ export const bwResource = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peer: Joi.string(),
+        peer: Joi.peerId(),
         proto: Joi.string(),
         poll: Joi.boolean().default(false),
         interval: Joi.string().default('1s'),
