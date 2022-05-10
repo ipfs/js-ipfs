@@ -10,9 +10,10 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
@@ -26,9 +27,6 @@
       "sourceType": "module"
     }
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
@@ -37,7 +35,7 @@
     "lint": "aegir lint",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node --cov",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-http-client -i rimraf -i ipfs-core-types -i npm-run-all",
     "build": "run-s build:*",
     "build:update-version": "node scripts/update-version.js",

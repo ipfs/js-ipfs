@@ -10,9 +10,10 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -20,9 +21,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -36,7 +34,7 @@
   "scripts": {
     "build": "aegir build",
     "lint": "aegir lint",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i aegir -i rimraf"
   },
   "dependencies": {

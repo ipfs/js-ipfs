@@ -7,6 +7,7 @@ import { FloodSub } from '@libp2p/floodsub'
 export const routers = () => ({
   gossipsub: new GossipSub({
     allowPublishToZeroPeers: true,
+    fallbackToFloodsub: true,
     emitSelf: true
   }),
   floodsub: new FloodSub({

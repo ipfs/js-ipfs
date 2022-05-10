@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
-// @ts-expect-error no types
-import toUri from 'multiaddr-to-uri'
+import { multiaddrToUri } from '@multiformats/multiaddr-to-uri'
 import errCode from 'err-code'
 import HTTP from 'ipfs-utils/src/http.js'
 import { waitFor } from './wait-for.js'
@@ -20,7 +19,7 @@ export const defaultAddr = `/dnsaddr/localhost/tcp/${defaultPort}`
  * @returns {Promise<string[]>}
  */
 export async function getPreloadCids (addr) {
-  const res = await HTTP.get(`${toUri(addr || defaultAddr)}/cids`)
+  const res = await HTTP.get(`${multiaddrToUri(addr || defaultAddr)}/cids`)
   return res.json()
 }
 
@@ -30,7 +29,7 @@ export async function getPreloadCids (addr) {
  * @param {string} [addr]
  */
 export function clearPreloadCids (addr) {
-  return HTTP.delete(`${toUri(addr || defaultAddr)}/cids`)
+  return HTTP.delete(`${multiaddrToUri(addr || defaultAddr)}/cids`)
 }
 
 /**

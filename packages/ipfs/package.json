@@ -9,22 +9,26 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
-  "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -32,9 +36,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -60,9 +61,9 @@
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
-    "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client LIBP2P_TCP_REUSEPORT=false ipfs-interop",
+    "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js LIBP2P_TCP_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
   },
   "dependencies": {
@@ -86,9 +87,9 @@
     "ipfs-client": "^0.7.8",
     "ipfs-core-types": "^0.10.3",
     "ipfs-http-client": "^56.0.3",
-    "ipfs-interop": "^8.0.10",
+    "ipfs-interop": "ipfs/interop#feat/upgrade-to-esm-libp2p",
     "ipfs-utils": "^9.0.6",
-    "ipfsd-ctl": "^10.0.4",
+    "ipfsd-ctl": "^11.0.0",
     "iso-url": "^1.0.0",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.4.2",

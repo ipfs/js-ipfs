@@ -3,6 +3,7 @@ import parseDuration from 'parse-duration'
 import { Multiaddr } from '@multiformats/multiaddr'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import Joi from 'joi'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
  * @param {*} value
@@ -65,6 +66,20 @@ export default Joi
           }
 
           return { value: toCID(value) }
+        }
+      }
+    },
+    (joi) => {
+      return {
+        type: 'peerId',
+        base: joi.any(),
+        validate: requireIfRequired,
+        coerce (value, _helpers) {
+          if (!value) {
+            return
+          }
+
+          return { value: peerIdFromString(value) }
         }
       }
     },

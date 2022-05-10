@@ -4,16 +4,20 @@
   "description": "Creates an HTTP response from an IPFS Hash",
   "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
@@ -29,14 +33,11 @@
       "import": "./src/index.js"
     }
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
   "scripts": {
     "lint": "aegir lint",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "build": "aegir build --no-bundle",
-    "pretest": "aegir build --esm-tests",
+    "pretest": "aegir build",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node --cov",
     "dep-check": "aegir dep-check -i rimraf -i global"
@@ -79,7 +80,7 @@
     "get-stream": "^6.0.0",
     "global": "^4.4.0",
     "ipfs-core": "^0.14.3",
-    "ipfsd-ctl": "^10.0.4",
+    "ipfsd-ctl": "^11.0.0",
     "it-all": "^1.0.4",
     "rimraf": "^3.0.2",
     "uint8arrays": "^3.0.0"

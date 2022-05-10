@@ -10,21 +10,26 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -32,9 +37,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -59,10 +61,10 @@
     "test:chrome-webworker": "aegir test -t webworker",
     "test:firefox": "aegir test -t browser -- --browser firefox",
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
-    "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
-    "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
+    "test:electron-main": "aegir build && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
+    "test:electron-renderer": "aegir build && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrappers.js",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i npm-run-all --i interface-blockstore"
   },
   "dependencies": {
@@ -141,7 +143,7 @@
     "go-ipfs": "^0.12.1",
     "interface-blockstore-tests": "^2.0.2",
     "interface-ipfs-core": "^0.154.3",
-    "ipfsd-ctl": "^10.0.4",
+    "ipfsd-ctl": "^11.0.0",
     "iso-url": "^1.0.0",
     "nanoid": "^3.1.23",
     "npm-run-all": "^4.1.5",

@@ -190,9 +190,11 @@ export function testSubscribe (factory, options) {
           // @ts-expect-error this is mocha
           return this.skip()
         }
+
         const expectedString = 'should receive messages from a different node with floodsub'
         const topic = `floodsub-${nanoid()}`
         const ipfs1 = (await factory.spawn({
+          test: true,
           ipfsOptions: {
             config: {
               Pubsub: {
@@ -204,6 +206,7 @@ export function testSubscribe (factory, options) {
         const ipfs1Id = await ipfs1.id()
         const ipfs2 = (await factory.spawn({
           type: isWebWorker ? 'go' : undefined,
+          test: true,
           ipfsOptions: {
             config: {
               Pubsub: {
@@ -229,14 +232,15 @@ export function testSubscribe (factory, options) {
           msgStream2.resolve(msg)
         }
 
-        const abort1 = new AbortController()
-        const abort2 = new AbortController()
         await Promise.all([
-          ipfs1.pubsub.subscribe(topic, sub1, { signal: abort1.signal }),
-          ipfs2.pubsub.subscribe(topic, sub2, { signal: abort2.signal })
+          ipfs1.pubsub.subscribe(topic, sub1),
+          ipfs2.pubsub.subscribe(topic, sub2)
         ])
 
-        await waitForPeers(ipfs2, topic, [ipfs1Id.id], 30000)
+        await Promise.all([
+          waitForPeers(ipfs2, topic, [ipfs1Id.id], 30000),
+          waitForPeers(ipfs1, topic, [ipfs2Id.id], 30000)
+        ])
 
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
@@ -247,9 +251,6 @@ export function testSubscribe (factory, options) {
         const sub2Msg = await msgStream2.promise
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
         expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
-
-        abort1.abort()
-        abort2.abort()
       })
 
       it('should receive messages from a different node', async () => {

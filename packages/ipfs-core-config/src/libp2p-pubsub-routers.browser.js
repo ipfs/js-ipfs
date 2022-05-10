@@ -6,6 +6,7 @@ import { GossipSub } from '@achingbrain/libp2p-gossipsub'
 export const routers = () => ({
   gossipsub: new GossipSub({
     allowPublishToZeroPeers: true,
+    fallbackToFloodsub: true,
     emitSelf: true
   })
 })

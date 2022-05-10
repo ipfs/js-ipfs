@@ -10,21 +10,26 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -32,9 +37,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -52,7 +54,7 @@
     "lint": "aegir lint",
     "test": "npm run test:node",
     "test:node": "aegir test -t node --cov",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-core-types",
     "build": "aegir build --no-bundle"
   },

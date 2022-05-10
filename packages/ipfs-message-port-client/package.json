@@ -12,9 +12,10 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
@@ -28,9 +29,6 @@
       "sourceType": "module"
     }
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
   "browser": {},
   "repository": {
     "type": "git",
@@ -40,7 +38,7 @@
     "build": "aegir build",
     "test:interface:message-port-client": "aegir test -t browser --bail -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i esbuild"
   },
   "dependencies": {

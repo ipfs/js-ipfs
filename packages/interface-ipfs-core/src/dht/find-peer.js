@@ -59,7 +59,7 @@ export function testFindPeer (factory, options) {
       const nodeAddresses = nodeBId.addresses.map((addr) => addr.nodeAddress())
       const peerAddresses = finalPeer.peer.multiaddrs.map(ma => ma.nodeAddress())
 
-      expect(id).to.equal(nodeBId.id)
+      expect(id.toString()).to.equal(nodeBId.id.toString())
       expect(peerAddresses).to.deep.include(nodeAddresses[0])
     })
 

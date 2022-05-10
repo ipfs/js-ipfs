@@ -2,34 +2,37 @@
   "name": "ipfs-core-types",
   "version": "0.10.3",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "lint": "aegir lint",
     "build": "aegir build && copyfiles 'src/**/*' package.json README.md CHANGELOG.md COPYRIGHT LICENSE-APACHE LICENSE-MIT dist"
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "typesVersions": {
     "*": {
-      "src/*": [
-        "types/src/*",
-        "types/src/*/index"
+      "*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "src/": [
-        "types/src/index"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "eslintConfig": {
     "extends": "ipfs"
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "repository": {
     "type": "git",

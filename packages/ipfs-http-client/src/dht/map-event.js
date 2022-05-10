@@ -18,16 +18,13 @@ import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
  * @param {{Type: number, ID: string, Extra: string, Responses: {ID: string, Addrs: string[]}[]}} event
- * @returns {import('@libp2p/interfaces/dht').QueryEvent}
+ * @returns {import('ipfs-core-types/src/dht').QueryEvent}
  */
 export const mapEvent = (event) => {
   if (event.Type === SendingQuery) {
     return {
-      to: peerIdFromString(event.ID),
       name: 'SENDING_QUERY',
-      type: event.Type,
-      messageName: 'PUT_VALUE',
-      messageType: 0
+      type: event.Type
     }
   }
 
@@ -49,8 +46,10 @@ export const mapEvent = (event) => {
 
   if (event.Type === FinalPeer) {
     // dht.query ends with a FinalPeer event with no Responses
+    /** @type {import('@libp2p/interfaces/peer-info').PeerInfo} */
     let peer = {
-      id: peerIdFromString(event.ID),
+      // @ts-expect-error go-ipfs does not return this
+      id: event.ID ?? peerIdFromString(event.ID),
       /** @type {Multiaddr[]} */
       multiaddrs: [],
       protocols: []
@@ -66,7 +65,6 @@ export const mapEvent = (event) => {
     }
 
     return {
-      from: peerIdFromString(event.ID),
       name: 'FINAL_PEER',
       type: event.Type,
       peer
@@ -75,7 +73,6 @@ export const mapEvent = (event) => {
 
   if (event.Type === QueryError) {
     return {
-      from: peerIdFromString(event.ID),
       name: 'QUERY_ERROR',
       type: event.Type,
       error: new Error(event.Extra)
@@ -84,7 +81,6 @@ export const mapEvent = (event) => {
 
   if (event.Type === Provider) {
     return {
-      from: peerIdFromString(event.ID),
       name: 'PROVIDER',
       type: event.Type,
       providers: event.Responses.map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => new Multiaddr(addr)), protocols: [] }))
@@ -93,7 +89,6 @@ export const mapEvent = (event) => {
 
   if (event.Type === Value) {
     return {
-      from: peerIdFromString(event.ID),
       name: 'VALUE',
       type: event.Type,
       value: uint8ArrayFromString(event.Extra, 'base64pad')

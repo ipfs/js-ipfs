@@ -7,21 +7,26 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -29,9 +34,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -72,7 +74,7 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-core-utils",
     "build": "aegir build"
   },

@@ -80,8 +80,8 @@ export const subscribeResource = {
         output.push({
           from: msg.from, // TODO: switch to peerIdFromString(msg.from).toString() when go-ipfs defaults to CIDv1
           data: base64url.encode(msg.data),
-          sequenceNumber: msg.sequenceNumber?.toString(),
-          topic: base64url.encode(uint8ArrayFromString(msg.topic))
+          seqno: msg.sequenceNumber != null ? base64url.encode(uint8ArrayFromString(msg.sequenceNumber.toString(16), 'base16')) : undefined,
+          topicIDs: [base64url.encode(uint8ArrayFromString(msg.topic))]
         })
       }
 

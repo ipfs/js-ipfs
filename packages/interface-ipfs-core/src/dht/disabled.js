@@ -3,6 +3,7 @@
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -42,8 +43,8 @@ export function testDisabled (factory, options) {
     after(() => factory.clean())
 
     it('should error when DHT not available', async () => {
-      await expect(all(nodeA.dht.get('/ipns/12D3KooWQMSMXmsBvs5YDEQ6tXsaFv9tjuzmDmEvusaiQSFdrJdN')))
-        .to.eventually.be.rejectedWith('not available')
+      await expect(all(nodeA.dht.put('/ipns/12D3KooWBD9zgsogrYf1dum1TwTwe6k5xT8acGZ5PNeYmKf72qz2', uint8ArrayFromString('hello'), { verbose: true })))
+        .to.eventually.be.rejected()
     })
   })
 }

@@ -45,7 +45,7 @@ export function testPing (factory, options) {
       responses.forEach(expectIsPingResponse)
 
       const pongs = responses.filter(isPong)
-      expect(pongs.length).to.equal(count)
+      expect(pongs).to.have.lengthOf(count)
     })
 
     it('should fail when pinging a peer that is not available', () => {

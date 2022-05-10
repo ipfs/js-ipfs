@@ -4,21 +4,26 @@
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -29,9 +34,6 @@
     "ignorePatterns": [
       "test/fixtures/*"
     ]
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -46,7 +48,7 @@
     "path": false
   },
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "build": "aegir build && copyfiles './test/fixtures/**/*' ./dist",
     "lint": "aegir lint",
     "dep-check": "aegir dep-check -i ipfs-core-types -i rimraf -i copyfiles"

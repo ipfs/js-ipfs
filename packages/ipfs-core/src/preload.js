@@ -1,6 +1,4 @@
-
-// @ts-expect-error no types
-import toUri from 'multiaddr-to-uri'
+import { multiaddrToUri } from '@multiformats/multiaddr-to-uri'
 import { logger } from '@libp2p/logger'
 import shuffle from 'array-shuffle'
 import { preload } from 'ipfs-core-config/preload'
@@ -28,7 +26,7 @@ export function createPreloader (options = {}) {
   let stopped = true
   /** @type {AbortController[]} */
   let requests = []
-  const apiUris = options.addresses.map(toUri)
+  const apiUris = options.addresses.map((str) => multiaddrToUri(str))
 
   // Avoid preloading the same CID over and over again
   const cache = hashlru(options.cache)

@@ -1,7 +1,6 @@
 import os from 'os'
 import fs from 'fs'
-// @ts-expect-error no types
-import toUri from 'multiaddr-to-uri'
+import { multiaddrToUri } from '@multiformats/multiaddr-to-uri'
 import { ipfsPathHelp } from '../utils.js'
 import { isTest } from 'ipfs-utils/src/env.js'
 import { logger } from '@libp2p/logger'
@@ -123,7 +122,7 @@ export default {
 
       if (daemon._httpApi && daemon._httpApi._apiServers) {
         daemon._httpApi._apiServers.forEach(apiServer => {
-          print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
+          print(`Web UI available at ${multiaddrToUri(apiServer.info.ma)}/webui`)
         })
       }
     } catch (/** @type {any} */ err) {

@@ -9,10 +9,10 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
-  "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
@@ -25,9 +25,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "browser": {
     "ipfs-utils/src/files/glob-source": false,
@@ -48,9 +45,9 @@
     "test:chrome-webworker": "aegir test -t webworker",
     "test:firefox": "aegir test -t browser -- --browser firefox",
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
-    "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
+    "test:electron-renderer": "aegir build && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
     "lint": "aegir lint",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
   },
   "dependencies": {
@@ -77,7 +74,7 @@
     "aegir": "^37.0.11",
     "delay": "^5.0.0",
     "go-ipfs": "^0.12.1",
-    "ipfsd-ctl": "^10.0.4",
+    "ipfsd-ctl": "^11.0.0",
     "it-all": "^1.0.4",
     "it-first": "^1.0.4",
     "nock": "^13.0.2",

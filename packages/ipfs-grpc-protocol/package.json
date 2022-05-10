@@ -7,9 +7,10 @@
   ],
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -17,9 +18,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -34,7 +32,7 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "build": "npm run clean && mkdirp ./dist && pbjs ./src/*.proto -t json -o ./dist/ipfs.json && node ./scripts/update-index.js && npm run lint -- --fix && aegir build",
     "lint": "aegir lint"
   },

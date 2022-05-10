@@ -234,12 +234,12 @@ export function testGet (factory, options) {
 
       // Check contents
       expect(output.map(f => uint8ArrayToString(f.body))).to.include.members([
-        fixtures.directory.files['alice.txt'].toString(),
-        fixtures.directory.files['files/hello.txt'].toString(),
-        fixtures.directory.files['files/ipfs.txt'].toString(),
-        fixtures.directory.files['holmes.txt'].toString(),
-        fixtures.directory.files['jungle.txt'].toString(),
-        fixtures.directory.files['pp.txt'].toString()
+        uint8ArrayToString(fixtures.directory.files['alice.txt']),
+        uint8ArrayToString(fixtures.directory.files['files/hello.txt']),
+        uint8ArrayToString(fixtures.directory.files['files/ipfs.txt']),
+        uint8ArrayToString(fixtures.directory.files['holmes.txt']),
+        uint8ArrayToString(fixtures.directory.files['jungle.txt']),
+        uint8ArrayToString(fixtures.directory.files['pp.txt'])
       ])
     })
 
@@ -269,9 +269,9 @@ export function testGet (factory, options) {
 
       // Check contents
       expect(output.map(f => uint8ArrayToString(f.body))).to.include.members([
-        fixtures.directory.files['pp.txt'].toString(),
-        fixtures.directory.files['holmes.txt'].toString(),
-        fixtures.directory.files['jungle.txt'].toString()
+        uint8ArrayToString(fixtures.directory.files['pp.txt']),
+        uint8ArrayToString(fixtures.directory.files['holmes.txt']),
+        uint8ArrayToString(fixtures.directory.files['jungle.txt'])
       ])
     })
 
@@ -379,8 +379,8 @@ export function testGet (factory, options) {
 
       // Check contents
       expect(output.map(f => uint8ArrayToString(f.body))).to.include.members([
-        fixtures.directory.files['files/hello.txt'].toString(),
-        fixtures.directory.files['pp.txt'].toString()
+        uint8ArrayToString(fixtures.directory.files['files/hello.txt']),
+        uint8ArrayToString(fixtures.directory.files['pp.txt'])
       ])
     })
 

@@ -14,6 +14,7 @@ import { Bootstrap } from '@libp2p/bootstrap'
 import { ipnsValidator } from 'ipns/validator'
 import { ipnsSelector } from 'ipns/selector'
 import { WebSockets } from '@libp2p/websockets'
+import * as WebSocketsFilters from '@libp2p/websockets/filters'
 import { Mplex } from '@libp2p/mplex'
 import { NOISE } from '@chainsafe/libp2p-noise'
 
@@ -121,7 +122,9 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
     peerRouters: [],
     peerDiscovery: [],
     transports: [
-      new WebSockets()
+      new WebSockets({
+        filter: WebSocketsFilters.all
+      })
     ],
     streamMuxers: [
       new Mplex()
@@ -208,8 +211,9 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
   }
 
   if (!get(options, 'config.Discovery.MDNS.Enabled', get(config, 'Discovery.MDNS.Enabled', true))) {
-    // @ts-expect-error mdns property may not be defined
-    libp2pFinalConfig.peerDiscovery = libp2pFinalConfig.peerDiscovery?.filter(d => !(d?.mdns || false))
+    libp2pFinalConfig.peerDiscovery = libp2pFinalConfig.peerDiscovery?.filter(d => {
+      return d != null && d[Symbol.toStringTag] !== '@libp2p/mdns'
+    })
   }
 
   return libp2pFinalConfig

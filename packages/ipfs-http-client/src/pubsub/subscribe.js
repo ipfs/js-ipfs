@@ -109,8 +109,8 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
         onMessage({
           from: msg.from,
           data: rpcToBytes(msg.data),
-          sequenceNumber: rpcToBigInt(msg.sequenceNumber),
-          topic: rpcToText(msg.topic)
+          sequenceNumber: rpcToBigInt(msg.seqno),
+          topic: rpcToText(msg.topicIDs[0])
         })
       } catch (/** @type {any} */ err) {
         err.message = `Failed to parse pubsub message: ${err.message}`
