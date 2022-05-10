@@ -9,8 +9,8 @@ import * as ipns from 'ipns'
 const log = logger('ipfs:ipns:publisher')
 
 /**
- * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
- * @typedef {import('libp2p-crypto').PublicKey} PublicKey
+ * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interfaces/keys').PublicKey} PublicKey
  * @typedef {import('ipns').IPNSEntry} IPNSEntry
  * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */

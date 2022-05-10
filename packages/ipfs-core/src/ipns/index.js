@@ -10,7 +10,7 @@ const log = logger('ipfs:ipns')
 const defaultRecordTtl = 60 * 1000
 
 /**
- * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
  * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 

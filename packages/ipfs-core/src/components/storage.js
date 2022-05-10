@@ -22,7 +22,7 @@ const log = logger('ipfs:components:peer:storage')
  * @typedef {import('../types').InitOptions} InitOptions
  * @typedef {import('../types').Print} Print
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
- * @typedef {import('libp2p-crypto').KeyType} KeyType
+ * @typedef {import('@libp2p/crypto/keys').KeyTypes} KeyType
  * @typedef {import('@libp2p/interfaces/keychain').KeyChain} Keychain
  * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */

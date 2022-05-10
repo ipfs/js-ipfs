@@ -8,7 +8,7 @@ import { peerIdFromKeys } from '@libp2p/peer-id'
 const log = logger('ipfs:ipns:republisher')
 
 /**
- * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
  * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 

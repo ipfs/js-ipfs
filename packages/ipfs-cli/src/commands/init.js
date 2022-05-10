@@ -5,7 +5,7 @@ import * as IPFS from 'ipfs-core'
 
 const log = logger('ipfs:cli:init')
 
-/** @type {Record<string, import('libp2p-crypto').KeyType>} */
+/** @type {Record<string, import('@libp2p/crypto/keys').KeyTypes>} */
 const keyTypes = {
   ed25519: 'Ed25519',
   rsa: 'RSA',
