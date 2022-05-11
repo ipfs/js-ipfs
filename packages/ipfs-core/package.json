@@ -61,8 +61,7 @@
     "test:chrome-webworker": "aegir test -t webworker",
     "test:firefox": "aegir test -t browser -- --browser firefox",
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
-    "test:electron-main": "aegir build && aegir test -t electron-main -f ./dist/cjs/node-test/*.spec.js",
-    "test:electron-renderer": "aegir build && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
+    "test:electron-main": "aegir test -t electron-main",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrappers.js",
     "clean": "aegir clean",
     "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i npm-run-all --i interface-blockstore"
