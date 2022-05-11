@@ -52,7 +52,7 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "test": "npm run test:node",
+    "test": "aegir test -t node --cov",
     "test:node": "aegir test -t node --cov",
     "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-core-types",
@@ -63,11 +63,12 @@
     "@ipld/dag-json": "^8.0.1",
     "@ipld/dag-pb": "^2.1.3",
     "@libp2p/crypto": "^0.22.9",
+    "@libp2p/logger": "^1.1.4",
+    "@libp2p/peer-id": "^1.1.10",
     "@multiformats/mafmt": "^11.0.2",
     "@multiformats/multiaddr": "^10.0.0",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
     "byteman": "^1.3.5",
-    "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "execa": "^6.1.0",
     "get-folder-size": "^3.1.0",
@@ -97,6 +98,7 @@
     "yargs": "^17.4.0"
   },
   "devDependencies": {
+    "@types/get-folder-size": "^3.0.1",
     "@types/ncp": "^2.0.5",
     "@types/progress": "^2.0.3",
     "@types/yargs": "^17.0.10",

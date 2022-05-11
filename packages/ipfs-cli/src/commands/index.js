@@ -4,7 +4,6 @@ import block from './block.js'
 import bootstrap from './bootstrap.js'
 import cat from './cat.js'
 import cid from './cid.js'
-import commands from './commands.js'
 import config from './config.js'
 import daemon from './daemon.js'
 import dag from './dag.js'
@@ -30,6 +29,7 @@ import stats from './stats.js'
 import swarm from './swarm.js'
 import version from './version.js'
 
+/** @type {import('yargs').CommandModule[]} */
 export const commandList = [
   add,
   bitswap,
@@ -37,7 +37,6 @@ export const commandList = [
   bootstrap,
   cat,
   cid,
-  commands,
   config,
   daemon,
   dag,

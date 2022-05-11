@@ -1,15 +1,22 @@
 import { commands } from './bitswap/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'bitswap <command>',
 
-  description: 'Interact with the bitswap agent.',
+  describe: 'Interact with the bitswap agent',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
-    // @ts-expect-error types are wrong
-    return yargs.command(commands)
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
+    return yargs
+  },
+
+  handler () {
+
   }
 }
+
+export default command

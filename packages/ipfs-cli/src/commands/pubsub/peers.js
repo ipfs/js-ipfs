@@ -1,25 +1,25 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.topic
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'peers <topic>',
 
   describe: 'Get all peers subscribed to a topic',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.topic
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print }, topic, timeout }) {
     const peers = await ipfs.pubsub.peers(topic, {
       timeout
@@ -27,3 +27,5 @@ export default {
     peers.forEach(peer => print(peer.toString()))
   }
 }
+
+export default command

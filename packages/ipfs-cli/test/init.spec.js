@@ -16,8 +16,6 @@ describe('init', function () {
   let repoPath
   let ipfs
 
-  const readme = 'hello'
-
   const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
   const repoDirSync = (p) => {
@@ -47,7 +45,7 @@ describe('init', function () {
     // jsipfs cat /ipfs/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr/readme
     const command = out.substring(out.indexOf('cat'), out.length - 2 /* omit the newline char */)
     const out2 = await ipfs(command)
-    expect(out2).to.equal(readme)
+    expect(out2).to.include('Hello and Welcome to IPFS!')
   })
 
   it('algorithm', async function () {
@@ -55,7 +53,8 @@ describe('init', function () {
     const buf = uint8ArrayFromString(repoConfSync().Identity.PrivKey, 'base64pad')
     const key = await unmarshalPrivateKey(buf)
     const peerId = await peerIdFromKeys(key.public.bytes, key.bytes)
-    expect(peerId.privKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
+    const privateKey = await unmarshalPrivateKey(peerId.privateKey)
+    expect(privateKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
   })
 
   it('bits', async function () {
@@ -91,13 +90,7 @@ describe('init', function () {
 
   it('should present ipfs path help when option help is received', async function () {
     const res = await ipfs('init --help')
-
-    expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
-  })
-
-  it('should present ipfs path help when option help is received', async function () {
-    const res = await ipfs('init --help')
-    expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
+    expect(res).to.have.string('export IPFS_PATH=')
   })
 
   it('default config argument', async () => {

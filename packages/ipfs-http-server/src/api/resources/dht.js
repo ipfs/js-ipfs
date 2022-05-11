@@ -16,7 +16,7 @@ import Boom from '@hapi/boom'
  * @param {QueryEvent} event
  */
 function mapQueryEvent (event) {
-  let id = ''
+  let id
   let extra = ''
   const type = event.type
   let responses = null

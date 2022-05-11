@@ -1,5 +1,4 @@
-
-import execa from 'execa'
+import { execaCommand } from 'execa'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -31,14 +30,14 @@ export function ipfsExec (repoPath, opts) {
   const exec = (args, options) => {
     const opts = Object.assign({}, config, options)
 
-    return execa.command(`${path.resolve(__dirname, '../../src/bin.js')} ${args}`, opts)
+    return execaCommand(`${path.resolve(__dirname, '../../../ipfs/src/cli.js')} ${args}`, opts)
   }
   const execRaw = (args, options) => {
     const opts = Object.assign({}, config, options, {
       encoding: null
     })
 
-    return execa.command(`${path.resolve(__dirname, '../../src/bin.js')} ${args}`, opts)
+    return execaCommand(`${path.resolve(__dirname, '../../ipfs/src/cli.js')} ${args}`, opts)
   }
 
   const execute = (exec, args, options) => {

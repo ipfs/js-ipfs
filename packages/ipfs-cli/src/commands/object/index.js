@@ -6,6 +6,7 @@ import objectPatch from './patch.js'
 import objectPut from './put.js'
 import objectStat from './stat.js'
 
+/** @type {import('yargs').CommandModule[]} */
 export const commands = [
   objectData,
   objectGet,

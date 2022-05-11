@@ -1,6 +1,15 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.path
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'flush [path]',
 
   describe: ' Flush a given path\'s data to disk',
@@ -11,20 +20,11 @@ export default {
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.path
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({
     ctx: { ipfs, print },
     path,
@@ -42,3 +42,5 @@ export default {
     }))
   }
 }
+
+export default command

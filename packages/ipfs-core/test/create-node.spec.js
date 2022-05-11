@@ -303,6 +303,10 @@ describe('create node', function () {
     const deferred = defer()
     const id = await createEd25519PeerId()
 
+    if (id.privateKey == null) {
+      throw new Error('No private key found')
+    }
+
     // create an old-looking repo
     const repo = await createTempRepo({
       version: 1,
@@ -310,7 +314,7 @@ describe('create node', function () {
       config: {
         Identity: {
           PeerID: id.toString(),
-          PrivKey: uint8ArrayToString(id.toBytes(), 'base64pad')
+          PrivKey: uint8ArrayToString(id.privateKey, 'base64pad')
         }
       },
       autoMigrate: true,

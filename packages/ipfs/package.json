@@ -67,7 +67,7 @@
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
   },
   "dependencies": {
-    "debug": "^4.1.1",
+    "@libp2p/logger": "^1.1.4",
     "ipfs-cli": "^0.12.3",
     "ipfs-core": "^0.14.3",
     "semver": "^7.3.2",

@@ -1,19 +1,30 @@
 import { commands } from './pubsub/index.js'
 
+/**
+ * @typedef {import('yargs').Argv} Argv
+ */
+
 /*
 Manage and inspect the state of the IPNS pubsub resolver.
 Note: this command is experimental and subject to change as the system is refined.
 */
-export default {
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'pubsub',
 
-  description: 'IPNS pubsub management.',
+  describe: 'IPNS pubsub management',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
-    // @ts-expect-error types are wrong
-    return yargs.command(commands)
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
+    return yargs
+  },
+
+  handler () {
+
   }
 }
+
+export default command

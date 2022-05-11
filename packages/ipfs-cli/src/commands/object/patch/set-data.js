@@ -3,37 +3,37 @@ import concat from 'it-concat'
 import parseDuration from 'parse-duration'
 import { coerceCID } from '../../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../../types').Context} Argv.ctx
+ * @property {import('multiformats/cid').CID} Argv.root
+ * @property {string} Argv.data
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'set-data <root> [data]',
 
   describe: 'Set data field of an ipfs object',
 
   builder: {
     root: {
-      type: 'string',
+      string: true,
       coerce: coerceCID
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
-      type: 'string',
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect',
+      string: true,
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../../types').Context} argv.ctx
-   * @param {import('multiformats/cid').CID} argv.root
-   * @param {string} argv.data
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print, getStdin }, root, data, cidBase, timeout }) {
     let buf
 
@@ -52,3 +52,5 @@ export default {
     print(cid.toString(base.encoder))
   }
 }
+
+export default command

@@ -1,16 +1,22 @@
 import { commands } from './object/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'object <command>',
 
-  description: 'Interact with ipfs objects.',
+  describe: 'Interact with ipfs objects',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

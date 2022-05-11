@@ -1,35 +1,35 @@
 import parseDuration from 'parse-duration'
 import { coercePeerId } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('@libp2p/interfaces/peer-id').PeerId} Argv.peerId
+ * @property {number} Argv.timeout
+ * @property {number} Argv.count
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'query <peerId>',
 
-  describe: 'Find the closest Peer IDs to a given Peer ID by querying the DHT.',
+  describe: 'Find the closest Peer IDs to a given Peer ID by querying the DHT',
 
   builder: {
     peerId: {
-      type: 'string',
+      string: true,
       coerce: coercePeerId
     },
     count: {
-      type: 'number',
+      number: true,
       default: 20
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('@libp2p/interfaces/peer-id').PeerId} argv.peerId
-   * @param {number} argv.timeout
-   * @param {number} argv.count
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print }, peerId, timeout, count }) {
     const seen = new Set()
 
@@ -59,3 +59,5 @@ export default {
     }
   }
 }
+
+export default command

@@ -7,7 +7,30 @@ import {
 } from '../../utils.js'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.path
+ * @property {number} Argv.offset
+ * @property {number} Argv.length
+ * @property {boolean} Argv.create
+ * @property {boolean} Argv.truncate
+ * @property {boolean} Argv.rawLeaves
+ * @property {boolean} Argv.reduceSingleLeafToSelf
+ * @property {import('multiformats/cid').CIDVersion} Argv.cidVersion
+ * @property {string} Argv.hashAlg
+ * @property {boolean} Argv.parents
+ * @property {'trickle' | 'balanced'} Argv.strategy
+ * @property {boolean} Argv.flush
+ * @property {number} Argv.shardSplitThreshold
+ * @property {number} Argv.mode
+ * @property {number} Argv.mtime
+ * @property {number} Argv.mtimeNsecs
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'write <path>',
 
   describe: 'Write to mfs files',
@@ -15,119 +38,96 @@ export default {
   builder: {
     parents: {
       alias: 'p',
-      type: 'boolean',
+      boolean: true,
       default: false,
       describe: 'Create any non-existent intermediate directories'
     },
     create: {
       alias: 'e',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Create the file if it does not exist'
     },
     offset: {
       alias: 'o',
-      type: 'number',
+      number: true,
       describe: 'Start writing at this offset'
     },
     length: {
       alias: 'l',
-      type: 'number',
+      number: true,
       describe: 'Write only this number of bytes'
     },
     truncate: {
       alias: 't',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Truncate the file after writing'
     },
     'raw-leaves': {
       alias: 'r',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Whether to write leaf nodes as raw UnixFS nodes'
     },
     'reduce-single-leaf-to-self': {
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'If a file can fit in one DAGNode, only use one DAGNode instead of storing the data in a child'
     },
     flush: {
       alias: 'f',
-      type: 'boolean',
+      boolean: true,
       default: true,
       coerce: asBoolean,
       describe: 'Flush the changes to disk immediately'
     },
     strategy: {
       alias: 's',
-      type: 'string',
+      string: true,
       default: 'balanced'
     },
     'cid-version': {
       alias: ['cid-ver'],
-      type: 'number',
+      number: true,
       default: 0,
       describe: 'Cid version to use'
     },
     'hash-alg': {
       alias: 'h',
-      type: 'string',
+      string: true,
       default: 'sha2-256'
     },
     'shard-split-threshold': {
-      type: 'number',
+      number: true,
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
     },
     mode: {
-      type: 'int',
+      number: true,
       coerce: asOctal,
       describe: 'The mode to use'
     },
     mtime: {
-      type: 'number',
+      number: true,
       coerce: coerceMtime,
       describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
     },
     'mtime-nsecs': {
-      type: 'number',
+      number: true,
       coerce: coerceMtimeNsecs,
       describe: 'Modification time fraction in nanoseconds'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.path
-   * @param {number} argv.offset
-   * @param {number} argv.length
-   * @param {boolean} argv.create
-   * @param {boolean} argv.truncate
-   * @param {boolean} argv.rawLeaves
-   * @param {boolean} argv.reduceSingleLeafToSelf
-   * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
-   * @param {string} argv.hashAlg
-   * @param {boolean} argv.parents
-   * @param {'trickle' | 'balanced'} argv.strategy
-   * @param {boolean} argv.flush
-   * @param {number} argv.shardSplitThreshold
-   * @param {number} argv.mode
-   * @param {number} argv.mtime
-   * @param {number} argv.mtimeNsecs
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({
     ctx: { ipfs, getStdin },
     path,
@@ -167,3 +167,5 @@ export default {
     })
   }
 }
+
+export default command

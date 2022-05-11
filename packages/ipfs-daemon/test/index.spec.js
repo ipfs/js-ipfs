@@ -76,7 +76,7 @@ describe('daemon', function () {
       uri
     } = daemon._grpcServer.info
 
-    const socket = new WebSocket(`${uri}/ipfs.Root/id`)
+    const socket = new WebSocket(`${uri}/ipfs.Root/id`.replace('http', 'ws'))
     let received = Buffer.alloc(0)
 
     await new Promise((resolve) => {

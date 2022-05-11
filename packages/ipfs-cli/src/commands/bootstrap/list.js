@@ -1,24 +1,24 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'list',
 
   describe: 'Show peers in the bootstrap list',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const list = await ipfs.bootstrap.list({
       timeout
@@ -26,3 +26,5 @@ export default {
     list.Peers.forEach((node) => print(node.toString()))
   }
 }
+
+export default command

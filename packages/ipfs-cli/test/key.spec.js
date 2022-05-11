@@ -24,7 +24,7 @@ describe('key', () => {
     const name = 'key-name'
     const id = 'key-id'
     const defaultOptions = {
-      type: 'ed25519',
+      type: 'Ed25519',
       size: 2048,
       timeout: undefined
     }
@@ -42,7 +42,7 @@ describe('key', () => {
     it('gen with args', async () => {
       ipfs.key.gen.withArgs(name, {
         ...defaultOptions,
-        type: 'rsa',
+        type: 'RSA',
         size: 7
       }).resolves({
         id,
@@ -56,7 +56,7 @@ describe('key', () => {
     it('gen with short args', async () => {
       ipfs.key.gen.withArgs(name, {
         ...defaultOptions,
-        type: 'rsa',
+        type: 'RSA',
         size: 5
       }).resolves({
         id,

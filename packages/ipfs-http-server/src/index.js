@@ -156,24 +156,9 @@ export class HttpApi {
     await server.register({
       plugin: Pino,
       options: {
+        prettyPrint: Boolean(enabled(LOG)),
         logEvents: ['onPostStart', 'onPostStop', 'response', 'request-error'],
-        level: enabled(LOG) ? 'debug' : (enabled(LOG_ERROR) ? 'error' : 'fatal'),
-        transport: process.env.NODE_ENV !== 'production'
-          ? {
-              target: 'pino-pretty',
-              options: {
-                colorize: true,
-                minimumLevel: 'info',
-                levelFirst: true,
-                messageFormat: true,
-                timestampKey: 'time',
-                translateTime: true,
-                singleLine: false,
-                mkdir: true,
-                append: true
-              }
-            }
-          : undefined
+        level: enabled(LOG) ? 'debug' : (enabled(LOG_ERROR) ? 'error' : 'fatal')
       }
     })
 

@@ -111,9 +111,7 @@ export const rightpad = (val, n) => {
   return result
 }
 
-export const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
-  'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
-  'export IPFS_PATH=/path/to/ipfsrepo\n'
+export const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable: `export IPFS_PATH=/path/to/ipfsrepo`'
 
 /**
  * @param {{ api?: string, silent?: boolean, migrate?: boolean, pass?: string }} argv
@@ -251,7 +249,7 @@ export const coerceCIDs = (values) => {
 }
 
 /**
- * @param {string} value
+ * @param {string} [value]
  */
 export const coercePeerId = (value) => {
   if (!value) {

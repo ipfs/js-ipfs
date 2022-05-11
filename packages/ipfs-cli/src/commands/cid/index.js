@@ -4,6 +4,7 @@ import cidCodecs from './codecs.js'
 import cidFormat from './format.js'
 import cidHashes from './hashes.js'
 
+/** @type {import('yargs').CommandModule[]} */
 export const commands = [
   cidBase32,
   cidBases,

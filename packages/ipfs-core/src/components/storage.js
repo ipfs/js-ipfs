@@ -4,6 +4,7 @@ import getDefaultConfig from 'ipfs-core-config/config'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { peerIdFromKeys } from '@libp2p/peer-id'
+import { isPeerId } from '@libp2p/interfaces/peer-id'
 import mergeOpts from 'merge-options'
 import { profiles as configProfiles } from './config/profiles.js'
 import { NotEnabledError, NotInitializedError } from '../errors.js'
@@ -157,16 +158,14 @@ const initRepo = async (print, repo, options) => {
     keychainConfig
   })
 
-  /*
-  TODO: figure out how to do this without keeping dek around or if it's even necessary
-  if (libp2p.keychain && libp2p.keychain.opts) {
+  if (libp2p.keychain) {
     await libp2p.loadKeychain()
 
     await repo.config.set('Keychain', {
-      DEK: libp2p.keychain.opts.dek
+      // @ts-expect-error private field
+      DEK: libp2p.keychain.init.dek
     })
   }
-  */
 
   return { peerId, keychain: libp2p.keychain }
 }
@@ -176,13 +175,17 @@ const initRepo = async (print, repo, options) => {
  * an instance and returns a `PeerId` instance.
  *
  * @param {PeerId|string} peerId
- * @returns {Promise<PeerId>|PeerId}
+ * @returns {Promise<PeerId>}
  */
-const decodePeerId = (peerId) => {
+const decodePeerId = async (peerId) => {
   log('using user-supplied private-key')
-  return typeof peerId === 'object'
-    ? peerId
-    : peerIdFromKeys(uint8ArrayFromString(peerId, 'base64pad'))
+  if (isPeerId(peerId)) {
+    return peerId
+  }
+
+  const rawPrivateKey = uint8ArrayFromString(peerId, 'base64pad')
+  const key = await unmarshalPrivateKey(rawPrivateKey)
+  return await peerIdFromKeys(key.public.bytes, key.bytes)
 }
 
 /**

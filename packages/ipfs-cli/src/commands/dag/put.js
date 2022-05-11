@@ -18,80 +18,80 @@ const codecs = [dagCBOR, dagJSON, dagPB, raw].reduce((/** @type {Record<string, 
   return m
 }, /** @type {Record<string, BlockCodec<any>>} */ {})
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.data
+ * @property {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} Argv.inputCodec
+ * @property {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} Argv.storeCodec
+ * @property {import('multiformats/cid').CIDVersion} Argv.cidVersion
+ * @property {boolean} Argv.pin
+ * @property {string} Argv.hashAlg
+ * @property {string} Argv.cidBase
+ * @property {boolean} Argv.preload
+ * @property {boolean} Argv.onlyHash
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'put [data]',
 
   describe: 'accepts input from a file or stdin and parses it into an object of the specified format',
 
   builder: {
     data: {
-      type: 'string'
+      string: true
     },
     'store-codec': {
-      type: 'string',
+      string: true,
       default: 'dag-cbor',
       describe: 'The codec that the stored object will be encoded with',
       choices: ['dag-cbor', 'dag-json', 'dag-pb', 'raw']
     },
     'input-codec': {
-      type: 'string',
+      string: true,
       default: 'dag-json',
       describe: 'The codec that the input object is encoded with',
       choices: ['dag-cbor', 'dag-json', 'dag-pb', 'raw']
     },
     pin: {
-      type: 'boolean',
+      boolean: true,
       default: true,
       describe: 'Pin this object when adding'
     },
     'hash-alg': {
-      type: 'string',
+      string: true,
       alias: 'hash',
       default: 'sha2-256',
       describe: 'Hash function to use'
     },
     'cid-version': {
-      type: 'integer',
+      number: true,
       describe: 'CID version. Defaults to 0 unless an option that depends on CIDv1 is passed',
       default: 0
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in.',
-      type: 'string',
+      describe: 'Number base to display CIDs in',
+      string: true,
       default: 'base58btc'
     },
     preload: {
-      type: 'boolean',
+      boolean: true,
       default: true,
       describe: 'Preload this object when adding'
     },
     'only-hash': {
-      type: 'boolean',
+      boolean: true,
       default: false,
       describe: 'Only hash the content, do not write to the underlying block store'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.data
-   * @param {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} argv.inputCodec
-   * @param {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} argv.storeCodec
-   * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
-   * @param {boolean} argv.pin
-   * @param {string} argv.hashAlg
-   * @param {string} argv.cidBase
-   * @param {boolean} argv.preload
-   * @param {boolean} argv.onlyHash
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print, getStdin }, data, inputCodec, storeCodec, pin, hashAlg, cidVersion, cidBase, preload, onlyHash, timeout }) {
     if (!codecs[inputCodec]) {
       throw new Error(`Unknown input-codec ${inputCodec}`)
@@ -127,3 +127,5 @@ export default {
     print(cid.toString(base.encoder))
   }
 }
+
+export default command

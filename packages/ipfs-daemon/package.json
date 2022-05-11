@@ -40,9 +40,9 @@
     "build": "aegir build --no-bundle"
   },
   "dependencies": {
+    "@libp2p/logger": "^1.1.4",
     "@libp2p/webrtc-star": "^1.0.6",
     "@mapbox/node-pre-gyp": "^1.0.5",
-    "debug": "^4.1.1",
     "ipfs-core": "^0.14.3",
     "ipfs-core-types": "^0.10.3",
     "ipfs-grpc-server": "^0.8.3",

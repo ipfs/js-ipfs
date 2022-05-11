@@ -28,7 +28,7 @@ export function createRouting ({ libp2p, repo, peerId, options }) {
   }
 
   // Add DHT datastore if enabled
-  if (!get(options, 'offline', false) && get(options, 'config.Routing.Type') !== 'none') {
+  if (get(options, 'offline', false) !== true && ['dht', 'dhtclient', 'dhtserver'].includes(get(options, 'config.Routing.Type', 'none'))) {
     ipnsStores.push(new DHTDatastore(libp2p.dht))
   }
 

@@ -1,46 +1,46 @@
 import parseDuration from 'parse-duration'
 import { coercePeerId } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('@libp2p/interfaces/peer-id').PeerId} Argv.peer
+ * @property {string} Argv.proto
+ * @property {boolean} Argv.poll
+ * @property {number} Argv.interval
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'bw',
 
-  describe: 'Get bandwidth information.',
+  describe: 'Get bandwidth information',
 
   builder: {
     peer: {
-      type: 'string',
+      string: true,
       coerce: coercePeerId
     },
     proto: {
-      type: 'string',
+      string: true,
       default: ''
     },
     poll: {
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     interval: {
-      type: 'string',
+      string: true,
       default: '1s',
       coerce: parseDuration
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('@libp2p/interfaces/peer-id').PeerId} argv.peer
-   * @param {string} argv.proto
-   * @param {boolean} argv.poll
-   * @param {number} argv.interval
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print }, peer, proto, poll, interval, timeout }) {
     for await (const chunk of ipfs.stats.bw({ peer, proto, poll, interval, timeout })) {
       print(`bandwidth status
@@ -51,3 +51,5 @@ export default {
     }
   }
 }
+
+export default command

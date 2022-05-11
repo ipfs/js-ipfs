@@ -1,16 +1,22 @@
 import { commands } from './key/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'key <command>',
 
-  description: 'Manage your keys',
+  describe: 'Manage your keys',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

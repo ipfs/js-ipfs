@@ -1,4 +1,4 @@
-import { GossipSub } from '@achingbrain/libp2p-gossipsub'
+import { GossipSub } from '@chainsafe/libp2p-gossipsub'
 import { FloodSub } from '@libp2p/floodsub'
 
 /** @typedef {import('@libp2p/interfaces/pubsub').PubSub} PubSub */

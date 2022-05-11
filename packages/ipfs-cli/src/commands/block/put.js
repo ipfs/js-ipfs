@@ -2,7 +2,21 @@ import fs from 'fs'
 import concat from 'it-concat'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.block
+ * @property {string} Argv.format
+ * @property {string} Argv.mhtype
+ * @property {number} Argv.mhlen
+ * @property {import('multiformats/cid').CIDVersion} Argv.version
+ * @property {boolean} Argv.pin
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'put [block]',
 
   describe: 'Stores input as an IPFS block',
@@ -10,7 +24,7 @@ export default {
   builder: {
     format: {
       alias: 'f',
-      describe: 'cid format for blocks to be created with.',
+      describe: 'cid format for blocks to be created with',
       default: 'dag-pb'
     },
     mhtype: {
@@ -23,39 +37,25 @@ export default {
     },
     version: {
       describe: 'cid version',
-      type: 'number',
+      number: true,
       default: 0
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in.',
-      type: 'string',
+      describe: 'Number base to display CIDs in',
+      string: true,
       default: 'base58btc'
     },
     pin: {
       describe: 'Pin this block recursively',
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.block
-   * @param {string} argv.format
-   * @param {string} argv.mhtype
-   * @param {number} argv.mhlen
-   * @param {import('multiformats/cid').CIDVersion} argv.version
-   * @param {boolean} argv.pin
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print, getStdin }, block, timeout, format, mhtype, mhlen, version, cidBase, pin }) {
     let data
 
@@ -77,3 +77,5 @@ export default {
     print(cid.toString(base.encoder))
   }
 }
+
+export default command

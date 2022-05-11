@@ -39,7 +39,7 @@ export default {
         }, {
           type: 'js',
           ipfsModule: await import('./src/index.js'),
-          ipfsHttpModule: await import('ipfs-http-client/src'),
+          ipfsHttpModule: await import('ipfs-http-client'),
           ipfsBin: path.resolve('../ipfs/src/cli.js'),
           ipfsOptions: {
             libp2p: {

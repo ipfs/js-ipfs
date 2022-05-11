@@ -10,6 +10,7 @@ import filesStat from './stat.js'
 import filesTouch from './touch.js'
 import filesWrite from './write.js'
 
+/** @type {import('yargs').CommandModule[]} */
 export const commands = [
   filesChmod,
   filesCp,

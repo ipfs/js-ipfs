@@ -1,15 +1,22 @@
 import { commands } from './cid/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'cid <command>',
 
-  description: 'Convert, format and discover properties of CIDs.',
+  describe: 'Convert, format and discover properties of CIDs',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
-    // @ts-expect-error types are wrong
-    return yargs.command(commands)
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
+    return yargs
+  },
+
+  handler () {
+
   }
 }
+
+export default command

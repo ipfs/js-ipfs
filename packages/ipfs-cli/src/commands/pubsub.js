@@ -1,16 +1,22 @@
 import { commands } from './pubsub/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'pubsub <command>',
 
-  description: 'pubsub commands',
+  describe: 'pubsub commands',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

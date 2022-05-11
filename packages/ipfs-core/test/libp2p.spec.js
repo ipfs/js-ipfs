@@ -6,7 +6,7 @@ import { MemoryDatastore } from 'datastore-core/memory'
 // import { EventEmitter } from 'events'
 import { createLibp2p as libp2pComponent } from '../src/components/libp2p.js'
 // import { NOISE as Crypto } from '@chainsafe/libp2p-noise'
-import { GossipSub } from '@achingbrain/libp2p-gossipsub'
+import { GossipSub } from '@chainsafe/libp2p-gossipsub'
 import { createEd25519PeerId } from '@libp2p/peer-id-factory'
 
 /**
@@ -233,7 +233,7 @@ describe('libp2p customization', function () {
 
       await libp2p.start()
 
-      expect(libp2p.getMultiaddrs().map(m => m.toString())).to.include(annAddr)
+      expect(libp2p.getMultiaddrs().map(m => m.toString())).to.include(`${annAddr}/p2p/${peerId}`)
     })
 
     it('should select gossipsub as pubsub router', async () => {

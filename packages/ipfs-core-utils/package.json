@@ -116,12 +116,12 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@libp2p/logger": "^1.1.4",
     "@multiformats/multiaddr": "^10.0.0",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
     "any-signal": "^3.0.0",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
-    "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.10.3",
     "ipfs-unixfs": "^6.0.3",

@@ -1,37 +1,37 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {boolean} Argv.quiet
+ * @property {boolean} Argv.streamErrors
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'gc',
 
-  describe: 'Perform a garbage collection sweep on the repo.',
+  describe: 'Perform a garbage collection sweep on the repo',
 
   builder: {
     quiet: {
       alias: 'q',
       desc: 'Write minimal output',
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     'stream-errors': {
-      desc: 'Output individual errors thrown when deleting blocks.',
-      type: 'boolean',
+      desc: 'Output individual errors thrown when deleting blocks',
+      boolean: true,
       default: true
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {boolean} argv.quiet
-   * @param {boolean} argv.streamErrors
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print }, quiet, streamErrors, timeout }) {
     for await (const r of ipfs.repo.gc({
       timeout
@@ -44,3 +44,5 @@ export default {
     }
   }
 }
+
+export default command

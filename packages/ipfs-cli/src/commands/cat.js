@@ -1,6 +1,16 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../types').Context} Argv.ctx
+ * @property {string} Argv.ipfsPath
+ * @property {number} Argv.offset
+ * @property {number} Argv.length
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'cat <ipfsPath>',
 
   describe: 'Fetch and cat an IPFS path referencing a file',
@@ -8,33 +18,25 @@ export default {
   builder: {
     offset: {
       alias: 'o',
-      type: 'integer',
+      number: true,
       describe: 'Byte offset to begin reading from'
     },
     length: {
       alias: ['n', 'count'],
-      type: 'integer',
+      number: true,
       describe: 'Maximum number of bytes to read'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../types').Context} argv.ctx
-   * @param {string} argv.ipfsPath
-   * @param {number} argv.offset
-   * @param {number} argv.length
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({ ctx: { ipfs, print }, ipfsPath, offset, length, timeout }) {
     for await (const buf of ipfs.cat(ipfsPath, { offset, length, timeout })) {
       print.write(buf)
     }
   }
 }
+
+export default command

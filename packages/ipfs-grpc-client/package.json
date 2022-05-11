@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
+    "@libp2p/logger": "^1.1.4",
     "change-case": "^4.1.1",
-    "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.10.3",
     "ipfs-core-utils": "^0.14.3",

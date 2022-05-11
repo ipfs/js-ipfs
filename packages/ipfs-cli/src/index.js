@@ -9,7 +9,7 @@ export async function cli (command, ctxMiddleware) {
   // Apply command aliasing (eg `refs local` -> `refs-local`)
   command = commandAlias(command)
 
-  await parser
+  await parser()
     .middleware(ctxMiddleware)
     .parse(command)
 }

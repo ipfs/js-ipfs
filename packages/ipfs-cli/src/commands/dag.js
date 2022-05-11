@@ -1,16 +1,22 @@
 import { commands } from './dag/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'dag <command>',
 
-  description: 'Interact with ipld dag objects.',
+  describe: 'Interact with ipld dag objects',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

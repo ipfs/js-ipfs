@@ -7,7 +7,23 @@ import {
 } from '../../utils.js'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.path
+ * @property {boolean} Argv.parents
+ * @property {import('multiformats/cid').CIDVersion} Argv.cidVersion
+ * @property {string} Argv.hashAlg
+ * @property {boolean} Argv.flush
+ * @property {number} Argv.shardSplitThreshold
+ * @property {number} Argv.mode
+ * @property {number} Argv.mtime
+ * @property {number} Argv.mtimeNsecs
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'mkdir <path>',
 
   describe: 'Make mfs directories',
@@ -15,72 +31,56 @@ export default {
   builder: {
     parents: {
       alias: 'p',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'No error if existing, make parent directories as needed.'
     },
     'cid-version': {
       alias: ['cid-ver'],
-      type: 'number',
+      number: true,
       default: 0,
       describe: 'Cid version to use. (experimental).'
     },
     'hash-alg': {
       alias: 'h',
-      type: 'string',
+      string: true,
       default: 'sha2-256',
       describe: 'Hash function to use. Will set CID version to 1 if used'
     },
     flush: {
       alias: 'f',
-      type: 'boolean',
+      boolean: true,
       default: true,
       coerce: asBoolean,
       describe: 'Flush the changes to disk immediately'
     },
     'shard-split-threshold': {
-      type: 'number',
+      number: true,
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
     },
     mode: {
-      type: 'number',
+      number: true,
       coerce: asOctal,
       describe: 'Mode to apply to the new directory'
     },
     mtime: {
-      type: 'number',
+      number: true,
       coerce: coerceMtime,
       describe: 'Modification time in seconds before or since the Unix Epoch to apply to created UnixFS entries'
     },
     'mtime-nsecs': {
-      type: 'number',
+      number: true,
       coerce: coerceMtimeNsecs,
       describe: 'Modification time fraction in nanoseconds'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.path
-   * @param {boolean} argv.parents
-   * @param {import('multiformats/cid').CIDVersion} argv.cidVersion
-   * @param {string} argv.hashAlg
-   * @param {boolean} argv.flush
-   * @param {number} argv.shardSplitThreshold
-   * @param {number} argv.mode
-   * @param {number} argv.mtime
-   * @param {number} argv.mtimeNsecs
-   * @param {number} argv.timeout
-   *
-   * @returns {Promise<void>}
-   */
   async handler ({
     ctx: { ipfs },
     path,
@@ -106,3 +106,5 @@ export default {
     })
   }
 }
+
+export default command
