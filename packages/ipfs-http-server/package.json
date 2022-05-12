@@ -37,7 +37,7 @@
     "test:node": "aegir test -t node --cov",
     "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-http-client -i rimraf -i ipfs-core-types -i npm-run-all",
-    "build": "aegir build",
+    "build": "aegir build --no-bundle",
     "prepublishOnly": "node scripts/update-version.js"
   },
   "dependencies": {

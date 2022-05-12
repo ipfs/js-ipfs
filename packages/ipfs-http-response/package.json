@@ -37,7 +37,6 @@
     "lint": "aegir lint",
     "clean": "aegir clean",
     "build": "aegir build --no-bundle",
-    "pretest": "aegir build",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node --cov",
     "dep-check": "aegir dep-check -i rimraf -i global"
