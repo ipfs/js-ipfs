@@ -29,7 +29,7 @@ export default function testTimeout (fn) {
 
         reject(new Error(`API call did not time out after ${timeTaken}ms, got ${JSON.stringify(result, null, 2)}`))
       }, (/** @type {Error} */ err) => {
-        if (err.name === 'TimeoutError') {
+        if (err.toString().includes('Timeout')) {
           return resolve()
         }
 
