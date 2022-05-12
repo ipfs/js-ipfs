@@ -132,7 +132,7 @@ function createMfs (options) {
 export function createFiles ({ repo, preload, hashers, options: constructorOptions }) {
   const methods = createMfs({
     repo,
-    repoOwner: Boolean(constructorOptions.repoOwner),
+    repoOwner: constructorOptions.repoOwner !== false,
     hashers
   })
 

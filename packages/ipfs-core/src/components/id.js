@@ -75,6 +75,7 @@ export function createId ({ peerId, network }) {
       protocols: (peer.protocols || []).sort()
     }
   }
+
   return withTimeoutOption(id)
 }
 
