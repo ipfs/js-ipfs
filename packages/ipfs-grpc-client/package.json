@@ -63,6 +63,7 @@
     "multiformats": "^9.5.1",
     "p-defer": "^4.0.0",
     "protobufjs": "^6.10.2",
+    "uint8arrays": "^3.0.0",
     "wherearewe": "^1.0.0",
     "ws": "^8.5.0"
   },
