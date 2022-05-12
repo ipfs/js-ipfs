@@ -103,6 +103,7 @@
     "p-defer": "^4.0.0",
     "p-map": "^5.3.0",
     "p-retry": "^5.1.0",
+    "p-wait-for": "^4.1.0",
     "pako": "^2.0.4",
     "readable-stream": "^3.4.0",
     "sinon": "^13.0.1",

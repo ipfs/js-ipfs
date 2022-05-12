@@ -12,6 +12,7 @@ import delay from 'delay'
 import { isWebWorker, isNode } from 'ipfs-utils/src/env.js'
 import sinon from 'sinon'
 import defer from 'p-defer'
+import pWaitFor from 'p-wait-for'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -492,17 +493,19 @@ export function testSubscribe (factory, options) {
 
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hello world 1'))
 
-        await delay(1000)
+        // should receive message
+        await pWaitFor(() => {
+          return handler1.callCount === 1 && handler2.callCount === 1
+        })
 
-        expect(handler1).to.have.property('callCount', 1)
-        expect(handler2).to.have.property('callCount', 1)
-
+        // both handlers should be removed
         await ipfs2.pubsub.unsubscribe(topic)
 
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hello world 2'))
 
         await delay(1000)
 
+        // should not have received message
         expect(handler1).to.have.property('callCount', 1)
         expect(handler2).to.have.property('callCount', 1)
       })
@@ -528,18 +531,24 @@ export function testSubscribe (factory, options) {
 
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hello world 1'))
 
-        await delay(1000)
+        // should receive message
+        await pWaitFor(() => {
+          return handler1.callCount === 1 && handler2.callCount === 1
+        })
 
-        expect(handler1).to.have.property('callCount', 1)
-        expect(handler2).to.have.property('callCount', 1)
-
+        // only one handler should be removed
         await ipfs2.pubsub.unsubscribe(topic, handler1)
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hello world 2'))
 
         await delay(1000)
 
+        // one should receive message
+        await pWaitFor(() => {
+          return handler2.callCount === 2
+        })
+
+        // other should not have received message
         expect(handler1).to.have.property('callCount', 1)
-        expect(handler2).to.have.property('callCount', 2)
       })
     })
   })
