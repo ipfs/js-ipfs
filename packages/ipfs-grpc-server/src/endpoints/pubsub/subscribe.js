@@ -1,5 +1,6 @@
 import { subscriptions } from './subscriptions.js'
 import { nanoid } from 'nanoid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
@@ -24,7 +25,22 @@ export function grpcPubsubSubscribe (ipfs, options = {}) {
     const handler = {
       /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
       onMessage: (message) => {
-        sink.push(message)
+        let sequenceNumber
+
+        if (message.sequenceNumber != null) {
+          let numberString = message.sequenceNumber.toString(16)
+
+          if (numberString.length % 2 !== 0) {
+            numberString = `0${numberString}`
+          }
+
+          sequenceNumber = uint8ArrayFromString(numberString, 'base16')
+        }
+
+        sink.push({
+          ...message,
+          sequenceNumber
+        })
       },
       onUnsubscribe: () => {
         sink.end()

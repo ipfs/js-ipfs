@@ -1,4 +1,5 @@
 import { callbackify } from 'util'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
  * @param {import('ipfs-core-types').IPFS} ipfs
@@ -16,7 +17,10 @@ export function grpcId (ipfs, options = {}) {
       ...metadata
     }
 
-    return ipfs.id(opts)
+    return ipfs.id({
+      ...opts,
+      peerId: opts.peerId ? peerIdFromString(opts.peerId) : undefined
+    })
   }
 
   return callbackify(id)
