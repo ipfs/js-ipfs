@@ -11,6 +11,19 @@ import { getDescribe, getIt } from '../utils/mocha.js'
  */
 
 /**
+ * @param {import('ipfs-core-types/src/swarm').PeersResult[]} peers
+ */
+function peersAreUnique (peers) {
+  const peerSet = new Set()
+
+  peers.forEach(peer => {
+    peerSet.add(peer.peer.toString())
+  })
+
+  expect(peerSet).to.have.lengthOf(peers.length)
+}
+
+/**
  * @param {Factory} factory
  * @param {object} options
  */
@@ -103,10 +116,9 @@ export function testPeers (factory, options) {
       const nodeBId = await nodeB.id()
       await nodeA.swarm.connect(nodeBId.addresses[0])
       await delay(1000)
-      const peersA = await nodeA.swarm.peers()
-      const peersB = await nodeB.swarm.peers()
-      expect(peersA).to.have.length(1)
-      expect(peersB).to.have.length(1)
+
+      peersAreUnique(await nodeA.swarm.peers())
+      peersAreUnique(await nodeB.swarm.peers())
     })
 
     it('should list peers only once even if they have multiple addresses', async () => {
@@ -138,10 +150,9 @@ export function testPeers (factory, options) {
       await nodeB.swarm.connect(nodeAId.addresses[0])
 
       await delay(1000)
-      const peersA = await nodeA.swarm.peers()
-      const peersB = await nodeB.swarm.peers()
-      expect(peersA).to.have.length(1)
-      expect(peersB).to.have.length(1)
+
+      peersAreUnique(await nodeA.swarm.peers())
+      peersAreUnique(await nodeB.swarm.peers())
     })
   })
 }

@@ -17,7 +17,6 @@ export function createPeers ({ network }) {
 
     if (options.verbose) {
       const peers = []
-
       for (const connection of libp2p.getConnections()) {
         /** @type {PeersResult} */
         const peer = {
@@ -51,7 +50,7 @@ export function createPeers ({ network }) {
         peer: connection.remotePeer
       }
 
-      peers.set(connection.remoteAddr.toString(), peer)
+      peers.set(connection.remotePeer.toString(), peer)
     }
 
     return Array.from(peers.values())
