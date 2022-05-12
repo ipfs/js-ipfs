@@ -2,7 +2,6 @@
 
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { expectIsPingResponse, isPong } from './utils.js'
 import all from 'it-all'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
 import { peerIdFromString } from '@libp2p/peer-id'
@@ -42,10 +41,9 @@ export function testPing (factory, options) {
     it('should send the specified number of packets', async () => {
       const count = 3
       const responses = await all(ipfsA.ping(nodeBId.id, { count }))
-      responses.forEach(expectIsPingResponse)
 
-      const pongs = responses.filter(isPong)
-      expect(pongs).to.have.lengthOf(count)
+      expect(responses).to.have.lengthOf(count + 1)
+      expect(responses[0].success).to.be.true()
     })
 
     it('should fail when pinging a peer that is not available', () => {
