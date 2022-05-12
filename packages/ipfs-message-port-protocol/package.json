@@ -73,7 +73,7 @@
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
     "lint": "aegir lint",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i ipfs-core-types"
   },
   "dependencies": {
     "ipfs-core-types": "^0.10.3",
@@ -81,7 +81,6 @@
   },
   "devDependencies": {
     "aegir": "^37.0.11",
-    "rimraf": "^3.0.2",
     "uint8arrays": "^3.0.0"
   },
   "engines": {

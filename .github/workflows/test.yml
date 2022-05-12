@@ -143,25 +143,6 @@ jobs:
         with:
           flags: electron-main
 
-  test-electron-renderer:
-    name: Unit tests electron-renderer
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-      - uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm run test:electron-renderer -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
-        with:
-          flags: electron-renderer
-
   test-interop:
     name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
     runs-on: ubuntu-latest
@@ -171,7 +152,6 @@ jobs:
           - node
           - browser
           #- electron-main
-          #- electron-renderer
     steps:
       - uses: actions/checkout@v2
         with:
@@ -196,7 +176,6 @@ jobs:
           - node
           - browser
           #- electron-main
-          #- electron-renderer
         suite:
           - test:interface:core
           - test:interface:client
@@ -240,7 +219,6 @@ jobs:
       test-firefox,
       test-firefox-webworker,
       test-electron-main,
-      test-electron-renderer,
       test-interop,
       test-interface,
       test-interface-message-port-client

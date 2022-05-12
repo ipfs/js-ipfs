@@ -64,7 +64,7 @@
     "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js LIBP2P_TCP_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
+    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
   "dependencies": {
     "@libp2p/logger": "^1.1.4",
@@ -78,8 +78,6 @@
     "@types/semver": "^7.3.4",
     "@types/update-notifier": "^5.0.0",
     "aegir": "^37.0.11",
-    "assert": "^2.0.0",
-    "copyfiles": "^2.4.1",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "^0.12.1",
@@ -93,8 +91,6 @@
     "iso-url": "^1.0.0",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.4.2",
-    "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2",
     "url": "^0.11.0",
     "wrtc": "^0.4.6"
   },

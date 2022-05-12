@@ -63,17 +63,16 @@
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
     "lint": "aegir lint",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i ipfs-core-types"
   },
   "dependencies": {
     "ipfs-core-types": "^0.10.3",
     "ipfs-message-port-protocol": "^0.11.3",
-    "it-all": "^1.0.4",
-    "multiformats": "^9.5.1"
+    "it-all": "^1.0.4"
   },
   "devDependencies": {
     "aegir": "^37.0.11",
-    "rimraf": "^3.0.2"
+    "multiformats": "^9.5.1"
   },
   "engines": {
     "node": ">=15.0.0",

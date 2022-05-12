@@ -45,10 +45,9 @@
     "test:chrome-webworker": "aegir test -t webworker",
     "test:firefox": "aegir test -t browser -- --browser firefox",
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
-    "test:electron-renderer": "aegir build && aegir test -t electron-renderer -f ./dist/cjs/browser-test/*.spec.js",
     "lint": "aegir lint",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i ipfs-core -i ipfs-core-types"
   },
   "dependencies": {
     "@ipld/dag-cbor": "^7.0.0",
@@ -79,8 +78,7 @@
     "it-all": "^1.0.4",
     "it-first": "^1.0.4",
     "nock": "^13.0.2",
-    "p-defer": "^4.0.0",
-    "rimraf": "^3.0.2"
+    "p-defer": "^4.0.0"
   },
   "engines": {
     "node": ">=15.0.0",

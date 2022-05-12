@@ -63,7 +63,7 @@
     "test:electron-main": "aegir test -t electron-main",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrappers.js",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types -i npm-run-all --i interface-blockstore"
+    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types --i interface-blockstore"
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^6.0.1",
@@ -90,7 +90,6 @@
     "any-signal": "^3.0.0",
     "array-shuffle": "^3.0.0",
     "blockstore-core": "^1.0.2",
-    "blockstore-datastore-adapter": "^2.0.2",
     "dag-jose": "^1.0.0",
     "datastore-core": "^7.0.0",
     "datastore-pubsub": "^3.0.0",
@@ -113,7 +112,6 @@
     "ipns": "^1.0.0",
     "is-domain-name": "^1.0.1",
     "is-ipfs": "^6.0.1",
-    "it-all": "^1.0.4",
     "it-drain": "^1.0.3",
     "it-filter": "^1.0.2",
     "it-first": "^1.0.4",
@@ -142,14 +140,15 @@
     "@types/pako": "^1.0.2",
     "@types/rimraf": "^3.0.1",
     "aegir": "^37.0.11",
+    "blockstore-datastore-adapter": "^2.0.2",
     "delay": "^5.0.0",
     "go-ipfs": "^0.12.1",
     "interface-blockstore-tests": "^2.0.2",
     "interface-ipfs-core": "^0.154.3",
     "ipfsd-ctl": "^11.0.0",
     "iso-url": "^1.0.0",
+    "it-all": "^1.0.4",
     "nanoid": "^3.1.23",
-    "npm-run-all": "^4.1.5",
     "p-defer": "^4.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^13.0.1"

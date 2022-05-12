@@ -51,7 +51,7 @@
     "clean": "aegir clean",
     "build": "aegir build && copyfiles './test/fixtures/**/*' ./dist",
     "lint": "aegir lint",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i rimraf -i copyfiles"
+    "dep-check": "aegir dep-check -i ipfs-core-types -i copyfiles"
   },
   "repository": {
     "type": "git",
@@ -107,9 +107,6 @@
     "readable-stream": "^3.4.0",
     "sinon": "^13.0.1",
     "uint8arrays": "^3.0.0"
-  },
-  "devDependencies": {
-    "rimraf": "^3.0.2"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",

@@ -39,7 +39,6 @@
   "devDependencies": {
     "aegir": "^37.0.11",
     "mkdirp": "^1.0.4",
-    "protobufjs": "^6.10.2",
-    "rimraf": "^3.0.2"
+    "protobufjs": "^6.10.2"
   }
 }

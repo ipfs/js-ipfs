@@ -39,7 +39,7 @@
     "test:interface:message-port-client": "aegir test -t browser --bail -f ./test/interface-message-port-client.js",
     "lint": "aegir lint",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i esbuild"
+    "dep-check": "aegir dep-check -i ipfs-core -i ipfs-core-types -i esbuild"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
@@ -54,8 +54,7 @@
     "aegir": "^37.0.11",
     "interface-ipfs-core": "^0.154.2",
     "ipfs-core": "^0.14.3",
-    "ipfs-message-port-server": "^0.11.2",
-    "rimraf": "^3.0.2"
+    "ipfs-message-port-server": "^0.11.2"
   },
   "engines": {
     "node": ">=15.0.0",

@@ -39,7 +39,7 @@
     "build": "aegir build --no-bundle",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node --cov",
-    "dep-check": "aegir dep-check -i rimraf -i global"
+    "dep-check": "aegir dep-check -i global"
   },
   "browser": {
     "file-type": "file-type/browser",
@@ -82,7 +82,6 @@
     "ipfs-core": "^0.14.3",
     "ipfsd-ctl": "^11.0.0",
     "it-all": "^1.0.4",
-    "rimraf": "^3.0.2",
     "uint8arrays": "^3.0.0"
   },
   "contributors": [

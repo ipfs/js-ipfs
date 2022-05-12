@@ -46,7 +46,7 @@
     "test:electron-main": "aegir test -t electron-main",
     "lint": "aegir lint",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i aegir -i rimraf -i ipfs-grpc-protocol -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i aegir -i ipfs-grpc-protocol -i ipfs-core-types"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
@@ -69,7 +69,6 @@
   "devDependencies": {
     "aegir": "^37.0.11",
     "it-all": "^1.0.4",
-    "rimraf": "^3.0.2",
     "sinon": "^13.0.1"
   }
 }

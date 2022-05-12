@@ -110,7 +110,7 @@
     "test:electron-main": "aegir test -t electron-main",
     "lint": "aegir lint",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
+    "dep-check": "aegir dep-check -i ipfs-core-types",
     "build": "aegir build"
   },
   "license": "MIT",
@@ -138,8 +138,7 @@
   },
   "devDependencies": {
     "@web-std/file": "^3.0.2",
-    "aegir": "^37.0.11",
-    "rimraf": "^3.0.2"
+    "aegir": "^37.0.11"
   },
   "browser": {
     "fs": false

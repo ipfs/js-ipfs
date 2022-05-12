@@ -53,8 +53,7 @@
     "multiformats": "^9.5.1"
   },
   "devDependencies": {
-    "aegir": "^37.0.11",
-    "rimraf": "^3.0.2"
+    "aegir": "^37.0.11"
   },
   "contributors": [
     "Irakli Gozalishvili <dev@gozala.io>"
