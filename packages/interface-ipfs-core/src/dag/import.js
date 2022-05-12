@@ -61,7 +61,9 @@ export function testImport (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  describe('.dag.import', () => {
+  describe('.dag.import', function () {
+    this.timeout(540 * 1000)
+
     /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
     before(async () => {
