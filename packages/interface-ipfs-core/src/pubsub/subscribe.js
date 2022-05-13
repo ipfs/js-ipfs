@@ -370,7 +370,7 @@ export function testSubscribe (factory, options) {
         expect(inbox2.sort()).to.eql(outbox.sort())
       })
 
-      it('should send/receive 100 messages', async function () {
+      it.skip('should send/receive 100 messages', async function () {
         // @ts-expect-error this is mocha
         this.timeout(2 * 60 * 1000)
 
