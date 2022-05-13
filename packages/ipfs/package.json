@@ -61,7 +61,7 @@
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
-    "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js LIBP2P_TCP_REUSEPORT=false ipfs-interop",
+    "test:interop": "cross-env DEBUG=ipfs*,libp2p*,-*:trace IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js LIBP2P_TCP_REUSEPORT=false ipfs-interop -- -- --grep kad-dht",
     "test:external": "aegir test-dependant",
     "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
