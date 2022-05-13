@@ -150,7 +150,7 @@ jobs:
       matrix:
         type:
           - node
-          - browser
+  #       - browser
           #- electron-main
     steps:
       - uses: actions/checkout@v2
