@@ -28,16 +28,16 @@ jobs:
         external:
           - name: ipfs webui
             repo: https://github.com/ipfs-shipyard/ipfs-webui.git
-            deps: ipfs@$PWD/packages/ipfs/dist
+            deps: ipfs@$PWD/packages/ipfs
           - name: ipfs companion
             repo: https://github.com/ipfs-shipyard/ipfs-companion.git
-            deps: ipfs@$PWD/packages/ipfs/dist
+            deps: ipfs@$PWD/packages/ipfs
           - name: orbit-db-io
             repo: https://github.com/orbitdb/orbit-db-io.git
-            deps: ipfs@$PWD/packages/ipfs/dist
+            deps: ipfs@$PWD/packages/ipfs
           - name: ipfs-log
             repo: https://github.com/orbitdb/ipfs-log.git
-            deps: ipfs@$PWD/packages/ipfs/dist,orbit-db-io@next
+            deps: ipfs@$PWD/packages/ipfs,orbit-db-io@next
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
