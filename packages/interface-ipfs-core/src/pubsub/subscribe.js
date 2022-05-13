@@ -491,6 +491,9 @@ export function testSubscribe (factory, options) {
         expect(handler1).to.have.property('callCount', 0)
         expect(handler2).to.have.property('callCount', 0)
 
+        // await gossipsub heartbeat to rebalance mesh
+        await delay(2000)
+
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hello world 1'))
 
         // should receive message
@@ -528,6 +531,9 @@ export function testSubscribe (factory, options) {
 
         expect(handler1).to.have.property('callCount', 0)
         expect(handler2).to.have.property('callCount', 0)
+
+        // await gossipsub heartbeat to rebalance mesh
+        await delay(2000)
 
         await ipfs1.pubsub.publish(topic, uint8ArrayFromString('hello world 1'))
 
