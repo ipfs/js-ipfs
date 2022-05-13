@@ -371,7 +371,6 @@ export function testSubscribe (factory, options) {
       })
 
       it.skip('should send/receive 100 messages', async function () {
-        // @ts-expect-error this is mocha
         this.timeout(2 * 60 * 1000)
 
         const msgBase = 'msg - '
