@@ -10,7 +10,7 @@ import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
  */
 
 /**
- * @param {Object} json
+ * @param {object} json
  * @param {string} json.Name
  * @param {string} json.Cid
  * @param {Status} json.Status

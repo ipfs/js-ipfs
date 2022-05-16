@@ -1,23 +1,33 @@
 /* eslint-env mocha */
 
-import { Multiaddr } from 'multiaddr'
-import PeerId from 'peer-id'
+import { Multiaddr } from '@multiformats/multiaddr'
 import delay from 'delay'
 import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
  */
 
 /**
+ * @param {import('ipfs-core-types/src/swarm').PeersResult[]} peers
+ */
+function peersAreUnique (peers) {
+  const peerSet = new Set()
+
+  peers.forEach(peer => {
+    peerSet.add(peer.peer.toString())
+  })
+
+  expect(peerSet).to.have.lengthOf(peers.length)
+}
+
+/**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testPeers (factory, options) {
-  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -32,7 +42,7 @@ export function testPeers (factory, options) {
     let ipfsBId
 
     before(async () => {
-      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc' })).api
       ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       ipfsBId = await ipfsB.id()
       await ipfsA.swarm.connect(ipfsBId.addresses[0])
@@ -51,8 +61,8 @@ export function testPeers (factory, options) {
 
       expect(peer).to.have.a.property('addr')
       expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
-      expect(peer).to.have.a.property('peer').that.is.a('string')
-      expect(PeerId.parse(peer.peer)).to.be.ok()
+      expect(peer).to.have.a.property('peer')
+      expect(peer.peer).to.be.ok()
       expect(peer).to.not.have.a.property('latency')
 
       /* TODO: These assertions must be uncommented as soon as
@@ -101,15 +111,14 @@ export function testPeers (factory, options) {
     }
 
     it('should list peers only once', async () => {
-      const nodeA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      const nodeA = (await factory.spawn({ type: 'proc' })).api
       const nodeB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       const nodeBId = await nodeB.id()
       await nodeA.swarm.connect(nodeBId.addresses[0])
       await delay(1000)
-      const peersA = await nodeA.swarm.peers()
-      const peersB = await nodeB.swarm.peers()
-      expect(peersA).to.have.length(1)
-      expect(peersB).to.have.length(1)
+
+      peersAreUnique(await nodeA.swarm.peers())
+      peersAreUnique(await nodeB.swarm.peers())
     })
 
     it('should list peers only once even if they have multiple addresses', async () => {
@@ -128,8 +137,7 @@ export function testPeers (factory, options) {
         // browser nodes have webrtc-star addresses which can't be dialled by go so make the other
         // peer a js-ipfs node to get a tcp address that can be dialled. Also, webworkers are not
         // diable so don't use a in-proc node for webworkers
-        type: ((isBrowser && factory.opts.type === 'go') || isWebWorker) ? 'js' : 'proc',
-        ipfsOptions
+        type: ((isBrowser && factory.opts.type === 'go') || isWebWorker) ? 'js' : 'proc'
       })).api
       const nodeAId = await nodeA.id()
       const nodeB = (await factory.spawn({
@@ -142,10 +150,9 @@ export function testPeers (factory, options) {
       await nodeB.swarm.connect(nodeAId.addresses[0])
 
       await delay(1000)
-      const peersA = await nodeA.swarm.peers()
-      const peersB = await nodeB.swarm.peers()
-      expect(peersA).to.have.length(1)
-      expect(peersB).to.have.length(1)
+
+      peersAreUnique(await nodeA.swarm.peers())
+      peersAreUnique(await nodeB.swarm.peers())
     })
   })
 }

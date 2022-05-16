@@ -1,7 +1,18 @@
 import os from 'os'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../types').Context} Argv.ctx
+ * @property {boolean} Argv.all
+ * @property {boolean} Argv.commit
+ * @property {boolean} Argv.repo
+ * @property {boolean} Argv.number
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'version',
 
   describe: 'Shows IPFS version information',
@@ -9,40 +20,31 @@ export default {
   builder: {
     number: {
       alias: 'n',
-      type: 'boolean',
+      boolean: true,
       default: false,
       describe: 'Print only the version number'
     },
     commit: {
-      type: 'boolean',
+      boolean: true,
       default: false,
       describe: 'Include the version\'s commit hash'
     },
     repo: {
-      type: 'boolean',
+      boolean: true,
       default: false,
       describe: 'Print only the repo\'s version number'
     },
     all: {
-      type: 'boolean',
+      boolean: true,
       default: false,
       describe: 'Print everything we have'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../types').Context} argv.ctx
-   * @param {boolean} argv.all
-   * @param {boolean} argv.commit
-   * @param {boolean} argv.repo
-   * @param {boolean} argv.number
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { print, ipfs }, all, commit, repo, number, timeout }) {
     const data = await ipfs.version({
       timeout
@@ -53,7 +55,7 @@ export default {
 
     if (repo) {
       // go-ipfs prints only the number, even without the --number flag.
-      // @ts-ignore version return type is implementation-specific
+      // @ts-expect-error version return type is implementation-specific
       print(data.repo)
     } else if (number) {
       print(parsedVersion)
@@ -73,3 +75,5 @@ export default {
     }
   }
 }
+
+export default command

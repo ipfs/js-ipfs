@@ -2,9 +2,10 @@
 
 import sinon from 'sinon'
 import { server } from './utils/server.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import all from 'it-all'
 import drain from 'it-drain'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 describe('Root.id', () => {
   let ipfs
@@ -20,7 +21,9 @@ describe('Root.id', () => {
   it('should get the node id', async () => {
     const id = 'hello world ' + Math.random()
 
-    ipfs.id.withArgs({}).resolves(id)
+    ipfs.id.withArgs({
+      peerId: undefined
+    }).resolves(id)
 
     const channel = socket.send('/ipfs.Root/id', {})
     channel.clientSend({})
@@ -32,7 +35,7 @@ describe('Root.id', () => {
   })
 
   it('should get a different node id', async () => {
-    const peerId = 'peer-id ' + Math.random()
+    const peerId = peerIdFromString('Qma5z9bmwPcrWLJxX6Vj6BrcybaFg84c2riNbUKrSVf8h1')
     const id = 'hello world ' + Math.random()
 
     ipfs.id.withArgs({
@@ -41,7 +44,7 @@ describe('Root.id', () => {
 
     const channel = socket.send('/ipfs.Root/id', {})
     channel.clientSend({
-      peerId
+      peerId: peerId.toString()
     })
     channel.clientEnd()
 

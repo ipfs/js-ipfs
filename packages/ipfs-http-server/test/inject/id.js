@@ -1,9 +1,10 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import sinon from 'sinon'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 const defaultOptions = {
   signal: sinon.match.instanceOf(AbortSignal),
@@ -66,7 +67,7 @@ describe('/id', () => {
   })
 
   it('get the id of another peer', async () => {
-    const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
+    const peerId = peerIdFromString('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
     ipfs.id.withArgs({
       ...defaultOptions,
@@ -81,7 +82,7 @@ describe('/id', () => {
 
     const res = await http({
       method: 'POST',
-      url: `/api/v0/id?peerId=${peerId}`
+      url: `/api/v0/id?peerId=${peerId.toString()}`
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 200)

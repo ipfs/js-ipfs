@@ -9,37 +9,32 @@ import Boom from '@hapi/boom'
 
 /**
  * @typedef {import('ipfs-core-types/src/dht').QueryEvent} QueryEvent
- * @typedef {import('peer-id')} PeerId
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 
 /**
- * @param {string} id
  * @param {QueryEvent} event
  */
-function mapQueryEvent (id, event) {
+function mapQueryEvent (event) {
+  let id
   let extra = ''
   const type = event.type
   let responses = null
 
-  if (event.name === 'SENDING_QUERY') {
-    id = event.to
-  } else if (event.name === 'PEER_RESPONSE') {
-    id = event.from
+  if (event.name === 'PEER_RESPONSE') {
+    id = event.from.toString()
     responses = event.closer.map(peerData => ({
       ID: peerData.id,
       Addrs: peerData.multiaddrs
     }))
   } else if (event.name === 'QUERY_ERROR') {
-    id = event.from
     extra = event.error.message
   } else if (event.name === 'PROVIDER') {
-    id = event.from
     responses = event.providers.map(peerData => ({
       ID: peerData.id,
       Addrs: peerData.multiaddrs
     }))
   } else if (event.name === 'VALUE') {
-    id = event.from
     extra = uint8ArrayToString(event.value, 'base64pad')
   } else if (event.name === 'ADDING_PEER') {
     responses = [{
@@ -47,9 +42,9 @@ function mapQueryEvent (id, event) {
       Addrs: []
     }]
   } else if (event.name === 'DIALING_PEER') {
-    id = event.peer
+    id = event.peer.toString()
   } else if (event.name === 'FINAL_PEER') {
-    id = event.peer.id
+    id = event.peer.id.toString()
     responses = [{
       ID: event.peer.id,
       Addrs: event.peer.multiaddrs
@@ -72,7 +67,7 @@ export const findPeerResource = {
         stripUnknown: true
       },
       query: Joi.object().keys({
-        peerId: Joi.string().required(),
+        peerId: Joi.peerId().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -111,17 +106,12 @@ export const findPeerResource = {
       signals.push(timeoutController.signal)
     }
 
-    const id = await ipfs.id({
-      signal,
-      timeout
-    })
-
     return streamResponse(request, h, () => {
       return (async function * () {
         for await (const event of ipfs.dht.findPeer(peerId, {
           signal: anySignal(signals)
         })) {
-          yield mapQueryEvent(id.id, event)
+          yield mapQueryEvent(event)
         }
 
         if (timeoutController) {
@@ -185,11 +175,6 @@ export const findProvsResource = {
       signals.push(timeoutController.signal)
     }
 
-    const id = await ipfs.id({
-      signal,
-      timeout
-    })
-
     const providers = new Set()
 
     return streamResponse(request, h, () => {
@@ -203,7 +188,7 @@ export const findProvsResource = {
             })
           }
 
-          yield mapQueryEvent(id.id, event)
+          yield mapQueryEvent(event)
 
           if (providers.size >= numProviders) {
             break
@@ -265,17 +250,12 @@ export const getResource = {
       signals.push(timeoutController.signal)
     }
 
-    const id = await ipfs.id({
-      signal,
-      timeout
-    })
-
     return streamResponse(request, h, () => {
       return (async function * () {
         for await (const event of ipfs.dht.get(key, {
           signal: anySignal(signals)
         })) {
-          yield mapQueryEvent(id.id, event)
+          yield mapQueryEvent(event)
         }
 
         if (timeoutController) {
@@ -333,17 +313,12 @@ export const provideResource = {
       signals.push(timeoutController.signal)
     }
 
-    const id = await ipfs.id({
-      signal,
-      timeout
-    })
-
     return streamResponse(request, h, () => {
       return (async function * () {
         for await (const event of ipfs.dht.provide(cid, {
           signal: anySignal(signals)
         })) {
-          yield mapQueryEvent(id.id, event)
+          yield mapQueryEvent(event)
         }
 
         if (timeoutController) {
@@ -442,17 +417,12 @@ export const putResource = {
       signals.push(timeoutController.signal)
     }
 
-    const id = await ipfs.id({
-      signal,
-      timeout
-    })
-
     return streamResponse(request, h, () => {
       return (async function * () {
         for await (const event of ipfs.dht.put(key, value, {
           signal: anySignal(signals)
         })) {
-          yield mapQueryEvent(id.id, event)
+          yield mapQueryEvent(event)
         }
 
         if (timeoutController) {
@@ -510,17 +480,12 @@ export const queryResource = {
       signals.push(timeoutController.signal)
     }
 
-    const id = await ipfs.id({
-      signal,
-      timeout
-    })
-
     return streamResponse(request, h, () => {
       return (async function * () {
         for await (const event of ipfs.dht.query(key, {
           signal: anySignal(signals)
         })) {
-          yield mapQueryEvent(id.id, event)
+          yield mapQueryEvent(event)
         }
 
         if (timeoutController) {

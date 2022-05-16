@@ -1,28 +1,30 @@
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {boolean} [Argv.prefix]
+ * @property {boolean} [Argv.numeric]
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'bases',
 
-  describe: 'List available multibase encoding names.',
+  describe: 'List available multibase encoding names',
 
   builder: {
     prefix: {
-      describe: 'Display the single letter encoding codes as well as the encoding name.',
-      type: 'boolean',
+      describe: 'Display the single letter encoding codes as well as the encoding name',
+      boolean: true,
       default: false
     },
     numeric: {
       describe: 'Display the numeric encoding code as well as the encoding name',
-      type: 'boolean',
+      boolean: true,
       default: false
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {boolean} [argv.prefix]
-   * @param {boolean} [argv.numeric]
-   */
   handler ({ ctx: { ipfs, print }, prefix, numeric }) {
     for (const base of ipfs.bases.listBases()) {
       if (prefix && numeric) {
@@ -37,3 +39,5 @@ export default {
     }
   }
 }
+
+export default command

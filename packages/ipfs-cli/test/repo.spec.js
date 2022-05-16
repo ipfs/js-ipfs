@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli } from './utils/cli.js'
 import sinon from 'sinon'
 import { CID } from 'multiformats/cid'

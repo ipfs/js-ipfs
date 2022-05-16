@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { Daemon } from '../src/index.js'
 import fetch from 'node-fetch'
 import WebSocket from 'ws'
@@ -76,7 +76,7 @@ describe('daemon', function () {
       uri
     } = daemon._grpcServer.info
 
-    const socket = new WebSocket(`${uri}/ipfs.Root/id`)
+    const socket = new WebSocket(`${uri}/ipfs.Root/id`.replace('http', 'ws'))
     let received = Buffer.alloc(0)
 
     await new Promise((resolve) => {

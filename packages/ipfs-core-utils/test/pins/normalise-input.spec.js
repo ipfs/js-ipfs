@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { normaliseInput } from '../../src/pins/normalise-input.js'
 import all from 'it-all'
 import { CID } from 'multiformats/cid'

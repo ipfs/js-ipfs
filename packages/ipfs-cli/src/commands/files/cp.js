@@ -3,7 +3,20 @@ import {
 } from '../../utils.js'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.source
+ * @property {string} Argv.dest
+ * @property {boolean} Argv.parents
+ * @property {string} Argv.hashAlg
+ * @property {boolean} Argv.flush
+ * @property {number} Argv.shardSplitThreshold
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'cp <source> <dest>',
 
   describe: 'Copy files between locations in the mfs',
@@ -11,47 +24,36 @@ export default {
   builder: {
     parents: {
       alias: 'p',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Create any non-existent intermediate directories'
     },
     'hash-alg': {
       alias: 'h',
-      type: 'string',
+      string: true,
       default: 'sha2-256',
       describe: 'Hash function to use. Will set CID version to 1 if used'
     },
     flush: {
       alias: 'f',
-      type: 'boolean',
+      boolean: true,
       default: true,
       coerce: asBoolean,
       describe: 'Flush the changes to disk immediately'
     },
     'shard-split-threshold': {
-      type: 'number',
+      number: true,
       default: 1000,
       describe: 'If a directory has more links than this, it will be transformed into a hamt-sharded-directory'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.source
-   * @param {string} argv.dest
-   * @param {boolean} argv.parents
-   * @param {string} argv.hashAlg
-   * @param {boolean} argv.flush
-   * @param {number} argv.shardSplitThreshold
-   * @param {number} argv.timeout
-   */
-  handler ({
+  async handler ({
     ctx: { ipfs },
     source,
     dest,
@@ -61,7 +63,7 @@ export default {
     shardSplitThreshold,
     timeout
   }) {
-    return ipfs.files.cp(source, dest, {
+    await ipfs.files.cp(source, dest, {
       parents,
       flush,
       hashAlg,
@@ -70,3 +72,5 @@ export default {
     })
   }
 }
+
+export default command

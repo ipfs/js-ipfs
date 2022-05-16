@@ -1,8 +1,9 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -10,7 +11,7 @@ import all from 'it-all'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testDisabled (factory, options) {
   const describe = getDescribe(options)
@@ -42,9 +43,8 @@ export function testDisabled (factory, options) {
     after(() => factory.clean())
 
     it('should error when DHT not available', async () => {
-      const events = await all(nodeA.dht.get('/ipns/12D3KooWQMSMXmsBvs5YDEQ6tXsaFv9tjuzmDmEvusaiQSFdrJdN'))
-
-      expect(events.filter(event => event.name === 'QUERY_ERROR')).to.not.be.empty()
+      await expect(all(nodeA.dht.put('/ipns/12D3KooWBD9zgsogrYf1dum1TwTwe6k5xT8acGZ5PNeYmKf72qz2', uint8ArrayFromString('hello'), { verbose: true })))
+        .to.eventually.be.rejected()
     })
   })
 }

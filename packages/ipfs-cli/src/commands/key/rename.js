@@ -3,25 +3,27 @@ import {
   stripControlCharacters
 } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.name
+ * @property {string} Argv.newName
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'rename <name> <newName>',
 
   describe: 'Rename a key',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.name
-   * @param {string} argv.newName
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, name, newName, timeout }) {
     const res = await ipfs.key.rename(name, newName, {
       timeout
@@ -29,3 +31,5 @@ export default {
     print(`renamed to ${res.id} ${stripControlCharacters(res.now)}`)
   }
 }
+
+export default command

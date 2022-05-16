@@ -402,9 +402,6 @@ export const importResource = {
 
     return streamResponse(request, h, () => pipe(
       multipartRequestParser(request.raw.req),
-      /**
-       * @param {AsyncIterable<import('../../types').MultipartEntry>} source
-       */
       async function * (source) {
         for await (const entry of source) {
           if (entry.type !== 'file') {
@@ -415,9 +412,6 @@ export const importResource = {
           yield entry.content
         }
       },
-      /**
-       * @param {AsyncIterable<AsyncIterable<Uint8Array>>} source
-       */
       async function * (source) {
         yield * ipfs.dag.import(source, {
           pinRoots,
@@ -425,9 +419,6 @@ export const importResource = {
           signal
         })
       },
-      /**
-       * @param {AsyncIterable<import('ipfs-core-types/src/dag').ImportResult>} source
-       */
       async function * (source) {
         for await (const res of source) {
           yield {

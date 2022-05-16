@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 
 import os from 'os'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli } from './utils/cli.js'
 import sinon from 'sinon'
 

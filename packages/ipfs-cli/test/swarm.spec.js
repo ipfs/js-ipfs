@@ -1,10 +1,11 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli, fail } from './utils/cli.js'
 import sinon from 'sinon'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 describe('swarm', () => {
   let ipfs
@@ -103,7 +104,7 @@ describe('swarm', () => {
     }
 
     it('addrs', async () => {
-      const peer = 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z'
+      const peer = peerIdFromString('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
       const addr = `/ip4/192.0.0.2/tcp/5002/p2p/${peer}`
 
       ipfs.swarm.addrs.withArgs(defaultOptions).resolves([{
@@ -118,7 +119,7 @@ describe('swarm', () => {
     })
 
     it('addrs with timeout', async () => {
-      const peer = 'Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z'
+      const peer = peerIdFromString('Qmaj2NmcyAXT8dFmZRRytE12wpcaHADzbChKToMEjBsj5Z')
       const addr = `/ip4/192.0.0.2/tcp/5002/p2p/${peer}`
 
       ipfs.swarm.addrs.withArgs({

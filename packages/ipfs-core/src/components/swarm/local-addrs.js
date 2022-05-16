@@ -1,7 +1,7 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../../types').NetworkService} config.network
  */
 export function createLocalAddrs ({ network }) {
@@ -10,7 +10,7 @@ export function createLocalAddrs ({ network }) {
    */
   async function localAddrs (options = {}) {
     const { libp2p } = await network.use(options)
-    return libp2p.multiaddrs
+    return libp2p.getMultiaddrs()
   }
 
   return withTimeoutOption(localAddrs)

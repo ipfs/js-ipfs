@@ -1,17 +1,21 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { createRepo } from 'ipfs-core-config/repo'
 import getDefaultConfig from 'ipfs-core-config/config'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-import PeerId from 'peer-id'
+import { peerIdFromKeys } from '@libp2p/peer-id'
+import { isPeerId } from '@libp2p/interfaces/peer-id'
 import mergeOpts from 'merge-options'
 import { profiles as configProfiles } from './config/profiles.js'
 import { NotEnabledError, NotInitializedError } from '../errors.js'
 import { createLibp2p } from './libp2p.js'
 import { ERR_REPO_NOT_INITIALIZED } from 'ipfs-repo/errors'
+import { createEd25519PeerId, createRSAPeerId } from '@libp2p/peer-id-factory'
+import errCode from 'err-code'
+import { unmarshalPrivateKey } from '@libp2p/crypto/keys'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:components:peer:storage')
+const log = logger('ipfs:components:peer:storage')
 
 /**
  * @typedef {import('ipfs-repo').IPFSRepo} IPFSRepo
@@ -19,8 +23,9 @@ const log = debug('ipfs:components:peer:storage')
  * @typedef {import('../types').InitOptions} InitOptions
  * @typedef {import('../types').Print} Print
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
- * @typedef {import('libp2p-crypto').KeyType} KeyType
- * @typedef {import('libp2p/src/keychain')} Keychain
+ * @typedef {import('@libp2p/crypto/keys').KeyTypes} KeyType
+ * @typedef {import('@libp2p/interfaces/keychain').KeyChain} Keychain
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 
 export class Storage {
@@ -60,7 +65,7 @@ export class Storage {
     const { peerId, keychain, isNew } = await loadRepo(print, repo, options)
 
     // TODO: throw error?
-    // @ts-ignore On start, keychain will always be available
+    // @ts-expect-error On start, keychain will always be available
     return new Storage(peerId, keychain, repo, print, isNew)
   }
 }
@@ -153,11 +158,12 @@ const initRepo = async (print, repo, options) => {
     keychainConfig
   })
 
-  if (libp2p.keychain && libp2p.keychain.opts) {
+  if (libp2p.keychain) {
     await libp2p.loadKeychain()
 
     await repo.config.set('Keychain', {
-      DEK: libp2p.keychain.opts.dek
+      // @ts-expect-error private field
+      DEK: libp2p.keychain.init.dek
     })
   }
 
@@ -169,20 +175,24 @@ const initRepo = async (print, repo, options) => {
  * an instance and returns a `PeerId` instance.
  *
  * @param {PeerId|string} peerId
- * @returns {Promise<PeerId>|PeerId}
+ * @returns {Promise<PeerId>}
  */
-const decodePeerId = (peerId) => {
+const decodePeerId = async (peerId) => {
   log('using user-supplied private-key')
-  return typeof peerId === 'object'
-    ? peerId
-    : PeerId.createFromPrivKey(uint8ArrayFromString(peerId, 'base64pad'))
+  if (isPeerId(peerId)) {
+    return peerId
+  }
+
+  const rawPrivateKey = uint8ArrayFromString(peerId, 'base64pad')
+  const key = await unmarshalPrivateKey(rawPrivateKey)
+  return await peerIdFromKeys(key.public.bytes, key.bytes)
 }
 
 /**
  * Initializes new PeerId by generating an underlying keypair.
  *
  * @param {Print} print
- * @param {Object} options
+ * @param {object} options
  * @param {KeyType} [options.algorithm='Ed25519']
  * @param {number} [options.bits=2048]
  * @returns {Promise<PeerId>}
@@ -190,17 +200,32 @@ const decodePeerId = (peerId) => {
 const initPeerId = (print, { algorithm = 'Ed25519', bits = 2048 }) => {
   // Generate peer identity keypair + transform to desired format + add to config.
   print('generating %s keypair...', algorithm)
-  return PeerId.create({ keyType: algorithm, bits })
+
+  if (algorithm === 'Ed25519') {
+    return createEd25519PeerId()
+  }
+
+  if (algorithm === 'RSA') {
+    return createRSAPeerId({ bits })
+  }
+
+  throw errCode(new Error('Unknown PeerId algorithm'), 'ERR_UNKNOWN_PEER_ID_ALGORITHM')
 }
 
 /**
  * @param {PeerId} peerId
  */
-const peerIdToIdentity = (peerId) => ({
-  PeerID: peerId.toB58String(),
-  /** @type {string} */
-  PrivKey: uint8ArrayToString(peerId.privKey.bytes, 'base64pad')
-})
+const peerIdToIdentity = (peerId) => {
+  if (peerId.privateKey == null) {
+    throw errCode(new Error('Private key missing'), 'ERR_MISSING_PRIVATE_KEY')
+  }
+
+  return {
+    PeerID: peerId.toString(),
+    /** @type {string} */
+    PrivKey: uint8ArrayToString(peerId.privateKey, 'base64pad')
+  }
+}
 
 /**
  * Applies passed `profiles` and a `config` to an open repo.
@@ -224,7 +249,9 @@ const configureRepo = async (repo, options) => {
     throw new NotInitializedError('No private key was found in the config, please intialize the repo')
   }
 
-  const peerId = await PeerId.createFromPrivKey(changed.Identity.PrivKey)
+  const buf = uint8ArrayFromString(changed.Identity.PrivKey, 'base64pad')
+  const key = await unmarshalPrivateKey(buf)
+  const peerId = await peerIdFromKeys(key.public.bytes, key.bytes)
   const libp2p = await createLibp2p({
     options: undefined,
     multiaddrs: undefined,

@@ -12,7 +12,6 @@
     "test:firefox": "lerna run test:firefox",
     "test:firefox-webworker": "lerna run test:firefox-webworker",
     "test:electron-main": "lerna run test:electron-main",
-    "test:electron-renderer": "lerna run test:electron-renderer",
     "test:external": "lerna run test:external",
     "test:cli": "lerna run test:cli",
     "test:interop": "lerna run test:interop",

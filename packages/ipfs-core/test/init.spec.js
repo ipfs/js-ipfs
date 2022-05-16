@@ -1,14 +1,13 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { isNode } from 'ipfs-utils/src/env.js'
 import { CID } from 'multiformats/cid'
-import PeerId from 'peer-id'
-import { keys } from 'libp2p-crypto'
+import { peerIdFromKeys } from '@libp2p/peer-id'
 import createNode from './utils/create-node.js'
-
-const { supportedKeys } = keys
+import { fromString as uint8ArrayFromString } from 'uint8arrays'
+import { unmarshalPrivateKey } from '@libp2p/crypto/keys'
 
 const privateKey = 'CAASqAkwggSkAgEAAoIBAQChVmiObYo6pkKrMSd3OzW1cTL+RDmX1rkETYGKWV9TPXMNgElFTYoYHqT9QZomj5RI8iUmHccjzqr4J0mV+E0NpvHHOLlmDZ82lAw2Zx7saUkeQWvC0S9Z0o3aTx2sSubZV53rSomkZgQH4fYTs4RERejV4ltzLFdzQQBwWrBvlagpPHUCxKDUCnE5oIzdbD26ltWViPBWr7TfotzC8Lyi/tceqCpHMUJGMbsVgypnlgpey07MBvs71dVh5LcRen/ztsQO6Yju4D3QgWoyD0SIUdJFvBzEwL9bSiA3QjUc/fkGd7EcdN5bebYOqAi4ZIiAMLp3i4+B8Tzq/acull43AgMBAAECggEBAIDgZE75o4SsEO9tKWht7L5OeXxxBUyMImkUfJkGQUZd/MzZIC5y/Q+9UvBW+gs5gCsw+onTGaM50Iq/32Ej4nE4XURVxIuH8BmJ86N1hlc010qK2cjajqeCsPulXT+m6XbOLYCpnv+q2idt0cL1EH/1FEPeOEztK8ION4qIdw36SoykfTx/RqtkKHtS01AwN82EOPbWk7huyQT5R5MsCZmRJXBFkpNtiL+8619BH2aVlghHO4NouF9wQjdz/ysVuyYg+3rX2cpGjuHDTZ6hVQiJD1lF6D+dua7UPyHYAG2iRQiKZmCjitt9ywzPxiRaYF/aZ02FEMWckZulR09axskCgYEAzjl6ER8WwxYHn4tHse+CrIIF2z5cscdrh7KSwd3Rse9hIIBDJ/0KkvoYd1IcWrS8ywLrRfSLIjEU9u7IN1m+IRVWJ61fXNqOHm9clAu6qNhCN6W2+JfxDkUygTwmsq0v3huO+qkiMQz+a4nAXJe8Utd36ywgPhVGxFa/7x1v1N0CgYEAyEdiYRFf1aQZcO7+B2FH+tkGJsB30VIBhcpG9EukuQUUulLHhScc/KRj+EFAACLdkTqlVI0xVYIWaaCXwoQCWKixjZ5mYPC+bBLgn4IoDS6XTdHtR7Vn3UUvGTKsM0/z4e8/0eSzGNCHoYez9IoBlPNic0sQuST4jzgS2RYnFCMCgYASWSzSLyjwTJp7CIJlg4Dl5l+tBRxsOOkJVssV8q2AnmLO6HqRKUNylkvs+eJJ88DEc0sJm1txvFo4KkCoJBT1jpduyk8szMlOTew3w99kvHEP0G+6KJKrCV8X/okW5q/WnC8ZgEjpglV0rfnugxWfbUpfIzrvKydzuqAzHzRfBQKBgQDANtKSeoxRjEbmfljLWHAure8bbgkQmfXgI7xpZdfXwqqcECpw/pLxXgycDHOSLeQcJ/7Y4RGCEXHVOk2sX+mokW6mjmmPjD4VlyCBtfcef6KzC1EBS3c9g9KqCln+fTOBmY7UsPu6SxiAzK7HeVP/Un8gS+Dm8DalrZlZQ8uJpQKBgF6mL/Xo/XUOiz2jAD18l8Y6s49bA9H2CoLpBGTV1LfY5yTFxRy4R3qnX/IzsKy567sbtkEFKJxplc/RzCQfrgbdj7k26SbKtHR3yERaFGRYq8UeAHeYC1/N19LF5BMQL4y5R4PJ1SFPeJCL/wXiMqs1maTqvKqtc4bbegNdwlxn'
 const edPrivateKey = 'CAESYFeZamw+9QdwHgSmcvPmfLUpmWTtYpUeycbXcfnkTnDI7OaPmE6V8i+Lw7FNB5CtYuDFKUsOS5h+AogyF/Dft4Ds5o+YTpXyL4vDsU0HkK1i4MUpSw5LmH4CiDIX8N+3gA=='
@@ -93,24 +92,32 @@ describe('init', function () {
     await init({ init: { algorithm: 'RSA' } })
 
     const config = await repo.config.getAll()
-    const peerId = await PeerId.createFromPrivKey(`${config.Identity?.PrivKey}`)
-    expect(peerId.privKey).is.instanceOf(supportedKeys.rsa.RsaPrivateKey)
+
+    const buf = uint8ArrayFromString(`${config.Identity?.PrivKey}`, 'base64pad')
+    const key = await unmarshalPrivateKey(buf)
+    const peerId = await peerIdFromKeys(key.public.bytes, key.bytes)
+    expect(peerId.type).equals('RSA')
   })
 
   it('should init with a key algorithm (Ed25519)', async () => {
     await init({ init: { algorithm: 'Ed25519' } })
 
     const config = await repo.config.getAll()
-    const peerId = await PeerId.createFromPrivKey(`${config.Identity?.PrivKey}`)
-    expect(peerId.privKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
+    const buf = uint8ArrayFromString(`${config.Identity?.PrivKey}`, 'base64pad')
+    const key = await unmarshalPrivateKey(buf)
+    const peerId = await peerIdFromKeys(key.public.bytes, key.bytes)
+    expect(peerId.type).equals('Ed25519')
   })
 
-  it('should init with a key algorithm (secp256k1)', async () => {
+  // not supported any more
+  it.skip('should init with a key algorithm (secp256k1)', async () => {
     await init({ init: { algorithm: 'secp256k1' } })
 
     const config = await repo.config.getAll()
-    const peerId = await PeerId.createFromPrivKey(`${config.Identity?.PrivKey}`)
-    expect(peerId.privKey).is.instanceOf(supportedKeys.secp256k1.Secp256k1PrivateKey)
+    const buf = uint8ArrayFromString(`${config.Identity?.PrivKey}`, 'base64pad')
+    const key = await unmarshalPrivateKey(buf)
+    const peerId = await peerIdFromKeys(key.public.bytes, key.bytes)
+    expect(peerId.type).equals('secp256k1')
   })
 
   it('should set # of bits in key', async function () {
@@ -127,14 +134,14 @@ describe('init', function () {
     expect(config.Identity?.PrivKey.length).is.above(256)
   })
 
-  it('should allow a pregenerated key to be used', async () => {
+  it('should allow a pregenerated RSA key to be used', async () => {
     await init({ init: { privateKey } })
 
     const config = await repo.config.getAll()
     expect(config.Identity?.PeerID).is.equal('QmRsooYQasV5f5r834NSpdUtmejdQcpxXkK6qsozZWEihC')
   })
 
-  it('should allow a pregenerated ed25519 key to be used', async () => {
+  it('should allow a pregenerated Ed25519 key to be used', async () => {
     await init({ init: { privateKey: edPrivateKey } })
 
     const config = await repo.config.getAll()

@@ -1,7 +1,7 @@
 import { Service } from '../utils/service.js'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../types').NetworkService} config.network
  * @param {import('../types').Preload} config.preload
  * @param {import('./ipns').IPNSAPI} config.ipns

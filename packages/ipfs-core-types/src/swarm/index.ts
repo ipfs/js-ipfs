@@ -1,5 +1,6 @@
 import type { AbortOptions } from '../utils'
-import type { Multiaddr } from 'multiaddr'
+import type { Multiaddr } from '@multiformats/multiaddr'
+import type { PeerId } from '@libp2p/interfaces/peer-id'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -10,12 +11,12 @@ export interface API<OptionExtension = {}> {
   /**
    * Open a connection to a given address or peer id
    */
-  connect: (addr: Multiaddr | string, options?: AbortOptions & OptionExtension) => Promise<void>
+  connect: (multiaddrOrPeerId: Multiaddr | PeerId, options?: AbortOptions & OptionExtension) => Promise<void>
 
   /**
    * Close a connection to a given address or peer id
    */
-  disconnect: (addr: Multiaddr | string, options?: AbortOptions & OptionExtension) => Promise<void>
+  disconnect: (multiaddrOrPeerId: Multiaddr | PeerId, options?: AbortOptions & OptionExtension) => Promise<void>
 
   /**
    * Local addresses this node is listening on
@@ -29,7 +30,7 @@ export interface API<OptionExtension = {}> {
 }
 
 export interface AddrsResult {
-  id: string
+  id: PeerId
   addrs: Multiaddr[]
 }
 
@@ -42,7 +43,7 @@ export interface PeersOptions extends AbortOptions {
 
 export interface PeersResult {
   addr: Multiaddr
-  peer: string
+  peer: PeerId
   latency?: string
   muxer?: string
   streams?: string[]

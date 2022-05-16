@@ -1,79 +1,78 @@
 import os from 'os'
 import fs from 'fs'
-// @ts-expect-error no types
-import toUri from 'multiaddr-to-uri'
+import { multiaddrToUri } from '@multiformats/multiaddr-to-uri'
 import { ipfsPathHelp } from '../utils.js'
 import { isTest } from 'ipfs-utils/src/env.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { Daemon } from 'ipfs-daemon'
 
-const log = debug('ipfs:cli:daemon')
+const log = logger('ipfs:cli:daemon')
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../types').Context} Argv.ctx
+ * @property {string} [Argv.initConfig]
+ * @property {string[]} [Argv.initProfile]
+ * @property {boolean} Argv.enableShardingExperiment
+ * @property {boolean} Argv.offline
+ * @property {boolean} Argv.enableNamesysPubsub
+ * @property {boolean} Argv.enablePreload
+ * @property {boolean} Argv.silent
+ * @property {boolean} Argv.migrate
+ * @property {string} Argv.pass
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'daemon',
 
   describe: 'Start a long-running daemon process',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
-    return yargs
+    yargs
       .epilog(ipfsPathHelp)
       .option('init-config', {
-        type: 'string',
+        string: true,
         desc: 'Path to existing configuration file to be loaded during --init.'
       })
       .option('init-profile', {
-        type: 'string',
-        desc: 'Configuration profiles to apply for --init. See ipfs init --help for more.',
+        string: true,
+        desc: 'Configuration profiles to apply for --init. See ipfs init --help for more',
         coerce: (value) => {
           return (value || '').split(',')
         }
       })
       .option('enable-sharding-experiment', {
-        type: 'boolean',
+        boolean: true,
         default: false
       })
       .option('offline', {
-        type: 'boolean',
-        desc: 'Run offline. Do not connect to the rest of the network but provide local API.',
+        boolean: true,
+        desc: 'Run offline. Do not connect to the rest of the network but provide local API',
         default: false
       })
       .option('enable-namesys-pubsub', {
-        type: 'boolean',
+        boolean: true,
         default: false
       })
       .option('enable-preload', {
-        type: 'boolean',
+        boolean: true,
         default: !isTest // preload by default, unless in test env
       })
+
+    return yargs
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../types').Context} argv.ctx
-   * @param {string} [argv.initConfig]
-   * @param {string[]} [argv.initProfile]
-   * @param {boolean} argv.enableShardingExperiment
-   * @param {boolean} argv.offline
-   * @param {boolean} argv.enableNamesysPubsub
-   * @param {boolean} argv.enablePreload
-   * @param {boolean} argv.silent
-   * @param {boolean} argv.migrate
-   * @param {string} argv.pass
-   */
-  async handler (argv) {
-    const { print, repoPath } = argv.ctx
+  async handler ({ ctx: { print, repoPath }, initConfig, silent, migrate, offline, pass, enablePreload, enableNamesysPubsub, enableShardingExperiment, initProfile }) {
     print('Initializing IPFS daemon...')
     print(`System version: ${os.arch()}/${os.platform()}`)
     print(`Node.js version: ${process.versions.node}`)
 
     let config = {}
     // read and parse config file
-    if (argv.initConfig) {
+    if (initConfig) {
       try {
-        const raw = fs.readFileSync(argv.initConfig, { encoding: 'utf8' })
+        const raw = fs.readFileSync(initConfig, { encoding: 'utf8' })
         config = JSON.parse(raw)
       } catch (/** @type {any} */ error) {
         log(error)
@@ -83,17 +82,17 @@ export default {
 
     const daemon = new Daemon({
       config,
-      silent: argv.silent,
+      silent: silent,
       repo: process.env.IPFS_PATH,
-      repoAutoMigrate: argv.migrate,
-      offline: argv.offline,
-      pass: argv.pass,
-      preload: { enabled: argv.enablePreload },
+      repoAutoMigrate: migrate,
+      offline: offline,
+      pass: pass,
+      preload: { enabled: enablePreload },
       EXPERIMENTAL: {
-        ipnsPubsub: argv.enableNamesysPubsub,
-        sharding: argv.enableShardingExperiment
+        ipnsPubsub: enableNamesysPubsub,
+        sharding: enableShardingExperiment
       },
-      init: argv.initProfile ? { profiles: argv.initProfile } : undefined
+      init: initProfile ? { profiles: initProfile } : undefined
     })
 
     try {
@@ -109,7 +108,6 @@ export default {
         })
       }
 
-      // @ts-ignore - _httpGateway is possibly undefined
       if (daemon._grpcServer && daemon._grpcServer) {
         print(`gRPC listening on ${daemon._grpcServer.info.ma}`)
       }
@@ -122,7 +120,7 @@ export default {
 
       if (daemon._httpApi && daemon._httpApi._apiServers) {
         daemon._httpApi._apiServers.forEach(apiServer => {
-          print(`Web UI available at ${toUri(apiServer.info.ma)}/webui`)
+          print(`Web UI available at ${multiaddrToUri(apiServer.info.ma)}/webui`)
         })
       }
     } catch (/** @type {any} */ err) {
@@ -146,3 +144,5 @@ export default {
     process.on('SIGHUP', cleanup)
   }
 }
+
+export default command

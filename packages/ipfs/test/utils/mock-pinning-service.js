@@ -2,14 +2,14 @@
 import http from 'http'
 // @ts-expect-error no types
 import { setup } from 'mock-ipfs-pinning-service'
-import getPort from 'aegir/utils/get-port.js'
+import getPort from 'aegir/get-port'
 
 const defaultPort = 1139
 const defaultToken = 'secret'
 
 export class PinningService {
   /**
-   * @param {Object} options
+   * @param {object} options
    * @param {number} [options.port]
    * @param {string|null} [options.token]
    * @returns {Promise<PinningService>}

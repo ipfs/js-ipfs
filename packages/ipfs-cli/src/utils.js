@@ -1,17 +1,18 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import Progress from 'progress'
 // @ts-expect-error no types
 import byteman from 'byteman'
 import { create } from 'ipfs-core'
 import { CID } from 'multiformats/cid'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { create as httpClient } from 'ipfs-http-client'
+import { peerIdFromString } from '@libp2p/peer-id'
 
-const log = debug('ipfs:cli:utils')
+const log = logger('ipfs:cli:utils')
 
 export const getRepoPath = () => {
   return process.env.IPFS_PATH || path.join(os.homedir(), '/.jsipfs')
@@ -110,9 +111,7 @@ export const rightpad = (val, n) => {
   return result
 }
 
-export const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is ' +
-  'located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable:\n\n' +
-  'export IPFS_PATH=/path/to/ipfsrepo\n'
+export const ipfsPathHelp = 'ipfs uses a repository in the local file system. By default, the repo is located at ~/.jsipfs. To change the repo location, set the $IPFS_PATH environment variable: `export IPFS_PATH=/path/to/ipfsrepo`'
 
 /**
  * @param {{ api?: string, silent?: boolean, migrate?: boolean, pass?: string }} argv
@@ -247,6 +246,17 @@ export const coerceCIDs = (values) => {
   }
 
   return values.map(coerceCID).filter(Boolean)
+}
+
+/**
+ * @param {string} [value]
+ */
+export const coercePeerId = (value) => {
+  if (!value) {
+    return undefined
+  }
+
+  return peerIdFromString(value)
 }
 
 /**

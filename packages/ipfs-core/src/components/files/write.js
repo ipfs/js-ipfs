@@ -1,4 +1,4 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { importer } from 'ipfs-unixfs-importer'
 import {
   decode
@@ -26,7 +26,7 @@ import {
 } from 'ipfs-unixfs'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:mfs:write')
+const log = logger('ipfs:mfs:write')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -101,17 +101,17 @@ export function createWrite (context) {
       parent = await toMfsPath(context, destination.mfsDirectory, options)
     })()
     log('Read source, destination and parent')
-    // @ts-ignore - parent may be undefined
+    // @ts-expect-error - parent may be undefined
     if (!options.parents && !parent.exists) {
       throw errCode(new Error('directory does not exist'), 'ERR_NO_EXIST')
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     if (source == null) {
       throw errCode(new Error('could not create source'), 'ERR_NO_SOURCE')
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     if (destination == null) {
       throw errCode(new Error('could not create destination'), 'ERR_NO_DESTINATION')
     }

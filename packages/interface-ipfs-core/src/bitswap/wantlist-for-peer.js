@@ -3,7 +3,6 @@
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { waitForWantlistKey } from './utils.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 import { CID } from 'multiformats/cid'
 
 /**
@@ -12,10 +11,9 @@ import { CID } from 'multiformats/cid'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testWantlistForPeer (factory, options) {
-  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -29,7 +27,7 @@ export function testWantlistForPeer (factory, options) {
     const key = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
 
     before(async () => {
-      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc' })).api
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       // Add key to the wantlist for ipfsB

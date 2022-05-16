@@ -1,6 +1,7 @@
 import type { AbortOptions } from '../utils'
-import type { Multiaddr } from 'multiaddr'
 import type { CID } from 'multiformats/cid'
+import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { PeerInfo } from '@libp2p/interfaces/peer-info'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -21,7 +22,7 @@ export interface API<OptionExtension = {}> {
    * // '/ip4/147.75.94.115/tcp/4001'
    * ```
    */
-  findPeer: (peerId: string, options?: AbortOptions & OptionExtension) => AsyncIterable<QueryEvent>
+  findPeer: (peerId: PeerId, options?: AbortOptions & OptionExtension) => AsyncIterable<QueryEvent>
 
   /**
    * Find peers in the DHT that can provide a specific value, given a CID.
@@ -58,21 +59,11 @@ export interface API<OptionExtension = {}> {
   /**
    * Find the closest peers to a given `PeerId` or `CID`, by querying the DHT.
    */
-  query: (peerId: string | CID, options?: AbortOptions & OptionExtension) => AsyncIterable<QueryEvent>
-}
-
-export interface PeerResult {
-  id: string
-  addrs: Multiaddr[]
+  query: (peerId: PeerId | CID, options?: AbortOptions & OptionExtension) => AsyncIterable<QueryEvent>
 }
 
 export interface DHTProvideOptions extends AbortOptions {
   recursive?: boolean
-}
-
-export interface PeerData {
-  id: string
-  multiaddrs: Multiaddr[]
 }
 
 export enum EventTypes {
@@ -107,45 +98,40 @@ export interface DHTRecord {
 }
 
 export interface SendingQueryEvent {
-  to: string
   type: EventTypes.SENDING_QUERY
   name: 'SENDING_QUERY'
 }
 
 export interface PeerResponseEvent {
-  from: string
+  from: PeerId
   type: EventTypes.PEER_RESPONSE
   name: 'PEER_RESPONSE'
   messageType: MessageType
   messageName: MessageName
-  providers: PeerData[]
-  closer: PeerData[]
+  providers: PeerInfo[]
+  closer: PeerInfo[]
   record?: DHTRecord
 }
 
 export interface FinalPeerEvent {
-  from: string
-  peer: PeerData
+  peer: PeerInfo
   type: EventTypes.FINAL_PEER
   name: 'FINAL_PEER'
 }
 
 export interface QueryErrorEvent {
-  from: string
   type: EventTypes.QUERY_ERROR
   name: 'QUERY_ERROR'
   error: Error
 }
 
 export interface ProviderEvent {
-  from: string
   type: EventTypes.PROVIDER
   name: 'PROVIDER'
-  providers: PeerData[]
+  providers: PeerInfo[]
 }
 
 export interface ValueEvent {
-  from: string
   type: EventTypes.VALUE
   name: 'VALUE'
   value: Uint8Array
@@ -154,11 +140,11 @@ export interface ValueEvent {
 export interface AddingPeerEvent {
   type: EventTypes.ADDING_PEER
   name: 'ADDING_PEER'
-  peer: string
+  peer: PeerId
 }
 
 export interface DialingPeerEvent {
-  peer: string
+  peer: PeerId
   type: EventTypes.DIALING_PEER
   name: 'DIALING_PEER'
 }

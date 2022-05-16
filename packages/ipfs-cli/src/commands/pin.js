@@ -1,16 +1,22 @@
 import { commands } from './pin/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'pin <command>',
 
-  description: 'Pin and unpin objects to local storage.',
+  describe: 'Pin and unpin objects to local storage',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

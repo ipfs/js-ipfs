@@ -1,4 +1,7 @@
 import type { AbortOptions } from '../utils'
+import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { Message } from '@libp2p/interfaces/pubsub'
+import type { EventHandler } from '@libp2p/interfaces/events'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -13,7 +16,7 @@ export interface API<OptionExtension = {}> {
    * console.log(`subscribed to ${topic}`)
    * ```
    */
-  subscribe: (topic: string, handler: MessageHandlerFn, options?: SubscribeOptions & OptionExtension) => Promise<void>
+  subscribe: (topic: string, handler: EventHandler<Message>, options?: SubscribeOptions & OptionExtension) => Promise<void>
 
   /**
    * Unsubscribes from a pubsub topic
@@ -38,7 +41,7 @@ export interface API<OptionExtension = {}> {
    * await ipfs.pubsub.unsubscribe(topic);
    * ```
    */
-  unsubscribe: (topic: string, handler?: MessageHandlerFn, options?: AbortOptions & OptionExtension) => Promise<void>
+  unsubscribe: (topic: string, handler?: EventHandler<Message>, options?: AbortOptions & OptionExtension) => Promise<void>
 
   /**
    * Publish a data message to a pubsub topic
@@ -71,16 +74,9 @@ export interface API<OptionExtension = {}> {
    * console.log(peerIds)
    * ```
    */
-  peers: (topic: string, options?: AbortOptions & OptionExtension) => Promise<string[]>
+  peers: (topic: string, options?: AbortOptions & OptionExtension) => Promise<PeerId[]>
 
   setMaxListeners?: (max: number) => void
-}
-
-export interface Message {
-  from: string
-  seqno: Uint8Array
-  data: Uint8Array
-  topicIDs: string[]
 }
 
 export interface SubscribeOptions extends AbortOptions {
@@ -90,5 +86,3 @@ export interface SubscribeOptions extends AbortOptions {
    */
   onError?: (err: Error) => void
 }
-
-export interface MessageHandlerFn { (message: Message): void }

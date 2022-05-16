@@ -2,7 +2,7 @@ import last from 'it-last'
 import { CID } from 'multiformats/cid'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {ReturnType<typeof import('./add-all').createAddAll>} config.addAll
  */
 export function createAdd ({ addAll }) {
@@ -26,7 +26,7 @@ export function createAdd ({ addAll }) {
       }], options)
     }
 
-    // @ts-ignore return value of last can be undefined
+    // @ts-expect-error return value of last can be undefined
     return last(iter)
   }
 }

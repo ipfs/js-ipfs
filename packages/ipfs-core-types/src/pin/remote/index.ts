@@ -1,5 +1,5 @@
 import type { CID } from 'multiformats/cid'
-import type { Multiaddr } from 'multiaddr'
+import type { Multiaddr } from '@multiformats/multiaddr'
 import type { API as Service } from './service'
 import type { AbortOptions } from '../../utils'
 

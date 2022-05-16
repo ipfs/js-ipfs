@@ -1,16 +1,22 @@
 import { commands } from './bootstrap/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'bootstrap <command>',
 
-  description: 'Show or edit the list of bootstrap peers.',
+  describe: 'Show or edit the list of bootstrap peers',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

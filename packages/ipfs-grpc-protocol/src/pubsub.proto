@@ -16,9 +16,9 @@ message SubscribeRequest {
 message SubscribeResponse {
     string handler = 1;
     string from = 2;
-    bytes seqno = 3;
+    bytes sequenceNumber = 3;
     bytes data = 4;
-    repeated string topicIDs = 5;
+    string topic = 5;
 }
 
 message UnSubscribeRequest {

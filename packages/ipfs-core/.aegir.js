@@ -1,7 +1,8 @@
-'use strict'
+import { createServer } from 'ipfsd-ctl'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const { createServer } = require('ipfsd-ctl')
-const path = require('path')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
@@ -19,7 +20,7 @@ const esbuild = {
 }
 
 /** @type {import('aegir').PartialOptions} */
-module.exports = {
+export default {
   test: {
     browser: {
       config: {
@@ -38,7 +39,7 @@ module.exports = {
         }, {
           type: 'js',
           ipfsModule: await import('./src/index.js'),
-          ipfsHttpModule: await import('../ipfs-http-client/src/index.js'),
+          ipfsHttpModule: await import('ipfs-http-client'),
           ipfsBin: path.resolve('../ipfs/src/cli.js'),
           ipfsOptions: {
             libp2p: {
@@ -49,7 +50,7 @@ module.exports = {
           }
         }, {
           go: {
-            ipfsBin: require('go-ipfs').path()
+            ipfsBin: (await import('go-ipfs')).default.path()
           }
         }).start()
         return {

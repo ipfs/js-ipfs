@@ -1,24 +1,22 @@
 import { ipfsCore as pkgversion } from '../version.js'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
-import PeerId from 'peer-id'
 import { NotStartedError } from '../errors.js'
 import errCode from 'err-code'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 
-const log = Object.assign(debug('ipfs:components:id'), {
-  error: debug('ipfs:components:id:error')
-})
+const log = logger('ipfs:components:id')
 
 /**
- * @typedef {import('libp2p')} Libp2p
+ * @typedef {import('libp2p').Libp2p} Libp2p
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 
 /**
- * @param {Object} config
- * @param {import('peer-id')} config.peerId
+ * @param {object} config
+ * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
  * @param {import('../types').NetworkService} config.network
  */
 export function createId ({ peerId, network }) {
@@ -33,11 +31,13 @@ export function createId ({ peerId, network }) {
         throw new NotStartedError()
       }
 
-      const idStr = peerId.toB58String()
+      if (peerId.publicKey == null) {
+        throw errCode(new Error('Public key missing'), 'ERR_MISSING_PUBLIC_KEY')
+      }
 
       return {
-        id: idStr,
-        publicKey: uint8ArrayToString(peerId.pubKey.bytes, 'base64pad'),
+        id: peerId,
+        publicKey: uint8ArrayToString(peerId.publicKey, 'base64pad'),
         addresses: [],
         agentVersion: `js-ipfs/${pkgversion}`,
         protocolVersion: '9000',
@@ -46,15 +46,15 @@ export function createId ({ peerId, network }) {
     }
 
     const { libp2p } = net
-    const peerIdToId = options.peerId ? PeerId.parse(options.peerId) : peerId
+    const peerIdToId = options.peerId ? options.peerId : peerId
     const peer = await findPeer(peerIdToId, libp2p, options)
     const agentVersion = uint8ArrayToString(peer.metadata.get('AgentVersion') || new Uint8Array())
     const protocolVersion = uint8ArrayToString(peer.metadata.get('ProtocolVersion') || new Uint8Array())
-    const idStr = peer.id.toB58String()
-    const publicKeyStr = peer.publicKey ? uint8ArrayToString(peer.publicKey.bytes, 'base64pad') : ''
+    const idStr = peer.id.toString()
+    const publicKeyStr = peer.publicKey ? uint8ArrayToString(peer.publicKey, 'base64pad') : ''
 
     return {
-      id: idStr,
+      id: peerIdToId,
       publicKey: publicKeyStr,
       addresses: (peer.addresses || [])
         .map(ma => {
@@ -75,6 +75,7 @@ export function createId ({ peerId, network }) {
       protocols: (peer.protocols || []).sort()
     }
   }
+
   return withTimeoutOption(id)
 }
 
@@ -90,13 +91,13 @@ async function findPeer (peerId, libp2p, options) {
     peer = await findPeerOnDht(peerId, libp2p, options)
   }
 
-  let publicKey = peerId.pubKey ? peerId.pubKey : await libp2p.peerStore.keyBook.get(peerId)
+  let publicKey = peerId.publicKey ? peerId.publicKey : await libp2p.peerStore.keyBook.get(peerId)
 
-  if (!publicKey) {
+  if (publicKey == null) {
     try {
-      publicKey = await libp2p._dht.getPublicKey(peerId, options)
+      publicKey = await libp2p.getPublicKey(peerId, options)
     } catch (err) {
-      log.error('Could not load public key for', peerId.toB58String(), err)
+      log.error('Could not load public key for', peerId.toString(), err)
     }
   }
 
@@ -109,13 +110,16 @@ async function findPeer (peerId, libp2p, options) {
 }
 
 /**
- *
  * @param {PeerId} peerId
  * @param {Libp2p} libp2p
  * @param {AbortOptions} options
  */
 async function findPeerOnDht (peerId, libp2p, options) {
-  for await (const event of libp2p._dht.findPeer(peerId, options)) {
+  if (libp2p.dht == null) {
+    throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
+  }
+
+  for await (const event of libp2p.dht.findPeer(peerId, options)) {
     if (event.name === 'FINAL_PEER') {
       break
     }

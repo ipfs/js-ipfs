@@ -5,7 +5,7 @@ import { resolve } from '../../utils.js'
 import errCode from 'err-code'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../../types').Preload} config.preload
@@ -23,7 +23,7 @@ export function createGet ({ codecs, repo, preload }) {
       const entry = options.localResolve
         ? await first(resolve(cid, options.path, codecs, repo, options))
         : await last(resolve(cid, options.path, codecs, repo, options))
-      /** @type {import('ipfs-core-types/src/dag').GetResult} - first and last will return undefined when empty */
+      /** @type {import('ipfs-core-types/src/dag').GetResult | undefined} - first and last will return undefined when empty */
       const result = (entry)
 
       if (!result) {

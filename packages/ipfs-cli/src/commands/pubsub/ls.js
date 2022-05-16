@@ -3,23 +3,25 @@ import {
   stripControlCharacters
 } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'ls',
 
   describe: 'Get your list of subscriptions',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const subscriptions = await ipfs.pubsub.ls({
       timeout
@@ -27,3 +29,5 @@ export default {
     subscriptions.forEach(sub => print(stripControlCharacters(sub)))
   }
 }
+
+export default command

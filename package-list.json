@@ -53,6 +53,6 @@
     "Multiformats",
     ["multiformats/js-multiformats", "multiformats"],
     ["multiformats/js-mafmt", "mafmt"],
-    ["multiformats/js-multiaddr", "multiaddr"]
+    ["multiformats/js-multiaddr", "@multiformats/multiaddr"]
   ]
 }

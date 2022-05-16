@@ -1,34 +1,36 @@
 import parseDuration from 'parse-duration'
 import { coerceCID } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('multiformats/cid').CID} Argv.key
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'stat <key>',
 
   describe: 'Print information of a raw IPFS block',
 
   builder: {
     key: {
-      type: 'string',
+      string: true,
       coerce: coerceCID
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in.',
-      type: 'string',
+      describe: 'Number base to display CIDs in',
+      string: true,
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiformats/cid').CID} argv.key
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx, key, cidBase, timeout }) {
     const { ipfs, print } = ctx
     const stats = await ipfs.block.stat(key, {
@@ -39,3 +41,5 @@ export default {
     print('Size: ' + stats.size)
   }
 }
+
+export default command

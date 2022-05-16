@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 /* eslint max-nested-callbacks: ["error", 5] */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli, fail } from './utils/cli.js'
 import sinon from 'sinon'
 import { profiles } from 'ipfs-core/config/profiles'

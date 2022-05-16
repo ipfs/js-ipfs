@@ -1,17 +1,16 @@
-import debug from 'debug'
-const log = Object.assign(debug('ipfs:mfs-preload'), {
-  error: debug('ipfs:mfs-preload:error')
-})
+import { logger } from '@libp2p/logger'
+
+const log = logger('ipfs:mfs-preload')
 
 /**
  * @typedef {PreloadOptions & MFSPreloadOptions} Options
- * @typedef {Object} MFSPreloadOptions
+ * @typedef {object} MFSPreloadOptions
  * @property {number} [interval]
  * @typedef {import('./types').PreloadOptions} PreloadOptions
  */
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('./types').Preload} config.preload
  * @param {import('ipfs-core-types/src/files').API} config.files
  * @param {Options} [config.options]

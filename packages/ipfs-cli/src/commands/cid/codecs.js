@@ -1,22 +1,24 @@
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {boolean} [Argv.numeric]
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'codecs',
 
-  describe: 'List available CID codec names.',
+  describe: 'List available CID codec names',
 
   builder: {
     numeric: {
       describe: 'Display the numeric code as well as the codec name',
-      type: 'boolean',
+      boolean: true,
       default: false
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {boolean} [argv.numeric]
-   */
   handler ({ ctx: { ipfs, print }, numeric }) {
     for (const codec of ipfs.codecs.listCodecs()) {
       if (numeric) {
@@ -27,3 +29,5 @@ export default {
     }
   }
 }
+
+export default command

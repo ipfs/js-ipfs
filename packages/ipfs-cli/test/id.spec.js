@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli } from './utils/cli.js'
 import sinon from 'sinon'
-import PeerId from 'peer-id'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 const defaultOptions = {
   timeout: undefined,
@@ -57,7 +57,7 @@ describe('id', () => {
   })
 
   it('get the id of another peer', async () => {
-    const peerId = PeerId.createFromB58String('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
+    const peerId = peerIdFromString('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
     ipfs.id.withArgs({
       ...defaultOptions,

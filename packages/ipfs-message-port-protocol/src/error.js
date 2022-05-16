@@ -5,7 +5,7 @@
  * @typedef {Error|ErrorData} EncodedError
  *
  * Properties added by err-code library
- * @typedef {Object} ErrorExtension
+ * @typedef {object} ErrorExtension
  * @property {string} [code]
  * @property {string} [detail]
  */
@@ -15,7 +15,7 @@
  */
 
 /**
- * @typedef {Object} ErrorData
+ * @typedef {object} ErrorData
  * @property {string} name
  * @property {string} message
  * @property {string|undefined} stack

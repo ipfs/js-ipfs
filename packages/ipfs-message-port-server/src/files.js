@@ -19,7 +19,7 @@ export class FilesService {
   }
 
   /**
-   * @typedef {Object} StatQuery
+   * @typedef {object} StatQuery
    * @property {string} path
    *
    * @param {StatOptions & StatQuery} input

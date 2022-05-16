@@ -7,12 +7,12 @@ import { createRename } from './rename.js'
 import { createRm } from './rm.js'
 
 /**
- * @typedef {import('libp2p/src/keychain')} Keychain
+ * @typedef {import('@libp2p/interfaces/keychain').KeyChain} Keychain
  */
 
 export class KeyAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {Keychain} config.keychain
    */
   constructor ({ keychain }) {

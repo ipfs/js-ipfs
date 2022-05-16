@@ -3,24 +3,26 @@ import {
   stripControlCharacters
 } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.name
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'rm <name>',
 
   describe: 'Remove a key',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.name
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, name, timeout }) {
     const key = await ipfs.key.rm(name, {
       timeout
@@ -28,3 +30,5 @@ export default {
     print(`${key.id} ${stripControlCharacters(key.name)}`)
   }
 }
+
+export default command

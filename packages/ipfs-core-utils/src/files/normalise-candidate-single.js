@@ -49,7 +49,7 @@ export async function * normaliseCandidateSingle (input, normaliseContent) {
 
   // Iterable<?>
   if (Symbol.iterator in input || Symbol.asyncIterator in input) {
-    // @ts-ignore it's (async)iterable
+    // @ts-expect-error it's (async)iterable
     const peekable = itPeekable(input)
 
     /** @type {any} value **/
@@ -90,7 +90,7 @@ export async function * normaliseCandidateSingle (input, normaliseContent) {
  * @param {(content:ToContent) => Promise<AsyncIterable<Uint8Array>>} normaliseContent
  */
 async function toFileObject (input, normaliseContent) {
-  // @ts-ignore - Those properties don't exist on most input types
+  // @ts-expect-error - Those properties don't exist on most input types
   const { path, mode, mtime, content } = input
 
   /** @type {ImporterImportCandidate} */
@@ -103,7 +103,7 @@ async function toFileObject (input, normaliseContent) {
   if (content) {
     file.content = await normaliseContent(content)
   } else if (!path) { // Not already a file object with path or content prop
-    // @ts-ignore - input still can be different ToContent
+    // @ts-expect-error - input still can be different ToContent
     file.content = await normaliseContent(input)
   }
 

@@ -1,37 +1,37 @@
 import prettyBytes from 'pretty-bytes'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {boolean} Argv.human
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'stat',
 
-  describe: 'Show some diagnostic information on the bitswap agent.',
+  describe: 'Show some diagnostic information on the bitswap agent',
 
   builder: {
     'cid-base': {
-      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
-      type: 'string',
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect',
+      string: true,
       default: 'base58btc'
     },
     human: {
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {boolean} argv.human
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
-  async handler ({ ctx, cidBase, human, timeout }) {
-    const { ipfs, print } = ctx
-
+  async handler ({ ctx: { ipfs, print }, cidBase, human, timeout }) {
     const stats = await ipfs.bitswap.stat({
       timeout
     })
@@ -69,3 +69,5 @@ export default {
         partners [${stats.peers.length}]`)
   }
 }
+
+export default command

@@ -1,13 +1,12 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import get from 'dlv'
 import set from 'just-safe-set'
 import { multipartRequestParser } from '../../utils/multipart-request-parser.js'
 import Boom from '@hapi/boom'
 import Joi from '../../utils/joi.js'
 import all from 'it-all'
-const log = Object.assign(debug('ipfs:http-api:config'), {
-  error: debug('ipfs:http-api:config:error')
-})
+
+const log = logger('ipfs:http-api:config')
 
 export const getOrSetResource = {
   options: {

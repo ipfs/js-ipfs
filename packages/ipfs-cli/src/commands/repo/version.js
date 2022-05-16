@@ -1,22 +1,24 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'version',
 
   describe: 'Shows IPFS repo version information',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const version = await ipfs.repo.version({
       timeout
@@ -24,3 +26,5 @@ export default {
     print(`${version}`)
   }
 }
+
+export default command

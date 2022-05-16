@@ -1,8 +1,9 @@
 import { CID } from 'multiformats/cid'
 import parseDuration from 'parse-duration'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import Joi from 'joi'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
  * @param {*} value
@@ -52,7 +53,7 @@ const requireIfRequired = (value, helpers) => {
 
 export default Joi
   .extend(
-    // @ts-ignore - according to typedefs coerce should always return
+    // @ts-expect-error - according to typedefs coerce should always return
     // { errors?: ErrorReport[], value?: any }
     (joi) => {
       return {
@@ -65,6 +66,20 @@ export default Joi
           }
 
           return { value: toCID(value) }
+        }
+      }
+    },
+    (joi) => {
+      return {
+        type: 'peerId',
+        base: joi.any(),
+        validate: requireIfRequired,
+        coerce (value, _helpers) {
+          if (!value) {
+            return
+          }
+
+          return { value: peerIdFromString(value) }
         }
       }
     },

@@ -7,21 +7,26 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -29,9 +34,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -105,19 +107,20 @@
     "test:chrome-webworker": "aegir test -t webworker",
     "test:firefox": "aegir test -t browser -- --browser firefox",
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
-    "test:electron-main": "aegir build --esm-tests && aegir test -t electron-main -f ./dist/cjs/node-test/**/*.spec.js",
-    "test:electron-renderer": "aegir build --esm-tests && aegir test -t electron-renderer -f ./dist/cjs/browser-test/**/*.spec.js",
-    "lint": "aegir ts -p check && aegir lint",
-    "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
+    "test:electron-main": "aegir test -t electron-main",
+    "lint": "aegir lint",
+    "clean": "aegir clean",
+    "dep-check": "aegir dep-check -i ipfs-core-types",
     "build": "aegir build"
   },
   "license": "MIT",
   "dependencies": {
+    "@libp2p/logger": "^1.1.4",
+    "@multiformats/multiaddr": "^10.0.0",
+    "@multiformats/multiaddr-to-uri": "^9.0.1",
     "any-signal": "^3.0.0",
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
-    "debug": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.10.3",
     "ipfs-unixfs": "^6.0.3",
@@ -127,8 +130,6 @@
     "it-peekable": "^1.0.2",
     "it-to-stream": "^1.0.0",
     "merge-options": "^3.0.4",
-    "multiaddr": "^10.0.0",
-    "multiaddr-to-uri": "^8.0.0",
     "multiformats": "^9.5.1",
     "nanoid": "^3.1.23",
     "parse-duration": "^1.0.0",
@@ -136,9 +137,8 @@
     "uint8arrays": "^3.0.0"
   },
   "devDependencies": {
-    "@web-std/file": "^1.1.2",
-    "aegir": "^36.0.1",
-    "rimraf": "^3.0.2"
+    "@web-std/file": "^3.0.2",
+    "aegir": "^37.0.11"
   },
   "browser": {
     "fs": false

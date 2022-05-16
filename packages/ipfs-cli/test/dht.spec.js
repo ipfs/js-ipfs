@@ -1,11 +1,13 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli } from './utils/cli.js'
 import sinon from 'sinon'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { CID } from 'multiformats/cid'
+import { peerIdFromString } from '@libp2p/peer-id'
+import { matchPeerId } from './utils/match-peer-id.js'
 
 describe('dht', () => {
   let ipfs
@@ -198,7 +200,7 @@ describe('dht', () => {
     const defaultOptions = {
       timeout: undefined
     }
-    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
+    const peerId = peerIdFromString('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const peer = {
       multiaddrs: [
         'addr'
@@ -211,13 +213,13 @@ describe('dht', () => {
         peer
       }])
 
-      const out = await cli(`dht findpeer ${peerId}`, { ipfs })
+      const out = await cli(`dht findpeer ${peerId.toString()}`, { ipfs })
 
       expect(out).to.equal(`${peer.multiaddrs[0]}\n`)
     })
 
     it('should find a peer with a timeout', async () => {
-      ipfs.dht.findPeer.withArgs(peerId.toString(), {
+      ipfs.dht.findPeer.withArgs(matchPeerId(peerId), {
         ...defaultOptions,
         timeout: 1000
       }).returns([{
@@ -234,25 +236,25 @@ describe('dht', () => {
     const defaultOptions = {
       timeout: undefined
     }
-    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
+    const peerId = peerIdFromString('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const peer = {
       id: peerId
     }
 
     it('should query the DHT', async () => {
-      ipfs.dht.query.withArgs(peerId, defaultOptions).returns([{
+      ipfs.dht.query.withArgs(matchPeerId(peerId), defaultOptions).returns([{
         name: 'PEER_RESPONSE',
         closer: [
           peer
         ]
       }])
 
-      const out = await cli(`dht query ${peerId}`, { ipfs })
+      const out = await cli(`dht query ${peerId.toString()}`, { ipfs })
       expect(out).to.equal(`${peer.id}\n`)
     })
 
     it('should query the DHT with a timeout', async () => {
-      ipfs.dht.query.withArgs(peerId, {
+      ipfs.dht.query.withArgs(matchPeerId(peerId), {
         ...defaultOptions,
         timeout: 1000
       }).returns([{

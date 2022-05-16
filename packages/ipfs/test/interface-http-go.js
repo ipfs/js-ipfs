@@ -129,7 +129,14 @@ describe('interface-ipfs-core over ipfs-http-client tests against go-ipfs', () =
     ]
   })
 
-  tests.dht(commonFactory)
+  tests.dht(commonFactory, {
+    skip: [
+      {
+        name: 'should error when DHT not available',
+        reason: 'go returns a query error'
+      }
+    ]
+  })
 
   tests.files(commonFactory, {
     skip: [

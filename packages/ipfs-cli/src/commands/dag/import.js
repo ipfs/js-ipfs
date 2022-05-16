@@ -1,36 +1,38 @@
 import fs from 'fs'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string[]} Argv.path
+ * @property {boolean} Argv.pinRoots
+ * @property {number} Argv.timeout
+ * @property {string} Argv.cidBase
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'import [path...]',
 
   describe: 'Import the contents of one or more CARs from files or stdin',
 
   builder: {
     'pin-roots': {
-      type: 'boolean',
+      boolean: true,
       default: true,
       describe: 'Pin optional roots listed in the CAR headers after importing.'
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in.',
-      type: 'string',
+      describe: 'Number base to display CIDs in',
+      string: true,
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string[]} argv.path
-   * @param {boolean} argv.pinRoots
-   * @param {number} argv.timeout
-   * @param {string} argv.cidBase
-   */
   async handler ({ ctx: { ipfs, print, getStdin }, path, pinRoots, timeout, cidBase }) {
     const handleResult = async (/** @type {import('ipfs-core-types/src/dag').ImportResult} */ { root }) => {
       const base = await ipfs.bases.getBase(cidBase)
@@ -51,6 +53,8 @@ export default {
     }
   }
 }
+
+export default command
 
 /**
  * @param {import('../../types').Context["print"]} print

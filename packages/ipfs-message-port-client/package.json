@@ -12,9 +12,10 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
@@ -28,9 +29,6 @@
       "sourceType": "module"
     }
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
   "browser": {},
   "repository": {
     "type": "git",
@@ -39,9 +37,9 @@
   "scripts": {
     "build": "aegir build",
     "test:interface:message-port-client": "aegir test -t browser --bail -f ./test/interface-message-port-client.js",
-    "lint": "aegir ts -p check && aegir lint",
-    "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core -i rimraf -i ipfs-core-types -i esbuild"
+    "lint": "aegir lint",
+    "clean": "aegir clean",
+    "dep-check": "aegir dep-check -i ipfs-core -i ipfs-core-types -i esbuild"
   },
   "dependencies": {
     "browser-readablestream-to-it": "^1.0.1",
@@ -53,11 +51,10 @@
     "multiformats": "^9.5.1"
   },
   "devDependencies": {
-    "aegir": "^36.0.1",
-    "interface-ipfs-core": "^0.154.3",
+    "aegir": "^37.0.11",
+    "interface-ipfs-core": "^0.154.2",
     "ipfs-core": "^0.14.3",
-    "ipfs-message-port-server": "^0.11.3",
-    "rimraf": "^3.0.2"
+    "ipfs-message-port-server": "^0.11.2"
   },
   "engines": {
     "node": ">=15.0.0",

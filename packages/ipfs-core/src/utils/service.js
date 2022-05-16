@@ -45,7 +45,7 @@ export class Service {
    *
    * @template {(options:any) => Await<any>} T
    *
-   * @param {Object} config
+   * @param {object} config
    * @param {T} config.start
    * @param {(state:State<T>) => Await<void>} [config.stop]
    * @returns {Service<Parameters<T>[0], State<T>>}

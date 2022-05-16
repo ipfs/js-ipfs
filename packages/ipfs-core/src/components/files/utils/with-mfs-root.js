@@ -2,11 +2,11 @@ import { CID } from 'multiformats/cid'
 import { UnixFS } from 'ipfs-unixfs'
 import * as dagPB from '@ipld/dag-pb'
 import { sha256 } from 'multiformats/hashes/sha2'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import errCode from 'err-code'
 import { MFS_ROOT_KEY } from '../../../utils.js'
 
-const log = debug('ipfs:mfs:utils:with-mfs-root')
+const log = logger('ipfs:mfs:utils:with-mfs-root')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext

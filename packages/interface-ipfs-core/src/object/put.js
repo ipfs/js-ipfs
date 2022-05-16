@@ -5,7 +5,7 @@ import * as dagPB from '@ipld/dag-pb'
 import { nanoid } from 'nanoid'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import first from 'it-first'
 import drain from 'it-drain'
@@ -16,7 +16,7 @@ import drain from 'it-drain'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testPut (factory, options) {
   const describe = getDescribe(options)

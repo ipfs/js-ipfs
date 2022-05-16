@@ -3,54 +3,56 @@ import {
   stripControlCharacters
 } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('multiformats/cid').CID} Argv.ipfsPath
+ * @property {boolean} Argv.resolve
+ * @property {string} Argv.lifetime
+ * @property {string} Argv.key
+ * @property {string} Argv.ttl
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'publish <ipfsPath>',
 
-  describe: 'Publish IPNS names.',
+  describe: 'Publish IPNS names',
 
   builder: {
     ipfsPath: {
-      type: 'string'
+      string: true
     },
     resolve: {
       alias: 'r',
-      describe: 'Resolve given path before publishing. Default: true.',
+      describe: 'Resolve given path before publishing. Default: true',
       default: true,
-      type: 'boolean'
+      boolean: true
     },
     lifetime: {
       alias: 't',
-      describe: 'Time duration that the record will be valid for. Default: 24h.',
+      describe: 'Time duration that the record will be valid for. Default: 24h',
       default: '24h',
-      type: 'string'
+      string: true
     },
     key: {
       alias: 'k',
-      describe: 'Name of the key to be used, as listed by "ipfs key list -l". Default: self.',
+      describe: 'Name of the key to be used, as listed by "ipfs key list -l". Default: self',
       default: 'self',
-      type: 'string'
+      string: true
     },
     ttl: {
-      describe: 'Time duration this record should be cached for (caution: experimental).',
+      describe: 'Time duration this record should be cached for (caution: experimental)',
       default: '',
-      type: 'string'
+      string: true
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiformats/cid').CID} argv.ipfsPath
-   * @param {boolean} argv.resolve
-   * @param {string} argv.lifetime
-   * @param {string} argv.key
-   * @param {string} argv.ttl
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, ipfsPath, resolve, lifetime, key, ttl, timeout }) {
     const result = await ipfs.name.publish(ipfsPath, {
       resolve,
@@ -62,3 +64,5 @@ export default {
     print(`Published to ${stripControlCharacters(result.name)}: ${result.value}`)
   }
 }
+
+export default command

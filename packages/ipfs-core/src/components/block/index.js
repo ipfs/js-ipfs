@@ -9,7 +9,7 @@ import { createStat } from './stat.js'
 
 export class BlockAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-core-utils/src/multihashes').Multihashes} config.hashers
    * @param {import('ipfs-core-utils/src/multicodecs').Multicodecs} config.codecs
    * @param {Preload} config.preload

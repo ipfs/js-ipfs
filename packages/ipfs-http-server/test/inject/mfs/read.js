@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { http } from '../../utils/http.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import sinon from 'sinon'

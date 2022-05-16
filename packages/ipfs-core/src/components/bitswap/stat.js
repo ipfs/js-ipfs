@@ -1,7 +1,7 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../../types').NetworkService} config.network
  */
 export function createStat ({ network }) {
@@ -17,7 +17,7 @@ export function createStat ({ network }) {
       provideBufLen: parseInt(snapshot.providesBufferLength.toString()),
       blocksReceived: BigInt(snapshot.blocksReceived.toString()),
       wantlist: Array.from(bitswap.getWantlist()).map(e => e[1].cid),
-      peers: bitswap.peers().map(id => id.toB58String()),
+      peers: bitswap.peers(),
       dupBlksReceived: BigInt(snapshot.dupBlksReceived.toString()),
       dupDataReceived: BigInt(snapshot.dupDataReceived.toString()),
       dataReceived: BigInt(snapshot.dataReceived.toString()),

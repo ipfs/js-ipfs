@@ -1,12 +1,10 @@
 /* eslint-env browser */
 
 import HTTP from 'ipfs-utils/src/http.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import PQueue from 'p-queue'
 
-const log = Object.assign(debug('ipfs:preload'), {
-  error: debug('ipfs:preload:error')
-})
+const log = logger('ipfs:preload')
 
 // @ts-expect-error PQueue@6 is broken
 const Queue = PQueue.default ? PQueue.default : PQueue
@@ -25,7 +23,7 @@ export function preload (url, options = {}) {
   return httpQueue.add(async () => {
     const res = await HTTP.post(url, { signal: options.signal })
 
-    // @ts-ignore
+    // @ts-expect-error
     const reader = res.body.getReader()
 
     try {

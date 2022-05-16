@@ -5,7 +5,7 @@ import { createReset } from './reset.js'
 import { createRm } from './rm.js'
 export class BootstrapAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
   constructor ({ repo }) {

@@ -1,5 +1,5 @@
 import errCode from 'err-code'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { exporter } from 'ipfs-unixfs-exporter'
 import { createNode } from './utils/create-node.js'
 import { toPathComponents } from './utils/to-path-components.js'
@@ -11,7 +11,7 @@ import mergeOpts from 'merge-options'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:mfs:mkdir')
+const log = logger('ipfs:mfs:mkdir')
 
 /**
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode

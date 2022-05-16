@@ -4,21 +4,26 @@
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -29,9 +34,6 @@
     "ignorePatterns": [
       "test/fixtures/*"
     ]
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -46,10 +48,10 @@
     "path": false
   },
   "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "aegir build && copyfiles './test/fixtures/**/*' ./dist/cjs && copyfiles './test/fixtures/**/*' ./dist/esm",
-    "lint": "aegir ts -p check && aegir lint",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i rimraf -i copyfiles"
+    "clean": "aegir clean",
+    "build": "aegir build && copyfiles './test/fixtures/**/*' ./dist",
+    "lint": "aegir lint",
+    "dep-check": "aegir dep-check -i ipfs-core-types -i copyfiles"
   },
   "repository": {
     "type": "git",
@@ -63,9 +65,14 @@
     "@ipld/car": "^4.1.0",
     "@ipld/dag-cbor": "^7.0.0",
     "@ipld/dag-pb": "^2.1.3",
+    "@libp2p/crypto": "^0.22.9",
+    "@libp2p/peer-id": "^1.1.10",
+    "@libp2p/peer-id-factory": "^1.0.10",
+    "@libp2p/websockets": "^1.0.8",
+    "@multiformats/multiaddr": "^10.0.0",
     "@types/pako": "^1.0.2",
     "@types/readable-stream": "^2.3.11",
-    "aegir": "^36.0.1",
+    "aegir": "^37.0.11",
     "blockstore-core": "^1.0.2",
     "copyfiles": "^2.4.1",
     "dag-jose": "^1.0.0",
@@ -76,7 +83,7 @@
     "ipfs-unixfs": "^6.0.3",
     "ipfs-unixfs-importer": "^9.0.3",
     "ipfs-utils": "^9.0.6",
-    "ipns": "^0.16.0",
+    "ipns": "^1.0.0",
     "is-ipfs": "^6.0.1",
     "iso-random-stream": "^2.0.2",
     "it-all": "^1.0.4",
@@ -86,26 +93,21 @@
     "it-first": "^1.0.4",
     "it-last": "^1.0.4",
     "it-map": "^1.0.4",
-    "it-pipe": "^1.1.0",
-    "it-pushable": "^1.4.2",
-    "it-tar": "^4.0.0",
+    "it-pipe": "^2.0.3",
+    "it-pushable": "^2.0.1",
+    "it-tar": "^5.0.0",
     "it-to-buffer": "^2.0.0",
-    "libp2p-crypto": "^0.21.1",
-    "libp2p-websockets": "^0.16.2",
     "merge-options": "^3.0.4",
-    "multiaddr": "^10.0.0",
     "multiformats": "^9.5.1",
     "nanoid": "^3.1.23",
-    "p-map": "^4.0.0",
-    "p-retry": "^4.5.0",
-    "pako": "^1.0.2",
-    "peer-id": "^0.16.0",
+    "p-defer": "^4.0.0",
+    "p-map": "^5.3.0",
+    "p-retry": "^5.1.0",
+    "p-wait-for": "^4.1.0",
+    "pako": "^2.0.4",
     "readable-stream": "^3.4.0",
-    "sinon": "^12.0.01",
+    "sinon": "^13.0.1",
     "uint8arrays": "^3.0.0"
-  },
-  "devDependencies": {
-    "rimraf": "^3.0.2"
   },
   "contributors": [
     "Alan Shaw <alan.shaw@protocol.ai>",

@@ -1,11 +1,11 @@
 import errCode from 'err-code'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import {
   MFS_MAX_CHUNK_SIZE
 } from '../../../utils.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
-const log = debug('ipfs:mfs:utils:to-async-iterator')
+const log = logger('ipfs:mfs:utils:to-async-iterator')
 
 /**
  * @param {*} content
@@ -65,7 +65,7 @@ export function toAsyncIterator (content) {
            * @param {{ error?: Error }} ev
            */
           const handleLoad = (ev) => {
-            // @ts-ignore No overload matches this call.
+            // @ts-expect-error No overload matches this call.
             reader.removeEventListener('loadend', handleLoad, false)
 
             if (ev.error) {
@@ -78,7 +78,7 @@ export function toAsyncIterator (content) {
             })
           }
 
-          // @ts-ignore No overload matches this call.
+          // @ts-expect-error No overload matches this call.
           reader.addEventListener('loadend', handleLoad)
           reader.readAsArrayBuffer(chunk)
         })

@@ -12,7 +12,7 @@ import { encodeCID, decodeCID } from './cid.js'
 
 /**
  * @typedef {JSONValue} DAGNode
- * @typedef {Object} EncodedDAGNode
+ * @typedef {object} EncodedDAGNode
  * @property {DAGNode} dagNode
  * @property {CID[]} cids
  */

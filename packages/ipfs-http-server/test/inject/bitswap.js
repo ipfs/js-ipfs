@@ -1,12 +1,13 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { CID } from 'multiformats/cid'
 import sinon from 'sinon'
 import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import { base58btc } from 'multiformats/bases/base58'
 import { base64 } from 'multiformats/bases/base64'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 describe('/bitswap', () => {
   const cid = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
@@ -87,7 +88,7 @@ describe('/bitswap', () => {
 
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
-      const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
+      const peerId = peerIdFromString('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
       ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).returns([
         cid
@@ -95,7 +96,7 @@ describe('/bitswap', () => {
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/bitswap/wantlist?peer=${peerId}`
+        url: `/api/v0/bitswap/wantlist?peer=${peerId.toString()}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)
@@ -104,7 +105,7 @@ describe('/bitswap', () => {
 
     it('/wantlist?peer=QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D&timeout=1s', async () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
-      const peerId = 'QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D'
+      const peerId = peerIdFromString('QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D')
 
       ipfs.bitswap.wantlistForPeer.withArgs(peerId, {
         ...defaultOptions,
@@ -115,7 +116,7 @@ describe('/bitswap', () => {
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/bitswap/wantlist?peer=${peerId}&timeout=1s`
+        url: `/api/v0/bitswap/wantlist?peer=${peerId.toString()}&timeout=1s`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 200)

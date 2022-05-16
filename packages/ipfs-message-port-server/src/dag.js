@@ -18,7 +18,7 @@ export class DAGService {
   }
 
   /**
-   * @typedef {Object} PutDag
+   * @typedef {object} PutDag
    * @property {EncodedDAGNode} dagNode
    * @property {EncodedCID} [encodedCid]
    *
@@ -33,12 +33,12 @@ export class DAGService {
   }
 
   /**
-   * @typedef {Object} EncodedGetResult
+   * @typedef {object} EncodedGetResult
    * @property {Set<Transferable>} transfer
    * @property {string} [remainderPath]
    * @property {EncodedDAGNode} value
    *
-   * @typedef {Object} GetDAG
+   * @typedef {object} GetDAG
    * @property {EncodedCID} cid
    * @property {string} [path]
    * @property {boolean} [localResolve]
@@ -66,13 +66,13 @@ export class DAGService {
   }
 
   /**
-   * @typedef {Object} ResolveQuery
+   * @typedef {object} ResolveQuery
    * @property {EncodedCID|string} cid
    * @property {string} [path]
    * @property {number} [timeout]
    * @property {AbortSignal} [signal]
    *
-   * @typedef {Object} EncodedResolveResult
+   * @typedef {object} EncodedResolveResult
    * @property {EncodedCID} cid
    * @property {string} [remainderPath]
    *

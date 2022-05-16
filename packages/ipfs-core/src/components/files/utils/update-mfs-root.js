@@ -1,10 +1,10 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import {
   MFS_ROOT_KEY
 } from '../../../utils.js'
 import errCode from 'err-code'
 
-const log = debug('ipfs:mfs:utils:update-mfs-root')
+const log = logger('ipfs:mfs:utils:update-mfs-root')
 
 /**
  * @typedef {import('../').MfsContext} MfsContext

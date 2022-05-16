@@ -1,8 +1,9 @@
-'use strict'
+import path from 'path'
+import esbuild from 'esbuild'
+import EchoServer from 'aegir/echo-server'
+import { fileURLToPath } from 'url'
 
-const path = require('path')
-const esbuild = require('esbuild')
-const EchoServer = require('aegir/utils/echo-server')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const buildConfig = {
@@ -20,7 +21,7 @@ const buildConfig = {
 }
 
 /** @type {import('aegir').PartialOptions} */
-module.exports = {
+export default {
   build: {
     bundlesizeMax: '32KB',
     config: buildConfig

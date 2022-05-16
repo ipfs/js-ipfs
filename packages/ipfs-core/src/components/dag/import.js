@@ -3,8 +3,8 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import itPeekable from 'it-peekable'
 import drain from 'it-drain'
 import map from 'it-map'
-import debug from 'debug'
-const log = debug('ipfs:components:dag:import')
+import { logger } from '@libp2p/logger'
+const log = logger('ipfs:components:dag:import')
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
@@ -14,7 +14,7 @@ const log = debug('ipfs:components:dag:import')
  */
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {IPFSRepo} config.repo
  */
 export function createImport ({ repo }) {
@@ -35,7 +35,7 @@ export function createImport ({ repo }) {
       }
 
       if (value) {
-        // @ts-ignore
+        // @ts-expect-error
         peekable.push(value)
       }
 
@@ -45,10 +45,10 @@ export function createImport ({ repo }) {
       let cars
 
       if (value instanceof Uint8Array) {
-        // @ts-ignore
+        // @ts-expect-error
         cars = [peekable]
       } else {
-        // @ts-ignore
+        // @ts-expect-error
         cars = peekable
       }
 

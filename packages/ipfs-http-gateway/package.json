@@ -10,21 +10,26 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
@@ -41,29 +46,26 @@
       "sourceType": "module"
     }
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "lint": "aegir ts -p check && aegir lint",
+    "lint": "aegir lint",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node --cov",
-    "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types",
+    "clean": "aegir clean",
+    "dep-check": "aegir dep-check -i ipfs-core-types",
     "build": "aegir build --no-bundle"
   },
   "dependencies": {
     "@hapi/ammo": "^5.0.1",
     "@hapi/boom": "^9.1.0",
     "@hapi/hapi": "^20.0.0",
-    "debug": "^4.1.1",
-    "hapi-pino": "^8.3.0",
+    "@libp2p/logger": "^1.1.4",
+    "hapi-pino": "^8.5.0",
     "ipfs-core-types": "^0.10.3",
-    "ipfs-http-response": "^2.0.3",
+    "ipfs-http-response": "^2.0.2",
     "is-ipfs": "^6.0.1",
     "it-last": "^1.0.4",
     "it-to-stream": "^1.0.0",
@@ -75,9 +77,8 @@
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
     "@types/hapi__hapi": "^20.0.5",
-    "aegir": "^36.0.1",
-    "file-type": "^16.0.0",
-    "rimraf": "^3.0.2",
-    "sinon": "^12.0.01"
+    "aegir": "^37.0.11",
+    "file-type": "^17.1.1",
+    "sinon": "^13.0.1"
   }
 }

@@ -2,9 +2,9 @@
 // but uses the ws implementation of WebSockets
 // see: https://github.com/improbable-eng/grpc-web/issues/796
 import WebSocket from 'ws'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 
-const log = debug('ipfs:grpc-client:websocket-transport')
+const log = logger('ipfs:grpc-client:websocket-transport')
 
 /**
  * @typedef {import('http').Agent} HttpAgent

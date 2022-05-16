@@ -10,9 +10,10 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
@@ -26,38 +27,34 @@
       "sourceType": "module"
     }
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "lint": "aegir ts -p check && aegir lint",
+    "lint": "aegir lint",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node -- --exit",
-    "clean": "rimraf ./dist",
+    "clean": "aegir clean",
     "dep-check": "aegir dep-check -i ipfs-core-types -i @mapbox/node-pre-gyp",
     "build": "aegir build --no-bundle"
   },
   "dependencies": {
+    "@libp2p/logger": "^1.1.4",
+    "@libp2p/webrtc-star": "^1.0.6",
     "@mapbox/node-pre-gyp": "^1.0.5",
-    "debug": "^4.1.1",
     "ipfs-core": "^0.14.3",
     "ipfs-core-types": "^0.10.3",
-    "ipfs-grpc-server": "^0.8.4",
-    "ipfs-http-gateway": "^0.9.3",
-    "ipfs-http-server": "^0.11.3",
+    "ipfs-grpc-server": "^0.8.3",
+    "ipfs-http-gateway": "^0.9.2",
+    "ipfs-http-server": "^0.11.2",
     "ipfs-utils": "^9.0.6",
-    "just-safe-set": "^2.2.1",
-    "libp2p": "^0.36.2",
-    "libp2p-webrtc-star": "^0.25.0"
+    "libp2p": "^0.37.0"
   },
   "devDependencies": {
-    "aegir": "^36.0.1",
-    "node-fetch": "npm:@achingbrain/node-fetch@^2.6.4",
-    "ws": "^7.3.1"
+    "aegir": "^37.0.11",
+    "node-fetch": "^3.2.3",
+    "ws": "^8.5.0"
   },
   "optionalDependencies": {
     "electron-webrtc": "^0.3.0",

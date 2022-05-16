@@ -1,21 +1,17 @@
-import { createFromPrivKey } from 'peer-id'
 import errcode from 'err-code'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { IpnsPublisher } from './publisher.js'
 import { IpnsRepublisher } from './republisher.js'
 import { IpnsResolver } from './resolver.js'
 import { TLRU } from '../utils/tlru.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-const log = Object.assign(debug('ipfs:ipns'), {
-  error: debug('ipfs:ipns:error')
-})
-
+const log = logger('ipfs:ipns')
 const defaultRecordTtl = 60 * 1000
 
 /**
- * @typedef {import('libp2p-crypto').PrivateKey} PrivateKey
- * @typedef {import('peer-id')} PeerId
+ * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 
 export class IPNS {
@@ -23,7 +19,7 @@ export class IPNS {
    * @param {import('ipfs-core-types/src/utils').BufferStore} routing
    * @param {import('interface-datastore').Datastore} datastore
    * @param {PeerId} peerId
-   * @param {import('libp2p/src/keychain')} keychain
+   * @param {import('@libp2p/interfaces/keychain').KeyChain} keychain
    * @param {object} options
    * @param {string} options.pass
    * @param {number} [options.initialBroadcastInterval]
@@ -40,20 +36,19 @@ export class IPNS {
   /**
    * Publish
    *
-   * @param {PrivateKey} privKey
+   * @param {PeerId} peerId
    * @param {Uint8Array} value
    * @param {number} lifetime
    */
-  async publish (privKey, value, lifetime = IpnsPublisher.defaultRecordLifetime) {
+  async publish (peerId, value, lifetime = IpnsPublisher.defaultRecordLifetime) {
     try {
-      const peerId = await createFromPrivKey(privKey.bytes)
-      await this.publisher.publishWithEOL(privKey, value, lifetime)
+      await this.publisher.publishWithEOL(peerId, value, lifetime)
 
       log(`IPNS value ${uint8ArrayToString(value, 'base32')} was published correctly`)
 
       // // Add to cache
-      const id = peerId.toB58String()
-      // @ts-ignore - parseFloat expects string
+      const id = peerId.toString()
+      // @ts-expect-error - parseFloat expects string
       const ttEol = parseFloat(lifetime)
       const ttl = (ttEol < defaultRecordTtl) ? ttEol : defaultRecordTtl
 
@@ -114,10 +109,10 @@ export class IPNS {
    *
    * Sets the ipns record for the given key to point to an empty directory
    *
-   * @param {PrivateKey} privKey
+   * @param {PeerId} peerId
    * @param {Uint8Array} value
    */
-  async initializeKeyspace (privKey, value) { // eslint-disable-line require-await
-    return this.publish(privKey, value, IpnsPublisher.defaultRecordLifetime)
+  async initializeKeyspace (peerId, value) { // eslint-disable-line require-await
+    return this.publish(peerId, value, IpnsPublisher.defaultRecordLifetime)
   }
 }

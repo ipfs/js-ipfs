@@ -1,11 +1,12 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import sinon from 'sinon'
 import { allNdjson } from '../utils/all-ndjson.js'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 const defaultOptions = {
   count: 10,
@@ -14,7 +15,7 @@ const defaultOptions = {
 }
 
 describe('/ping', function () {
-  const peerId = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR'
+  const peerId = peerIdFromString('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
   let ipfs
 
   beforeEach(() => {
@@ -44,7 +45,7 @@ describe('/ping', function () {
 
     const res = await http({
       method: 'POST',
-      url: `/api/v0/ping?arg=${peerId}`
+      url: `/api/v0/ping?arg=${peerId.toString()}`
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 500)
@@ -58,7 +59,7 @@ describe('/ping', function () {
 
     const res = await http({
       method: 'POST',
-      url: `/api/v0/ping?arg=${peerId}&count=5`
+      url: `/api/v0/ping?arg=${peerId.toString()}&count=5`
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 200)
@@ -72,7 +73,7 @@ describe('/ping', function () {
 
     const res = await http({
       method: 'POST',
-      url: `/api/v0/ping?arg=${peerId}&n=5`
+      url: `/api/v0/ping?arg=${peerId.toString()}&n=5`
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 200)
@@ -95,7 +96,7 @@ describe('/ping', function () {
 
     const res = await http({
       method: 'POST',
-      url: `/api/v0/ping?arg=${peerId}`
+      url: `/api/v0/ping?arg=${peerId.toString()}`
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 200)
@@ -118,7 +119,7 @@ describe('/ping', function () {
 
     const res = await http({
       method: 'POST',
-      url: `/api/v0/ping?arg=${peerId}&timeout=1s`
+      url: `/api/v0/ping?arg=${peerId.toString()}&timeout=1s`
     }, { ipfs })
 
     expect(res).to.have.property('statusCode', 200)

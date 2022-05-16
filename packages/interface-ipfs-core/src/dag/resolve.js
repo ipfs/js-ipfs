@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import * as dagPB from '@ipld/dag-pb'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import testTimeout from '../utils/test-timeout.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
@@ -12,7 +12,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testResolve (factory, options) {
   const describe = getDescribe(options)

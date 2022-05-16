@@ -26,7 +26,7 @@ export const Format = {
  */
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-core-types/src/root').API<{}>["resolve"]} config.resolve

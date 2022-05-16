@@ -21,11 +21,11 @@ export class BlockService {
   }
 
   /**
-   * @typedef {Object} GetResult
+   * @typedef {object} GetResult
    * @property {Uint8Array} block
    * @property {Set<Transferable>} transfer
    *
-   * @typedef {Object} GetQuery
+   * @typedef {object} GetQuery
    * @property {EncodedCID} cid
    * @property {number} [timeout]
    * @property {AbortSignal} [query.signal]
@@ -42,11 +42,11 @@ export class BlockService {
   }
 
   /**
-   * @typedef {Object} PutResult
+   * @typedef {object} PutResult
    * @property {EncodedCID} cid
    * @property {Set<Transferable>} transfer
    *
-   * @typedef {Object} PutQuery
+   * @typedef {object} PutQuery
    * @property {Uint8Array} block
    * @property {EncodedCID|undefined} [cid]
    *
@@ -65,7 +65,7 @@ export class BlockService {
   }
 
   /**
-   * @typedef {Object} RmQuery
+   * @typedef {object} RmQuery
    * @property {EncodedCID[]} cids
    * @property {boolean} [force]
    * @property {boolean} [quiet]
@@ -87,12 +87,12 @@ export class BlockService {
   }
 
   /**
-   * @typedef {Object} StatQuery
+   * @typedef {object} StatQuery
    * @property {EncodedCID} cid
    * @property {number} [timeout]
    * @property {AbortSignal} [signal]
    *
-   * @typedef {Object} EncodedStatResult
+   * @typedef {object} EncodedStatResult
    * @property {EncodedCID} cid
    * @property {number} size
    *
@@ -109,7 +109,7 @@ export class BlockService {
 }
 
 /**
- * @param {Object} entry
+ * @param {object} entry
  * @param {CID} entry.cid
  * @param {Error|void} [entry.error]
  * @param {Set<Transferable>} transfer

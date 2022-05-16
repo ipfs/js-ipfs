@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import all from 'it-all'
 import sinon from 'sinon'
 import { bidiToDuplex } from '../src/utils/bidi-to-duplex.js'

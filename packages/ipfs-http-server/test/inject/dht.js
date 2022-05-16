@@ -1,7 +1,7 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { testHttpMethod } from '../utils/test-http-method.js'
 import { http } from '../utils/http.js'
 import sinon from 'sinon'
@@ -11,6 +11,7 @@ import { allNdjson } from '../utils/all-ndjson.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import FormData from 'form-data'
 import streamToPromise from 'stream-to-promise'
+import { EventTypes } from '@libp2p/interfaces/dht'
 
 describe('/dht', () => {
   const peerId = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'
@@ -55,12 +56,12 @@ describe('/dht', () => {
 
       const res = await http({
         method: 'POST',
-        url: `/api/v0/dht/findpeer?arg=${peerId}`
+        url: `/api/v0/dht/findpeer?arg=${peerId.toString()}`
       }, { ipfs })
 
       expect(res).to.have.property('statusCode', 500)
       expect(ipfs.dht.findPeer.called).to.be.true()
-      expect(ipfs.dht.findPeer.getCall(0).args[0]).to.equal(peerId)
+      expect(ipfs.dht.findPeer.getCall(0).args[0].toString()).to.equal(peerId.toString())
     })
   })
 
@@ -91,7 +92,7 @@ describe('/dht', () => {
     it('returns 200 if key is provided', async () => {
       ipfs.dht.findProvs.withArgs(cid, defaultOptions).returns([{
         name: 'PROVIDER',
-        type: 4,
+        type: EventTypes.PROVIDER,
         providers: [{
           id: peerId,
           multiaddrs: [
@@ -108,7 +109,7 @@ describe('/dht', () => {
       expect(res).to.have.property('statusCode', 200)
       expect(allNdjson(res)).to.deep.equal([{
         Extra: '',
-        Type: 4,
+        Type: EventTypes.PROVIDER,
         Responses: [{
           ID: peerId,
           Addrs: ['addr']
@@ -128,19 +129,19 @@ describe('/dht', () => {
         ...defaultOptions
       }).returns([{
         name: 'PROVIDER',
-        type: 4,
+        type: EventTypes.PROVIDER,
         providers: providers.slice(0, 4)
       }, {
         name: 'PROVIDER',
-        type: 4,
+        type: EventTypes.PROVIDER,
         providers: providers.slice(4, 8)
       }, {
         name: 'PROVIDER',
-        type: 4,
+        type: EventTypes.PROVIDER,
         providers: providers.slice(8, 12)
       }, {
         name: 'PROVIDER',
-        type: 4,
+        type: EventTypes.PROVIDER,
         providers: providers.slice(12)
       }])
 
@@ -255,15 +256,15 @@ describe('/dht', () => {
     it('returns 200 if key is provided', async () => {
       ipfs.dht.provide.withArgs(cid, defaultOptions).returns([{
         name: 'DIALING_PEER',
-        type: 7,
+        type: EventTypes.DIALING_PEER,
         peer: peerId
       }, {
         name: 'SENDING_QUERY',
-        type: 0,
+        type: EventTypes.SENDING_QUERY,
         to: peerId
       }, {
         name: 'PEER_RESPONSE',
-        type: 1,
+        type: EventTypes.PEER_RESPONSE,
         from: peerId,
         closer: [],
         providers: []
@@ -278,17 +279,16 @@ describe('/dht', () => {
       expect(allNdjson(res)).to.deep.equal([{
         Extra: '',
         ID: peerId,
-        Type: 7,
+        Type: EventTypes.DIALING_PEER,
+        Responses: null
+      }, {
+        Extra: '',
+        Type: EventTypes.SENDING_QUERY,
         Responses: null
       }, {
         Extra: '',
         ID: peerId,
-        Type: 0,
-        Responses: null
-      }, {
-        Extra: '',
-        ID: peerId,
-        Type: 1,
+        Type: EventTypes.PEER_RESPONSE,
         Responses: []
       }])
     })
@@ -324,15 +324,15 @@ describe('/dht', () => {
 
       ipfs.dht.put.withArgs(key, value, defaultOptions).returns([{
         name: 'DIALING_PEER',
-        type: 7,
+        type: EventTypes.DIALING_PEER,
         peer: peerId
       }, {
         name: 'SENDING_QUERY',
-        type: 0,
+        type: EventTypes.SENDING_QUERY,
         to: peerId
       }, {
         name: 'PEER_RESPONSE',
-        type: 1,
+        type: EventTypes.PEER_RESPONSE,
         from: peerId,
         closer: [],
         providers: []
@@ -355,17 +355,16 @@ describe('/dht', () => {
       expect(allNdjson(res)).to.deep.equal([{
         Extra: '',
         ID: peerId,
-        Type: 7,
+        Type: EventTypes.DIALING_PEER,
+        Responses: null
+      }, {
+        Extra: '',
+        Type: EventTypes.SENDING_QUERY,
         Responses: null
       }, {
         Extra: '',
         ID: peerId,
-        Type: 0,
-        Responses: null
-      }, {
-        Extra: '',
-        ID: peerId,
-        Type: 1,
+        Type: EventTypes.PEER_RESPONSE,
         Responses: []
       }])
     })
@@ -398,15 +397,15 @@ describe('/dht', () => {
     it('returns 200 if key is provided', async function () {
       ipfs.dht.query.withArgs(peerId, defaultOptions).returns([{
         name: 'DIALING_PEER',
-        type: 7,
+        type: EventTypes.DIALING_PEER,
         peer: peerId
       }, {
         name: 'SENDING_QUERY',
-        type: 0,
+        type: EventTypes.SENDING_QUERY,
         to: peerId
       }, {
         name: 'PEER_RESPONSE',
-        type: 1,
+        type: EventTypes.PEER_RESPONSE,
         from: peerId,
         closer: [],
         providers: []
@@ -421,17 +420,16 @@ describe('/dht', () => {
       expect(allNdjson(res)).to.deep.equal([{
         Extra: '',
         ID: peerId,
-        Type: 7,
+        Type: EventTypes.DIALING_PEER,
+        Responses: null
+      }, {
+        Extra: '',
+        Type: EventTypes.SENDING_QUERY,
         Responses: null
       }, {
         Extra: '',
         ID: peerId,
-        Type: 0,
-        Responses: null
-      }, {
-        Extra: '',
-        ID: peerId,
-        Type: 1,
+        Type: EventTypes.PEER_RESPONSE,
         Responses: []
       }])
     })

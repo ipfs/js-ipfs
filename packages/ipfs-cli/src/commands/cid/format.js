@@ -1,10 +1,20 @@
 import split from 'it-split'
 import { CID } from 'multiformats/cid'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string[]} [Argv.cids]
+ * @property {string} [Argv.format]
+ * @property {import('multiformats/cid').CIDVersion} [Argv.cidVersion]
+ * @property {string} [Argv.base]
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'format [cids...]',
 
-  describe: 'Format and convert a CID in various useful ways.',
+  describe: 'Format and convert a CID in various useful ways',
 
   builder: {
     format: {
@@ -30,29 +40,21 @@ export default {
 
 (1) For CID version 0 the multibase must be base58btc and no prefix is used. For Cid version 1 the multibase prefix is included.`,
       alias: 'f',
-      type: 'string',
+      string: true,
       default: '%s'
     },
     'cid-version': {
-      describe: 'CID version to convert to.',
+      describe: 'CID version to convert to',
       alias: 'v',
-      type: 'number'
+      number: true
     },
     base: {
-      describe: 'Multibase to display output in.',
+      describe: 'Multibase to display output in',
       alias: 'b',
-      type: 'string'
+      string: true
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string[]} [argv.cids]
-   * @param {string} [argv.format]
-   * @param {import('multiformats/cid').CIDVersion} [argv.cidVersion]
-   * @param {string} [argv.base]
-   */
   async handler ({ ctx: { ipfs, print, getStdin }, cids, format, cidVersion, base }) {
     let input
 
@@ -107,6 +109,8 @@ export default {
     }
   }
 }
+
+export default command
 
 /**
  * @param {CID} cid

@@ -1,5 +1,3 @@
-
-// @ts-expect-error - no types
 import mortice from 'mortice'
 
 /**

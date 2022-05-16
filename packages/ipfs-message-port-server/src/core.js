@@ -34,11 +34,11 @@ import { decodeCID, encodeCID } from 'ipfs-message-port-protocol/cid'
  */
 
 /**
- * @typedef {Object} AddAllInput
+ * @typedef {object} AddAllInput
  * @property {EncodedAddAllInput} input
  * @property {RemoteCallback} [progressCallback]
  *
- * @typedef {Object} AddInput
+ * @typedef {object} AddInput
  * @property {EncodedAddInput} input
  * @property {RemoteCallback} [progressCallback]
  *
@@ -151,7 +151,7 @@ export class CoreService {
   }
 
   /**
-   * @typedef {Object} CatQuery
+   * @typedef {object} CatQuery
    * @property {string|EncodedCID} path
    * @property {number} [offset]
    * @property {number} [length]
@@ -168,7 +168,7 @@ export class CoreService {
   }
 
   /**
-   * @typedef {Object} LsQuery
+   * @typedef {object} LsQuery
    * @property {string|EncodedCID} path
    * @property {boolean} [preload]
    * @property {boolean} [recursive]

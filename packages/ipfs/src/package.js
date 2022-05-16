@@ -1,4 +1,4 @@
 
 export const name = 'ipfs'
-export const version = ''
+export const version = '0.62.2'
 export const node = '>=15.0.0'

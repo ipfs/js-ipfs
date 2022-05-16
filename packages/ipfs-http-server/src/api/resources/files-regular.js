@@ -233,9 +233,6 @@ export const addResource = {
 
     return streamResponse(request, h, () => pipe(
       multipartRequestParser(request.raw.req),
-      /**
-       * @param {AsyncIterable<import('../../types').MultipartEntry>} source
-       */
       async function * (source) {
         for await (const entry of source) {
           if (entry.type === 'file') {
@@ -260,9 +257,6 @@ export const addResource = {
           }
         }
       },
-      /**
-       * @param {import('ipfs-core-types/src/utils').ImportCandidateStream} source
-       */
       async function * (source) {
         const progressStream = new PassThrough({
           objectMode: true

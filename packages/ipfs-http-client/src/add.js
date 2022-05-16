@@ -18,7 +18,7 @@ export function createAdd (options) {
      * @type {RootAPI["add"]}
      */
     async function add (input, options = {}) {
-      // @ts-ignore - last may return undefined if source is empty
+      // @ts-expect-error - last may return undefined if source is empty
       return await last(all(normaliseInput(input), options))
     }
     return add

@@ -1,4 +1,3 @@
-import PeerId from 'peer-id'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
@@ -7,24 +6,24 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  * A "pong" message can be identified by a truthy success property and an empty
  * text property. Other ping responses are failures or status updates.
  *
- * @typedef {Object} Pong
+ * @typedef {object} Pong
  * @property {true} success
  * @property {number} time
  * @property {''} text
  *
- * @typedef {Object} PingFailure
+ * @typedef {object} PingFailure
  * @property {false} success
  * @property {number} time
  * @property {string} text
  *
- * @typedef {Object} StatusUpdate
+ * @typedef {object} StatusUpdate
  * @property {true} success
  * @property {0} time
  * @property {string} text
  *
  * @typedef {PingSettings & AbortOptions} PingOptions
  *
- * @typedef {Object} PingSettings
+ * @typedef {object} PingSettings
  * @property {number} [count=10] - The number of ping messages to send
  *
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
@@ -34,7 +33,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 const basePacket = { success: true, time: 0, text: '' }
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../types').NetworkService} config.network
  */
 export function createPing ({ network }) {
@@ -45,14 +44,12 @@ export function createPing ({ network }) {
     const { libp2p } = await network.use()
     options.count = options.count || 10
 
-    const peer = PeerId.createFromB58String(peerId)
-
-    const storedPeer = await libp2p.peerStore.get(peer)
+    const storedPeer = await libp2p.peerStore.get(peerId)
     let id = storedPeer && storedPeer.id
 
     if (!id) {
       yield { ...basePacket, text: `Looking up peer ${peerId}` }
-      const remotePeer = await libp2p.peerRouting.findPeer(peer)
+      const remotePeer = await libp2p.peerRouting.findPeer(peerId)
 
       id = remotePeer && remotePeer.id
     }
@@ -61,7 +58,7 @@ export function createPing ({ network }) {
       throw new Error('Peer was not found')
     }
 
-    yield { ...basePacket, text: `PING ${id.toB58String()}` }
+    yield { ...basePacket, text: `PING ${id.toString()}` }
 
     let packetCount = 0
     let totalTime = 0

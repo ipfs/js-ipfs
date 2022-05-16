@@ -37,7 +37,7 @@ export async function resolveDnslink (fqdn, opts) { // eslint-disable-line requi
    * @param {boolean} [opts.nocache]
    */
   const resolve = async (fqdn, opts = {}) => {
-    // @ts-ignore - URLSearchParams does not take boolean options, only strings
+    // @ts-expect-error - URLSearchParams does not take boolean options, only strings
     const searchParams = new URLSearchParams(opts)
     searchParams.set('arg', fqdn)
 

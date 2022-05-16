@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 
 import { create } from '../src/index.js'
-import WebSocket from 'ws'
+import { WebSocketServer } from 'ws'
 
 function startServer () {
   return new Promise((resolve) => {
-    const wss = new WebSocket.Server({ port: 0 })
+    const wss = new WebSocketServer({ port: 0 })
 
     wss.on('listening', () => {
       resolve({

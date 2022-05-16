@@ -9,7 +9,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testRepo (factory, options) {
   const describe = getDescribe(options)

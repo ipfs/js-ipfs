@@ -2,31 +2,31 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import parseDuration from 'parse-duration'
 import { base32 } from 'multiformats/bases/base32'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../types').Context} Argv.ctx
+ * @property {boolean} Argv.multihash
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'refs-local',
 
-  describe: 'List all local references.',
-
-  epilog: 'CIDs are reconstructed therefore they might differ from those under which the blocks were originally stored.',
+  describe: 'List all local references. CIDs are reconstructed therefore they might differ from those under which the blocks were originally stored',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     },
     multihash: {
-      type: 'boolean',
+      boolean: true,
       default: false,
       desc: 'Shows base32 encoded multihashes instead of reconstructed CIDs'
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../types').Context} argv.ctx
-   * @param {boolean} argv.multihash
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, timeout, multihash }) {
     for await (const { ref, err } of ipfs.refs.local({
       timeout
@@ -43,3 +43,5 @@ export default {
     }
   }
 }
+
+export default command

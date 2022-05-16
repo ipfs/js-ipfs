@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { formatMtime } from '../../src/files/format-mtime.js'
 
 describe('format-mtime', function () {

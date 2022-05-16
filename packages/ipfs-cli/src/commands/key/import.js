@@ -1,7 +1,17 @@
 import fs from 'fs'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.name
+ * @property {string} Argv.input
+ * @property {string} Argv.passin
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'import <name>',
 
   describe: 'Import the key from a PKCS #8 PEM file',
@@ -10,32 +20,21 @@ export default {
     passin: {
       alias: 'p',
       describe: 'Password for the PEM',
-      type: 'string'
+      string: true
     },
     input: {
       alias: 'i',
       describe: 'Input PEM file',
-      type: 'string',
+      string: true,
       demandOption: true,
-      /**
-       * @param {string} input
-       */
       coerce: input => fs.readFileSync(input, 'utf8')
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.name
-   * @param {string} argv.input
-   * @param {string} argv.passin
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, name, input, passin, timeout }) {
     const key = await ipfs.key.import(name, input, passin, {
       timeout
@@ -43,3 +42,5 @@ export default {
     print(`imported ${key.id} ${key.name}`)
   }
 }
+
+export default command

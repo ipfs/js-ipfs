@@ -12,7 +12,7 @@ export const pingResource = {
       },
       query: Joi.object().keys({
         count: Joi.number().integer().greater(0).default(10),
-        peerId: Joi.string().required(),
+        peerId: Joi.peerId().required(),
         timeout: Joi.timeout()
       })
         .rename('arg', 'peerId', {
@@ -47,7 +47,7 @@ export const pingResource = {
     } = request
 
     return streamResponse(request, h, () => pipe(
-      ipfs.ping(peerId.toString(), {
+      ipfs.ping(peerId, {
         count,
         signal,
         timeout

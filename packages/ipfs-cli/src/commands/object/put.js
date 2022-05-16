@@ -4,36 +4,38 @@ import parseDuration from 'parse-duration'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.data
+ * @property {'json' | 'protobuf'} Argv.inputEnc
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'put [data]',
 
   describe: 'Stores input as a DAG object, outputs its key',
 
   builder: {
     'input-enc': {
-      type: 'string',
+      string: true,
       choices: ['json', 'protobuf'],
       default: 'json'
     },
     'cid-base': {
       describe: 'Number base to display CIDs in',
-      type: 'string',
+      string: true,
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.data
-   * @param {'json' | 'protobuf'} argv.inputEnc
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print, getStdin }, data, inputEnc, cidBase, timeout }) {
     let buf
 
@@ -57,3 +59,5 @@ export default {
     print(`added ${cid.toString(base.encoder)}`)
   }
 }
+
+export default command

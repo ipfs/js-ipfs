@@ -9,7 +9,7 @@ import all from 'it-all'
 import drain from 'it-drain'
 import last from 'it-last'
 import map from 'it-map'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from './utils/mocha.js'
 import testTimeout from './utils/test-timeout.js'
 import { importer } from 'ipfs-unixfs-importer'
@@ -18,6 +18,10 @@ import { extract } from 'it-tar'
 import { pipe } from 'it-pipe'
 import toBuffer from 'it-to-buffer'
 import Pako from 'pako'
+
+/**
+ * @typedef {import('it-stream-types').Source<Uint8Array>} Source
+ */
 
 /**
  * @param {string} name
@@ -45,7 +49,7 @@ const emptyDir = (name) => ({ path: `test-folder/${name}` })
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testGet (factory, options) {
   const describe = getDescribe(options)
@@ -58,7 +62,7 @@ export function testGet (factory, options) {
     let ipfs
 
     /**
-     * @param {AsyncIterable<Uint8Array>} source
+     * @param {Source} source
      */
     async function * gzipped (source) {
       const inflator = new Pako.Inflate()
@@ -81,7 +85,7 @@ export function testGet (factory, options) {
     }
 
     /**
-     * @param {AsyncIterable<Uint8Array>} source
+     * @param {Source} source
      */
     async function * tarballed (source) {
       yield * pipe(
@@ -96,14 +100,6 @@ export function testGet (factory, options) {
           }
         }
       )
-    }
-
-    /**
-     * @template T
-     * @param {AsyncIterable<T>} source
-     */
-    async function collect (source) {
-      return all(source)
     }
 
     before(async () => {
@@ -127,7 +123,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(fixtures.smallFile.cid),
         tarballed,
-        collect
+        (source) => all(source)
       )
       expect(output).to.have.lengthOf(1)
       expect(output).to.have.nested.property('[0].header.name', fixtures.smallFile.cid.toString())
@@ -146,7 +142,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(cidv1),
         tarballed,
-        collect
+        (source) => all(source)
       )
       expect(output).to.have.lengthOf(1)
       expect(output).to.have.nested.property('[0].header.name', cidv1.toString())
@@ -165,7 +161,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(cidv0),
         tarballed,
-        collect
+        (source) => all(source)
       )
       expect(output).to.have.lengthOf(1)
       expect(output).to.have.nested.property('[0].header.name', cidv0.toString())
@@ -182,7 +178,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(cidv1),
         tarballed,
-        collect
+        (source) => all(source)
       )
       expect(output).to.have.lengthOf(1)
       expect(output).to.have.nested.property('[0].header.name', cidv1.toString())
@@ -193,7 +189,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(fixtures.bigFile.cid),
         tarballed,
-        collect
+        (source) => all(source)
       )
       expect(output).to.have.lengthOf(1)
       expect(output).to.have.nested.property('[0].header.name', fixtures.bigFile.cid.toString())
@@ -218,7 +214,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(cid),
         tarballed,
-        collect
+        (source) => all(source)
       )
 
       // Check paths
@@ -238,12 +234,12 @@ export function testGet (factory, options) {
 
       // Check contents
       expect(output.map(f => uint8ArrayToString(f.body))).to.include.members([
-        fixtures.directory.files['alice.txt'].toString(),
-        fixtures.directory.files['files/hello.txt'].toString(),
-        fixtures.directory.files['files/ipfs.txt'].toString(),
-        fixtures.directory.files['holmes.txt'].toString(),
-        fixtures.directory.files['jungle.txt'].toString(),
-        fixtures.directory.files['pp.txt'].toString()
+        uint8ArrayToString(fixtures.directory.files['alice.txt']),
+        uint8ArrayToString(fixtures.directory.files['files/hello.txt']),
+        uint8ArrayToString(fixtures.directory.files['files/ipfs.txt']),
+        uint8ArrayToString(fixtures.directory.files['holmes.txt']),
+        uint8ArrayToString(fixtures.directory.files['jungle.txt']),
+        uint8ArrayToString(fixtures.directory.files['pp.txt'])
       ])
     })
 
@@ -260,7 +256,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(cid),
         tarballed,
-        collect
+        (source) => all(source)
       )
 
       // Check paths
@@ -273,9 +269,9 @@ export function testGet (factory, options) {
 
       // Check contents
       expect(output.map(f => uint8ArrayToString(f.body))).to.include.members([
-        fixtures.directory.files['pp.txt'].toString(),
-        fixtures.directory.files['holmes.txt'].toString(),
-        fixtures.directory.files['jungle.txt'].toString()
+        uint8ArrayToString(fixtures.directory.files['pp.txt']),
+        uint8ArrayToString(fixtures.directory.files['holmes.txt']),
+        uint8ArrayToString(fixtures.directory.files['jungle.txt'])
       ])
     })
 
@@ -296,7 +292,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(`/ipfs/${fileAdded.cid}/testfile.txt`),
         tarballed,
-        collect
+        (source) => all(source)
       )
       expect(output).to.be.length(1)
 
@@ -310,7 +306,7 @@ export function testGet (factory, options) {
           compressionLevel: 5
         }),
         gzipped,
-        collect
+        (source) => all(source)
       )
       expect(uint8ArrayConcat(output)).to.equalBytes(fixtures.smallFile.data)
     })
@@ -324,7 +320,7 @@ export function testGet (factory, options) {
         }),
         gzipped,
         tarballed,
-        collect
+        (source) => all(source)
       )
       expect(output).to.have.nested.property('[0].body').that.equalBytes(fixtures.smallFile.data)
     })
@@ -369,7 +365,7 @@ export function testGet (factory, options) {
         }),
         gzipped,
         tarballed,
-        collect
+        (source) => all(source)
       )
 
       // Check paths
@@ -383,8 +379,8 @@ export function testGet (factory, options) {
 
       // Check contents
       expect(output.map(f => uint8ArrayToString(f.body))).to.include.members([
-        fixtures.directory.files['files/hello.txt'].toString(),
-        fixtures.directory.files['pp.txt'].toString()
+        uint8ArrayToString(fixtures.directory.files['files/hello.txt']),
+        uint8ArrayToString(fixtures.directory.files['pp.txt'])
       ])
     })
 
@@ -411,7 +407,7 @@ export function testGet (factory, options) {
       const output = await pipe(
         ipfs.get(CID.parse(cid)),
         tarballed,
-        collect
+        (source) => all(source)
       )
 
       expect(output).to.be.an('array').with.lengthOf(3)

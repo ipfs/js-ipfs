@@ -10,7 +10,7 @@
  */
 import semver from 'semver'
 import * as pkg from './package.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 
 import { print, getIpfs, getRepoPath } from 'ipfs-cli/utils'
 import { cli } from 'ipfs-cli'
@@ -47,7 +47,7 @@ if (process.env.DEBUG) {
   })
 }
 
-const log = debug('ipfs:cli')
+const log = logger('ipfs:cli')
 
 process.title = pkg.name
 
@@ -81,9 +81,9 @@ async function main (argv) {
   const command = argv.slice(2)
 
   try {
-    const data = await cli(command, async (argv) => {
+    await cli(command, async (argv) => {
       if (!['daemon', 'init'].includes(command[0])) {
-        // @ts-ignore argv as no properties in common
+        // @ts-expect-error argv as no properties in common
         const { ipfs, isDaemon, cleanup } = await getIpfs(argv)
 
         ctx = {
@@ -95,13 +95,7 @@ async function main (argv) {
       }
 
       argv.ctx = ctx
-
-      return argv
     })
-
-    if (data) {
-      print(data)
-    }
   } catch (/** @type {any} */ err) {
     // TODO: export errors from ipfs-repo to use .code constants
     if (err.code === 'ERR_INVALID_REPO_VERSION') {

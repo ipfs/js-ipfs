@@ -1,9 +1,8 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -11,10 +10,9 @@ import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testConnect (factory, options) {
-  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -28,7 +26,7 @@ export function testConnect (factory, options) {
     let ipfsBId
 
     before(async () => {
-      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc' })).api
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       ipfsBId = await ipfsB.id()
@@ -40,12 +38,12 @@ export function testConnect (factory, options) {
       let peers
 
       peers = await ipfsA.swarm.peers()
-      expect(peers).to.have.length(0)
+      expect(peers.map(p => p.peer.toString())).to.not.include(ipfsBId.id.toString())
 
       await ipfsA.swarm.connect(ipfsBId.addresses[0])
 
       peers = await ipfsA.swarm.peers()
-      expect(peers).to.have.length.above(0)
+      expect(peers.map(p => p.peer.toString())).to.include(ipfsBId.id.toString())
     })
   })
 }

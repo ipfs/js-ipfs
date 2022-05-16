@@ -16,42 +16,44 @@ const codecs = [dagCBOR, dagJSON, dagPB, raw].reduce((/** @type {Record<string, 
   return m
 }, /** @type {Record<string, BlockCodec<any>>} */ {})
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.cidpath
+ * @property {'dag-json' | 'dag-cbor' | 'dag-pb' | 'raw'} Argv.outputCodec
+ * @property {'base16' | 'base64' | 'base58btc'} Argv.dataEnc
+ * @property {boolean} Argv.localResolve
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'get <cid path>',
 
-  describe: 'Get a dag node or value from ipfs.',
+  describe: 'Get a dag node or value from ipfs',
 
   builder: {
     'local-resolve': {
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     'output-codec': {
-      describe: 'Codec to encode data in before displaying.',
-      type: 'string',
+      describe: 'Codec to encode data in before displaying',
+      string: true,
       choices: ['dag-json', 'dag-cbor', 'dag-pb', 'raw'],
       default: 'dag-json'
     },
     'data-enc': {
-      describe: 'String encoding to display raw node data in if using "raw" output-codec.',
-      type: 'string',
+      describe: 'String encoding to display raw node data in if using "raw" output-codec',
+      string: true,
       choices: ['base16', 'base64', 'base58btc']
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.cidpath
-   * @param {'dag-json' | 'dag-cbor' | 'dag-pb' | 'raw'} argv.outputCodec
-   * @param {'base16' | 'base64' | 'base58btc'} argv.dataEnc
-   * @param {boolean} argv.localResolve
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, cidpath, dataEnc, outputCodec, localResolve, timeout }) {
     const options = {
       localResolve,
@@ -101,3 +103,5 @@ export default {
     }
   }
 }
+
+export default command

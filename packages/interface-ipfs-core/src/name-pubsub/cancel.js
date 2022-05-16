@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 
-import PeerId from 'peer-id'
 import all from 'it-all'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
+import { createEd25519PeerId } from '@libp2p/peer-id-factory'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -11,7 +11,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testCancel (factory, options) {
   const describe = getDescribe(options)
@@ -26,13 +26,13 @@ export function testCancel (factory, options) {
     before(async () => {
       ipfs = (await factory.spawn()).api
       const peerInfo = await ipfs.id()
-      nodeId = peerInfo.id
+      nodeId = peerInfo.id.toString()
     })
 
     after(() => factory.clean())
 
     it('should return false when the name that is intended to cancel is not subscribed', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(60 * 1000)
 
       const res = await ipfs.name.pubsub.cancel(nodeId)
@@ -42,11 +42,11 @@ export function testCancel (factory, options) {
     })
 
     it('should cancel a subscription correctly returning true', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(300 * 1000)
 
-      const peerId = await PeerId.create({ bits: 512 })
-      const id = peerId.toB58String()
+      const peerId = await createEd25519PeerId()
+      const id = peerId.toString()
       const ipnsPath = `/ipns/${id}`
 
       const subs = await ipfs.name.pubsub.subs()

@@ -1,16 +1,26 @@
 import { commands } from './patch/index.js'
 
-export default {
+/**
+ * @typedef {import('yargs').Argv} Argv
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'patch',
 
-  description: 'Create a new merkledag object based on an existing one.',
+  describe: 'Create a new merkledag object based on an existing one',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

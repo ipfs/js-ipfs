@@ -1,6 +1,6 @@
 import { createMkdir } from './mkdir.js'
 import { createStat } from './stat.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import errCode from 'err-code'
 import { updateTree } from './utils/update-tree.js'
 import { updateMfsRoot } from './utils/update-mfs-root.js'
@@ -11,7 +11,7 @@ import { toTrail } from './utils/to-trail.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:mfs:cp')
+const log = logger('ipfs:mfs:cp')
 
 /**
  * @typedef {import('@ipld/dag-pb').PBNode} DAGNode
@@ -78,7 +78,6 @@ export function createCp (context) {
     if (destination.exists) {
       log('Destination exists')
 
-      // @ts-ignore ts seems to think `sources` will always have a length of 10
       if (sources.length === 1 && !destinationIsDirectory) {
         throw errCode(new Error('directory already has entry by that name'), 'ERR_ALREADY_EXISTS')
       }
@@ -117,7 +116,6 @@ export function createCp (context) {
     const destinationPath = isDirectory(destination) ? destination.mfsPath : destination.mfsDirectory
     const trail = await toTrail(context, destinationPath)
 
-    // @ts-ignore ts seems to think `sources` will always have a length of 10
     if (sources.length === 1) {
       const source = sources.pop()
 

@@ -19,7 +19,6 @@ export const createList = configure(api => {
     })
     const data = await res.json()
 
-    // @ts-ignore server output is not typed
     return (data.Keys || []).map((/** @type {any} **/ k) => objectToCamel(k))
   }
   return list

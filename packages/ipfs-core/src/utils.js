@@ -147,7 +147,7 @@ export const mapFile = (file) => {
   }
 
   if (file.type === 'directory') {
-    // @ts-ignore - TS type can't be changed from File to Directory
+    // @ts-expect-error - TS type can't be changed from File to Directory
     output.type = 'dir'
   }
 

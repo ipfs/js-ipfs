@@ -1,24 +1,26 @@
-import mafmt from 'mafmt'
-import { Multiaddr } from 'multiaddr'
+import { IPFS } from '@multiformats/mafmt'
+import { Multiaddr } from '@multiformats/multiaddr'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'peers',
 
   describe: 'List peers with open connections',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { print, ipfs, isDaemon }, timeout }) {
     if (!isDaemon) {
       throw new Error('This command must be run in online mode. Try running \'ipfs daemon\' first.')
@@ -31,7 +33,7 @@ export default {
     result.forEach((item) => {
       let ma = new Multiaddr(`${item.addr}`)
 
-      if (!mafmt.IPFS.matches(ma)) {
+      if (!IPFS.matches(ma)) {
         ma = ma.encapsulate(`/ipfs/${item.peer}`)
       }
 
@@ -39,3 +41,5 @@ export default {
     })
   }
 }
+
+export default command

@@ -1,6 +1,6 @@
 import mergeOpts from 'merge-options'
 import { toMfsPath } from './utils/to-mfs-path.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import errCode from 'err-code'
 import { UnixFS } from 'ipfs-unixfs'
 import { toTrail } from './utils/to-trail.js'
@@ -12,7 +12,7 @@ import { CID } from 'multiformats/cid'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
-const log = debug('ipfs:mfs:touch')
+const log = logger('ipfs:mfs:touch')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -70,7 +70,6 @@ export function createTouch (context) {
     if (!exists) {
       const metadata = new UnixFS({
         type: 'file',
-        // @ts-ignore TODO: restore hrtime support to ipfs-unixfs constructor - it's in the code, just not the signature
         mtime: settings.mtime
       })
       updatedBlock = dagPB.encode({ Data: metadata.marshal(), Links: [] })
@@ -98,7 +97,7 @@ export function createTouch (context) {
 
       const metadata = UnixFS.unmarshal(node.Data)
 
-      // @ts-ignore TODO: restore setting all date types as mtime - it's in the code, just not the signature
+      // @ts-expect-error TODO: restore setting all date types as mtime - it's in the code, just not the signature
       metadata.mtime = settings.mtime
 
       updatedBlock = dagPB.encode({

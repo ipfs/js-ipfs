@@ -1,6 +1,16 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.path
+ * @property {number} Argv.offset
+ * @property {number} Argv.length
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'read <path>',
 
   describe: 'Read an mfs file',
@@ -8,28 +18,20 @@ export default {
   builder: {
     offset: {
       alias: 'o',
-      type: 'number',
+      number: true,
       describe: 'Start writing at this offset'
     },
     length: {
       alias: 'l',
-      type: 'number',
+      number: true,
       describe: 'Write only this number of bytes'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.path
-   * @param {number} argv.offset
-   * @param {number} argv.length
-   * @param {number} argv.timeout
-   */
   async handler ({
     ctx: { ipfs, print },
     path,
@@ -46,3 +48,5 @@ export default {
     }
   }
 }
+
+export default command

@@ -33,9 +33,15 @@ const rpcToText = mb => uint8ArrayToString(rpcToBytes(mb))
 const rpcToBytes = mb => base64url.decode(mb)
 
 /**
+ * @param {string} mb
+ * @returns {bigint}
+ */
+const rpcToBigInt = mb => BigInt(`0x${uint8ArrayToString(base64url.decode(mb), 'base16')}`)
+
+/**
  * @param {string} text
  * @returns {string}
  */
 const textToUrlSafeRpc = text => base64url.encode(uint8ArrayFromString(text))
 
-export { rpcArrayToTextArray, rpcToText, rpcToBytes, textToUrlSafeRpc }
+export { rpcArrayToTextArray, rpcToText, rpcToBytes, rpcToBigInt, textToUrlSafeRpc }

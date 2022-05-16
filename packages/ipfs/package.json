@@ -9,22 +9,26 @@
   "bugs": "https://github.com/ipfs/js-ipfs/issues",
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
-  "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
-        "types/*",
-        "types/src/*"
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ],
-      "types/*": [
-        "types/*",
-        "types/src/*"
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
       ]
     }
   },
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "eslintConfig": {
@@ -32,9 +36,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "publishConfig": {
-    "directory": "dist"
   },
   "exports": {
     ".": {
@@ -53,50 +54,43 @@
     "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
-    "build": "run-s build:*",
-    "build:update-version": "node scripts/update-version.js",
-    "build:aegir": "aegir build",
-    "build:copy-cli": "copyfiles ./src/cli.js ./src/package.js ./dist",
-    "build:copy-package": "copyfiles ./dist/esm/package.json ./dist/src -u 2",
-    "lint": "aegir ts -p check && aegir lint",
+    "build": "aegir build",
+    "prepublishOnly": "node scripts/update-version.js",
+    "lint": "aegir lint",
     "test:interface:core": "aegir test -f test/interface-core.js",
     "test:interface:client": "aegir test -f test/interface-client.js",
     "test:interface:http-js": "aegir test -f test/interface-http-js.js",
     "test:interface:http-go": "aegir test -f test/interface-http-go.js",
-    "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js IPFS_JS_MODULE=$PWD/dist IPFS_JS_HTTP_MODULE=$PWD/node_modules/ipfs-http-client LIBP2P_TCP_REUSEPORT=false ipfs-interop",
+    "test:interop": "cross-env DEBUG=$DEBUG IPFS_LOGGING=$IPFS_LOGGING IPFS_JS_EXEC=$PWD/src/cli.js LIBP2P_TCP_REUSEPORT=false ipfs-interop",
     "test:external": "aegir test-dependant",
-    "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/* -i npm-run-all -i copyfiles"
+    "clean": "aegir clean",
+    "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
   "dependencies": {
-    "debug": "^4.1.1",
+    "@libp2p/logger": "^1.1.4",
     "ipfs-cli": "^0.12.3",
     "ipfs-core": "^0.14.3",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
   "devDependencies": {
+    "@libp2p/webrtc-star-signalling-server": "^1.0.3",
     "@types/semver": "^7.3.4",
     "@types/update-notifier": "^5.0.0",
-    "aegir": "^36.0.1",
-    "assert": "^2.0.0",
-    "copyfiles": "^2.4.1",
+    "aegir": "^37.0.11",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "0.12.1",
-    "interface-ipfs-core": "^0.154.3",
-    "ipfs-client": "^0.7.9",
+    "go-ipfs": "^0.12.1",
+    "interface-ipfs-core": "^0.154.2",
+    "ipfs-client": "^0.7.8",
     "ipfs-core-types": "^0.10.3",
     "ipfs-http-client": "^56.0.3",
-    "ipfs-interop": "^8.0.9",
+    "ipfs-interop": "ipfs/interop#feat/upgrade-to-esm-libp2p",
     "ipfs-utils": "^9.0.6",
-    "ipfsd-ctl": "^10.0.4",
+    "ipfsd-ctl": "^11.0.0",
     "iso-url": "^1.0.0",
-    "libp2p-webrtc-star-signalling-server": "^0.1.1",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.4.2",
-    "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2",
     "url": "^0.11.0",
     "wrtc": "^0.4.6"
   },

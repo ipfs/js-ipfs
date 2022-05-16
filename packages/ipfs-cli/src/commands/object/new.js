@@ -1,29 +1,31 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {'unixfs-dir'} Argv.template
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'new [<template>]',
 
   describe: 'Create new ipfs objects',
 
   builder: {
     'cid-base': {
-      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
-      type: 'string',
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect',
+      string: true,
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {'unixfs-dir'} argv.template
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, template, cidBase, timeout }) {
     const cid = await ipfs.object.new({
       template,
@@ -33,3 +35,5 @@ export default {
     print(cid.toString(base.encoder))
   }
 }
+
+export default command

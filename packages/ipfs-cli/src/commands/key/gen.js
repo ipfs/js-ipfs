@@ -3,7 +3,17 @@ import {
   stripControlCharacters
 } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.name
+ * @property {string} Argv.type
+ * @property {number} Argv.size
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'gen <name>',
 
   describe: 'Create a new key',
@@ -17,30 +27,24 @@ export default {
     },
     size: {
       alias: 's',
-      describe: 'size of the key to generate.',
+      describe: 'size of the key to generate',
       default: 2048,
-      type: 'number'
+      number: true
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.name
-   * @param {string} argv.type
-   * @param {number} argv.size
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, name, type, size, timeout }) {
     const key = await ipfs.key.gen(name, {
-      type,
+      type: type.toLowerCase() === 'rsa' ? 'RSA' : 'Ed25519',
       size,
       timeout
     })
     print(`generated ${key.id} ${stripControlCharacters(key.name)}`)
   }
 }
+
+export default command

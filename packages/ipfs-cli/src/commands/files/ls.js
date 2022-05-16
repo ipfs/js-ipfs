@@ -6,7 +6,17 @@ import { formatMode } from 'ipfs-core-utils/files/format-mode'
 import { formatMtime } from 'ipfs-core-utils/files/format-mtime'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.path
+ * @property {boolean} Argv.long
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'ls [path]',
 
   describe: 'List mfs directories',
@@ -14,29 +24,21 @@ export default {
   builder: {
     long: {
       alias: 'l',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Use long listing format.'
     },
     'cid-base': {
-      describe: 'CID base to use.',
+      describe: 'CID base to use',
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.path
-   * @param {boolean} argv.long
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
   async handler ({
     ctx: { ipfs, print },
     path,
@@ -66,3 +68,5 @@ export default {
     }
   }
 }
+
+export default command

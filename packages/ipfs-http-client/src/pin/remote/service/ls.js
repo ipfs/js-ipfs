@@ -14,7 +14,7 @@ export function createLs (client) {
    * @type {RemotePiningServiceAPI["ls"]}
    */
   async function ls (options = {}) {
-    // @ts-ignore cannot derive option type from typedef
+    // @ts-expect-error cannot derive option type from typedef
     const { stat, headers, timeout, signal } = options
 
     const response = await client.post('pin/remote/service/ls', {
@@ -24,7 +24,7 @@ export function createLs (client) {
       searchParams: stat === true ? toUrlSearchParams({ stat }) : undefined
     })
 
-    /** @type {{RemoteServices: Object[]}} */
+    /** @type {{RemoteServices: object[]}} */
     const { RemoteServices } = await response.json()
 
     return RemoteServices.map(decodeRemoteService)

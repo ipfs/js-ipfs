@@ -3,7 +3,7 @@
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import { nanoid } from 'nanoid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import delay from 'delay'
 import all from 'it-all'
@@ -14,7 +14,7 @@ import all from 'it-all'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testTouch (factory, options) {
   const describe = getDescribe(options)
@@ -53,7 +53,7 @@ export function testTouch (factory, options) {
     after(() => factory.clean())
 
     it('should have default mtime', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(5 * 1000)
       const testPath = `/test-${nanoid()}`
 
@@ -74,7 +74,7 @@ export function testTouch (factory, options) {
     })
 
     it('should update file mtime', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(5 * 1000)
       const testPath = `/test-${nanoid()}`
       const mtime = new Date()
@@ -92,7 +92,7 @@ export function testTouch (factory, options) {
     })
 
     it('should update directory mtime', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(5 * 1000)
       const testPath = `/test-${nanoid()}`
       const mtime = new Date()

@@ -1,15 +1,13 @@
 import drain from 'it-drain'
 import { notFoundError } from 'datastore-core/errors'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 
-const log = Object.assign(debug('ipfs:ipns:dht-datastore'), {
-  error: debug('ipfs:ipns:dht-datastore:error')
-})
+const log = logger('ipfs:ipns:dht-datastore')
 
 export class DHTDatastore {
   /**
    *
-   * @param {import('libp2p-kad-dht/src/types').DHT} dht
+   * @param {import('@libp2p/interfaces/dht').DHT} dht
    */
   constructor (dht) {
     this._dht = dht

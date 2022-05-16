@@ -9,7 +9,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 const BLOCK_RM_CONCURRENCY = 8
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 export function createRm ({ repo }) {

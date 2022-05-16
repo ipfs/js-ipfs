@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 
 import { randomBytes } from 'iso-random-stream'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import FormData from 'form-data'
 import streamToPromise from 'stream-to-promise'
 import { testHttpMethod } from '../utils/test-http-method.js'

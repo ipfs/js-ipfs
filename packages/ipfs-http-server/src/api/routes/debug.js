@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import Boom from '@hapi/boom'
-import debug from 'debug'
+import { disable, enable } from '@libp2p/logger'
 
 // Clear the register to make sure we're not registering multiple ones
 client.register.clear()
@@ -57,9 +57,9 @@ export default [{
     }
 
     if (!request.query.debug) {
-      debug.disable()
+      disable()
     } else {
-      debug.enable(request.query.debug)
+      enable(request.query.debug)
     }
 
     return h.response()

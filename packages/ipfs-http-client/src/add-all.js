@@ -30,7 +30,6 @@ export const createAddAll = configure((api) => {
     // `{ total, loaded}` passed to `onUploadProgress` and `multipart.total`
     // in which case we disable progress updates to be written out.
     const [progressFn, onUploadProgress] = typeof options.progress === 'function'
-      // @ts-ignore tsc picks up the node codepath
       ? createProgressHandler(total, parts, options.progress)
       : [undefined, undefined]
 

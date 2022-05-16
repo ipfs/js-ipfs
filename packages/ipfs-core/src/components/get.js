@@ -13,7 +13,7 @@ import toBuffer from 'it-to-buffer'
 const DEFAULT_COMPRESSION_LEVEL = 6
 
 /**
- * @typedef {Object} Context
+ * @typedef {object} Context
  * @property {import('ipfs-repo').IPFSRepo} repo
  * @property {import('../types').Preload} preload
  *
@@ -84,7 +84,7 @@ export function createGet ({ repo, preload }) {
         )
       }
 
-      // @ts-ignore cannot derive type
+      // @ts-expect-error cannot derive type
       yield * pipe(...args)
 
       return
@@ -154,7 +154,7 @@ export function createGet ({ repo, preload }) {
         }
       }
 
-      // @ts-ignore cannot derive type
+      // @ts-expect-error cannot derive type
       yield * pipe(...args)
 
       return

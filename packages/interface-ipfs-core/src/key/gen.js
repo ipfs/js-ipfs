@@ -1,11 +1,9 @@
 /* eslint-env mocha */
 
 import { nanoid } from 'nanoid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { keys } from 'libp2p-crypto'
-
-const { supportedKeys, import: importKey } = keys
+import { supportedKeys, importKey } from '@libp2p/crypto/keys'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -13,7 +11,7 @@ const { supportedKeys, import: importKey } = keys
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testGen (factory, options) {
   const describe = getDescribe(options)
@@ -46,7 +44,7 @@ export function testGen (factory, options) {
 
     keyTypes.forEach((kt) => {
       it(`should generate a new ${kt.opts.type || 'default'} key`, async function () {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         this.timeout(20 * 1000)
         const name = nanoid()
         const key = await ipfs.key.gen(name, kt.opts)
@@ -63,7 +61,7 @@ export function testGen (factory, options) {
         } catch (/** @type {any} */ err) {
           if (err.code === 'ERR_NOT_IMPLEMENTED') {
             // key export is not exposed over the HTTP API
-            // @ts-ignore this is mocha
+            // @ts-expect-error this is mocha
             this.skip('Cannot verify key type')
           }
 

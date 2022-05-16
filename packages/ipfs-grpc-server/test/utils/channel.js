@@ -1,5 +1,5 @@
 
-import pushable from 'it-pushable'
+import { pushable } from 'it-pushable'
 
 class MessageChannel {
   constructor () {

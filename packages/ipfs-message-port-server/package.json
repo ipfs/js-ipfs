@@ -12,9 +12,10 @@
   "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "main": "src/index.js",
-  "types": "types/src/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "*",
+    "dist",
+    "src",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
@@ -46,9 +47,6 @@
       "sourceType": "module"
     }
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
   "browser": {
     "worker_threads": false
   },
@@ -63,19 +61,18 @@
     "test:chrome-webworker": "aegir test -t webworker",
     "test:firefox": "aegir test -t browser -- --browser firefox",
     "test:firefox-webworker": "aegir test -t webworker -- --browser firefox",
-    "lint": "aegir ts -p check && aegir lint",
-    "clean": "rimraf ./dist",
-    "dep-check": "aegir dep-check -i rimraf -i ipfs-core-types"
+    "lint": "aegir lint",
+    "clean": "aegir clean",
+    "dep-check": "aegir dep-check -i ipfs-core-types"
   },
   "dependencies": {
     "ipfs-core-types": "^0.10.3",
     "ipfs-message-port-protocol": "^0.11.3",
-    "it-all": "^1.0.4",
-    "multiformats": "^9.5.1"
+    "it-all": "^1.0.4"
   },
   "devDependencies": {
-    "aegir": "^36.0.1",
-    "rimraf": "^3.0.2"
+    "aegir": "^37.0.11",
+    "multiformats": "^9.5.1"
   },
   "engines": {
     "node": ">=15.0.0",

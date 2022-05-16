@@ -1,30 +1,32 @@
 import JSONDiff from 'jsondiffpatch'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../../types').Context} Argv.ctx
+ * @property {string} Argv.profile
+ * @property {boolean} Argv.dryRun
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'apply <profile>',
 
   describe: 'Apply profile to config',
 
   builder: {
     'dry-run': {
-      type: 'boolean',
-      describe: 'print difference between the current config and the config that would be generated.',
+      boolean: true,
+      describe: 'print difference between the current config and the config that would be generated',
       default: false
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../../types').Context} argv.ctx
-   * @param {string} argv.profile
-   * @param {boolean} argv.dryRun
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx, profile, dryRun, timeout }) {
     const { print, ipfs, isDaemon } = ctx
     const diff = await ipfs.config.profiles.apply(profile, {
@@ -45,3 +47,5 @@ export default {
     }
   }
 }
+
+export default command

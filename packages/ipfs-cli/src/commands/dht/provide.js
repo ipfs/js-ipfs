@@ -1,35 +1,37 @@
 import parseDuration from 'parse-duration'
 import { coerceCID } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('multiformats/cid').CID} Argv.key
+ * @property {boolean} Argv.recursive
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'provide <key>',
 
-  describe: 'Announce to the network that you are providing given values.',
+  describe: 'Announce to the network that you are providing given values',
 
   builder: {
     key: {
-      type: 'string',
+      string: true,
       coerce: coerceCID
     },
     recursive: {
       alias: 'r',
-      recursive: 'Recursively provide entire graph.',
+      describe: 'Recursively provide entire graph',
       default: false,
-      type: 'boolean'
+      boolean: true
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiformats/cid').CID} argv.key
-   * @param {boolean} argv.recursive
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs }, key, recursive, timeout }) {
     await ipfs.dht.provide(key, {
       recursive,
@@ -37,3 +39,5 @@ export default {
     })
   }
 }
+
+export default command

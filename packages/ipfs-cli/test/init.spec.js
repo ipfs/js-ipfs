@@ -1,21 +1,20 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import path from 'path'
 import fs from 'fs'
-import PeerId from 'peer-id'
 import { nanoid } from 'nanoid'
 import os from 'os'
-import { supportedKeys } from 'libp2p-crypto/src/keys/index.js'
+import { unmarshalPrivateKey, supportedKeys } from '@libp2p/crypto/keys'
 import { clean } from './utils/clean.js'
 import { ipfsExec } from './utils/ipfs-exec.js'
 import tempWrite from 'temp-write'
+import { peerIdFromKeys } from '@libp2p/peer-id'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
-describe.skip('init', function () {
+describe('init', function () {
   let repoPath
   let ipfs
-
-  const readme = 'hello'
 
   const repoExistsSync = (p) => fs.existsSync(path.join(repoPath, p))
 
@@ -46,13 +45,16 @@ describe.skip('init', function () {
     // jsipfs cat /ipfs/QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr/readme
     const command = out.substring(out.indexOf('cat'), out.length - 2 /* omit the newline char */)
     const out2 = await ipfs(command)
-    expect(out2).to.equal(readme)
+    expect(out2).to.include('Hello and Welcome to IPFS!')
   })
 
   it('algorithm', async function () {
     await ipfs('init --algorithm ed25519')
-    const peerId = await PeerId.createFromPrivKey(repoConfSync().Identity.PrivKey)
-    expect(peerId.privKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
+    const buf = uint8ArrayFromString(repoConfSync().Identity.PrivKey, 'base64pad')
+    const key = await unmarshalPrivateKey(buf)
+    const peerId = await peerIdFromKeys(key.public.bytes, key.bytes)
+    const privateKey = await unmarshalPrivateKey(peerId.privateKey)
+    expect(privateKey).is.instanceOf(supportedKeys.ed25519.Ed25519PrivateKey)
   })
 
   it('bits', async function () {
@@ -88,13 +90,7 @@ describe.skip('init', function () {
 
   it('should present ipfs path help when option help is received', async function () {
     const res = await ipfs('init --help')
-
-    expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
-  })
-
-  it('should present ipfs path help when option help is received', async function () {
-    const res = await ipfs('init --help')
-    expect(res).to.have.string('export IPFS_PATH=/path/to/ipfsrepo')
+    expect(res).to.have.string('export IPFS_PATH=')
   })
 
   it('default config argument', async () => {

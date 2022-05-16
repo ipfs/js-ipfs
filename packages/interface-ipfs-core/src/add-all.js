@@ -8,13 +8,13 @@ import drain from 'it-drain'
 import { supportsFileReader } from 'ipfs-utils/src/supports.js'
 import globSource from 'ipfs-utils/src/files/glob-source.js'
 import { isNode } from 'ipfs-utils/src/env.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from './utils/mocha.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import bufferStream from 'it-buffer-stream'
 import * as raw from 'multiformats/codecs/raw'
 import * as dagPB from '@ipld/dag-pb'
-import resolve from 'aegir/utils/resolve.js'
+import resolve from 'aegir/resolve'
 import { sha256, sha512 } from 'multiformats/hashes/sha2'
 
 /**
@@ -24,14 +24,14 @@ import { sha256, sha512 } from 'multiformats/hashes/sha2'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testAddAll (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
   describe('.addAll', function () {
-    this.timeout(120 * 1000)
+    this.timeout(360 * 1000)
 
     /** @type {import('ipfs-core-types').IPFS} */
     let ipfs
@@ -76,7 +76,7 @@ export function testAddAll (factory, options) {
 
     it('should add a File as array of tuples', async function () {
       if (!supportsFileReader) {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         return this.skip('skip in node')
       }
 
@@ -102,7 +102,7 @@ export function testAddAll (factory, options) {
 
     it('should add array of objects with readable stream content', async function () {
       if (!isNode) {
-        // @ts-ignore this is mocha
+        // @ts-expect-error this is mocha
         this.skip('Only node supports readable streams')
       }
 
@@ -286,10 +286,10 @@ export function testAddAll (factory, options) {
 
       /**
        * @param {object} arg
-       * @param {string} arg.path
+       * @param {string} [arg.path]
        */
       const toPath = ({ path }) => path
-      const nonSeqDirFilePaths = input.map(toPath).filter(p => p.includes('/a/'))
+      const nonSeqDirFilePaths = input.map(toPath).filter(p => p && p.includes('/a/'))
       const filesAddedPaths = filesAdded.map(toPath)
 
       expect(nonSeqDirFilePaths.every(p => filesAddedPaths.includes(p))).to.be.true()
@@ -336,7 +336,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add a directory with only-hash=true', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const content = String(Math.random() + Date.now())
 
@@ -358,21 +358,21 @@ export function testAddAll (factory, options) {
     })
 
     it('should add with mode as string', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mode = '0777'
       await testMode(mode, parseInt(mode, 8))
     })
 
     it('should add with mode as number', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mode = parseInt('0777', 8)
       await testMode(mode, mode)
     })
 
     it('should add with mtime as Date', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = new Date(5000)
       await testMtime(mtime, {
@@ -382,7 +382,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add with mtime as { nsecs, secs }', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = {
         secs: 5,
@@ -392,7 +392,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add with mtime as timespec', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       await testMtime({
         Seconds: 5,
@@ -404,7 +404,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add with mtime as hrtime', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = process.hrtime()
       await testMtime(mtime, {
@@ -414,7 +414,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add a directory from the file system', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       if (!isNode) this.skip()
       const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
 
@@ -423,7 +423,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add a directory from the file system with an odd name', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       if (!isNode) this.skip()
 
       const filesPath = resolve('test/fixtures/weird name folder [v0]', 'interface-ipfs-core')
@@ -433,7 +433,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should ignore a directory from the file system', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       if (!isNode) this.skip()
 
       const filesPath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
@@ -443,7 +443,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add a file from the file system', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       if (!isNode) this.skip()
 
       const filePath = resolve('test/fixtures/test-folder', 'interface-ipfs-core')
@@ -454,7 +454,7 @@ export function testAddAll (factory, options) {
     })
 
     it('should add a hidden file in a directory from the file system', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       if (!isNode) this.skip()
 
       const filesPath = resolve('test/fixtures', 'interface-ipfs-core')
@@ -465,10 +465,10 @@ export function testAddAll (factory, options) {
     })
 
     it('should add a file with only-hash=true', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       if (!isNode) this.skip()
 
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
 
       const out = await all(ipfs.addAll([{

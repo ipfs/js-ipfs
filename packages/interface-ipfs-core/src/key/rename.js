@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { nanoid } from 'nanoid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
@@ -10,7 +10,7 @@ import { getDescribe, getIt } from '../utils/mocha.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testRename (factory, options) {
   const describe = getDescribe(options)
@@ -27,7 +27,7 @@ export function testRename (factory, options) {
     after(() => factory.clean())
 
     it('should rename a key', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(30 * 1000)
 
       const oldName = nanoid()

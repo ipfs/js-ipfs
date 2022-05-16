@@ -1,7 +1,7 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../../types').Preload} config.preload
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */

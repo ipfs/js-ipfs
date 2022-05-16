@@ -1,26 +1,28 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.ref
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'resolve <ref>',
 
   describe: 'fetches a dag node from ipfs, prints its address and remaining path',
 
   builder: {
     ref: {
-      type: 'string'
+      string: true
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.ref
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, ref, timeout }) {
     const options = {
       timeout
@@ -36,7 +38,7 @@ export default {
           ref = ref.substring(6)
         }
 
-        // @ts-ignore we will toString this so it doesn't matter
+        // @ts-expect-error we will toString this so it doesn't matter
         lastCid = ref.split('/').shift()
       }
 
@@ -46,3 +48,5 @@ export default {
     }
   }
 }
+
+export default command

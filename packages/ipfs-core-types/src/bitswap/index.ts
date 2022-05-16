@@ -1,5 +1,6 @@
 import type { CID } from 'multiformats/cid'
 import type { AbortOptions } from '../utils'
+import type { PeerId } from '@libp2p/interfaces/peer-id'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -24,7 +25,7 @@ export interface API<OptionExtension = {}> {
    * // [ CID('QmHash') ]
    * ```
    */
-  wantlistForPeer: (peerId: string, options?: AbortOptions & OptionExtension) => Promise<CID[]>
+  wantlistForPeer: (peerId: PeerId, options?: AbortOptions & OptionExtension) => Promise<CID[]>
 
   /**
    * Removes one or more CIDs from the wantlist
@@ -60,7 +61,7 @@ export interface API<OptionExtension = {}> {
 export interface Stats {
   provideBufLen: number
   wantlist: CID[]
-  peers: string[]
+  peers: PeerId[]
   blocksReceived: bigint
   dataReceived: bigint
   blocksSent: bigint

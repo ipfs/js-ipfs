@@ -1,43 +1,46 @@
 import { commands } from './config/index.js'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../types').Context} Argv.ctx
+ * @property {any} Argv.value
+ * @property {boolean} Argv.bool
+ * @property {boolean} Argv.json
+ * @property {string} Argv.key
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'config <key> [value]',
 
-  description: 'Get and set IPFS config values.',
+  describe: 'Get and set IPFS config values',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder: (yargs) => {
-    return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
+    yargs
       .option('bool', {
-        type: 'boolean',
-        describe: 'Set a boolean value.',
+        boolean: true,
+        describe: 'Set a boolean value',
         default: false
       })
       .option('json', {
-        type: 'boolean',
-        describe: 'Parse stringified JSON.',
+        boolean: true,
+        describe: 'Parse stringified JSON',
         default: false
       })
       .option('timeout', {
-        type: 'string',
+        string: true,
         coerce: parseDuration
       })
+
+    return yargs
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../types').Context} argv.ctx
-   * @param {any} argv.value
-   * @param {boolean} argv.bool
-   * @param {boolean} argv.json
-   * @param {string} argv.key
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, value, bool, json, key, timeout }) {
     if (!value) {
       // Get the value of a given key
@@ -69,3 +72,5 @@ export default {
     }
   }
 }
+
+export default command

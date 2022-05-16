@@ -6,39 +6,41 @@ import {
   coerceCID
 } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('multiformats/cid').CID} Argv.key
+ * @property {'base64' | 'text' | 'hex'} Argv.dataEncoding
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'get <key>',
 
   describe: 'Get and serialize the DAG node named by <key>',
 
   builder: {
     key: {
-      type: 'string',
+      string: true,
       coerce: coerceCID
     },
     'data-encoding': {
-      type: 'string',
+      string: true,
       default: 'base64'
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect.',
-      type: 'string',
+      describe: 'Number base to display CIDs in. Note: specifying a CID base for v0 CIDs will have no effect',
+      string: true,
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiformats/cid').CID} argv.key
-   * @param {'base64' | 'text' | 'hex'} argv.dataEncoding
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, key, dataEncoding, cidBase, timeout }) {
     const node = await ipfs.object.get(key, { timeout })
 
@@ -61,7 +63,7 @@ export default {
     const base = await ipfs.bases.getBase(cidBase)
 
     const answer = {
-      // @ts-ignore encoding type is wrong
+      // @ts-expect-error encoding type is wrong
       Data: node.Data ? uint8ArrayToString(node.Data, encoding) : '',
       Hash: key.toString(base.encoder),
       Size: buf.length,
@@ -77,3 +79,5 @@ export default {
     print(JSON.stringify(answer))
   }
 }
+
+export default command

@@ -9,7 +9,7 @@ export const idResource = {
       },
       query: Joi.object().keys({
         timeout: Joi.timeout(),
-        peerId: Joi.string()
+        peerId: Joi.peerId()
       })
         .rename('arg', 'peerId', {
           override: true,
@@ -43,7 +43,7 @@ export const idResource = {
       peerId
     })
     return h.response({
-      ID: id.id,
+      ID: id.id.toString(),
       PublicKey: id.publicKey,
       Addresses: id.addresses,
       AgentVersion: id.agentVersion,

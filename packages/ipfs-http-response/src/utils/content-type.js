@@ -1,10 +1,13 @@
-import fileType from 'file-type'
-// @ts-ignore no types
+import { fileTypeFromBuffer } from 'file-type'
 import mime from 'mime-types'
-// @ts-ignore no types
-import Reader from 'it-reader'
+import { reader } from 'it-reader'
+import map from 'it-map'
 
 const minimumBytes = 4100
+
+/**
+ * @typedef {import('uint8arraylist').Uint8ArrayList} Uint8ArrayList
+ */
 
 /**
  * @param {string} path
@@ -13,27 +16,33 @@ const minimumBytes = 4100
  */
 export const detectContentType = async (path, source) => {
   let fileSignature
+  /** @type {AsyncIterable<Uint8ArrayList> | undefined} */
+  let output
 
   // try to guess the filetype based on the first bytes
   // note that `file-type` doesn't support svgs, therefore we assume it's a svg if path looks like it
   if (!path.endsWith('.svg')) {
     try {
-      const reader = Reader(source)
-      const { value, done } = await reader.next(minimumBytes)
+      const stream = reader(source)
+      const { value, done } = await stream.next(minimumBytes)
 
-      if (done) return { source: reader }
+      if (done) {
+        return {
+          source: map(stream, (buf) => buf.slice())
+        }
+      }
 
-      fileSignature = await fileType.fromBuffer(value.slice())
+      fileSignature = await fileTypeFromBuffer(value.slice())
 
-      source = (async function * () { // eslint-disable-line require-await
+      output = (async function * () { // eslint-disable-line require-await
         yield value
-        yield * reader
+        yield * stream
       })()
     } catch (/** @type {any} */ err) {
       if (err.code !== 'ERR_UNDER_READ') throw err
 
       // not enough bytes for sniffing, just yield the data
-      source = (async function * () { // eslint-disable-line require-await
+      output = (async function * () { // eslint-disable-line require-await
         yield err.buffer // these are the bytes that were read (if any)
       })()
     }
@@ -42,5 +51,19 @@ export const detectContentType = async (path, source) => {
   // if we were unable to, fallback to the `path` which might contain the extension
   const mimeType = mime.lookup(fileSignature ? fileSignature.ext : path)
 
-  return { source, contentType: mime.contentType(mimeType) }
+  let contentType
+
+  if (mimeType !== false) {
+    contentType = mime.contentType(mimeType)
+
+    if (contentType === false) {
+      contentType = undefined
+    }
+  }
+
+  if (output != null) {
+    return { source: map(output, (buf) => buf.slice()), contentType }
+  }
+
+  return { source, contentType }
 }

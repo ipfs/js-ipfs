@@ -17,9 +17,9 @@ export const createAddLink = configure(api => {
       searchParams: toUrlSearchParams({
         arg: [
           `${cid}`,
-          // @ts-ignore loose types
+          // @ts-expect-error loose types
           dLink.Name || dLink.name || '',
-          // @ts-ignore loose types
+          // @ts-expect-error loose types
           (dLink.Hash || dLink.cid || '').toString() || null
         ],
         ...options

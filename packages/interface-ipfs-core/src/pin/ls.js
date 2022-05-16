@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { fixtures } from './utils.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 
@@ -11,7 +11,7 @@ import all from 'it-all'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testLs (factory, options) {
   const describe = getDescribe(options)

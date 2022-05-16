@@ -4,11 +4,10 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import isIpfs from 'is-ipfs'
 import { nanoid } from 'nanoid'
 import { base64url } from 'multiformats/bases/base64'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
 import merge from 'merge-options'
 
 /**
@@ -17,10 +16,9 @@ import merge from 'merge-options'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testResolve (factory, options) {
-  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -34,7 +32,7 @@ export function testResolve (factory, options) {
     before(async () => {
       ipfs = (await factory.spawn({
         type: 'proc',
-        ipfsOptions: merge(ipfsOptions, {
+        ipfsOptions: merge({
           config: {
             Routing: {
               Type: 'none'
@@ -96,7 +94,7 @@ export function testResolve (factory, options) {
 
     // Test resolve turns /ipns/domain.com into /ipfs/QmHash
     it('should resolve an IPNS DNS link', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.retries(3)
       const resolved = await ipfs.resolve('/ipns/ipfs.io')
 
@@ -104,7 +102,7 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve IPNS link recursively by default', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
       const node = (await factory.spawn({
@@ -130,7 +128,7 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve IPNS link non-recursively if recursive==false', async function () {
-      // @ts-ignore this is mocha
+      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
       // webworkers are not dialable because webrtc is not available
       const node = (await factory.spawn({

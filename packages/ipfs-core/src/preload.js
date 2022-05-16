@@ -1,17 +1,10 @@
-
-// @ts-expect-error no types
-import toUri from 'multiaddr-to-uri'
-import debug from 'debug'
+import { multiaddrToUri } from '@multiformats/multiaddr-to-uri'
+import { logger } from '@libp2p/logger'
 import shuffle from 'array-shuffle'
 import { preload } from 'ipfs-core-config/preload'
-/** @type {typeof import('hashlru').default} */
-// @ts-ignore - hashlru has incorrect typedefs
 import hashlru from 'hashlru'
 
-const log = Object.assign(
-  debug('ipfs:preload'),
-  { error: debug('ipfs:preload:error') }
-)
+const log = logger('ipfs:preload')
 
 /**
  * @param {import('./types').PreloadOptions} [options]
@@ -33,7 +26,7 @@ export function createPreloader (options = {}) {
   let stopped = true
   /** @type {AbortController[]} */
   let requests = []
-  const apiUris = options.addresses.map(toUri)
+  const apiUris = options.addresses.map((str) => multiaddrToUri(str))
 
   // Avoid preloading the same CID over and over again
   const cache = hashlru(options.cache)

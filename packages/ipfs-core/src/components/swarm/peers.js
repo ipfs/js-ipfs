@@ -1,7 +1,11 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @typedef {import('ipfs-core-types/src/swarm').PeersResult} PeersResult
+ */
+
+/**
+ * @param {object} config
  * @param {import('../../types').NetworkService} config.network
  */
 export function createPeers ({ network }) {
@@ -10,14 +14,14 @@ export function createPeers ({ network }) {
    */
   async function peers (options = {}) {
     const { libp2p } = await network.use(options)
-    const peers = []
 
-    for (const [peerId, connections] of libp2p.connections) {
-      for (const connection of connections) {
-        /** @type {import('ipfs-core-types/src/swarm').PeersResult} */
+    if (options.verbose) {
+      const peers = []
+      for (const connection of libp2p.getConnections()) {
+        /** @type {PeersResult} */
         const peer = {
           addr: connection.remoteAddr,
-          peer: peerId
+          peer: connection.remotePeer
         }
 
         if (options.verbose || options.direction) {
@@ -32,9 +36,24 @@ export function createPeers ({ network }) {
 
         peers.push(peer)
       }
+
+      return peers
     }
 
-    return peers
+    /** @type {Map<string, PeersResult>} */
+    const peers = new Map()
+
+    for (const connection of libp2p.getConnections()) {
+      /** @type {import('ipfs-core-types/src/swarm').PeersResult} */
+      const peer = {
+        addr: connection.remoteAddr,
+        peer: connection.remotePeer
+      }
+
+      peers.set(connection.remotePeer.toString(), peer)
+    }
+
+    return Array.from(peers.values())
   }
 
   return withTimeoutOption(peers)

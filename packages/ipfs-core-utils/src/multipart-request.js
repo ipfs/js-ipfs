@@ -19,7 +19,7 @@ export async function multipartRequest (source, abortController, headers = {}, b
   // In electron-renderer we use native fetch and should encode body using native
   // form data.
   if (isElectronRenderer) {
-    // @ts-ignore types are different
+    // @ts-expect-error types are different
     req = multipartRequestBrowser
   }
 

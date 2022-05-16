@@ -18,119 +18,113 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
 
-  test-examples:
-    name: Test example ${{ matrix.example.name }}
-    needs: build
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    strategy:
-      matrix:
-        example:
-          - name: ipfs browser add readable stream
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-add-readable-stream.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser angular
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-angular.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-core-types@$PWD/packages/ipfs-core-types/dist
-          - name: ipfs browser browserify
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser react
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser exchange files
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs@$PWD/packages/ipfs/dist,ipfs-core-types@$PWD/packages/ipfs-core-types/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
-          - name: ipfs browser ipns publish
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
-          - name: ipfs browser mfs
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          # fails with No native build was found for platform=darwin arch=x64 runtime=node abi=93 uv=1 libc=glibc node=16.13.0 webpack=true
-          #- name: ipfs browser nextjs
-          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
-          #  deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser parceljs
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-parceljs.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser readable stream
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser service worker
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client/dist,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol/dist,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server/dist
-          - name: ipfs browser sharing across tabs
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client/dist,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server/dist
-          - name: ipfs browser video streaming
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-video-streaming.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser vue
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs browser webpack
-            repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs circuit relaying
-            repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
-          - name: ipfs custom ipfs repo
-            repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs custom ipld formats
-            repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist,ipfs-daemon@$PWD/packages/ipfs-daemon/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
-          - name: ipfs custom libp2p
-            repo: https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs-http-client browser pubsub
-            repo: https://github.com/ipfs-examples/js-ipfs-http-client-browser-pubsub.git
-            deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist,ipfs@$PWD/packages/ipfs/dist
-          - name: ipfs-http-client bundle webpack
-            repo: https://github.com/ipfs-examples/js-ipfs-http-client-bundle-webpack.git
-            deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist,ipfs@$PWD/packages/ipfs/dist
-          - name: ipfs-http-client name api
-            repo: https://github.com/ipfs-examples/js-ipfs-http-client-name-api.git
-            deps: ipfs-http-client@$PWD/packages/ipfs-http-client/dist
-          - name: ipfs-http-client upload file
-            repo: https://github.com/ipfs-examples/js-ipfs-http-client-upload-file.git
-            deps: ipfs@$PWD/packages/ipfs/dist,ipfs-http-client@$PWD/packages/ipfs-http-client/dist
-          - name: ipfs 101
-            repo: https://github.com/ipfs-examples/js-ipfs-101.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs-client add files
-            repo: https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
-            deps: ipfs@$PWD/packages/ipfs/dist,ipfs-client@$PWD/packages/ipfs-client/dist
-          - name: ipfs electron js
-            repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: ipfs running multiple nodes
-            repo: https://github.com/ipfs-examples/js-ipfs-running-multiple-nodes.git
-            deps: ipfs@$PWD/packages/ipfs/dist
-          - name: ipfs traverse ipld graphs
-            repo: https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: types with typescript
-            repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-          - name: types with typed js
-            repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
-            deps: ipfs-core@$PWD/packages/ipfs-core/dist
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: lts/*
-      - uses: ipfs/aegir/actions/cache-node-modules@master
-        with:
-          build: |
-            npm run link
-      - uses: GabrielBB/xvfb-action@v1
-        name: Run npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
-        with:
-          run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
+  # test-examples:
+  #   name: Test example ${{ matrix.example.name }}
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   continue-on-error: true
+  #   strategy:
+  #     matrix:
+  #       example:
+  #         - name: ipfs browser add readable stream
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-add-readable-stream.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser angular
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-angular.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-core-types@$PWD/packages/ipfs-core-types
+  #         - name: ipfs browser browserify
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-browserify.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser react
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-create-react-app.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser exchange files
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-exchange-files.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core,ipfs@$PWD/packages/ipfs,ipfs-core-types@$PWD/packages/ipfs-core-types,ipfs-http-client@$PWD/packages/ipfs-http-client
+  #         - name: ipfs browser ipns publish
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-ipns-publish.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-http-client@$PWD/packages/ipfs-http-client
+  #         - name: ipfs browser mfs
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-mfs.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         # fails with No native build was found for platform=darwin arch=x64 runtime=node abi=93 uv=1 libc=glibc node=16.13.0 webpack=true
+  #         #- name: ipfs browser nextjs
+  #         #  repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
+  #         #  deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser parceljs
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-parceljs.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser readable stream
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser service worker
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-service-worker.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-protocol@$PWD/packages/ipfs-message-port-protocol,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
+  #         - name: ipfs browser sharing across tabs
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-sharing-node-across-tabs.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-message-port-client@$PWD/packages/ipfs-message-port-client,ipfs-message-port-server@$PWD/packages/ipfs-message-port-server
+  #         - name: ipfs browser video streaming
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-video-streaming.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser vue
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-vue.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs browser webpack
+  #           repo: https://github.com/ipfs-examples/js-ipfs-browser-webpack.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs circuit relaying
+  #           repo: https://github.com/ipfs-examples/js-ipfs-circuit-relaying.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-http-client@$PWD/packages/ipfs-http-client
+  #         - name: ipfs custom ipfs repo
+  #           repo: https://github.com/ipfs-examples/js-ipfs-custom-ipfs-repo.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs custom ipld formats
+  #           repo: https://github.com/ipfs-examples/js-ipfs-custom-ipld-formats.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core,ipfs-daemon@$PWD/packages/ipfs-daemon,ipfs-http-client@$PWD/packages/ipfs-http-client
+  #         - name: ipfs custom libp2p
+  #           repo: https://github.com/ipfs-examples/js-ipfs-custom-libp2p.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs-http-client browser pubsub
+  #           repo: https://github.com/ipfs-examples/js-ipfs-http-client-browser-pubsub.git
+  #           deps: ipfs-http-client@$PWD/packages/ipfs-http-client,ipfs@$PWD/packages/ipfs
+  #         - name: ipfs-http-client bundle webpack
+  #           repo: https://github.com/ipfs-examples/js-ipfs-http-client-bundle-webpack.git
+  #           deps: ipfs-http-client@$PWD/packages/ipfs-http-client,ipfs@$PWD/packages/ipfs
+  #         - name: ipfs-http-client name api
+  #           repo: https://github.com/ipfs-examples/js-ipfs-http-client-name-api.git
+  #           deps: ipfs-http-client@$PWD/packages/ipfs-http-client
+  #         - name: ipfs-http-client upload file
+  #           repo: https://github.com/ipfs-examples/js-ipfs-http-client-upload-file.git
+  #           deps: ipfs@$PWD/packages/ipfs,ipfs-http-client@$PWD/packages/ipfs-http-client
+  #         - name: ipfs 101
+  #           repo: https://github.com/ipfs-examples/js-ipfs-101.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs-client add files
+  #           repo: https://github.com/ipfs-examples/js-ipfs-ipfs-client-add-files.git
+  #           deps: ipfs@$PWD/packages/ipfs,ipfs-client@$PWD/packages/ipfs-client
+  #         - name: ipfs electron js
+  #           repo: https://github.com/ipfs-examples/js-ipfs-run-in-electron.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: ipfs running multiple nodes
+  #           repo: https://github.com/ipfs-examples/js-ipfs-running-multiple-nodes.git
+  #           deps: ipfs@$PWD/packages/ipfs
+  #         - name: ipfs traverse ipld graphs
+  #           repo: https://github.com/ipfs-examples/js-ipfs-traverse-ipld-graphs.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: types with typescript
+  #           repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-ts.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #         - name: types with typed js
+  #           repo: https://github.com/ipfs-examples/js-ipfs-types-use-ipfs-from-typed-js.git
+  #           deps: ipfs-core@$PWD/packages/ipfs-core
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: lts/*
+  #     - uses: ipfs/aegir/actions/cache-node-modules@master
+  #     - uses: GabrielBB/xvfb-action@v1
+  #       name: Run npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}
+  #       with:
+  #         run: npm run test:external -- -- -- ${{ matrix.example.repo }} --deps ${{ matrix.example.deps }}

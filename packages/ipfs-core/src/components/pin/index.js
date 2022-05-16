@@ -6,7 +6,7 @@ import { createRmAll } from './rm-all.js'
 
 export class PinAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    */
@@ -28,7 +28,7 @@ export class PinAPI {
       service: {
         add: (name, credentials) => Promise.reject(new Error('Not implemented')),
         rm: (name, options = {}) => Promise.reject(new Error('Not implemented')),
-        // @ts-ignore return types seem to be broken by a recent ts release. doesn't matter here because
+        // @ts-expect-error return types seem to be broken by a recent ts release. doesn't matter here because
         // we are just throwing. Will be removed by https://github.com/protocol/web3-dev-team/pull/58
         ls: (options = {}) => Promise.reject(new Error('Not implemented'))
       }

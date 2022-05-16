@@ -1,16 +1,22 @@
 import { commands } from './swarm/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'swarm <command>',
 
-  description: 'Swarm inspection tool.',
+  describe: 'Swarm inspection tool',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

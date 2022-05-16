@@ -1,5 +1,5 @@
 import type { AbortOptions } from '../utils'
-import type { Multiaddr } from 'multiaddr'
+import type { Multiaddr } from '@multiformats/multiaddr'
 
 export interface API<OptionExtension = {}> {
   /**

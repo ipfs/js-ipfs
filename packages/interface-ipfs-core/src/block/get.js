@@ -3,7 +3,7 @@
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { identity } from 'multiformats/hashes/identity'
 import { CID } from 'multiformats/cid'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import testTimeout from '../utils/test-timeout.js'
 
@@ -13,7 +13,7 @@ import testTimeout from '../utils/test-timeout.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testGet (factory, options) {
   const describe = getDescribe(options)

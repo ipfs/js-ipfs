@@ -90,7 +90,7 @@ export const toMfsPath = async (context, path, options) => {
   const root = await loadMfsRoot(context, options)
 
   /** @type {MfsPath} */
-  // @ts-ignore fields get set later
+  // @ts-expect-error fields get set later
   let output = {
     entryType: 'file'
   }
@@ -134,7 +134,7 @@ export const toMfsPath = async (context, path, options) => {
       mfsDirectory = `/${pathComponents.slice(0, pathComponents.length - 1).join('/')}`
     }
 
-    // @ts-ignore fields being set
+    // @ts-expect-error fields being set
     output = {
       type: 'ipfs',
       depth: pathComponents.length - 2,
@@ -150,7 +150,7 @@ export const toMfsPath = async (context, path, options) => {
     const mfsPath = `/${IPFS_PREFIX}/${root}${pathComponents.length ? '/' + pathComponents.join('/') : ''}`
     const mfsDirectory = `/${IPFS_PREFIX}/${root}/${pathComponents.slice(0, pathComponents.length - 1).join('/')}`
 
-    // @ts-ignore fields being set
+    // @ts-expect-error fields being set
     output = {
       type: 'mfs',
       depth: pathComponents.length,

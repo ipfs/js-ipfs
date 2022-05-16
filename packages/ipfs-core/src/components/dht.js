@@ -1,18 +1,17 @@
-import PeerId from 'peer-id'
 import errCode from 'err-code'
 import { NotEnabledError } from '../errors.js'
-import get from 'dlv'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import map from 'it-map'
 import { CID } from 'multiformats/cid'
 import { base58btc } from 'multiformats/bases/base58'
 import { base36 } from 'multiformats/bases/base36'
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
- * @typedef {import('libp2p-kad-dht').QueryEvent} DHTQueryEvent
- * @typedef {import('ipfs-core-types/src/dht').QueryEvent} QueryEvent
+ * @typedef {import('@libp2p/interfaces/dht').QueryEvent} QueryEvent
+ * @typedef {import('./network').Network} Network
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
  */
 
 const IPNS_PREFIX = '/ipns/'
@@ -65,91 +64,7 @@ function toDHTKey (str) {
 }
 
 /**
- * @param {DHTQueryEvent} event
- * @returns {QueryEvent}
- */
-function mapEvent (event) {
-  if (event.name === 'SENDING_QUERY') {
-    return {
-      type: event.type,
-      name: event.name,
-      to: event.to.toB58String()
-    }
-  }
-
-  if (event.name === 'PEER_RESPONSE') {
-    return {
-      type: event.type,
-      name: event.name,
-      messageType: event.messageType,
-      messageName: event.messageName,
-      closer: event.closer.map(({ id, multiaddrs }) => ({ id: id.toB58String(), multiaddrs })),
-      providers: event.providers.map(({ id, multiaddrs }) => ({ id: id.toB58String(), multiaddrs })),
-      record: event.record,
-      from: event.from.toB58String()
-    }
-  }
-
-  if (event.name === 'FINAL_PEER') {
-    return {
-      type: event.type,
-      name: event.name,
-      from: event.from.toB58String(),
-      peer: {
-        id: event.peer.id.toB58String(),
-        multiaddrs: event.peer.multiaddrs
-      }
-    }
-  }
-
-  if (event.name === 'QUERY_ERROR') {
-    return {
-      type: event.type,
-      name: event.name,
-      error: event.error,
-      from: event.from.toB58String()
-    }
-  }
-
-  if (event.name === 'PROVIDER') {
-    return {
-      type: event.type,
-      name: event.name,
-      providers: event.providers.map(({ id, multiaddrs }) => ({ id: id.toB58String(), multiaddrs })),
-      from: event.from.toB58String()
-    }
-  }
-
-  if (event.name === 'VALUE') {
-    return {
-      type: event.type,
-      name: event.name,
-      value: event.value,
-      from: event.from.toB58String()
-    }
-  }
-
-  if (event.name === 'ADDING_PEER') {
-    return {
-      type: event.type,
-      name: event.name,
-      peer: event.peer.toB58String()
-    }
-  }
-
-  if (event.name === 'DIALING_PEER') {
-    return {
-      type: event.type,
-      name: event.name,
-      peer: event.peer.toB58String()
-    }
-  }
-
-  throw errCode(new Error('Unknown DHT event type'), 'ERR_UNKNOWN_DHT_EVENT')
-}
-
-/**
- * @param {Object} config
+ * @param {object} config
  * @param {import('../types').NetworkService} config.network
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {PeerId} config.peerId
@@ -164,7 +79,11 @@ export function createDht ({ network, repo, peerId }) {
 
       const dhtKey = key instanceof Uint8Array ? key : toDHTKey(key)
 
-      yield * map(libp2p._dht.get(dhtKey, options), mapEvent)
+      if (libp2p.dht == null) {
+        throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
+      }
+
+      yield * libp2p.dht.get(dhtKey, options)
     },
 
     /**
@@ -175,7 +94,11 @@ export function createDht ({ network, repo, peerId }) {
 
       const dhtKey = key instanceof Uint8Array ? key : toDHTKey(key)
 
-      yield * map(libp2p._dht.put(dhtKey, value), mapEvent)
+      if (libp2p.dht == null) {
+        throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
+      }
+
+      yield * libp2p.dht.put(dhtKey, value)
     },
 
     /**
@@ -184,9 +107,13 @@ export function createDht ({ network, repo, peerId }) {
     async * findProvs (cid, options = {}) {
       const { libp2p } = await use(network, peerId, options)
 
-      yield * map(libp2p._dht.findProviders(cid, {
+      if (libp2p.dht == null) {
+        throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
+      }
+
+      yield * libp2p.dht.findProviders(cid, {
         signal: options.signal
-      }), mapEvent)
+      })
     },
 
     /**
@@ -195,9 +122,13 @@ export function createDht ({ network, repo, peerId }) {
     async * findPeer (peerIdToFind, options = {}) {
       const { libp2p } = await use(network, peerId, options)
 
-      yield * map(libp2p._dht.findPeer(PeerId.parse(peerIdToFind), {
+      if (libp2p.dht == null) {
+        throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
+      }
+
+      yield * libp2p.dht.findPeer(peerIdToFind, {
         signal: options.signal
-      }), mapEvent)
+      })
     },
 
     /**
@@ -218,7 +149,11 @@ export function createDht ({ network, repo, peerId }) {
         throw errCode(new Error('not implemented yet'), 'ERR_NOT_IMPLEMENTED_YET')
       }
 
-      yield * map(libp2p._dht.provide(cid), mapEvent)
+      if (libp2p.dht == null) {
+        throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
+      }
+
+      yield * libp2p.dht.provide(cid)
     },
 
     /**
@@ -232,10 +167,14 @@ export function createDht ({ network, repo, peerId }) {
       if (asCid != null) {
         bytes = asCid.multihash.bytes
       } else {
-        bytes = PeerId.parse(peerIdToQuery.toString()).toBytes()
+        bytes = peerIdFromString(peerIdToQuery.toString()).toBytes()
       }
 
-      yield * map(libp2p._dht.getClosestPeers(bytes, options), mapEvent)
+      if (libp2p.dht == null) {
+        throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
+      }
+
+      yield * libp2p.dht.getClosestPeers(bytes, options)
     }
   }
 
@@ -253,10 +192,11 @@ export function createDht ({ network, repo, peerId }) {
  * @param {import('../types').NetworkService} network
  * @param {PeerId} peerId
  * @param {import('ipfs-core-types/src/utils').AbortOptions} [options]
+ * @returns {Promise<Network>}
  */
 const use = async (network, peerId, options) => {
   const net = await network.use(options)
-  if (get(net.libp2p, '_config.dht.enabled', false)) {
+  if (net.libp2p.dht != null) {
     return net
   } else {
     const fn = async function * () {
@@ -270,13 +210,19 @@ const use = async (network, peerId, options) => {
 
     return {
       libp2p: {
-        _dht: {
+        dht: {
+          // @ts-expect-error incomplete implementation
           get: fn,
+          // @ts-expect-error incomplete implementation
           put: fn,
-          findProvs: fn,
+          // @ts-expect-error incomplete implementation
+          findProviders: fn,
+          // @ts-expect-error incomplete implementation
           findPeer: fn,
+          // @ts-expect-error incomplete implementation
           provide: fn,
-          query: fn
+          // @ts-expect-error incomplete implementation
+          getClosestPeers: fn
         }
       }
     }

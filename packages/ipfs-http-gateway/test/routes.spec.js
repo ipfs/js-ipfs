@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 /* eslint dot-notation: 0, dot-notation: 0, quote-props: 0 */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import FileType from 'file-type'
+import { fileTypeFromBuffer } from 'file-type'
 import { CID } from 'multiformats/cid'
 import { base32 } from 'multiformats/bases/base32'
 import { http } from './utils/http.js'
@@ -508,7 +508,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
     expect(res.headers.suborigin).to.equal(`ipfs000${dirCid.toV1().toString(base32)}`)
 
-    const fileSignature = await FileType.fromBuffer(res.rawPayload)
+    const fileSignature = await fileTypeFromBuffer(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
     expect(fileSignature.ext).to.equal('jpg')
   })
@@ -837,7 +837,7 @@ describe('HTTP Gateway', function () {
     expect(res.headers.etag).to.equal(`"${fileCid}"`)
     expect(res.headers.suborigin).to.equal(`ipns000${CID.parse(id).toV1().toString()}`)
 
-    const fileSignature = await FileType.fromBuffer(res.rawPayload)
+    const fileSignature = await fileTypeFromBuffer(res.rawPayload)
     expect(fileSignature.mime).to.equal('image/jpeg')
     expect(fileSignature.ext).to.equal('jpg')
   }, { ipfs })

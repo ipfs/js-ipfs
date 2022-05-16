@@ -1,6 +1,6 @@
 import type { Agent as HttpAgent } from 'http'
 import type { Agent as HttpsAgent } from 'https'
-import type { Multiaddr } from 'multiaddr'
+import type { Multiaddr } from '@multiformats/multiaddr'
 import type { BlockCodec } from 'multiformats/codecs/interface'
 import type { MultihashHasher } from 'multiformats/hashes/interface'
 import type { MultibaseCodec } from 'multiformats/bases/interface'

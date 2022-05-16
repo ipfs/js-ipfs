@@ -40,12 +40,11 @@ BlockClient.prototype.get = async function get (cid, options = {}) {
  */
 BlockClient.prototype.put = async function put (block, options = {}) {
   const { transfer } = options
-  // @ts-ignore - ipfs-unixfs-importer passes `progress` which causing errors
+  // @ts-expect-error - ipfs-unixfs-importer passes `progress` which causing errors
   // because functions can't be transferred.
   delete options.progress
   const result = await this.remote.put({
     ...options,
-    // @ts-ignore PutOptions requires CID, we send EncodedCID
     block: block instanceof Uint8Array ? block : encodeBlock(block, transfer)
   })
   return decodeCID(result.cid)

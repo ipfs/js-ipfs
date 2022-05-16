@@ -1,14 +1,15 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { CID } from 'multiformats/cid'
 import { base58btc } from 'multiformats/bases/base58'
 import { base64 } from 'multiformats/bases/base64'
 import { cli } from './utils/cli.js'
 import sinon from 'sinon'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 describe('bitswap', () => {
-  const peerId = 'QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA'
+  const peerId = peerIdFromString('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNA')
   const key0 = CID.parse('QmUBdnXXPyoDFXj3Hj39dNJ5VkN3QFRskXxcGaYFBB8CNR')
   const key1 = CID.parse('zb2rhafnd6kEUujnoMkozHnWXY7XpWttyVDWKXfChqA42VTDU')
 
@@ -62,7 +63,7 @@ describe('bitswap', () => {
     it('wantlist peerid', async () => {
       ipfs.bitswap.wantlistForPeer.withArgs(peerId, defaultOptions).resolves([])
 
-      const out = await cli(`bitswap wantlist ${peerId}`, { ipfs })
+      const out = await cli(`bitswap wantlist ${peerId.toString()}`, { ipfs })
       expect(out).to.be.empty()
     })
 
@@ -82,7 +83,7 @@ describe('bitswap', () => {
         timeout: 1000
       }).resolves([])
 
-      const out = await cli(`bitswap wantlist ${peerId} --timeout=1s`, { ipfs })
+      const out = await cli(`bitswap wantlist ${peerId.toString()} --timeout=1s`, { ipfs })
       expect(out).to.be.empty()
     })
   })

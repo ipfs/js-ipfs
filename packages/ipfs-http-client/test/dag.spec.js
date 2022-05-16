@@ -2,7 +2,7 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import * as dagPB from '@ipld/dag-pb'
 import * as dagCBOR from '@ipld/dag-cbor'
 import * as raw from 'multiformats/codecs/raw'

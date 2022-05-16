@@ -5,8 +5,12 @@ import Boom from '@hapi/boom'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { streamResponse } from '../../utils/stream-response.js'
-import pushable from 'it-pushable'
+import { pushable } from 'it-pushable'
 import { base64url } from 'multiformats/bases/base64'
+
+/**
+ * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ */
 
 const preDecodeTopicFromHttpRpc = {
   assign: 'topic',
@@ -70,14 +74,14 @@ export const subscribeResource = {
       const output = pushable()
 
       /**
-       * @type {import('ipfs-core-types/src/pubsub').MessageHandlerFn}
+       * @type {import('@libp2p/interfaces/events').EventHandler<Message>}
        */
       const handler = (msg) => {
         output.push({
-          from: msg.from, // TODO: switch to PeerId.parse(msg.from).toString() when go-ipfs defaults to CIDv1
+          from: msg.from, // TODO: switch to peerIdFromString(msg.from).toString() when go-ipfs defaults to CIDv1
           data: base64url.encode(msg.data),
-          seqno: base64url.encode(msg.seqno),
-          topicIDs: msg.topicIDs.map(t => base64url.encode(uint8ArrayFromString(t)))
+          seqno: msg.sequenceNumber != null ? base64url.encode(uint8ArrayFromString(msg.sequenceNumber.toString(16), 'base16')) : undefined,
+          topicIDs: [base64url.encode(uint8ArrayFromString(msg.topic))]
         })
       }
 

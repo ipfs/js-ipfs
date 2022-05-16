@@ -14,7 +14,7 @@ import { ObjectPatchAPI } from './patch/index.js'
 
 export class ObjectAPI {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
    * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
    * @param {Preload} config.preload

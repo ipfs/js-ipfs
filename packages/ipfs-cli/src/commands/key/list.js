@@ -3,23 +3,25 @@ import {
   stripControlCharacters
 } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'list',
 
   describe: 'List all local keys',
 
   builder: {
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const keys = await ipfs.key.list({
       timeout
@@ -27,3 +29,5 @@ export default {
     keys.forEach((ki) => print(`${ki.id} ${stripControlCharacters(ki.name)}`))
   }
 }
+
+export default command

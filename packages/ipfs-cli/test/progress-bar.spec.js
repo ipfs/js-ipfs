@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { createProgressBar } from '../src/utils.js'
 
 describe('progress bar', () => {

@@ -3,7 +3,17 @@ import { formatMode } from 'ipfs-core-utils/files/format-mode'
 import { formatMtime } from 'ipfs-core-utils/files/format-mtime'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../types').Context} Argv.ctx
+ * @property {string} Argv.key
+ * @property {boolean} Argv.headers
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'ls <key>',
 
   describe: 'List files for the given directory',
@@ -11,29 +21,21 @@ export default {
   builder: {
     v: {
       alias: 'headers',
-      desc: 'Print table headers (Hash, Size, Name).',
-      type: 'boolean',
+      desc: 'Print table headers (Hash, Size, Name)',
+      boolean: true,
       default: false
     },
     'cid-base': {
-      describe: 'Number base to display CIDs in.',
-      type: 'string',
+      describe: 'Number base to display CIDs in',
+      string: true,
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../types').Context} argv.ctx
-   * @param {string} argv.key
-   * @param {boolean} argv.headers
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, key, headers, cidBase, timeout }) {
     // replace multiple slashes
     key = key.replace(/\/(\/+)/g, '/')
@@ -105,3 +107,5 @@ export default {
     }
   }
 }
+
+export default command

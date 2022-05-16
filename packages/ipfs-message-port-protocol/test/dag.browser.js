@@ -4,7 +4,7 @@
 import { CID } from 'multiformats/cid'
 import { encodeNode, decodeNode } from '../src/dag.js'
 import { ipc } from './util.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 describe('dag (browser)', function () {

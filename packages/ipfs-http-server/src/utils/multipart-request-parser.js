@@ -57,7 +57,7 @@ const collect = async (stream) => {
 }
 
 /**
- * @typedef {Object} MultipartUpload
+ * @typedef {object} MultipartUpload
  * @property {'file' | 'directory' | 'symlink'} type
  * @property {string} name
  * @property {AsyncIterable<Uint8Array>} body

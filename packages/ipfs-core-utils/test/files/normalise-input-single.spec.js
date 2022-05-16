@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import blobToIt from 'blob-to-it'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import all from 'it-all'
 import { File } from '@web-std/file'
 import { normaliseInput } from '../../src/files/normalise-input-single.js'
 import { isNode } from 'ipfs-utils/src/env.js'
-import resolve from 'aegir/utils/resolve.js'
+import resolve from 'aegir/resolve'
 
 const { Blob, ReadableStream } = globalThis
 

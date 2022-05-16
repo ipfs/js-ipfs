@@ -1,8 +1,10 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { cli } from './utils/cli.js'
 import sinon from 'sinon'
+import { peerIdFromString } from '@libp2p/peer-id'
+import { matchPeerId } from './utils/match-peer-id.js'
 
 const defaultOptions = {
   count: 10,
@@ -19,11 +21,11 @@ describe('ping', function () {
   })
 
   it('ping host', async () => {
-    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
+    const peerId = peerIdFromString('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
     // https://github.com/libp2p/js-peer-id/issues/141
-    ipfs.ping.withArgs(peerId, defaultOptions).returns([{
+    ipfs.ping.withArgs(matchPeerId(peerId), defaultOptions).returns([{
       success: true,
       time
     }])
@@ -32,12 +34,12 @@ describe('ping', function () {
     expect(out).to.equal(`Pong received: time=${time} ms\n`)
   })
 
-  it('ping host with --n option', async () => {
-    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
+  it('ping host with -n option', async () => {
+    const peerId = peerIdFromString('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
     // https://github.com/libp2p/js-peer-id/issues/141
-    ipfs.ping.withArgs(peerId, {
+    ipfs.ping.withArgs(matchPeerId(peerId), {
       ...defaultOptions,
       count: 1
     }).returns([{
@@ -50,11 +52,11 @@ describe('ping', function () {
   })
 
   it('ping host with --count option', async () => {
-    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
+    const peerId = peerIdFromString('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
     // https://github.com/libp2p/js-peer-id/issues/141
-    ipfs.ping.withArgs(peerId.toString(), {
+    ipfs.ping.withArgs(matchPeerId(peerId), {
       ...defaultOptions,
       count: 1
     }).returns([{
@@ -67,11 +69,11 @@ describe('ping', function () {
   })
 
   it('ping host with timeout', async () => {
-    const peerId = 'QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp'
+    const peerId = peerIdFromString('QmZjTnYw2TFhn9Nn7tjmPSoTBoY7YRkwPzwSrSbabY24Kp')
     const time = 10
 
     // https://github.com/libp2p/js-peer-id/issues/141
-    ipfs.ping.withArgs(peerId.toString(), {
+    ipfs.ping.withArgs(matchPeerId(peerId), {
       ...defaultOptions,
       timeout: 1000
     }).returns([{

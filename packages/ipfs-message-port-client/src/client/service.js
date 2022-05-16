@@ -24,7 +24,7 @@ export class Service {
     this.transport = transport
     // Type script does not like using classes as some dicitionaries, so
     // we explicitly type it as dictionary.
-    /** @type {Object.<ProcedureNames<T>, Function>} */
+    /** @type {Object<ProcedureNames<T>, Function>} */
     const api = this
     for (const method of methods) {
       /**

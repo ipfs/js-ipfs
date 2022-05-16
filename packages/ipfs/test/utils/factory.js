@@ -12,9 +12,6 @@ const merge = mergeOpts.bind({ ignoreUndefined: true })
 let __dirname = ''
 
 if (isNode) {
-  // @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
-  // but then the "--module" setting doesn't get used by the "--build" setting
-  // which we use to build types from jsdoc
   __dirname = dirname(fileURLToPath(import.meta.url))
 }
 

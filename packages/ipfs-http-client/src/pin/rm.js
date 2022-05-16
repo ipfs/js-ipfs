@@ -18,7 +18,7 @@ export const createRm = (config) => {
      * @type {PinAPI["rm"]}
      */
     async function rm (path, options = {}) {
-      // @ts-ignore last can return undefined
+      // @ts-expect-error last can return undefined
       return last(all([{
         path,
         ...options

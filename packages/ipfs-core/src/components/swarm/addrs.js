@@ -1,7 +1,11 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @typedef {import('ipfs-core-types/src/swarm').AddrsResult} AddrsResult
+ */
+
+/**
+ * @param {object} config
  * @param {import('../../types').NetworkService} config.network
  */
 export function createAddrs ({ network }) {
@@ -9,14 +13,17 @@ export function createAddrs ({ network }) {
    * @type {import('ipfs-core-types/src/swarm').API<{}>["addrs"]}
    */
   async function addrs (options = {}) { // eslint-disable-line require-await
+    /** @type {AddrsResult[]} */
     const peers = []
     const { libp2p } = await network.use(options)
-    for await (const peer of libp2p.peerStore.getPeers()) {
+
+    await libp2p.peerStore.forEach(peer => {
       peers.push({
-        id: peer.id.toB58String(),
+        id: peer.id,
         addrs: peer.addresses.map((mi) => mi.multiaddr)
       })
-    }
+    })
+
     return peers
   }
 

@@ -1,9 +1,8 @@
-
-import execa from 'execa'
+import { execaCommand } from 'execa'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
-// @ts-ignore need to set module to es2020 to use import.meta.url, which we do,
+// @ts-expect-error need to set module to es2020 to use import.meta.url, which we do,
 // but then the "--module" setting doesn't get used by the "--build" setting
 // which we use to build types from jsdoc
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -31,14 +30,14 @@ export function ipfsExec (repoPath, opts) {
   const exec = (args, options) => {
     const opts = Object.assign({}, config, options)
 
-    return execa.command(`${path.resolve(__dirname, '../../src/bin.js')} ${args}`, opts)
+    return execaCommand(`${path.resolve(__dirname, '../../../ipfs/src/cli.js')} ${args}`, opts)
   }
   const execRaw = (args, options) => {
     const opts = Object.assign({}, config, options, {
       encoding: null
     })
 
-    return execa.command(`${path.resolve(__dirname, '../../src/bin.js')} ${args}`, opts)
+    return execaCommand(`${path.resolve(__dirname, '../../ipfs/src/cli.js')} ${args}`, opts)
   }
 
   const execute = (exec, args, options) => {
@@ -80,7 +79,7 @@ export function ipfsExec (repoPath, opts) {
    * Expect the command passed as @param arguments to fail.
    *
    * @param {string} command - String command to run, e.g. `'pin ls'`
-   * @param {Object} [options] - Options to pass to `execa`
+   * @param {object} [options] - Options to pass to `execa`
    * @returns {Promise<Error | undefined>} Resolves if the command passed as @param command fails,
    * rejects if it was successful.
    */

@@ -1,10 +1,10 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { addLink } from './add-link.js'
 import {
   decode
 } from '@ipld/dag-pb'
 
-const log = debug('ipfs:mfs:utils:update-tree')
+const log = logger('ipfs:mfs:utils:update-tree')
 
 const defaultOptions = {
   shardSplitThreshold: 1000
@@ -75,7 +75,7 @@ export async function updateTree (context, trail, options) {
     }
   }
 
-  // @ts-ignore - child is possibly undefined
+  // @ts-expect-error - child is possibly undefined
   const { cid } = child
   log(`Final CID ${cid}`)
 

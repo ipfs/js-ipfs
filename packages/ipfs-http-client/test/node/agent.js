@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import delay from 'delay'
 import { create as httpClient } from '../../src/index.js'
 import http, { Agent } from 'http'
@@ -81,10 +81,12 @@ describe('agent', function () {
 
         // respond to the in-flight requests
         responses[0]({
-          res: 0
+          res: 0,
+          id: 'QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr'
         })
         responses[1]({
-          res: 1
+          res: 1,
+          id: 'QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr'
         })
 
         break
@@ -103,22 +105,18 @@ describe('agent', function () {
       if (responses.length === 3) {
         // respond to it
         responses[2]({
-          res: 2
+          res: 2,
+          id: 'QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr'
         })
       }
     }
 
-    const results = await requests
+    let results = await requests
+    results = results.map(r => r.res)
     expect(results).to.have.lengthOf(3)
-    expect(results).to.deep.include({
-      res: 0
-    })
-    expect(results).to.deep.include({
-      res: 1
-    })
-    expect(results).to.deep.include({
-      res: 2
-    })
+    expect(results).to.include(0)
+    expect(results).to.include(1)
+    expect(results).to.include(2)
 
     server.close()
   })

@@ -1,10 +1,10 @@
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import errcode from 'err-code'
 import mergeOpts from 'merge-options'
 import { CID } from 'multiformats/cid'
 import * as Digest from 'multiformats/hashes/digest'
 import { base36 } from 'multiformats/bases/base36'
-import PeerId from 'peer-id'
+import { peerIdFromString } from '@libp2p/peer-id'
 // @ts-expect-error no types
 import isDomain from 'is-domain-name'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
@@ -12,9 +12,7 @@ import { OFFLINE_ERROR } from '../../utils.js'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
-const log = Object.assign(debug('ipfs:name:resolve'), {
-  error: debug('ipfs:name:resolve:error')
-})
+const log = logger('ipfs:name:resolve')
 
 /**
  *
@@ -30,14 +28,13 @@ const appendRemainder = (result, remainder) =>
 /**
  * IPNS - Inter-Planetary Naming System
  *
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-core-types/src/root').API<{}>["dns"]} config.dns
  * @param {import('../ipns').IPNSAPI} config.ipns
- * @param {import('peer-id')} config.peerId
  * @param {import('ipfs-core-types/src/root').API<{}>["isOnline"]} config.isOnline
  * @param {import('../../types').Options} config.options
  */
-export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline } }) {
+export function createResolve ({ dns, ipns, isOnline, options: { offline } }) {
   /**
    * @type {import('ipfs-core-types/src/name').API<{}>["resolve"]}
    */
@@ -57,20 +54,17 @@ export function createResolve ({ dns, ipns, peerId, isOnline, options: { offline
       throw errcode(new Error(OFFLINE_ERROR), 'OFFLINE_ERROR')
     }
 
-    // Set node id as name for being resolved, if it is not received
-    if (!name) {
-      name = peerId.toB58String()
+    let ipnsName = name.toString()
+
+    if (!ipnsName.startsWith('/ipns/')) {
+      ipnsName = `/ipns/${ipnsName}`
     }
 
-    if (!name.startsWith('/ipns/')) {
-      name = `/ipns/${name}`
-    }
-
-    let [namespace, hash, ...remainder] = name.slice(1).split('/')
+    let [namespace, hash, ...remainder] = ipnsName.slice(1).split('/')
 
     try {
       if (hash.substring(0, 1) === '1') {
-        const id = PeerId.parse(hash)
+        const id = peerIdFromString(hash)
         const digest = Digest.decode(id.toBytes())
         const libp2pKey = CID.createV1(0x72, digest)
         hash = libp2pKey.toString(base36)

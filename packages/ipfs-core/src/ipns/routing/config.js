@@ -10,9 +10,9 @@ import { DHTDatastore } from './dht-datastore.js'
 
 /**
  * @param {object} arg
- * @param {import('libp2p')} arg.libp2p
+ * @param {import('libp2p').Libp2p} arg.libp2p
  * @param {import('ipfs-repo').IPFSRepo} arg.repo
- * @param {import('peer-id')} arg.peerId
+ * @param {import('@libp2p/interfaces/peer-id').PeerId} arg.peerId
  * @param {object} arg.options
  */
 export function createRouting ({ libp2p, repo, peerId, options }) {
@@ -23,21 +23,18 @@ export function createRouting ({ libp2p, repo, peerId, options }) {
   // Add IPNS pubsub if enabled
   let pubsubDs
   if (get(options, 'EXPERIMENTAL.ipnsPubsub', false)) {
-    const pubsub = libp2p.pubsub
-    const localDatastore = repo.datastore
-
-    pubsubDs = new IpnsPubsubDatastore(pubsub, localDatastore, peerId)
+    pubsubDs = new IpnsPubsubDatastore(libp2p.pubsub, repo.datastore, peerId)
     ipnsStores.push(pubsubDs)
   }
 
   // Add DHT datastore if enabled
-  if (!get(options, 'offline', false) && libp2p._config && libp2p._config.dht && libp2p._config.dht.enabled) {
-    ipnsStores.push(new DHTDatastore(libp2p._dht))
+  if (get(options, 'offline', false) !== true && ['dht', 'dhtclient', 'dhtserver'].includes(get(options, 'config.Routing.Type', 'none'))) {
+    ipnsStores.push(new DHTDatastore(libp2p.dht))
   }
 
   // Add an offline datastore if we are offline or no other datastores are configured
   if (get(options, 'offline', false) || ipnsStores.length === 0) {
-    const offlineDatastore = new OfflineDatastore(repo)
+    const offlineDatastore = new OfflineDatastore(repo.datastore)
     ipnsStores.push(offlineDatastore)
   }
 

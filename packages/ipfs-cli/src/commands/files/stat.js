@@ -5,7 +5,20 @@ import { formatMode } from 'ipfs-core-utils/files/format-mode'
 import { formatMtime } from 'ipfs-core-utils/files/format-mtime'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.path
+ * @property {string} Argv.format
+ * @property {boolean} Argv.hash
+ * @property {boolean} Argv.size
+ * @property {boolean} Argv.withLocal
+ * @property {string} Argv.cidBase
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'stat [path]',
 
   describe: 'Display file/directory status',
@@ -13,7 +26,7 @@ export default {
   builder: {
     format: {
       alias: 'f',
-      type: 'string',
+      string: true,
       default: `<hash>
 Size: <size>
 CumulativeSize: <cumulsize>
@@ -25,46 +38,35 @@ Mtime: <mtime>`,
     },
     hash: {
       alias: 'h',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Print only hash. Implies \'--format=<hash>\'. Conflicts with other format options.'
     },
     size: {
       alias: 's',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Print only size. Implies \'--format=<cumulsize>\'. Conflicts with other format options.'
     },
     'with-local': {
       alias: 'l',
-      type: 'boolean',
+      boolean: true,
       default: false,
       coerce: asBoolean,
       describe: 'Compute the amount of the dag that is local, and if possible the total size'
     },
     'cid-base': {
-      describe: 'CID base to use.',
+      describe: 'CID base to use',
       default: 'base58btc'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.path
-   * @param {string} argv.format
-   * @param {boolean} argv.hash
-   * @param {boolean} argv.size
-   * @param {boolean} argv.withLocal
-   * @param {string} argv.cidBase
-   * @param {number} argv.timeout
-   */
   async handler ({
     ctx: { ipfs, print },
     path,
@@ -100,3 +102,5 @@ Mtime: <mtime>`,
     )
   }
 }
+
+export default command

@@ -1,5 +1,5 @@
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { http } from './http.js'
 
 const METHODS = [

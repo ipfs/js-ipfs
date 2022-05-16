@@ -2,6 +2,7 @@ import { serverStreamToIterator } from '../../utils/server-stream-to-iterator.js
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { subscriptions } from './subscriptions.js'
 import defer from 'p-defer'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 /**
  * @param {import('@improbable-eng/grpc-web').grpc} grpc
@@ -34,12 +35,22 @@ export function grpcPubsubSubscribe (grpc, service, opts) {
 
             deferred.resolve()
           } else {
-            handler({
+            /** @type {import('@libp2p/interfaces/pubsub').Message} */
+            const msg = {
               from: result.from,
-              seqno: result.seqno,
+              sequenceNumber: result.sequenceNumber == null ? undefined : BigInt(`0x${uint8ArrayToString(result.sequenceNumber, 'base16')}`),
               data: result.data,
-              topicIDs: result.topicIDs
-            })
+              topic: result.topic
+            }
+
+            if (typeof handler === 'function') {
+              handler(msg)
+              continue
+            }
+
+            if (handler != null && typeof handler.handleEvent === 'function') {
+              handler.handleEvent(msg)
+            }
           }
         }
       } catch (/** @type {any} */ err) {

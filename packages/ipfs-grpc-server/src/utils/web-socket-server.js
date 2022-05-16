@@ -1,13 +1,13 @@
-import WS from 'ws'
+import { WebSocketServer } from 'ws'
 import { EventEmitter } from 'events'
 import { WebSocketMessageChannel } from './web-socket-message-channel.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 // @ts-expect-error - no types
 import coerce from 'coercer'
 import { camelCase } from 'change-case'
-import { Multiaddr } from 'multiaddr'
+import { Multiaddr } from '@multiformats/multiaddr'
 
-const log = debug('ipfs:grpc-server:utils:web-socket-server')
+const log = logger('ipfs:grpc-server:utils:web-socket-server')
 
 /**
  * @param {import('ws').Data} buf - e.g. `Buffer.from('foo-bar: baz\r\n')`
@@ -31,7 +31,7 @@ const fromHeaders = (buf) => {
 
 class Messages extends EventEmitter {
   /**
-   * @param {WS.Server} wss
+   * @param {WebSocketServer} wss
    */
   constructor (wss) {
     super()
@@ -119,7 +119,7 @@ export async function webSocketServer (ipfs, options = {}) {
 
   log(`starting ws server on ${host}:${port}`)
 
-  const wss = new WS.Server({
+  const wss = new WebSocketServer({
     host,
     port: parseInt(port, 10)
   })

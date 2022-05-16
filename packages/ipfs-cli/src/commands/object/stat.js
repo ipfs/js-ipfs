@@ -1,28 +1,30 @@
 import parseDuration from 'parse-duration'
 import { coerceCID } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('multiformats/cid').CID} Argv.key
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'stat <key>',
 
   describe: 'Get stats for the DAG node named by <key>',
 
   builder: {
     key: {
-      type: 'string',
+      string: true,
       coerce: coerceCID
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiformats/cid').CID} argv.key
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, key, timeout }) {
     const stats = await ipfs.object.stat(key, { timeout })
 
@@ -35,3 +37,5 @@ export default {
     })
   }
 }
+
+export default command

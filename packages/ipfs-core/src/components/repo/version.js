@@ -2,7 +2,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { repoVersion } from 'ipfs-repo/constants'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  */
 export function createVersion ({ repo }) {
@@ -11,7 +11,7 @@ export function createVersion ({ repo }) {
    */
   async function version (options = {}) {
     try {
-      // @ts-ignore - not a public API
+      // @ts-expect-error - not a public API
       await repo._checkInitialized(options)
     } catch (/** @type {any} */ err) {
       // TODO: (dryajov) This is really hacky, there must be a better way

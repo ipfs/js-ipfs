@@ -1,44 +1,46 @@
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.name
+ * @property {boolean} Argv.nocache
+ * @property {boolean} Argv.recursive
+ * @property {boolean} Argv.stream
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'resolve <name>',
 
-  describe: 'Resolve IPNS names.',
+  describe: 'Resolve IPNS names',
 
   builder: {
     nocache: {
-      type: 'boolean',
+      boolean: true,
       alias: 'n',
-      describe: 'Do not use cached entries. Default: false.',
+      describe: 'Do not use cached entries. Default: false',
       default: false
     },
     recursive: {
-      type: 'boolean',
+      boolean: true,
       alias: 'r',
-      describe: 'Resolve until the result is not an IPNS name. Default: true.',
+      describe: 'Resolve until the result is not an IPNS name. Default: true',
       default: true
     },
     stream: {
-      type: 'boolean',
+      boolean: true,
       alias: 's',
-      describe: 'Stream entries as they are found.',
+      describe: 'Stream entries as they are found',
       default: false
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.name
-   * @param {boolean} argv.nocache
-   * @param {boolean} argv.recursive
-   * @param {boolean} argv.stream
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, nocache, recursive, name, stream, timeout }) {
     let bestValue
 
@@ -50,3 +52,5 @@ export default {
     if (!stream) print(bestValue || '')
   }
 }
+
+export default command

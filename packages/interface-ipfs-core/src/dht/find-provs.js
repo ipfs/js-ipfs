@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import all from 'it-all'
 import drain from 'it-drain'
@@ -13,7 +13,7 @@ import { ensureReachable } from './utils.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testFindProvs (factory, options) {
   const describe = getDescribe(options)
@@ -70,15 +70,15 @@ export function testFindProvs (factory, options) {
 
       for await (const event of nodeA.dht.findProvs(providedCid)) {
         if (event.name === 'PROVIDER') {
-          providerIds.push(...event.providers.map(prov => prov.id))
+          providerIds.push(...event.providers.map(prov => prov.id.toString()))
         }
       }
 
       const nodeBId = await nodeB.id()
       const nodeCId = await nodeC.id()
 
-      expect(providerIds).to.include(nodeBId.id)
-      expect(providerIds).to.include(nodeCId.id)
+      expect(providerIds).to.include(nodeBId.id.toString())
+      expect(providerIds).to.include(nodeCId.id.toString())
     })
   })
 }

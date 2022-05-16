@@ -2,16 +2,18 @@ import split from 'it-split'
 import { CID } from 'multiformats/cid'
 import { base32 } from 'multiformats/bases/base32'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string[]} [Argv.cids]
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'base32 [cids...]',
 
-  describe: 'Convert CIDs to base 32 CID version 1.',
+  describe: 'Convert CIDs to base 32 CID version 1',
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string[]} [argv.cids]
-   */
   async handler ({ ctx: { print, getStdin }, cids }) {
     let input
 
@@ -32,3 +34,5 @@ export default {
     }
   }
 }
+
+export default command

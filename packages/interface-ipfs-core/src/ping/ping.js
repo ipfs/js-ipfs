@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { expectIsPingResponse, isPong } from './utils.js'
 import all from 'it-all'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
-import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets-filter-all.js'
+import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -13,10 +12,9 @@ import { ipfsOptionsWebsocketsFilterAll } from '../utils/ipfs-options-websockets
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testPing (factory, options) {
-  const ipfsOptions = ipfsOptionsWebsocketsFilterAll()
   const describe = getDescribe(options)
   const it = getIt(options)
 
@@ -31,7 +29,7 @@ export function testPing (factory, options) {
     let nodeBId
 
     before(async () => {
-      ipfsA = (await factory.spawn({ type: 'proc', ipfsOptions })).api
+      ipfsA = (await factory.spawn({ type: 'proc' })).api
       // webworkers are not dialable because webrtc is not available
       ipfsB = (await factory.spawn({ type: isWebWorker ? 'go' : undefined })).api
       nodeBId = await ipfsB.id()
@@ -43,24 +41,15 @@ export function testPing (factory, options) {
     it('should send the specified number of packets', async () => {
       const count = 3
       const responses = await all(ipfsA.ping(nodeBId.id, { count }))
-      responses.forEach(expectIsPingResponse)
-
-      const pongs = responses.filter(isPong)
-      expect(pongs.length).to.equal(count)
+      expect(responses.length).to.be.ok()
+      expect(responses[0].success).to.be.true()
     })
 
     it('should fail when pinging a peer that is not available', () => {
-      const notAvailablePeerId = 'QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn'
+      const notAvailablePeerId = peerIdFromString('QmUmaEnH1uMmvckMZbh3yShaasvELPW4ZLPWnB4entMTEn')
       const count = 2
 
       return expect(all(ipfsA.ping(notAvailablePeerId, { count }))).to.eventually.be.rejected()
-    })
-
-    it('should fail when pinging an invalid peer Id', () => {
-      const invalidPeerId = 'not a peer ID'
-      const count = 2
-
-      return expect(all(ipfsA.ping(invalidPeerId, { count }))).to.eventually.be.rejected()
     })
 
     it('can ping without options', async () => {

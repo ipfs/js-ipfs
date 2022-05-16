@@ -2,7 +2,7 @@
  * @typedef {import('./error').EncodedError} EncodedError
  * @typedef {import('./cid').EncodedCID} EncodedCID
  *
- * @typedef {Object} EncodedRmResult
+ * @typedef {object} EncodedRmResult
  * @property {EncodedCID} cid
  * @property {EncodedError|undefined} [error]
  */

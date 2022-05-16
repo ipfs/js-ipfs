@@ -4,7 +4,7 @@ import {
   createHAMT
 } from 'hamt-sharding'
 import { DirSharded } from './dir-sharded.js'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { UnixFS } from 'ipfs-unixfs'
 import last from 'it-last'
 import { CID } from 'multiformats/cid'
@@ -14,7 +14,7 @@ import {
   hamtBucketBits
 } from './hamt-constants.js'
 
-const log = debug('ipfs:mfs:core:utils:hamt-utils')
+const log = logger('ipfs:mfs:core:utils:hamt-utils')
 
 /**
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
@@ -198,7 +198,7 @@ export const generatePath = async (context, fileName, rootNode) => {
       prefix: toPrefix(currentBucket._posAtParent)
     })
 
-    // @ts-ignore - only the root bucket's parent will be undefined
+    // @ts-expect-error - only the root bucket's parent will be undefined
     currentBucket = currentBucket._parent
   }
 

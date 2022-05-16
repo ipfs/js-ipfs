@@ -5,6 +5,7 @@ import dhtProvide from './provide.js'
 import dhtPut from './put.js'
 import dhtQuery from './query.js'
 
+/** @type {import('yargs').CommandModule[]} */
 export const commands = [
   dhtFindPeer,
   dhtFindProviders,

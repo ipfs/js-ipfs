@@ -2,9 +2,13 @@ import { nanoid } from 'nanoid'
 import delay from 'delay'
 
 /**
+ * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ */
+
+/**
  * @param {import('ipfs-core-types').IPFS} ipfs
  * @param {string} topic
- * @param {string[]} peersToWait
+ * @param {PeerId[]} peersToWait
  * @param {number} waitForMs
  * @returns
  */
@@ -13,7 +17,7 @@ export async function waitForPeers (ipfs, topic, peersToWait, waitForMs) {
 
   while (true) {
     const peers = await ipfs.pubsub.peers(topic)
-    const everyPeerFound = peersToWait.every(p => peers.includes(p))
+    const everyPeerFound = peersToWait.every(p => peers.map(p => p.toString()).includes(p.toString()))
 
     if (everyPeerFound) {
       return

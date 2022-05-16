@@ -1,7 +1,17 @@
 import fs from 'fs'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {string} Argv.name
+ * @property {string} Argv.passout
+ * @property {string} Argv.output
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'export <name>',
 
   describe: 'Export the key as a password protected PKCS #8 PEM file',
@@ -10,29 +20,21 @@ export default {
     passout: {
       alias: 'p',
       describe: 'Password for the PEM',
-      type: 'string',
+      string: true,
       demandOption: true
     },
     output: {
       alias: 'o',
       describe: 'Output file',
-      type: 'string',
+      string: true,
       default: 'stdout'
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {string} argv.name
-   * @param {string} argv.passout
-   * @param {string} argv.output
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx, name, passout, output, timeout }) {
     const { ipfs } = ctx
     const pem = await ipfs.key.export(name, passout, {
@@ -45,3 +47,5 @@ export default {
     }
   }
 }
+
+export default command

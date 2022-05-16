@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
 import drain from 'it-drain'
 import testTimeout from '../utils/test-timeout.js'
@@ -12,7 +12,7 @@ import { ensureReachable } from './utils.js'
 
 /**
  * @param {Factory} factory
- * @param {Object} options
+ * @param {object} options
  */
 export function testQuery (factory, options) {
   const describe = getDescribe(options)
@@ -47,14 +47,13 @@ export function testQuery (factory, options) {
       /** @type {string[]} */
       const peers = []
       const nodeBId = await nodeB.id()
-
       for await (const event of nodeA.dht.query(nodeBId.id)) {
         if (event.name === 'PEER_RESPONSE') {
-          peers.push(...event.closer.map(data => data.id))
+          peers.push(...event.closer.map(data => data.id.toString()))
         }
       }
 
-      expect(peers).to.include(nodeBId.id)
+      expect(peers).to.include(nodeBId.id.toString())
     })
   })
 }

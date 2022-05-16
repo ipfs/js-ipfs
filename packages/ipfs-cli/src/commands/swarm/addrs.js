@@ -1,29 +1,32 @@
 import { commands } from './addrs/index.js'
 import parseDuration from 'parse-duration'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'addrs',
 
   describe: '',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
-    return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
+    yargs
       .option('timeout', {
-        type: 'string',
+        string: true,
         coerce: parseDuration
       })
+
+    return yargs
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx: { ipfs, print }, timeout }) {
     const res = await ipfs.swarm.addrs({
       timeout
@@ -52,3 +55,5 @@ export default {
     print(output.join('\n'))
   }
 }
+
+export default command

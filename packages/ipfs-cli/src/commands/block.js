@@ -1,16 +1,22 @@
 import { commands } from './block/index.js'
 
-export default {
+/** @type {import('yargs').CommandModule} */
+const command = {
   command: 'block <command>',
 
-  description: 'Manipulate raw IPFS blocks.',
+  describe: 'Manipulate raw IPFS blocks',
 
-  /**
-   * @param {import('yargs').Argv} yargs
-   */
   builder (yargs) {
+    commands.forEach(command => {
+      yargs.command(command)
+    })
+
     return yargs
-      // @ts-expect-error types are wrong
-      .command(commands)
+  },
+
+  handler () {
+
   }
 }
+
+export default command

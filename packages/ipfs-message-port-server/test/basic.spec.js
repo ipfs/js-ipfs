@@ -3,7 +3,7 @@
 
 import { Server } from '../src/server.js'
 import { IPFSService } from '../src/index.js'
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 
 describe('dag', function () {
   this.timeout(10 * 1000)

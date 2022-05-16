@@ -10,7 +10,20 @@ import {
 import { extract } from 'it-tar'
 import map from 'it-map'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../types').Context} Argv.ctx
+ * @property {string} Argv.ipfsPath
+ * @property {string} Argv.output
+ * @property {boolean} Argv.force
+ * @property {number} Argv.timeout
+ * @property {boolean} Argv.archive
+ * @property {boolean} Argv.compress
+ * @property {-1 | 0 | 1 | 2 | 3 | 4 | 5 | 6| 7 | 8| 9} Argv.compressionLevel
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'get <ipfsPath>',
 
   describe: 'Download IPFS objects',
@@ -18,47 +31,36 @@ export default {
   builder: {
     output: {
       alias: 'o',
-      type: 'string',
+      string: true,
       default: process.cwd()
     },
     force: {
       alias: 'f',
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     },
     archive: {
       alias: 'a',
-      type: 'boolean',
+      boolean: true,
       desc: 'Output a TAR archive'
     },
     compress: {
       alias: 'C',
-      type: 'boolean',
+      boolean: true,
       desc: 'Compress the output with GZIP compression'
     },
     compressionLevel: {
       alias: ['l', 'compression-level'],
-      type: 'number',
+      number: true,
       desc: 'The level of compression (-1-9)',
       default: 6
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../types').Context} argv.ctx
-   * @param {string} argv.ipfsPath
-   * @param {string} argv.output
-   * @param {boolean} argv.force
-   * @param {number} argv.timeout
-   * @param {boolean} argv.archive
-   * @param {boolean} argv.compress
-   * @param {-1 | 0 | 1 | 2 | 3 | 4 | 5 | 6| 7 | 8| 9} argv.compressionLevel
-   */
   async handler ({ ctx: { ipfs, print }, ipfsPath, output, force, timeout, archive, compress, compressionLevel }) {
     print(`Saving file(s) ${stripControlCharacters(ipfsPath)}`)
 
@@ -108,9 +110,6 @@ export default {
             await fs.promises.mkdir(path.dirname(outputPath), { recursive: true })
             await pipe(
               body,
-              /**
-               * @param {AsyncIterable<Uint8Array>} source
-               */
               (source) => map(source, buf => buf.slice()),
               toIterable.sink(fs.createWriteStream(outputPath))
             )
@@ -127,3 +126,5 @@ export default {
     )
   }
 }
+
+export default command

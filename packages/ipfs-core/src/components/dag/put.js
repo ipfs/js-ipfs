@@ -2,7 +2,7 @@ import { CID } from 'multiformats/cid'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 
 /**
- * @param {Object} config
+ * @param {object} config
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
  * @param {import('ipfs-core-utils/multihashes').Multihashes} config.hashers

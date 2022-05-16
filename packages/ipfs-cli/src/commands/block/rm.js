@@ -1,7 +1,17 @@
 import parseDuration from 'parse-duration'
 import { coerceCIDs } from '../../utils.js'
 
-export default {
+/**
+ * @typedef {object} Argv
+ * @property {import('../../types').Context} Argv.ctx
+ * @property {import('multiformats/cid').CID[]} Argv.hash
+ * @property {boolean} Argv.force
+ * @property {boolean} Argv.quiet
+ * @property {number} Argv.timeout
+ */
+
+/** @type {import('yargs').CommandModule<Argv, Argv>} */
+const command = {
   command: 'rm <hash...>',
 
   describe: 'Remove IPFS block(s)',
@@ -14,29 +24,21 @@ export default {
     force: {
       alias: 'f',
       describe: 'Ignore nonexistent blocks',
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     quiet: {
       alias: 'q',
       describe: 'Write minimal output',
-      type: 'boolean',
+      boolean: true,
       default: false
     },
     timeout: {
-      type: 'string',
+      string: true,
       coerce: parseDuration
     }
   },
 
-  /**
-   * @param {object} argv
-   * @param {import('../../types').Context} argv.ctx
-   * @param {import('multiformats/cid').CID[]} argv.hash
-   * @param {boolean} argv.force
-   * @param {boolean} argv.quiet
-   * @param {number} argv.timeout
-   */
   async handler ({ ctx, hash, force, quiet, timeout }) {
     const { ipfs, print } = ctx
 
@@ -61,3 +63,5 @@ export default {
     }
   }
 }
+
+export default command
