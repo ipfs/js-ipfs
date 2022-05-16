@@ -34,7 +34,7 @@ An optional object which may have the following keys:
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| peer | [PeerId][], [CID][] or `String` | `undefined` | Specifies a peer to print bandwidth for |
+| peer | [PeerId][] | `undefined` | Specifies a peer to print bandwidth for |
 | proto | `String` | `undefined` | Specifies a protocol to print bandwidth for |
 | poll | `boolean` | `undefined` | Is used to yield bandwidth info at an interval |
 | interval | `Number` | `undefined` | The time interval to wait between updating output, if `poll` is `true` |
@@ -71,5 +71,5 @@ A great source of [examples][] can be found in the tests for this API.
 [bigNumber]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/stats
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
-[cid]: https://www.npmjs.com/package/cids
-[peerid]: https://www.npmjs.com/package/peer-id
+[cid]: https://docs.ipfs.io/concepts/content-addressing
+[peerid]: https://docs.libp2p.io/concepts/peer-id/

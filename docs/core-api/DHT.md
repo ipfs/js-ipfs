@@ -39,7 +39,7 @@
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| peerId | [PeerID][] or [CID][] | The Peer ID of the node to find |
+| peerId | [PeerID][] | The Peer ID of the node to find |
 
 ### Options
 
@@ -61,7 +61,7 @@ An optional object which may have the following keys:
 ```JavaScript
 const info = await ipfs.dht.findPeer('QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt')
 
-console.log(info.id)
+console.log(info.id.toString())
 /*
 QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt
 */
@@ -191,7 +191,7 @@ Prints objects like:
 
 {
   extra: 'dial backoff',
-  id: 'QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z',
+  id: PeerId('QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z'),
   responses: [
     {
       addrs: [
@@ -199,7 +199,7 @@ Prints objects like:
         Multiaddr(/ip4/172.20.0.3/tcp/4001),
         Multiaddr(/ip4/35.178.190.196/tcp/1024)
       ],
-      id: 'QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8'
+      id: PeerId('QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8')
     }
   ],
   type: 1
@@ -258,7 +258,7 @@ Prints objects like:
 
 {
   extra: 'dial backoff',
-  id: 'QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z',
+  id: PeerId('QmWtewmnzJiQevJPSmG9s8aC7yRfK2WXTCdRc1pCbDFu6z'),
   responses: [
     {
       addrs: [
@@ -266,7 +266,7 @@ Prints objects like:
         Multiaddr(/ip4/172.20.0.3/tcp/4001),
         Multiaddr(/ip4/35.178.190.196/tcp/1024)
       ],
-      id: 'QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8'
+      id: PeerId('QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8')
     }
   ],
   type: 1
@@ -288,7 +288,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 ## `ipfs.dht.query(peerId, [options])`
 
-> Find the closest Peer IDs to a given Peer ID by querying the DHT.
+> Find the closest Peer IDs to a given Peer ID or CID by querying the DHT.
 
 ### Parameters
 
@@ -331,7 +331,7 @@ Prints objects like:
         Multiaddr(/ip4/172.20.0.3/tcp/4001),
         Multiaddr(/ip4/35.178.190.196/tcp/1024)
       ],
-      id: 'QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8'
+      id: PeerId('QmRz5Nth4jTFuJJKcjyb6uwvrhxWbruRvamKY2PJxwJKw8')
     }
   ],
   type: 1
@@ -345,6 +345,6 @@ https://github.com/libp2p/go-libp2p-core/blob/6e566d10f4a5447317a66d64c7459954b9
 A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/dht
-[peerid]: https://www.npmjs.com/package/peer-id
-[cid]: https://www.npmjs.com/package/cids
+[peerid]: https://docs.libp2p.io/concepts/peer-id/
+[cid]: https://docs.ipfs.io/concepts/content-addressing
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

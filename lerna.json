@@ -14,8 +14,7 @@
       "message": "chore: publish",
       "createRelease": "github",
       "conventionalCommits": true,
-      "verifyAccess": false,
-      "contents": "dist"
+      "verifyAccess": false
     },
     "version": {
       "allowBranch": ["master", "release/*"],

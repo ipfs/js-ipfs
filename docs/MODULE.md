@@ -377,14 +377,14 @@ Aside from the default export, `ipfs` exports various types and utilities that a
 - [`crypto`](https://www.npmjs.com/package/libp2p-crypto)
 - [`isIPFS`](https://www.npmjs.com/package/is-ipfs)
 - [`Buffer`](https://www.npmjs.com/package/buffer)
-- [`PeerId`](https://www.npmjs.com/package/peer-id)
+- [`PeerId`](https://docs.libp2p.io/concepts/peer-id/)
 - [`PeerInfo`](https://www.npmjs.com/package/peer-info)
 - [`multiaddr`](https://www.npmjs.com/package/multiaddr)
 - [`multibase`](https://www.npmjs.com/package/multibase)
 - [`multihash`](https://www.npmjs.com/package/multihashes)
 - [`multihashing`](https://www.npmjs.com/package/multihashing-async)
 - [`multicodec`](https://www.npmjs.com/package/multicodec)
-- [`CID`](https://www.npmjs.com/package/cids)
+- [`CID`](https://docs.ipfs.io/concepts/content-addressing)
 
 These can be accessed like this, for example:
 

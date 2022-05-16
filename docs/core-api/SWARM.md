@@ -83,7 +83,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| addr | [MultiAddr][] | The object to search for references |
+| addr | [MultiAddr][] or [PeerId][] | The PeerId or Multiaddr to connect to |
 
 ### Options
 
@@ -116,7 +116,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| addr | [MultiAddr][] | The object to search for references |
+| addr | [MultiAddr][] or [PeerId][] | The PeerId or Multiaddr to disconnect from |
 
 ### Options
 
@@ -228,3 +228,4 @@ A great source of [examples][] can be found in the tests for this API.
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/swarm
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
 [MultiAddr]: https://github.com/multiformats/js-multiaddr
+[peerid]: https://docs.libp2p.io/concepts/peer-id/

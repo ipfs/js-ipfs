@@ -62,7 +62,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| peerId | [PeerId][], [CID][], `String` or `Uint8Array` | A peer ID to return the wantlist for |
+| peerId | [PeerId][] | A peer ID to return the wantlist for |
 
 ### Options
 
@@ -159,7 +159,7 @@ The returned object contains the following keys:
 
 - `provideBufLen` is an integer.
 - `wantlist` (array of [CID][cid]s)
-- `peers` (array of peer IDs represented by strings)
+- `peers` (array of [PeerId][peerId]s)
 - `blocksReceived` is a [BigInt][1]
 - `dataReceived` is a [BigInt][1]
 - `blocksSent` is a [BigInt][1]
@@ -192,6 +192,6 @@ A great source of [examples][] can be found in the tests for this API.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/bitswap
-[cid]: https://www.npmjs.com/package/cids
-[peerid]: https://www.npmjs.com/package/peer-id
+[cid]: https://docs.ipfs.io/concepts/content-addressing
+[peerid]: https://docs.libp2p.io/concepts/peer-id/
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

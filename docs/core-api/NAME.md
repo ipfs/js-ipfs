@@ -226,7 +226,7 @@ A great source of [examples][examples-pubsub] can be found in the tests for this
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| value | `String` | An IPNS address such as `/ipns/ipfs.io` |
+| value | `PeerId` or `string` | An IPNS address such as `/ipns/ipfs.io` |
 
 ### Options
 
@@ -261,5 +261,5 @@ A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/name
 [examples-pubsub]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/name-pubsub
-[cid]: https://www.npmjs.com/package/cids
+[cid]: https://docs.ipfs.io/concepts/content-addressing
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

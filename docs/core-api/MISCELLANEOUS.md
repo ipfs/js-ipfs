@@ -300,5 +300,5 @@ A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/package
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
-[cid]: https://www.npmjs.com/package/cids
+[cid]: https://docs.ipfs.io/concepts/content-addressing
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
