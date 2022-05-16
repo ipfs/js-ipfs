@@ -1024,7 +1024,7 @@ for await (const file of ipfs.files.ls('/screenshots')) {
 
 [b]: https://www.npmjs.com/package/buffer
 [file]: https://developer.mozilla.org/en-US/docs/Web/API/File
-[cid]: https://www.npmjs.com/package/cids
+[cid]: https://docs.ipfs.io/concepts/content-addressing
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob
 [IPFS Path]: https://www.npmjs.com/package/is-ipfs#isipfspathpath
 [MFS Path]: https://docs.ipfs.io/guides/concepts/mfs/
