@@ -70,7 +70,7 @@
     "@libp2p/peer-id-factory": "^1.0.10",
     "@libp2p/websockets": "^1.0.8",
     "@multiformats/multiaddr": "^10.0.0",
-    "@types/pako": "^1.0.2",
+    "@types/pako": "^2.0.0",
     "@types/readable-stream": "^2.3.11",
     "aegir": "^37.0.11",
     "blockstore-core": "^1.0.2",

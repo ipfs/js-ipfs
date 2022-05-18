@@ -137,7 +137,7 @@
   "devDependencies": {
     "@chainsafe/libp2p-gossipsub": "^1.0.0",
     "@types/dlv": "^1.1.2",
-    "@types/pako": "^1.0.2",
+    "@types/pako": "^2.0.0",
     "@types/rimraf": "^3.0.1",
     "aegir": "^37.0.11",
     "blockstore-datastore-adapter": "^2.0.2",
