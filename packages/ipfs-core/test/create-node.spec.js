@@ -27,7 +27,6 @@ describe('create node', function () {
 
     const node = await IPFS.create({
       repo: tmpDir(),
-      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -47,7 +46,6 @@ describe('create node', function () {
 
     const node = await IPFS.create({
       repo: tempRepo,
-      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -81,7 +79,6 @@ describe('create node', function () {
 
   it('should create and initialize but not start', async () => {
     const ipfs = await IPFS.create({
-      init: { bits: 512 },
       start: false,
       repo: tempRepo,
       config: { Addresses: { Swarm: [] } }
@@ -111,7 +108,7 @@ describe('create node', function () {
     })).to.eventually.be.rejected()
   })
 
-  it('should init with 1024 key bits', async function () {
+  it('should init RSA key with 1024 key bits', async function () {
     this.timeout(80 * 1000)
 
     const node = await IPFS.create({
@@ -144,7 +141,6 @@ describe('create node', function () {
     const ipfs = await IPFS.create({
       silent: true,
       repo: tempRepo,
-      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -166,7 +162,6 @@ describe('create node', function () {
 
     const node = await IPFS.create({
       repo: tempRepo,
-      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: ['/ip4/127.0.0.1/tcp/9977']
@@ -188,8 +183,11 @@ describe('create node', function () {
 
     const node = await IPFS.create({
       repo: tempRepo,
-      init: { bits: 512 },
       config: {
+        Addresses: {
+          Swarm: []
+        },
+        Bootstrap: [],
         Pubsub: {
           Enabled: false
         }
@@ -208,7 +206,6 @@ describe('create node', function () {
 
     const node = await IPFS.create({
       repo: tempRepo,
-      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -226,29 +223,22 @@ describe('create node', function () {
   it('should not share identity with a simultaneously created node', async function () {
     this.timeout(2 * 60 * 1000)
 
-    let _nodeNumber = 0
     /**
      * @param {import('ipfs-repo').IPFSRepo} repo
      * @returns
      */
     function createNode (repo) {
-      _nodeNumber++
       return IPFS.create({
         repo,
-        init: { bits: 512, emptyRepo: true },
+        init: { emptyRepo: true },
         config: {
           Addresses: {
-            API: `/ip4/127.0.0.1/tcp/${5010 + _nodeNumber}`,
-            Gateway: `/ip4/127.0.0.1/tcp/${9090 + _nodeNumber}`,
-            Swarm: isNode
-              ? [
-              `/ip4/0.0.0.0/tcp/${4010 + _nodeNumber * 2}`
-                ]
-              : []
+            Swarm: []
           },
           Bootstrap: []
         },
-        preload: { enabled: false }
+        preload: { enabled: false },
+        start: false
       })
     }
 
@@ -267,7 +257,6 @@ describe('create node', function () {
 
     const node = await IPFS.create({
       repo: tempRepo,
-      init: { bits: 512 },
       config: {
         Addresses: {
           Swarm: []
@@ -283,7 +272,6 @@ describe('create node', function () {
   it('should error when receiving websocket-star swarm addresses', async () => {
     const node = await IPFS.create({
       repo: tempRepo,
-      init: { bits: 512 },
       start: false,
       config: {
         Addresses: {
