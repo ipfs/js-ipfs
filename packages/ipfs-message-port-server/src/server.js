@@ -253,10 +253,10 @@ export class Server {
           query.fail(error)
         }
       } else {
-        query.fail(new RangeError(`Method '${method}' is not found`))
+        query.fail(new RangeError(`Method '${String(method)}' is not found`))
       }
     } else {
-      query.fail(new RangeError(`Namespace '${namespace}' is not found`))
+      query.fail(new RangeError(`Namespace '${String(namespace)}' is not found`))
     }
   }
 
