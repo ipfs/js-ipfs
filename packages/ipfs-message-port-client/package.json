@@ -46,7 +46,7 @@
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.10.3",
     "ipfs-message-port-protocol": "^0.11.3",
-    "ipfs-unixfs": "^6.0.3",
+    "ipfs-unixfs": "^6.0.9",
     "it-peekable": "^1.0.2",
     "multiformats": "^9.5.1"
   },

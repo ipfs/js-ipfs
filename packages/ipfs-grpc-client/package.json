@@ -56,7 +56,7 @@
     "ipfs-core-types": "^0.10.3",
     "ipfs-core-utils": "^0.14.3",
     "ipfs-grpc-protocol": "^0.5.5",
-    "ipfs-unixfs": "^6.0.3",
+    "ipfs-unixfs": "^6.0.9",
     "it-first": "^1.0.4",
     "it-pushable": "^2.0.1",
     "@multiformats/multiaddr": "^10.0.0",
