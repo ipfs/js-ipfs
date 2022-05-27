@@ -45,7 +45,7 @@
     "@hapi/content": "^5.0.2",
     "@hapi/hapi": "^20.0.0",
     "@ipld/dag-pb": "^2.1.3",
-    "@libp2p/interfaces": "^1.3.32",
+    "@libp2p/interfaces": "^2.0.2",
     "@libp2p/logger": "^1.1.4",
     "@libp2p/peer-id": "^1.1.10",
     "any-signal": "^3.0.0",

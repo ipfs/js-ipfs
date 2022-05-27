@@ -115,8 +115,10 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
       minConnections: get(options, 'config.Swarm.ConnMgr.LowWater', get(config, 'Swarm.ConnMgr.LowWater'))
     }),
     keychain: keychainConfig,
-    host: {
-      agentVersion: `js-ipfs/${pkgversion}`
+    identify: {
+      host: {
+        agentVersion: `js-ipfs/${pkgversion}`
+      }
     },
     contentRouters: [],
     peerRouters: [],
