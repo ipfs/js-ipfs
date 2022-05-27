@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.14.3",
+  "version": "0.15.0",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
@@ -122,7 +122,7 @@
     "blob-to-it": "^1.0.1",
     "browser-readablestream-to-it": "^1.0.1",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.10.3",
+    "ipfs-core-types": "^0.11.0",
     "ipfs-unixfs": "^6.0.9",
     "ipfs-utils": "^9.0.6",
     "it-all": "^1.0.4",

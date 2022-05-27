@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-response",
-  "version": "2.0.3",
+  "version": "3.0.0",
   "description": "Creates an HTTP response from an IPFS Hash",
   "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
   "main": "src/index.js",
@@ -79,7 +79,7 @@
     "aegir": "^37.0.11",
     "get-stream": "^6.0.0",
     "global": "^4.4.0",
-    "ipfs-core": "^0.14.3",
+    "ipfs-core": "^0.15.0",
     "ipfsd-ctl": "^11.0.0",
     "it-all": "^1.0.4",
     "uint8arrays": "^3.0.0"

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v2.0.3...ipfs-http-response-v3.0.0) (2022-05-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* This module is now ESM only and there return types of some methods have changed
+
+### Features
+
+* update to libp2p 0.37.x ([#4092](https://www.github.com/ipfs/js-ipfs/issues/4092)) ([74aee8b](https://www.github.com/ipfs/js-ipfs/commit/74aee8b3d78f233c3199a3e9a6c0ac628a31a433))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.14.3 to ^0.15.0
+
 ### [2.0.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v2.0.2...ipfs-http-response-v2.0.3) (2022-04-20)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.62.3",
+  "version": "0.63.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -68,8 +68,8 @@
   },
   "dependencies": {
     "@libp2p/logger": "^1.1.4",
-    "ipfs-cli": "^0.12.3",
-    "ipfs-core": "^0.14.3",
+    "ipfs-cli": "^0.13.0",
+    "ipfs-core": "^0.15.0",
     "semver": "^7.3.2",
     "update-notifier": "^5.0.0"
   },
@@ -81,10 +81,10 @@
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "^0.12.1",
-    "interface-ipfs-core": "^0.154.2",
-    "ipfs-client": "^0.7.8",
-    "ipfs-core-types": "^0.10.3",
-    "ipfs-http-client": "^56.0.3",
+    "interface-ipfs-core": "^0.155.0",
+    "ipfs-client": "^0.8.0",
+    "ipfs-core-types": "^0.11.0",
+    "ipfs-http-client": "^57.0.0",
     "ipfs-interop": "ipfs/interop#feat/upgrade-to-esm-libp2p",
     "ipfs-utils": "^9.0.6",
     "ipfsd-ctl": "^11.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core",
-  "version": "0.14.3",
+  "version": "0.15.0",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
@@ -100,10 +100,10 @@
     "interface-blockstore": "^2.0.2",
     "interface-datastore": "^6.0.2",
     "ipfs-bitswap": "^11.0.0",
-    "ipfs-core-config": "^0.3.2",
-    "ipfs-core-types": "^0.10.3",
-    "ipfs-core-utils": "^0.14.3",
-    "ipfs-http-client": "^56.0.3",
+    "ipfs-core-config": "^0.4.0",
+    "ipfs-core-types": "^0.11.0",
+    "ipfs-core-utils": "^0.15.0",
+    "ipfs-http-client": "^57.0.0",
     "ipfs-repo": "^14.0.1",
     "ipfs-unixfs": "^6.0.9",
     "ipfs-unixfs-exporter": "^7.0.11",
@@ -144,7 +144,7 @@
     "delay": "^5.0.0",
     "go-ipfs": "^0.12.1",
     "interface-blockstore-tests": "^2.0.2",
-    "interface-ipfs-core": "^0.154.3",
+    "interface-ipfs-core": "^0.155.0",
     "ipfsd-ctl": "^11.0.0",
     "iso-url": "^1.0.0",
     "it-all": "^1.0.4",
