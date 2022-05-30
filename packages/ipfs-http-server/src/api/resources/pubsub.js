@@ -86,7 +86,7 @@ export const subscribeResource = {
             numberString = `0${numberString}`
           }
 
-          sequenceNumber = uint8ArrayFromString(numberString, 'base16')
+          sequenceNumber = base64url.encode(uint8ArrayFromString(numberString, 'base16'))
         }
 
         output.push({
