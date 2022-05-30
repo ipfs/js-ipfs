@@ -106,7 +106,7 @@
     "p-wait-for": "^4.1.0",
     "pako": "^2.0.4",
     "readable-stream": "^3.4.0",
-    "sinon": "^13.0.1",
+    "sinon": "^14.0.0",
     "uint8arrays": "^3.0.0"
   },
   "contributors": [

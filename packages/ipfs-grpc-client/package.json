@@ -70,6 +70,6 @@
   "devDependencies": {
     "aegir": "^37.0.11",
     "it-all": "^1.0.4",
-    "sinon": "^13.0.1"
+    "sinon": "^14.0.0"
   }
 }
