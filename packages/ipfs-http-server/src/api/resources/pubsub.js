@@ -77,10 +77,22 @@ export const subscribeResource = {
        * @type {import('@libp2p/interfaces/events').EventHandler<Message>}
        */
       const handler = (msg) => {
+        let sequenceNumber
+
+        if (msg.sequenceNumber != null) {
+          let numberString = msg.sequenceNumber.toString(16)
+
+          if (numberString.length % 2 !== 0) {
+            numberString = `0${numberString}`
+          }
+
+          sequenceNumber = uint8ArrayFromString(numberString, 'base16')
+        }
+
         output.push({
           from: msg.from, // TODO: switch to peerIdFromString(msg.from).toString() when go-ipfs defaults to CIDv1
           data: base64url.encode(msg.data),
-          seqno: msg.sequenceNumber != null ? base64url.encode(uint8ArrayFromString(msg.sequenceNumber.toString(16), 'base16')) : undefined,
+          seqno: sequenceNumber,
           topicIDs: [base64url.encode(uint8ArrayFromString(msg.topic))]
         })
       }
