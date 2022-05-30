@@ -28,6 +28,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.12.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-server-v0.12.0...ipfs-http-server-v0.12.1) (2022-05-30)
+
+
+### Bug Fixes
+
+* base64url encode seq no ([ddfb899](https://www.github.com/ipfs/js-ipfs/commit/ddfb899f2cc46f822da6fe06ce0dc6672b4c89b2))
+* pad seqno if needed ([8eeba69](https://www.github.com/ipfs/js-ipfs/commit/8eeba696686a5c781034803acdb2b6c6906db0e5))
+
 ## [0.12.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-server-v0.11.3...ipfs-http-server-v0.12.0) (2022-05-27)
 
 
