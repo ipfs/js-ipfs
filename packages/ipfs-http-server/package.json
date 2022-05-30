@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-server",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "JavaScript implementation of the IPFS specification",
   "keywords": [
     "IPFS"
