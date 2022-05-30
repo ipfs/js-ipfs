@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-client-v0.7.9...ipfs-client-v0.8.0) (2022-05-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* This module is now ESM only and there return types of some methods have changed
+
+### Features
+
+* update to libp2p 0.37.x ([#4092](https://www.github.com/ipfs/js-ipfs/issues/4092)) ([74aee8b](https://www.github.com/ipfs/js-ipfs/commit/74aee8b3d78f233c3199a3e9a6c0ac628a31a433))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-grpc-client bumped from ^0.9.4 to ^0.10.0
+    * ipfs-http-client bumped from ^56.0.3 to ^57.0.0
+
 ### [0.7.9](https://www.github.com/ipfs/js-ipfs/compare/ipfs-client-v0.7.8...ipfs-client-v0.7.9) (2022-04-20)
 
 
