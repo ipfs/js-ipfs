@@ -34,6 +34,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [57.0.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-client-v57.0.0...ipfs-http-client-v57.0.1) (2022-06-01)
+
+
+### Bug Fixes
+
+* export ipfs-http-client types ([#4120](https://www.github.com/ipfs/js-ipfs/issues/4120)) ([764b4ad](https://www.github.com/ipfs/js-ipfs/commit/764b4adca756a4445686d30fd01029abfd7bf682))
+
 ## [57.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-client-v56.0.3...ipfs-http-client-v57.0.0) (2022-05-27)
 
 
