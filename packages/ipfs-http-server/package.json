@@ -86,7 +86,7 @@
     "it-first": "^1.0.4",
     "it-to-buffer": "^2.0.0",
     "qs": "^6.9.4",
-    "sinon": "^13.0.1",
+    "sinon": "^14.0.0",
     "stream-to-promise": "^3.0.0"
   },
   "optionalDependencies": {
