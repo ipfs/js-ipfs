@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [3.0.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.0...ipfs-http-response-v3.0.1) (2022-06-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.15.0 to ^0.15.1
+
 ## [3.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v2.0.3...ipfs-http-response-v3.0.0) (2022-05-27)
 
 
