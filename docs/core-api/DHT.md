@@ -109,7 +109,9 @@ Note that if `options.numProviders` are not found an error will be thrown.
 ### Example
 
 ```JavaScript
-const providers = ipfs.dht.findProvs('QmdPAhQRxrDKqkGPvQzBvjYe3kU8kiEEAd2J6ETEamKAD9')
+import { CID } from 'multiformats/cid'
+
+const providers = ipfs.dht.findProvs(CID.parse('QmdPAhQRxrDKqkGPvQzBvjYe3kU8kiEEAd2J6ETEamKAD9'))
 
 for await (const provider of providers) {
   console.log(provider.id.toString())
