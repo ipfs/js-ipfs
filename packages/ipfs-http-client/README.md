@@ -126,7 +126,7 @@ import { create } from 'ipfs-http-client'
 const client = create()
 
 // connect to a different API
-const client = create('http://127.0.0.1:5002')
+const client = create({ url: "http://127.0.0.1:5002/api/v0" });
 
 // connect using a URL
 const client = create(new URL('http://127.0.0.1:5002'))
