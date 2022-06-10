@@ -32,19 +32,6 @@ export interface API<OptionExtension = {}> {
    * console.log(block.cid.toString())
    * // Logs:
    * // the CID of the object
-   *
-   * // With custom format and hashtype through CID
-   * import { CID } from 'multiformats/cid'
-   * const another = encoder.encode('another serialized object')
-   * const cid = CID.createV1(dagPB.code, multihash)
-   * const block = await ipfs.block.put(another, cid)
-   * console.log(decoder.decode(block.data))
-   *
-   * // Logs:
-   * // a serialized object
-   * console.log(block.cid.toString())
-   * // Logs:
-   * // the CID of the object
    * ```
    */
   put: (block: Uint8Array, options?: PutOptions & OptionExtension) => Promise<CID>

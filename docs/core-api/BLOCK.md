@@ -39,6 +39,7 @@ An optional object which may have the following keys:
 | ---- | ---- | ------- | ----------- |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` |  Can be used to cancel any long running requests started as a result of this call |
+| preload | `boolean` | `false` |  Whether to preload all blocks created during this operation |
 
 ### Returns
 
@@ -63,7 +64,7 @@ A great source of [examples][] can be found in the tests for this API.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| block | A `Uint8Array` or [Block][] instance | The block or data to store |
+| block | `Uint8Array` | The block of data to store |
 
 ### Options
 
@@ -73,19 +74,18 @@ An optional object which may have the following keys:
 | ---- | ---- | ------- | ----------- |
 | format | `String` | `'dag-pb'` | The codec to use to create the CID |
 | mhtype | `String` | `sha2-256` | The hashing algorithm to use to create the CID |
-| mhlen | `Number` | | |
+| mhlen | `Number` | `undefined` | The hash length (only relevant for `go-ipfs`) |
 | version | `Number` | `0` |  The version to use to create the CID |
 | pin | `boolean` | `false` |  If true, pin added blocks recursively |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
-
-**Note:** If you pass a [`Block`][block] instance as the block parameter, you don't need to pass options, as the block instance will carry the CID value as a property.
+| preload | `boolean` | `false` |  Whether to preload all blocks created during this operation |
 
 ### Returns
 
 | Type | Description |
 | -------- | -------- |
-| `Promise<Block>` | A [Block][block] type object, containing both the data and the hash of the block |
+| `Promise<CID>` | A [CID][CID] type object containing the hash of the block |
 
 ### Example
 
@@ -95,21 +95,6 @@ const buf = new TextEncoder().encode('a serialized object')
 const decoder = new TextDecoder()
 
 const block = await ipfs.block.put(buf)
-
-console.log(decoder.decode(block.data))
-// Logs:
-// a serialized object
-console.log(block.cid.toString())
-// Logs:
-// the CID of the object
-
-// With custom format and hashtype through CID
-import { CID } from 'multiformats/cid'
-import * as dagPB from '@ipld/dag-pb'
-const buf = new TextEncoder().encode('another serialized object')
-const cid = CID.createV1(dagPB.code, multihash)
-
-const block = await ipfs.block.put(blob, cid)
 
 console.log(decoder.decode(block.data))
 // Logs:
@@ -191,6 +176,7 @@ An optional object which may have the following keys:
 | ---- | ---- | ------- | ----------- |
 | timeout | `Number` | `undefined` | A timeout in ms |
 | signal | [AbortSignal][] | `undefined` | Can be used to cancel any long running requests started as a result of this call |
+| preload | `boolean` | `false` |  Whether to preload all blocks created during this operation |
 
 ### Returns
 
