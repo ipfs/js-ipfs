@@ -37,6 +37,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.15.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-v0.15.1...ipfs-core-v0.15.2) (2022-06-13)
+
+
+### Bug Fixes
+
+* onMessage assignment should be undefined not null ([#4131](https://www.github.com/ipfs/js-ipfs/issues/4131)) ([129ac77](https://www.github.com/ipfs/js-ipfs/commit/129ac775f1934f8f8e51006c12c6f19d8543954e))
+
 ### [0.15.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-v0.15.0...ipfs-core-v0.15.1) (2022-06-01)
 
 
