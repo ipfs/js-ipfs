@@ -98,7 +98,7 @@ export function createPubsub ({ network, config }) {
     // no more pubsub handlers, remove message listener
     if (Object.keys(handlers).length === 0) {
       libp2p.pubsub.removeEventListener('message', onMessage)
-      onMessage = null
+      onMessage = undefined
     }
   }
 

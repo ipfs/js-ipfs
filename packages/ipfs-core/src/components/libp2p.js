@@ -129,7 +129,10 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
       })
     ],
     streamMuxers: [
-      new Mplex()
+      new Mplex({
+        // temporary fix until we can limit streams on a per-protocol basis
+        maxStreamsPerConnection: Infinity
+      })
     ],
     connectionEncryption: [
       NOISE
