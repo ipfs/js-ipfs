@@ -20,6 +20,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.13.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-daemon-v0.13.2...ipfs-daemon-v0.13.3) (2022-06-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core bumped from ^0.15.1 to ^0.15.2
+    * ipfs-grpc-server bumped from ^0.9.1 to ^0.9.2
+    * ipfs-http-gateway bumped from ^0.10.1 to ^0.10.2
+    * ipfs-http-server bumped from ^0.12.2 to ^0.12.3
+
 ### [0.13.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-daemon-v0.13.1...ipfs-daemon-v0.13.2) (2022-06-01)
 
 
