@@ -7,6 +7,8 @@ import * as ipfsModule from 'ipfs-core'
 import goIpfs from 'go-ipfs'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { WebSockets } from '@libp2p/websockets'
+import { all as WebSocketsFiltersAll } from '@libp2p/websockets/filters'
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })
 let __dirname = ''
@@ -25,7 +27,12 @@ const commonOptions = {
     libp2p: {
       dialer: {
         dialTimeout: 60e3 // increase timeout because travis is slow
-      }
+      },
+      transports: [
+        new WebSockets({
+          filter: WebSocketsFiltersAll
+        })
+      ]
     }
   },
   endpoint: process.env.IPFSD_SERVER

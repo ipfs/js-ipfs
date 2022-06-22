@@ -14,7 +14,6 @@ import { Bootstrap } from '@libp2p/bootstrap'
 import { ipnsValidator } from 'ipns/validator'
 import { ipnsSelector } from 'ipns/selector'
 import { WebSockets } from '@libp2p/websockets'
-import * as WebSocketsFilters from '@libp2p/websockets/filters'
 import { Mplex } from '@libp2p/mplex'
 import { NOISE } from '@chainsafe/libp2p-noise'
 
@@ -123,11 +122,7 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
     contentRouters: [],
     peerRouters: [],
     peerDiscovery: [],
-    transports: [
-      new WebSockets({
-        filter: WebSocketsFilters.all
-      })
-    ],
+    transports: [],
     streamMuxers: [
       new Mplex({
         // temporary fix until we can limit streams on a per-protocol basis
@@ -219,6 +214,15 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
     libp2pFinalConfig.peerDiscovery = libp2pFinalConfig.peerDiscovery?.filter(d => {
       return d != null && d[Symbol.toStringTag] !== '@libp2p/mdns'
     })
+  }
+
+  if (libp2pFinalConfig.transports == null) {
+    libp2pFinalConfig.transports = []
+  }
+
+  // add WebSocket transport if not overridden by user config
+  if (libp2pFinalConfig.transports.find(t => t[Symbol.toStringTag] === '@libp2p/websockets') == null) {
+    libp2pFinalConfig.transports.push(new WebSockets())
   }
 
   return libp2pFinalConfig
