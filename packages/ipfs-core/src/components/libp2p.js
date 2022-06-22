@@ -14,7 +14,6 @@ import { Bootstrap } from '@libp2p/bootstrap'
 import { ipnsValidator } from 'ipns/validator'
 import { ipnsSelector } from 'ipns/selector'
 import { WebSockets } from '@libp2p/websockets'
-import * as WebSocketsFilters from '@libp2p/websockets/filters'
 import { Mplex } from '@libp2p/mplex'
 import { NOISE } from '@chainsafe/libp2p-noise'
 
