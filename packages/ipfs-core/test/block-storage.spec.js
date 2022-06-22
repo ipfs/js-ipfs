@@ -20,9 +20,7 @@ class MockBitswap extends MemoryBlockstore {
   }
 }
 
-describe('block-storage', function () {
-  this.timeout(540000)
-
+describe('block-storage', () => {
   describe('interface-blockstore (bitswap online)', () => {
     interfaceBlockstoreTests({
       setup: () => {
