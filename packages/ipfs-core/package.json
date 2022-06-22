@@ -95,7 +95,7 @@
     "datastore-pubsub": "^3.0.0",
     "dlv": "^1.1.3",
     "err-code": "^3.0.1",
-    "hamt-sharding": "^2.0.1",
+    "hamt-sharding": "^3.0.0",
     "hashlru": "^2.3.0",
     "interface-blockstore": "^2.0.3",
     "interface-datastore": "^6.1.1",
