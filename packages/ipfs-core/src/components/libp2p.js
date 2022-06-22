@@ -124,9 +124,7 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
     peerRouters: [],
     peerDiscovery: [],
     transports: [
-      new WebSockets({
-        filter: WebSocketsFilters.all
-      })
+      new WebSockets()
     ],
     streamMuxers: [
       new Mplex({
