@@ -98,7 +98,7 @@
     "hamt-sharding": "^2.0.1",
     "hashlru": "^2.3.0",
     "interface-blockstore": "^2.0.2",
-    "interface-datastore": "^6.1.2",
+    "interface-datastore": "^6.1.1",
     "ipfs-bitswap": "^11.0.0",
     "ipfs-core-config": "^0.4.0",
     "ipfs-core-types": "^0.11.0",

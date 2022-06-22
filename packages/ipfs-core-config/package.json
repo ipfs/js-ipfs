@@ -92,7 +92,7 @@
     "datastore-level": "^8.0.0",
     "err-code": "^3.0.1",
     "hashlru": "^2.3.0",
-    "interface-datastore": "^6.1.2",
+    "interface-datastore": "^6.1.1",
     "ipfs-repo": "^14.0.1",
     "ipfs-utils": "^9.0.6",
     "is-ipfs": "^6.0.1",
