@@ -75,7 +75,7 @@
     "aegir": "^37.0.11",
     "blockstore-core": "^1.0.2",
     "copyfiles": "^2.4.1",
-    "dag-jose": "^1.0.0",
+    "dag-jose": "^2.0.0",
     "delay": "^5.0.0",
     "did-jwt": "^5.12.1",
     "err-code": "^3.0.1",
