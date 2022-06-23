@@ -81,7 +81,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
     * ipfs-grpc-client bumped from ^0.9.0 to ^0.9.1
     * ipfs-http-client bumped from ^55.0.0 to ^56.0.0
 
-## [0.7.5](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.4...ipfs-client@0.7.5) (2021-12-15)
+### [0.7.5](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.4...ipfs-client@0.7.5) (2021-12-15)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -89,7 +89,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.7.4](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.3...ipfs-client@0.7.4) (2021-11-24)
+### [0.7.4](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.3...ipfs-client@0.7.4) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -97,7 +97,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.7.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.2...ipfs-client@0.7.3) (2021-11-19)
+### [0.7.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.2...ipfs-client@0.7.3) (2021-11-19)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -105,7 +105,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.1...ipfs-client@0.7.2) (2021-11-12)
+### [0.7.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.1...ipfs-client@0.7.2) (2021-11-12)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -113,7 +113,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.0...ipfs-client@0.7.1) (2021-09-28)
+### [0.7.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.7.0...ipfs-client@0.7.1) (2021-09-28)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -121,7 +121,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.6...ipfs-client@0.7.0) (2021-09-24)
+## [0.7.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.6...ipfs-client@0.7.0) (2021-09-24)
 
 
 ### Features
@@ -137,7 +137,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.6](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.5...ipfs-client@0.6.6) (2021-09-17)
+### [0.6.6](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.5...ipfs-client@0.6.6) (2021-09-17)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -145,7 +145,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.5](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.4...ipfs-client@0.6.5) (2021-09-17)
+### [0.6.5](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.4...ipfs-client@0.6.5) (2021-09-17)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -153,7 +153,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.4](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.3...ipfs-client@0.6.4) (2021-09-02)
+### [0.6.4](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.3...ipfs-client@0.6.4) (2021-09-02)
 
 
 ### Bug Fixes
@@ -164,7 +164,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.2...ipfs-client@0.6.3) (2021-08-25)
+### [0.6.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.2...ipfs-client@0.6.3) (2021-08-25)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -172,7 +172,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.1...ipfs-client@0.6.2) (2021-08-17)
+### [0.6.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.1...ipfs-client@0.6.2) (2021-08-17)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -180,7 +180,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.0...ipfs-client@0.6.1) (2021-08-17)
+### [0.6.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.6.0...ipfs-client@0.6.1) (2021-08-17)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -188,7 +188,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.5.1...ipfs-client@0.6.0) (2021-08-11)
+## [0.6.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.5.1...ipfs-client@0.6.0) (2021-08-11)
 
 
 ### Features
@@ -204,7 +204,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.5.0...ipfs-client@0.5.1) (2021-07-30)
+### [0.5.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.5.0...ipfs-client@0.5.1) (2021-07-30)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -212,7 +212,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.3...ipfs-client@0.5.0) (2021-07-27)
+## [0.5.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.3...ipfs-client@0.5.0) (2021-07-27)
 
 
 ### Features
@@ -231,7 +231,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.4.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.2...ipfs-client@0.4.3) (2021-06-18)
+### [0.4.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.2...ipfs-client@0.4.3) (2021-06-18)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -239,7 +239,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.4.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.1...ipfs-client@0.4.2) (2021-06-05)
+### [0.4.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.1...ipfs-client@0.4.2) (2021-06-05)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -247,7 +247,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.4.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.0...ipfs-client@0.4.1) (2021-05-26)
+### [0.4.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.4.0...ipfs-client@0.4.1) (2021-05-26)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -255,7 +255,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.4...ipfs-client@0.4.0) (2021-05-10)
+## [0.4.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.4...ipfs-client@0.4.0) (2021-05-10)
 
 
 ### chore
@@ -271,7 +271,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.3.4](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.3...ipfs-client@0.3.4) (2021-03-10)
+### [0.3.4](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.3...ipfs-client@0.3.4) (2021-03-10)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -279,7 +279,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.3.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.2...ipfs-client@0.3.3) (2021-03-09)
+### [0.3.3](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.2...ipfs-client@0.3.3) (2021-03-09)
 
 
 ### Bug Fixes
@@ -290,7 +290,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.3.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.1...ipfs-client@0.3.2) (2021-02-08)
+### [0.3.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.1...ipfs-client@0.3.2) (2021-02-08)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -298,7 +298,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.3.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.0...ipfs-client@0.3.1) (2021-02-02)
+### [0.3.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.3.0...ipfs-client@0.3.1) (2021-02-02)
 
 **Note:** Version bump only for package ipfs-client
 
@@ -306,7 +306,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.2...ipfs-client@0.3.0) (2021-02-01)
+## [0.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.2...ipfs-client@0.3.0) (2021-02-01)
 
 
 ### chore
@@ -322,7 +322,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.2.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.1...ipfs-client@0.2.2) (2021-01-22)
+### [0.2.2](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.1...ipfs-client@0.2.2) (2021-01-22)
 
 
 ### Bug Fixes
@@ -333,7 +333,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-## [0.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.0...ipfs-client@0.2.1) (2021-01-20)
+### [0.2.1](https://github.com/ipfs/js-ipfs/compare/ipfs-client@0.2.0...ipfs-client@0.2.1) (2021-01-20)
 
 **Note:** Version bump only for package ipfs-client
 
