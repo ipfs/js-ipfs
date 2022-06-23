@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
 
   test-externals:
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - uses: GabrielBB/xvfb-action@v1
         name: Run npm run test:external -- -- -- ${{ matrix.external.repo }} --deps ${{ matrix.external.deps }} --branch ${{ matrix.external.branch }}

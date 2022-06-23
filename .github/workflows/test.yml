@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
 
   check:
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: |
           npm run lint
@@ -40,8 +40,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        node: [16.14.2]
+        os: [ubuntu-latest, macos-latest]
+        node: [16]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -65,7 +65,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
@@ -82,7 +82,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
@@ -99,7 +99,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
@@ -116,7 +116,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npx playwright install --with-deps
       - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
@@ -134,7 +134,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - uses: GabrielBB/xvfb-action@v1
         with:
@@ -158,7 +158,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npm install
       - run: npm run build
@@ -187,7 +187,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - run: npm install
       - run: npm run build
       - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
@@ -205,7 +205,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npx playwright install --with-deps
       - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
@@ -238,7 +238,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.14.2
+          node-version: lts/*
           registry-url: 'https://registry.npmjs.org'
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - uses: ipfs/aegir/actions/docker-login@master
