@@ -78,7 +78,6 @@
     "@types/mime-types": "^2.1.1",
     "aegir": "^37.0.11",
     "get-stream": "^6.0.0",
-    "global": "^4.4.0",
     "ipfs-core": "^0.15.3",
     "ipfsd-ctl": "^11.0.0",
     "it-all": "^1.0.4",

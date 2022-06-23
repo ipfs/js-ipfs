@@ -3,36 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [55.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@54.0.2...ipfs-http-client@55.0.0) (2021-12-15)
-
-
-### Bug Fixes
-
-* **pubsub:** multibase in pubsub http rpc ([#3922](https://github.com/ipfs/js-ipfs/issues/3922)) ([6eeaca4](https://github.com/ipfs/js-ipfs/commit/6eeaca452c36fa13be42d704575c577e4ca938f1))
-* return nested value from dag.get ([#3966](https://github.com/ipfs/js-ipfs/issues/3966)) ([45ac973](https://github.com/ipfs/js-ipfs/commit/45ac9730d6484e8324acfbc3579fce052b8452d7)), closes [#3957](https://github.com/ipfs/js-ipfs/issues/3957)
-
-
-### chore
-
-* Bump @ipld/dag-cbor to v7 ([#3977](https://github.com/ipfs/js-ipfs/issues/3977)) ([73476f5](https://github.com/ipfs/js-ipfs/commit/73476f55e39ecfb01eb2b4880637aad658f51bc2))
-
-
-### Features
-
-* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
-* update DAG API to match go-ipfs@0.10 changes ([#3917](https://github.com/ipfs/js-ipfs/issues/3917)) ([38c01be](https://github.com/ipfs/js-ipfs/commit/38c01be03b4fd5f401cd9b698cfdb4237d835b01))
-
-
-### BREAKING CHANGES
-
-* **pubsub:** We had to make breaking changes to `pubsub` commands sent over HTTP RPC  to fix data corruption caused by topic names and payload bytes that included `\n`. More details in https://github.com/ipfs/go-ipfs/issues/7939 and https://github.com/ipfs/go-ipfs/pull/8183 
-* On decode of CBOR blocks, `undefined` values will be coerced to `null`
-* `ipfs.dag.put` no longer accepts a `format` arg, it is now `storeCodec` and `inputCodec`.  `'json'` has become `'dag-json'`, `'cbor'` has become `'dag-cbor'` and so on
-* The DHT API has been refactored to return async iterators of query events
-
-
-
-
 
 ### [57.0.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-client-v57.0.1...ipfs-http-client-v57.0.2) (2022-06-22)
 
@@ -137,6 +107,35 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
     * ipfs-core-types bumped from ^0.9.0 to ^0.10.0
     * ipfs-core-utils bumped from ^0.13.0 to ^0.14.0
 
+
+## [55.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@54.0.2...ipfs-http-client@55.0.0) (2021-12-15)
+
+
+### Bug Fixes
+
+* **pubsub:** multibase in pubsub http rpc ([#3922](https://github.com/ipfs/js-ipfs/issues/3922)) ([6eeaca4](https://github.com/ipfs/js-ipfs/commit/6eeaca452c36fa13be42d704575c577e4ca938f1))
+* return nested value from dag.get ([#3966](https://github.com/ipfs/js-ipfs/issues/3966)) ([45ac973](https://github.com/ipfs/js-ipfs/commit/45ac9730d6484e8324acfbc3579fce052b8452d7)), closes [#3957](https://github.com/ipfs/js-ipfs/issues/3957)
+
+
+### chore
+
+* Bump @ipld/dag-cbor to v7 ([#3977](https://github.com/ipfs/js-ipfs/issues/3977)) ([73476f5](https://github.com/ipfs/js-ipfs/commit/73476f55e39ecfb01eb2b4880637aad658f51bc2))
+
+
+### Features
+
+* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
+* update DAG API to match go-ipfs@0.10 changes ([#3917](https://github.com/ipfs/js-ipfs/issues/3917)) ([38c01be](https://github.com/ipfs/js-ipfs/commit/38c01be03b4fd5f401cd9b698cfdb4237d835b01))
+
+
+### BREAKING CHANGES
+
+* **pubsub:** We had to make breaking changes to `pubsub` commands sent over HTTP RPC  to fix data corruption caused by topic names and payload bytes that included `\n`. More details in https://github.com/ipfs/go-ipfs/issues/7939 and https://github.com/ipfs/go-ipfs/pull/8183
+* On decode of CBOR blocks, `undefined` values will be coerced to `null`
+* `ipfs.dag.put` no longer accepts a `format` arg, it is now `storeCodec` and `inputCodec`.  `'json'` has become `'dag-json'`, `'cbor'` has become `'dag-cbor'` and so on
+* The DHT API has been refactored to return async iterators of query events
+
+
 ## [54.0.2](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@54.0.1...ipfs-http-client@54.0.2) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-http-client
@@ -153,7 +152,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [54.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@53.0.1...ipfs-http-client@54.0.0) (2021-11-12)
+## [54.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@53.0.1...ipfs-http-client@54.0.0) (2021-11-12)
 
 
 ### Bug Fixes
@@ -177,7 +176,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [53.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@52.0.5...ipfs-http-client@53.0.0) (2021-09-24)
+## [53.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@52.0.5...ipfs-http-client@53.0.0) (2021-09-24)
 
 
 ### Features
@@ -243,7 +242,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [52.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@51.0.1...ipfs-http-client@52.0.0) (2021-08-11)
+## [52.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@51.0.1...ipfs-http-client@52.0.0) (2021-08-11)
 
 
 ### Bug Fixes
@@ -274,7 +273,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [51.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.1.2...ipfs-http-client@51.0.0) (2021-07-27)
+## [51.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.1.2...ipfs-http-client@51.0.0) (2021-07-27)
 
 
 ### Bug Fixes
@@ -319,7 +318,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [50.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.0.0...ipfs-http-client@50.1.0) (2021-05-26)
+## [50.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@50.0.0...ipfs-http-client@50.1.0) (2021-05-26)
 
 
 ### Features
@@ -330,7 +329,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [50.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@49.0.4...ipfs-http-client@50.0.0) (2021-05-10)
+## [50.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@49.0.4...ipfs-http-client@50.0.0) (2021-05-10)
 
 
 ### Bug Fixes
@@ -391,7 +390,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [49.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.2.2...ipfs-http-client@49.0.0) (2021-02-01)
+## [49.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.2.2...ipfs-http-client@49.0.0) (2021-02-01)
 
 
 ### chore
@@ -431,7 +430,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [48.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.1.3...ipfs-http-client@48.2.0) (2021-01-15)
+## [48.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.1.3...ipfs-http-client@48.2.0) (2021-01-15)
 
 
 ### Features
@@ -475,7 +474,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [48.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.0.0...ipfs-http-client@48.1.0) (2020-11-09)
+## [48.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@48.0.0...ipfs-http-client@48.1.0) (2020-11-09)
 
 
 ### Bug Fixes
@@ -491,7 +490,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [48.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@47.0.1...ipfs-http-client@48.0.0) (2020-10-28)
+## [48.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@47.0.1...ipfs-http-client@48.0.0) (2020-10-28)
 
 
 ### Bug Fixes
@@ -535,7 +534,7 @@ Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
 
 
 
-# [46.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@46.0.1...ipfs-http-client@46.1.0) (2020-09-03)
+## [46.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@46.0.1...ipfs-http-client@46.1.0) (2020-09-03)
 
 
 ### Bug Fixes
@@ -567,7 +566,7 @@ Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
 
 
 
-# [46.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@45.0.0...ipfs-http-client@46.0.0) (2020-08-12)
+## [46.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@45.0.0...ipfs-http-client@46.0.0) (2020-08-12)
 
 
 ### Bug Fixes
@@ -590,7 +589,7 @@ Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
 
 
 
-# [45.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.3.0...ipfs-http-client@45.0.0) (2020-07-16)
+## [45.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.3.0...ipfs-http-client@45.0.0) (2020-07-16)
 
 
 ### Bug Fixes
@@ -614,7 +613,7 @@ Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
 
 
 
-# [44.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.2.0...ipfs-http-client@44.3.0) (2020-06-24)
+## [44.3.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.2.0...ipfs-http-client@44.3.0) (2020-06-24)
 
 
 ### Features
@@ -626,7 +625,7 @@ Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
 
 
 
-# [44.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.1...ipfs-http-client@44.2.0) (2020-06-05)
+## [44.2.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.1.1...ipfs-http-client@44.2.0) (2020-06-05)
 
 
 ### Features
@@ -645,7 +644,7 @@ Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
 
 
 
-# [44.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.3...ipfs-http-client@44.1.0) (2020-05-18)
+## [44.1.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@44.0.3...ipfs-http-client@44.1.0) (2020-05-18)
 
 
 ### Bug Fixes
@@ -694,7 +693,7 @@ Co-authored-by: Geoffrey Cohler <g.cohler@computer.org>
 
 
 
-# [44.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@43.0.1...ipfs-http-client@44.0.0) (2020-04-16)
+## [44.0.0](https://github.com/ipfs/js-ipfs/compare/ipfs-http-client@43.0.1...ipfs-http-client@44.0.0) (2020-04-16)
 
 
 ### Bug Fixes
@@ -771,7 +770,7 @@ on small files with CIDv1.
 
 
 <a name="42.0.0"></a>
-# [42.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v42.0.0-pre.2...v42.0.0) (2020-02-04)
+## [42.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v42.0.0-pre.2...v42.0.0) (2020-02-04)
 
 There are significant and breaking API changes in this release. Please see the [migration guide](https://gist.github.com/alanshaw/04b2ddc35a6fff25c040c011ac6acf26).
 
@@ -891,7 +890,7 @@ There are significant and breaking API changes in this release. Please see the [
 
 
 <a name="42.0.0-pre.0"></a>
-# [42.0.0-pre.0](https://github.com/ipfs/js-ipfs-http-client/compare/v41.0.1...v42.0.0-pre.0) (2020-01-23)
+## [42.0.0-pre.0](https://github.com/ipfs/js-ipfs-http-client/compare/v41.0.1...v42.0.0-pre.0) (2020-01-23)
 
 
 
@@ -901,7 +900,7 @@ There are significant and breaking API changes in this release. Please see the [
 
 
 <a name="41.0.0"></a>
-# [41.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.2.1...v41.0.0) (2020-01-12)
+## [41.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.2.1...v41.0.0) (2020-01-12)
 
 
 ### Bug Fixes
@@ -929,7 +928,7 @@ Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
 
 
 <a name="40.2.0"></a>
-# [40.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.1.0...v40.2.0) (2020-01-09)
+## [40.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.1.0...v40.2.0) (2020-01-09)
 
 
 ### Features
@@ -939,7 +938,7 @@ Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
 
 
 <a name="40.1.0"></a>
-# [40.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.0.1...v40.1.0) (2019-12-10)
+## [40.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v40.0.1...v40.1.0) (2019-12-10)
 
 
 ### Features
@@ -959,7 +958,7 @@ Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
 
 
 <a name="40.0.0"></a>
-# [40.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v39.0.2...v40.0.0) (2019-11-22)
+## [40.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v39.0.2...v40.0.0) (2019-11-22)
 
 
 ### Code Refactoring
@@ -1028,12 +1027,12 @@ Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
 
 
 <a name="39.0.0"></a>
-# [39.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.2.0...v39.0.0) (2019-10-15)
+## [39.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.2.0...v39.0.0) (2019-10-15)
 
 
 
 <a name="38.2.0"></a>
-# [38.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.1.0...v38.2.0) (2019-10-06)
+## [38.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.1.0...v38.2.0) (2019-10-06)
 
 
 ### Features
@@ -1043,7 +1042,7 @@ Follows on from https://github.com/ipfs/js-ipfs-mfs/pull/69
 
 
 <a name="38.1.0"></a>
-# [38.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.0.1...v38.1.0) (2019-10-04)
+## [38.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v38.0.1...v38.1.0) (2019-10-04)
 
 
 ### Bug Fixes
@@ -1083,7 +1082,7 @@ for discussion.
 
 
 <a name="38.0.0"></a>
-# [38.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v37.0.3...v38.0.0) (2019-09-25)
+## [38.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v37.0.3...v38.0.0) (2019-09-25)
 
 
 
@@ -1108,7 +1107,7 @@ for discussion.
 
 
 <a name="37.0.0"></a>
-# [37.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v36.1.0...v37.0.0) (2019-09-17)
+## [37.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v36.1.0...v37.0.0) (2019-09-17)
 
 
 ### Bug Fixes
@@ -1118,7 +1117,7 @@ for discussion.
 
 
 <a name="36.1.0"></a>
-# [36.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v36.0.0...v36.1.0) (2019-09-17)
+## [36.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v36.0.0...v36.1.0) (2019-09-17)
 
 
 ### Bug Fixes
@@ -1128,12 +1127,12 @@ for discussion.
 
 
 <a name="36.0.0"></a>
-# [36.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v35.1.0...v36.0.0) (2019-09-11)
+## [36.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v35.1.0...v36.0.0) (2019-09-11)
 
 
 
 <a name="35.1.0"></a>
-# [35.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v35.0.0...v35.1.0) (2019-09-04)
+## [35.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v35.0.0...v35.1.0) (2019-09-04)
 
 
 ### Features
@@ -1143,14 +1142,14 @@ for discussion.
 
 
 <a name="35.0.0"></a>
-# [35.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v34.0.0...v35.0.0) (2019-09-04)
+## [35.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v34.0.0...v35.0.0) (2019-09-04)
 
 ### BREAKING CHANGES
 
 Kebab case options (e.g. `wrap-with-directory`) are no longer supported in `ipfs.add`. Use camel case instead (e.g. `wrapWithDirectory`).
 
 <a name="34.0.0"></a>
-# [34.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.1.1...v34.0.0) (2019-08-29)
+## [34.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.1.1...v34.0.0) (2019-08-29)
 
 
 ### Bug Fixes
@@ -1177,7 +1176,7 @@ Kebab case options (e.g. `wrap-with-directory`) are no longer supported in `ipfs
 
 
 <a name="33.1.0"></a>
-# [33.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.0.2...v33.1.0) (2019-07-11)
+## [33.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v33.0.2...v33.1.0) (2019-07-11)
 
 
 ### Bug Fixes
@@ -1213,7 +1212,7 @@ Kebab case options (e.g. `wrap-with-directory`) are no longer supported in `ipfs
 
 
 <a name="33.0.0"></a>
-# [33.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v32.0.1...v33.0.0) (2019-07-10)
+## [33.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v32.0.1...v33.0.0) (2019-07-10)
 
 
 ### Bug Fixes
@@ -1241,7 +1240,7 @@ Kebab case options (e.g. `wrap-with-directory`) are no longer supported in `ipfs
 
 
 <a name="32.0.0"></a>
-# [32.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.1.0...v32.0.0) (2019-05-21)
+## [32.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.1.0...v32.0.0) (2019-05-21)
 
 
 ### Bug Fixes
@@ -1277,7 +1276,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="31.1.0"></a>
-# [31.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.0.2...v31.1.0) (2019-05-16)
+## [31.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v31.0.2...v31.1.0) (2019-05-16)
 
 
 ### Features
@@ -1307,7 +1306,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="31.0.0"></a>
-# [31.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.4...v31.0.0) (2019-05-13)
+## [31.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.1.4...v31.0.0) (2019-05-13)
 
 
 ### Features
@@ -1358,7 +1357,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="30.1.0"></a>
-# [30.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.0.0...v30.1.0) (2019-03-15)
+## [30.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v30.0.0...v30.1.0) (2019-03-15)
 
 
 ### Bug Fixes
@@ -1378,7 +1377,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="30.0.0"></a>
-# [30.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.1.1...v30.0.0) (2019-03-13)
+## [30.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.1.1...v30.0.0) (2019-03-13)
 
 
 ### Bug Fixes
@@ -1422,7 +1421,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="29.1.0"></a>
-# [29.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.0.1...v29.1.0) (2019-01-29)
+## [29.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v29.0.1...v29.1.0) (2019-01-29)
 
 
 ### Bug Fixes
@@ -1447,7 +1446,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="29.0.0"></a>
-# [29.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v28.1.2...v29.0.0) (2019-01-15)
+## [29.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v28.1.2...v29.0.0) (2019-01-15)
 
 
 ### Code Refactoring
@@ -1475,7 +1474,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="28.1.0"></a>
-# [28.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v28.0.3...v28.1.0) (2018-12-16)
+## [28.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v28.0.3...v28.1.0) (2018-12-16)
 
 
 ### Features
@@ -1512,7 +1511,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="28.0.0"></a>
-# [28.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.1.0...v28.0.0) (2018-12-11)
+## [28.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.1.0...v28.0.0) (2018-12-11)
 
 
 ### Bug Fixes
@@ -1537,7 +1536,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="27.1.0"></a>
-# [27.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.0.0...v27.1.0) (2018-12-05)
+## [27.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v27.0.0...v27.1.0) (2018-12-05)
 
 
 ### Bug Fixes
@@ -1552,7 +1551,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="27.0.0"></a>
-# [27.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v26.1.2...v27.0.0) (2018-11-28)
+## [27.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v26.1.2...v27.0.0) (2018-11-28)
 
 
 ### Bug Fixes
@@ -1678,7 +1677,7 @@ Signed-off-by: Oli Evans <oli@tableflip.io>
 
 
 <a name="26.1.0"></a>
-# [26.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v26.0.3...v26.1.0) (2018-10-31)
+## [26.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v26.0.3...v26.1.0) (2018-10-31)
 
 
 ### Bug Fixes
@@ -1708,7 +1707,7 @@ Signed-off-by: Oli Evans <oli@tableflip.io>
 
 
 <a name="26.0.0"></a>
-# [26.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v25.0.0...v26.0.0) (2018-10-30)
+## [26.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v25.0.0...v26.0.0) (2018-10-30)
 
 
 ### Bug Fixes
@@ -1788,7 +1787,7 @@ you need to bundle them yourself.
 
 
 <a name="25.0.0"></a>
-# [25.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v24.0.2...v25.0.0) (2018-10-15)
+## [25.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v24.0.2...v25.0.0) (2018-10-15)
 
 
 ### Bug Fixes
@@ -1815,7 +1814,7 @@ you need to bundle them yourself.
 
 
 <a name="24.0.0"></a>
-# [24.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v23.0.0...v24.0.0) (2018-08-15)
+## [24.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v23.0.0...v24.0.0) (2018-08-15)
 
 
 ### Bug Fixes
@@ -1833,7 +1832,7 @@ you need to bundle them yourself.
 
 
 <a name="23.0.0"></a>
-# [23.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.3.0...v23.0.0) (2018-08-06)
+## [23.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.3.0...v23.0.0) (2018-08-06)
 
 
 ### Bug Fixes
@@ -1848,7 +1847,7 @@ you need to bundle them yourself.
 
 
 <a name="22.3.0"></a>
-# [22.3.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.2.4...v22.3.0) (2018-08-02)
+## [22.3.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.2.4...v22.3.0) (2018-08-02)
 
 
 ### Bug Fixes
@@ -1911,7 +1910,7 @@ you need to bundle them yourself.
 
 
 <a name="22.2.0"></a>
-# [22.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.1.1...v22.2.0) (2018-06-29)
+## [22.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.1.1...v22.2.0) (2018-06-29)
 
 
 ### Features
@@ -1931,7 +1930,7 @@ you need to bundle them yourself.
 
 
 <a name="22.1.0"></a>
-# [22.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.0.2...v22.1.0) (2018-06-18)
+## [22.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v22.0.2...v22.1.0) (2018-06-18)
 
 
 ### Features
@@ -1964,7 +1963,7 @@ you need to bundle them yourself.
 
 
 <a name="22.0.0"></a>
-# [22.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v21.0.0...v22.0.0) (2018-05-20)
+## [22.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v21.0.0...v22.0.0) (2018-05-20)
 
 
 ### Bug Fixes
@@ -1981,7 +1980,7 @@ you need to bundle them yourself.
 
 
 <a name="21.0.0"></a>
-# [21.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v20.2.1...v21.0.0) (2018-05-12)
+## [21.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v20.2.1...v21.0.0) (2018-05-12)
 
 
 ### Bug Fixes
@@ -2004,7 +2003,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="20.2.0"></a>
-# [20.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v20.0.1...v20.2.0) (2018-04-30)
+## [20.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v20.0.1...v20.2.0) (2018-04-30)
 
 
 ### Bug Fixes
@@ -2023,7 +2022,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="20.1.0"></a>
-# [20.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v20.0.1...v20.1.0) (2018-04-30)
+## [20.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v20.0.1...v20.1.0) (2018-04-30)
 
 
 ### Bug Fixes
@@ -2047,7 +2046,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="20.0.0"></a>
-# [20.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v19.0.0...v20.0.0) (2018-04-05)
+## [20.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v19.0.0...v20.0.0) (2018-04-05)
 
 
 ### Bug Fixes
@@ -2070,7 +2069,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="19.0.0"></a>
-# [19.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v18.2.1...v19.0.0) (2018-03-28)
+## [19.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v18.2.1...v19.0.0) (2018-03-28)
 
 
 ### Bug Fixes
@@ -2096,7 +2095,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="18.2.0"></a>
-# [18.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v18.1.2...v18.2.0) (2018-03-16)
+## [18.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v18.1.2...v18.2.0) (2018-03-16)
 
 
 ### Bug Fixes
@@ -2137,7 +2136,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="18.1.0"></a>
-# [18.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v18.0.0...v18.1.0) (2018-02-20)
+## [18.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v18.0.0...v18.1.0) (2018-02-20)
 
 
 ### Features
@@ -2147,7 +2146,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="18.0.0"></a>
-# [18.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.5.0...v18.0.0) (2018-02-14)
+## [18.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.5.0...v18.0.0) (2018-02-14)
 
 
 ### Bug Fixes
@@ -2166,7 +2165,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="17.5.0"></a>
-# [17.5.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.3.0...v17.5.0) (2018-01-24)
+## [17.5.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.3.0...v17.5.0) (2018-01-24)
 
 
 ### Bug Fixes
@@ -2182,7 +2181,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="17.4.0"></a>
-# [17.4.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.3.0...v17.4.0) (2018-01-24)
+## [17.4.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.3.0...v17.4.0) (2018-01-24)
 
 
 ### Bug Fixes
@@ -2197,7 +2196,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="17.3.0"></a>
-# [17.3.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.2.7...v17.3.0) (2018-01-12)
+## [17.3.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.2.7...v17.3.0) (2018-01-12)
 
 
 ### Features
@@ -2279,7 +2278,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="17.2.0"></a>
-# [17.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.1.3...v17.2.0) (2017-12-01)
+## [17.2.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.1.3...v17.2.0) (2017-12-01)
 
 
 ### Bug Fixes
@@ -2314,7 +2313,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="17.1.0"></a>
-# [17.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.0.1...v17.1.0) (2017-11-20)
+## [17.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v17.0.1...v17.1.0) (2017-11-20)
 
 
 ### Features
@@ -2334,7 +2333,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="17.0.0"></a>
-# [17.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v16.0.0...v17.0.0) (2017-11-17)
+## [17.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v16.0.0...v17.0.0) (2017-11-17)
 
 
 ### Features
@@ -2344,7 +2343,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="16.0.0"></a>
-# [16.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v15.1.0...v16.0.0) (2017-11-16)
+## [16.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v15.1.0...v16.0.0) (2017-11-16)
 
 
 ### Bug Fixes
@@ -2354,7 +2353,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="15.1.0"></a>
-# [15.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v15.0.2...v15.1.0) (2017-11-14)
+## [15.1.0](https://github.com/ipfs/js-ipfs-http-client/compare/v15.0.2...v15.1.0) (2017-11-14)
 
 
 ### Bug Fixes
@@ -2379,7 +2378,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="15.0.0"></a>
-# [15.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v14.3.7...v15.0.0) (2017-10-22)
+## [15.0.0](https://github.com/ipfs/js-ipfs-http-client/compare/v14.3.7...v15.0.0) (2017-10-22)
 
 
 ### Features
