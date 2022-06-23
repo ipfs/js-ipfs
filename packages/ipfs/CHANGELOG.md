@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+### [0.63.4](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.3...ipfs-v0.63.4) (2022-06-22)
+
+
+### Bug Fixes
+
+* use default ws filters instead of connecting to everything ([#4142](https://www.github.com/ipfs/js-ipfs/issues/4142)) ([7be50bd](https://www.github.com/ipfs/js-ipfs/commit/7be50bd157b984d4607545bb78d22cd33de933fa)), closes [#4141](https://www.github.com/ipfs/js-ipfs/issues/4141)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.13.3 to ^0.13.4
+    * ipfs-core bumped from ^0.15.2 to ^0.15.3
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.155.0 to ^0.155.1
+    * ipfs-client bumped from ^0.8.1 to ^0.8.2
+    * ipfs-core-types bumped from ^0.11.0 to ^0.11.1
+    * ipfs-http-client bumped from ^57.0.1 to ^57.0.2
+
 ### [0.63.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.2...ipfs-v0.63.3) (2022-06-13)
 
 

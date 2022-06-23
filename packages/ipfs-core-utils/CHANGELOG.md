@@ -19,6 +19,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.15.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-utils-v0.15.0...ipfs-core-utils-v0.15.1) (2022-06-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.11.0 to ^0.11.1
+
 ## [0.15.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-utils-v0.14.3...ipfs-core-utils-v0.15.0) (2022-05-27)
 
 

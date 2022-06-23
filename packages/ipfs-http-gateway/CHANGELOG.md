@@ -19,6 +19,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.10.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-gateway-v0.10.2...ipfs-http-gateway-v0.10.3) (2022-06-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.11.0 to ^0.11.1
+    * ipfs-http-response bumped from ^3.0.2 to ^3.0.3
+
 ### [0.10.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-gateway-v0.10.1...ipfs-http-gateway-v0.10.2) (2022-06-13)
 
 

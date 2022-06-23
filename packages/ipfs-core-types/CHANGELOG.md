@@ -21,6 +21,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+### [0.11.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.11.0...ipfs-core-types-v0.11.1) (2022-06-22)
+
+
+### Bug Fixes
+
+* use default ws filters instead of connecting to everything ([#4142](https://www.github.com/ipfs/js-ipfs/issues/4142)) ([7be50bd](https://www.github.com/ipfs/js-ipfs/commit/7be50bd157b984d4607545bb78d22cd33de933fa)), closes [#4141](https://www.github.com/ipfs/js-ipfs/issues/4141)
+
 ## [0.11.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.10.3...ipfs-core-types-v0.11.0) (2022-05-27)
 
 
