@@ -75,7 +75,7 @@
     "@libp2p/crypto": "^0.22.9",
     "@libp2p/delegated-content-routing": "^1.0.3",
     "@libp2p/delegated-peer-routing": "^1.0.3",
-    "@libp2p/interfaces": "^2.0.2",
+    "@libp2p/interfaces": "^2.0.4",
     "@libp2p/kad-dht": "^1.0.3",
     "@libp2p/logger": "^1.1.4",
     "@libp2p/mplex": "^1.0.5",
