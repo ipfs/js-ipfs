@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+### [0.10.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-client-v0.10.1...ipfs-grpc-client-v0.10.2) (2022-06-24)
+
+
+### Bug Fixes
+
+* make pubsub message types consistent ([#4145](https://www.github.com/ipfs/js-ipfs/issues/4145)) ([00bd3dd](https://www.github.com/ipfs/js-ipfs/commit/00bd3dd0bca7fc705e5e87272972f586d1f161e8))
+
 ### [0.10.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-client-v0.10.0...ipfs-grpc-client-v0.10.1) (2022-06-22)
 
 

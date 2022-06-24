@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-client",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "description": "IPFS client library for accessing IPFS node over message port",
   "keywords": [
     "ipfs",
@@ -52,8 +52,8 @@
   },
   "devDependencies": {
     "aegir": "^37.0.11",
-    "interface-ipfs-core": "^0.155.1",
-    "ipfs-core": "^0.15.3",
+    "interface-ipfs-core": "^0.155.2",
+    "ipfs-core": "^0.15.4",
     "ipfs-message-port-server": "^0.12.1"
   },
   "engines": {
