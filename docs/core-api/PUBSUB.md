@@ -32,7 +32,7 @@
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | topic | `String` | The topic name |
-| handler | `Function<(msg) => {}>` | Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: String, sequenceNumber: bigint, data: Uint8Array, topicIDs: Array<String>}` |
+| handler | `Function<(msg) => {}>` | Event handler which will be called with a message object everytime one is received. The `msg` has the format `{from: PeerId, sequenceNumber: bigint, data: Uint8Array, topicIDs: Array<String>}` |
 
 ### Options
 

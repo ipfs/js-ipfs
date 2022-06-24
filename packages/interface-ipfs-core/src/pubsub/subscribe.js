@@ -13,6 +13,7 @@ import { isWebWorker, isNode } from 'ipfs-utils/src/env.js'
 import sinon from 'sinon'
 import defer from 'p-defer'
 import pWaitFor from 'p-wait-for'
+import { isPeerId } from '@libp2p/interfaces/peer-id'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -87,6 +88,7 @@ export function testSubscribe (factory, options) {
         expect(msg).to.have.property('sequenceNumber')
         expect(msg.sequenceNumber).to.be.a('BigInt')
         expect(msg.topic).to.eq(topic)
+        expect(isPeerId(msg.from)).to.be.true()
         expect(msg.from.toString()).to.equal(ipfs1Id.id.toString())
       })
 

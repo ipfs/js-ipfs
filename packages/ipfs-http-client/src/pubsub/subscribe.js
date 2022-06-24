@@ -2,6 +2,7 @@ import { logger } from '@libp2p/logger'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { textToUrlSafeRpc, rpcToText, rpcToBytes, rpcToBigInt } from '../lib/http-rpc-wire-format.js'
+import { peerIdFromString } from '@libp2p/peer-id'
 const log = logger('ipfs-http-client:pubsub:subscribe')
 
 /**
@@ -107,7 +108,7 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
         }
 
         onMessage({
-          from: msg.from,
+          from: peerIdFromString(msg.from),
           data: rpcToBytes(msg.data),
           sequenceNumber: rpcToBigInt(msg.seqno),
           topic: rpcToText(msg.topicIDs[0])
