@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [0.15.4](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-v0.15.3...ipfs-core-v0.15.4) (2022-06-24)
+
+
+### Bug Fixes
+
+* make pubsub message types consistent ([#4145](https://www.github.com/ipfs/js-ipfs/issues/4145)) ([00bd3dd](https://www.github.com/ipfs/js-ipfs/commit/00bd3dd0bca7fc705e5e87272972f586d1f161e8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-http-client bumped from ^57.0.2 to ^57.0.3
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.155.1 to ^0.155.2
+
 ### [0.15.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-v0.15.2...ipfs-core-v0.15.3) (2022-06-22)
 
 

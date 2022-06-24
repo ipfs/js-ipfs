@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.155.1",
+  "version": "0.155.2",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "type": "module",
   "main": "src/index.js",
