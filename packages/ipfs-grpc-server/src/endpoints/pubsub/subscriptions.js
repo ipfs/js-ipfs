@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {object} Subscription
  * @property {import('@libp2p/interfaces/events').EventHandler<Message>} onMessage
  * @property {() => void} onUnsubscribe

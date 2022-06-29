@@ -13,11 +13,11 @@ import { isWebWorker, isNode } from 'ipfs-utils/src/env.js'
 import sinon from 'sinon'
 import defer from 'p-defer'
 import pWaitFor from 'p-wait-for'
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {import('it-pushable').Pushable<Message>} Pushable
  * @typedef {import('p-defer').DeferredPromise<Message>} DeferredMessagePromise
  */
@@ -93,7 +93,7 @@ export function testSubscribe (factory, options) {
       })
 
       it('should subscribe to one topic with options', async () => {
-        const msgStream = pushable()
+        const msgStream = pushable({ objectMode: true })
 
         await ipfs1.pubsub.subscribe(topic, msg => {
           msgStream.push(msg)
@@ -153,7 +153,7 @@ export function testSubscribe (factory, options) {
       })
 
       it('should allow discover option to be passed', async () => {
-        const msgStream = pushable()
+        const msgStream = pushable({ objectMode: true })
 
         await ipfs1.pubsub.subscribe(topic, msg => {
           msgStream.push(msg)
@@ -330,8 +330,8 @@ export function testSubscribe (factory, options) {
       it('should receive multiple messages', async () => {
         const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
 
-        const msgStream1 = pushable()
-        const msgStream2 = pushable()
+        const msgStream1 = pushable({ objectMode: true })
+        const msgStream2 = pushable({ objectMode: true })
 
         let sub1Called = 0
         /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
@@ -377,7 +377,7 @@ export function testSubscribe (factory, options) {
 
         const msgBase = 'msg - '
         const count = 100
-        const msgStream = pushable()
+        const msgStream = pushable({ objectMode: true })
 
         let subCalled = 0
         /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
@@ -426,8 +426,8 @@ export function testSubscribe (factory, options) {
           const topic = `pubsub-topic-${Math.random()}`
           topics.push(topic)
 
-          const msgStream1 = pushable()
-          const msgStream2 = pushable()
+          const msgStream1 = pushable({ objectMode: true })
+          const msgStream2 = pushable({ objectMode: true })
 
           msgStreams.push({
             msgStream1,

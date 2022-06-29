@@ -1,6 +1,6 @@
 import { GossipSub } from '@chainsafe/libp2p-gossipsub'
 
-/** @typedef {import('@libp2p/interfaces/pubsub').PubSub} PubSub */
+/** @typedef {import('@libp2p/interface-pubsub').PubSub} PubSub */
 
 /** @type {() => Record<string, PubSub>}>} */
 export const routers = () => ({

@@ -40,8 +40,8 @@
     "build": "aegir build --no-bundle"
   },
   "dependencies": {
-    "@libp2p/logger": "^1.1.4",
-    "@libp2p/webrtc-star": "^1.0.6",
+    "@libp2p/logger": "^2.0.0",
+    "@libp2p/webrtc-star": "^3.0.0",
     "@mapbox/node-pre-gyp": "^1.0.5",
     "ipfs-core": "^0.15.4",
     "ipfs-core-types": "^0.11.1",
@@ -49,7 +49,7 @@
     "ipfs-http-gateway": "^0.10.4",
     "ipfs-http-server": "^0.12.5",
     "ipfs-utils": "^9.0.6",
-    "libp2p": "^0.37.1"
+    "libp2p": "next"
   },
   "devDependencies": {
     "aegir": "^37.0.11",

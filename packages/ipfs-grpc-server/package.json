@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.8",
-    "@libp2p/logger": "^1.1.4",
+    "@libp2p/logger": "^2.0.0",
     "@libp2p/peer-id": "^1.1.10",
     "change-case": "^4.1.1",
     "coercer": "^1.1.2",
@@ -51,9 +51,9 @@
     "it-map": "^1.0.4",
     "it-peekable": "^1.0.2",
     "it-pipe": "^2.0.3",
-    "it-pushable": "^2.0.1",
+    "it-pushable": "^3.0.0",
     "@multiformats/multiaddr": "^10.0.0",
-    "nanoid": "^3.1.23",
+    "nanoid": "^4.0.0",
     "protobufjs": "^6.10.2",
     "uint8arrays": "^3.0.0",
     "ws": "^8.5.0"

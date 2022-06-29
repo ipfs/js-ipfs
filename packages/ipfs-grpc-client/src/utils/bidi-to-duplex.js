@@ -28,8 +28,8 @@ async function sendMessages (service, client, source) {
  * @returns {{ source: AsyncIterable<any>, sink: import('it-pushable').Pushable<any> }}
  **/
 export function bidiToDuplex (grpc, service, options) {
-  const source = pushable()
-  const sink = pushable()
+  const source = pushable({ objectMode: true })
+  const sink = pushable({ objectMode: true })
 
   const client = grpc.client(service, {
     ...options,

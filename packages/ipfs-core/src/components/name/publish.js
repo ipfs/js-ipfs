@@ -18,16 +18,16 @@ const log = logger('ipfs:name:publish')
  * @param {import('../ipns').IPNSAPI} config.ipns
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} config.codecs
- * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
+ * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
  * @param {import('ipfs-core-types/src/root').API<{}>["isOnline"]} config.isOnline
- * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
+ * @param {import('@libp2p/interface-keychain').KeyChain} config.keychain
  */
 export function createPublish ({ ipns, repo, codecs, peerId, isOnline, keychain }) {
   /**
    * @param {string} keyName
    */
   const lookupKey = async keyName => {
-    /** @type {import('@libp2p/interfaces/keys').PrivateKey} */
+    /** @type {import('@libp2p/interface-keys').PrivateKey} */
     let privateKey
 
     if (keyName === 'self' && peerId.privateKey != null) {

@@ -67,17 +67,17 @@
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
   "dependencies": {
-    "@libp2p/logger": "^1.1.4",
+    "@libp2p/logger": "^2.0.0",
     "ipfs-cli": "^0.13.5",
     "ipfs-core": "^0.15.4",
     "semver": "^7.3.2",
-    "update-notifier": "^5.0.0"
+    "update-notifier": "^6.0.0"
   },
   "devDependencies": {
-    "@libp2p/webrtc-star-signalling-server": "^1.0.3",
-    "@libp2p/websockets": "^1.0.8",
+    "@libp2p/webrtc-star-signalling-server": "^2.0.1",
+    "@libp2p/websockets": "^3.0.0",
     "@types/semver": "^7.3.4",
-    "@types/update-notifier": "^5.0.0",
+    "@types/update-notifier": "^5.1.0",
     "aegir": "^37.0.11",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
@@ -88,7 +88,7 @@
     "ipfs-http-client": "^57.0.3",
     "ipfs-interop": "ipfs/interop#feat/upgrade-to-esm-libp2p",
     "ipfs-utils": "^9.0.6",
-    "ipfsd-ctl": "^11.0.0",
+    "ipfsd-ctl": "^12.0.0",
     "iso-url": "^1.0.0",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.4.2",

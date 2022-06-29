@@ -11,12 +11,12 @@ const log = logger('ipfs:components:id')
 /**
  * @typedef {import('libp2p').Libp2p} Libp2p
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 /**
  * @param {object} config
- * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
+ * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
  * @param {import('../types').NetworkService} config.network
  */
 export function createId ({ peerId, network }) {

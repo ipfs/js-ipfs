@@ -1,7 +1,7 @@
 import type { AbortOptions } from '../utils'
 import type { CID } from 'multiformats/cid'
-import type { PeerId } from '@libp2p/interfaces/peer-id'
-import type { PeerInfo } from '@libp2p/interfaces/peer-info'
+import type { PeerId } from '@libp2p/interface-peer-id'
+import type { PeerInfo } from '@libp2p/interface-peer-info'
 
 export interface API<OptionExtension = {}> {
   /**

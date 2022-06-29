@@ -4,7 +4,7 @@ import { coercePeerId } from '../../utils.js'
 /**
  * @typedef {object} Argv
  * @property {import('../../types').Context} Argv.ctx
- * @property {import('@libp2p/interfaces/peer-id').PeerId} Argv.peer
+ * @property {import('@libp2p/interface-peer-id').PeerId} Argv.peer
  * @property {string} Argv.cidBase
  * @property {number} Argv.timeout
  */

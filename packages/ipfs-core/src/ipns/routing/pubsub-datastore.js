@@ -14,9 +14,9 @@ const log = logger('ipfs:ipns:pubsub')
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 export class IpnsPubsubDatastore {
   /**
-   * @param {import('@libp2p/interfaces/pubsub').PubSub} pubsub
+   * @param {import('@libp2p/interface-pubsub').PubSub} pubsub
    * @param {import('interface-datastore').Datastore} localDatastore
-   * @param {import('@libp2p/interfaces/peer-id').PeerId} peerId
+   * @param {import('@libp2p/interface-peer-id').PeerId} peerId
    */
   constructor (pubsub, localDatastore, peerId) {
     /** @type {Record<string, string>} */

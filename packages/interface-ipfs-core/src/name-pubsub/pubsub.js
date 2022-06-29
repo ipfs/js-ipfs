@@ -25,7 +25,7 @@ const daemonsOptions = {
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {import('@libp2p/interfaces/events').EventHandler<Message>} EventHandler
  */
 
@@ -126,7 +126,7 @@ export function testPubsub (factory, options) {
       const testAccountName = 'test-account'
 
       /**
-       * @type {import('@libp2p/interfaces/pubsub').Message}
+       * @type {import('@libp2p/interface-pubsub').Message}
        */
       let publishedMessage
 

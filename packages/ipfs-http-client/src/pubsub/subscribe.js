@@ -7,7 +7,7 @@ const log = logger('ipfs-http-client:pubsub:subscribe')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {(err: Error, fatal: boolean, msg?: Message) => void} ErrorHandlerFn
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions & { onError?: ErrorHandlerFn }>} PubsubAPI
  * @typedef {import('../types').Options} Options

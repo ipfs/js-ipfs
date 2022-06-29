@@ -9,7 +9,7 @@ import { pushable } from 'it-pushable'
 import { base64url } from 'multiformats/bases/base64'
 
 /**
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  */
 
 const preDecodeTopicFromHttpRpc = {
@@ -71,7 +71,7 @@ export const subscribeResource = {
     // request.raw.res.setHeader('Trailer', 'X-Stream-Error')
 
     return streamResponse(request, h, () => {
-      const output = pushable()
+      const output = pushable({ objectMode: true })
 
       /**
        * @type {import('@libp2p/interfaces/events').EventHandler<Message>}

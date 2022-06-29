@@ -115,7 +115,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@libp2p/logger": "^1.1.4",
+    "@libp2p/logger": "^2.0.0",
     "@multiformats/multiaddr": "^10.0.0",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
     "any-signal": "^3.0.0",
@@ -131,7 +131,7 @@
     "it-to-stream": "^1.0.0",
     "merge-options": "^3.0.4",
     "multiformats": "^9.5.1",
-    "nanoid": "^3.1.23",
+    "nanoid": "^4.0.0",
     "parse-duration": "^1.0.0",
     "timeout-abort-controller": "^3.0.0",
     "uint8arrays": "^3.0.0"

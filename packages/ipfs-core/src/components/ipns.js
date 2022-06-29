@@ -7,7 +7,7 @@ import { logger } from '@libp2p/logger'
 const log = logger('ipfs:components:ipns')
 
 /**
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  *
  * @typedef {object} ExperimentalOptions
  * @property {boolean} [ipnsPubsub]
@@ -59,8 +59,8 @@ export class IPNSAPI {
    *
    * @param {object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
-   * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
+   * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
+   * @param {import('@libp2p/interface-keychain').KeyChain} config.keychain
    */
   startOffline ({ repo, peerId, keychain }) {
     if (this.offline != null) {
@@ -79,8 +79,8 @@ export class IPNSAPI {
    * @param {object} config
    * @param {import('libp2p').Libp2p} config.libp2p
    * @param {import('ipfs-repo').IPFSRepo} config.repo
-   * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
+   * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
+   * @param {import('@libp2p/interface-keychain').KeyChain} config.keychain
    */
   async startOnline ({ libp2p, repo, peerId, keychain }) {
     if (this.online != null) {

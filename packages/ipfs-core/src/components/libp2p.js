@@ -31,7 +31,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true, concatArrays: true 
  * @property {DekOptions} [dek]
  *
  * @typedef {import('ipfs-repo').IPFSRepo} Repo
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p').Libp2p} LibP2P
  * @typedef {import('libp2p').Libp2pOptions} Libp2pOptions
@@ -125,8 +125,8 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
     transports: [],
     streamMuxers: [
       new Mplex({
-        // temporary fix until we can limit streams on a per-protocol basis
-        maxStreamsPerConnection: Infinity
+        maxInboundStreams: 256,
+        maxOutboundStreams: 1024
       })
     ],
     connectionEncryption: [

@@ -10,8 +10,8 @@ const log = logger('ipfs:ipns')
 const defaultRecordTtl = 60 * 1000
 
 /**
- * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 export class IPNS {
@@ -19,7 +19,7 @@ export class IPNS {
    * @param {import('ipfs-core-types/src/utils').BufferStore} routing
    * @param {import('interface-datastore').Datastore} datastore
    * @param {PeerId} peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} keychain
+   * @param {import('@libp2p/interface-keychain').KeyChain} keychain
    * @param {object} options
    * @param {string} options.pass
    * @param {number} [options.initialBroadcastInterval]

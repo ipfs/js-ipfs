@@ -7,7 +7,7 @@ const log = logger('ipfs:ipns:dht-datastore')
 export class DHTDatastore {
   /**
    *
-   * @param {import('@libp2p/interfaces/dht').DHT} dht
+   * @param {import('@libp2p/interface-dht').DHT} dht
    */
   constructor (dht) {
     this._dht = dht

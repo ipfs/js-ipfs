@@ -51,8 +51,8 @@ export class WebSocketMessageChannel {
       serialize: (message) => Buffer.from([])
     }
 
-    this.source = pushable()
-    this.sink = pushable()
+    this.source = pushable({ objectMode: true })
+    this.sink = pushable({ objectMode: true })
 
     ws.on('message', (buf) => {
       if (!(buf instanceof Uint8Array)) {

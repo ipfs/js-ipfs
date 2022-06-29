@@ -1,6 +1,6 @@
 import * as ipns from 'ipns'
 import { importKey } from '@libp2p/crypto/keys'
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 import errcode from 'err-code'
 import { logger } from '@libp2p/logger'
 import { peerIdFromKeys } from '@libp2p/peer-id'
@@ -8,8 +8,8 @@ import { peerIdFromKeys } from '@libp2p/peer-id'
 const log = logger('ipfs:ipns:republisher')
 
 /**
- * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 const minute = 60 * 1000
@@ -23,7 +23,7 @@ export class IpnsRepublisher {
    * @param {import('./publisher').IpnsPublisher} publisher
    * @param {import('interface-datastore').Datastore} datastore
    * @param {PeerId} peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} keychain
+   * @param {import('@libp2p/interface-keychain').KeyChain} keychain
    * @param {object} options
    * @param {string} options.pass
    * @param {number} [options.initialBroadcastInterval]

@@ -9,9 +9,9 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
- * @typedef {import('@libp2p/interfaces/dht').QueryEvent} QueryEvent
+ * @typedef {import('@libp2p/interface-dht').QueryEvent} QueryEvent
  * @typedef {import('./network').Network} Network
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 const IPNS_PREFIX = '/ipns/'

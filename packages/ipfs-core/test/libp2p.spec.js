@@ -10,7 +10,7 @@ import { GossipSub } from '@chainsafe/libp2p-gossipsub'
 import { createEd25519PeerId } from '@libp2p/peer-id-factory'
 
 /**
- * @type {import('@libp2p/interfaces/transport').Transport}
+ * @type {import('@libp2p/interface-transport').Transport}
  */
 
 /*
@@ -48,7 +48,7 @@ describe('libp2p customization', function () {
    */
   let datastore
   /**
-   * @type {import('@libp2p/interfaces/peer-id').PeerId}
+   * @type {import('@libp2p/interface-peer-id').PeerId}
    */
   let peerId
   /**

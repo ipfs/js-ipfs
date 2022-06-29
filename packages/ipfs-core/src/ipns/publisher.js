@@ -1,4 +1,4 @@
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 import { notFoundError } from 'datastore-core/errors'
 import errcode from 'err-code'
 import { logger } from '@libp2p/logger'
@@ -9,10 +9,10 @@ import * as ipns from 'ipns'
 const log = logger('ipfs:ipns:publisher')
 
 /**
- * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
- * @typedef {import('@libp2p/interfaces/keys').PublicKey} PublicKey
+ * @typedef {import('@libp2p/interface-keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interface-keys').PublicKey} PublicKey
  * @typedef {import('ipns').IPNSEntry} IPNSEntry
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 const ERR_NOT_FOUND = notFoundError().code

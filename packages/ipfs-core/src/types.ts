@@ -1,5 +1,5 @@
-import type { KeyType } from '@libp2p/interfaces/keys'
-import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { KeyType } from '@libp2p/interface-keys'
+import type { PeerId } from '@libp2p/interface-peer-id'
 import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
 import type { Libp2p, Libp2pOptions } from 'libp2p'
 
