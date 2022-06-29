@@ -71,7 +71,7 @@
     "@libp2p/peer-id-factory": "^1.0.10",
     "@libp2p/websockets": "^3.0.0",
     "@multiformats/multiaddr": "^10.0.0",
-    "@types/node": "^16.0.0",
+    "@types/node": "^18.0.0",
     "@types/pako": "^1.0.2",
     "@types/readable-stream": "^2.3.13",
     "aegir": "^37.0.11",
