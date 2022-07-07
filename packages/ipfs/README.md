@@ -7,9 +7,8 @@
 <h3 align="center">The JavaScript implementation of the IPFS protocol</h3>
 
 <p align="center">
-  <a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
-  <a href="http://webchat.freenode.net/?channels=%23ipfs"><img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat" /></a>
-  <a href="https://discord.gg/24fmuwR"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
+  <a href="https://matrix.to/#/#ipfs-space:ipfs.io"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
+  <a href="https://discord.gg/ipfs"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
   <a href="https://github.com/ipfs/team-mgmt/blob/master/MGMT_JS_CORE_DEV.md"><img src="https://img.shields.io/badge/team-mgmt-blue.svg?style=flat" /></a>
 </p>
 
@@ -27,8 +26,6 @@
   <br>
 </p>
 
-> **Upgrading from <=0.40?** See the [release notes](https://github.com/ipfs/js-ipfs/issues/2656) for the list of API changes and the [migration guide](https://github.com/ipfs/js-ipfs/tree/master/docs/docs/MIGRATION-TO-ASYNC-AWAIT.md).
-
 `ipfs` is the core API, a CLI and a HTTP server that functions as a HTTP to IPFS bridge and an RPC endpoint.
 
 If you want to integrate IPFS into your application without including a CLI or HTTP server, see the [ipfs-core](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core) module.
@@ -42,8 +39,6 @@ If you want to integrate IPFS into your application without including a CLI or H
 - [License](#license)
 
 ## Getting Started
-
-We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of 🐉..
 
 ### Install
 
@@ -72,7 +67,6 @@ added QmXXY5ZxbtuYj6DnfApLiGstzPN7fvSyigrRee3hDWPCaf hello-world.txt
 * Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
 * Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
-* Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
 * Check out https://docs.ipfs.io for tips, how-tos and more
 * See https://blog.ipfs.io for news and more
@@ -93,7 +87,6 @@ Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of
   b. ensure quality, and
   c. reduce possible future bugs.
 - **Add tests**. There can never be enough tests.
-- **Join the [Weekly Core Implementations Call](https://github.com/ipfs/team-mgmt/issues/992)** it's where everyone discusses what's going on with IPFS and what's next
 
 ## License
 
