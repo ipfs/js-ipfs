@@ -7,9 +7,8 @@
 <h3 align="center">The JavaScript implementation of the IPFS protocol</h3>
 
 <p align="center">
-  <a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
-  <a href="http://webchat.freenode.net/?channels=%23ipfs"><img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat" /></a>
-  <a href="https://discord.gg/24fmuwR"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
+  <a href="https://matrix.to/#/#ipfs-space:ipfs.io"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
+  <a href="https://discord.gg/ipfs"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
   <a href="https://github.com/ipfs/team-mgmt/blob/master/MGMT_JS_CORE_DEV.md"><img src="https://img.shields.io/badge/team-mgmt-blue.svg?style=flat" /></a>
 </p>
 
@@ -19,10 +18,6 @@
   <a href="https://codecov.io/gh/ipfs/js-ipfs"><img src="https://badgen.net/codecov/c/github/ipfs/js-ipfs" /></a>
   <br>
 </p>
-
-> **Upgrading from <=0.40 to 0.48?** See the [release notes](https://github.com/ipfs/js-ipfs/issues/2656) for the list of API changes and the [migration guide](https://github.com/ipfs/js-ipfs/tree/master/docs/MIGRATION-TO-ASYNC-AWAIT.md).
-
-We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of 🐉..
 
 ## Getting started
 
@@ -112,7 +107,7 @@ This project is broken into several modules, their purposes are:
 * [`/packages/ipfs-grpc-protocol`](./packages/ipfs-grpc-protocol) Shared module between the gRPC client and server
 * [`/packages/ipfs-grpc-server`](./packages/ipfs-grpc-server) A gRPC-over-websockets server for js-IPFS
 * [`/packages/ipfs-http-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
-* [`/packages/ipfs-http-server`](./packages/ipfs-http-server) JS implementation of the [IPFS RPC HTTP API](https://docs.ipfs.io/reference/http/api/)
+* [`/packages/ipfs-http-server`](./packages/ipfs-http-server) JS implementation of the [Kubo RPC HTTP API](https://docs.ipfs.io/reference/kubo/rpc/)
 * [`/packages/ipfs-http-gateway`](./packages/ipfs-http-gateway) JS implementation of the [IPFS HTTP Gateway](https://docs.ipfs.io/concepts/ipfs-gateway/)
 * [`/packages/ipfs-http-response`](./packages/ipfs-http-response) Creates a HTTP response for a given IPFS Path
 * [`/packages/ipfs-message-port-client`](./packages/ipfs-message-port-client) A client for the RPC-over-message-port API presented by js-ipfs running in a shared worker
@@ -182,7 +177,6 @@ Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of
   b. ensure quality, and
   c. reduce possible future bugs.
 - **Add tests**. There can never be enough tests.
-- **Join the [Weekly Core Implementations Call](https://github.com/ipfs/team-mgmt/issues/992)** it's where everyone discusses what's going on with IPFS and what's next
 
 ## License
 
