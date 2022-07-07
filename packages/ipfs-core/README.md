@@ -7,9 +7,8 @@
 <h3 align="center">The JavaScript implementation of the IPFS protocol</h3>
 
 <p align="center">
-<a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
-<a href="http://webchat.freenode.net/?channels=%23ipfs"><img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat" /></a>
-<a href="https://discord.gg/24fmuwR"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
+<a href="https://matrix.to/#/#ipfs-space:ipfs.io"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
+<a href="https://discord.gg/ipfs"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
 <a href="https://github.com/ipfs/team-mgmt/blob/master/MGMT_JS_CORE_DEV.md"><img src="https://img.shields.io/badge/team-mgmt-blue.svg?style=flat" /></a>
 </p>
 
@@ -31,7 +30,7 @@
 
 > The IPFS Core API
 
-`ipfs-core` is the implementation of the IPFS Core API. It contains all you need to integrate IPFS into your application.
+`ipfs-core` is the implementation of the IPFS Core API written in JavaScript without depending on other languages/implementations. It contains all you need to integrate IPFS into your application.
 
 If you want to run IPFS as a standalone daemon process, see the [ipfs](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs) module.
 
@@ -67,7 +66,6 @@ console.info(cid)
 
 * Look into the [js-ipfs-examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Read the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
-* Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
 * Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
 * Check out https://docs.ipfs.io for tips, how-tos and more
 * See https://blog.ipfs.io for news and more
@@ -117,7 +115,6 @@ a. speed the project along
 b. ensure quality, and
 c. reduce possible future bugs.
 - **Add tests**. There can never be enough tests.
-- **Join the [Weekly Core Implementations Call](https://github.com/ipfs/team-mgmt/issues/992)** it's where everyone discusses what's going on with IPFS and what's next
 
 ## License
 
