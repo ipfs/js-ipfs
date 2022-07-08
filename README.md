@@ -7,12 +7,6 @@
 <h3 align="center">The JavaScript implementation of the IPFS protocol</h3>
 
 <p align="center">
-  <a href="https://matrix.to/#/#ipfs-space:ipfs.io"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
-  <a href="https://discord.gg/ipfs"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
-  <a href="https://github.com/ipfs/team-mgmt/blob/master/MGMT_JS_CORE_DEV.md"><img src="https://img.shields.io/badge/team-mgmt-blue.svg?style=flat" /></a>
-</p>
-
-<p align="center">
   <a href="https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core"><img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg"></a>
   <a href="https://travis-ci.com/ipfs/js-ipfs?branch=master"><img src="https://badgen.net/travis/ipfs/js-ipfs?branch=master" /></a>
   <a href="https://codecov.io/gh/ipfs/js-ipfs"><img src="https://badgen.net/codecov/c/github/ipfs/js-ipfs" /></a>
@@ -27,8 +21,8 @@
 * Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Head over to https://proto.school to take the [IPFS course](https://proto.school/course/ipfs) that covers core IPFS concepts and JS APIs
 * Check out https://docs.ipfs.io for [glossary](https://docs.ipfs.io/concepts/glossary), tips, how-tos and more
-* See https://blog.ipfs.io for news and more
 * Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
+* Find out about chat channels, the IPFS newsletter, the IPFS blog, and more in the [IPFS community space](https://docs.ipfs.io/community/).
 
 ## Table of Contents <!-- omit in toc -->
 
