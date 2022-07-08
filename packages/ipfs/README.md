@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h3 align="center">An [IPFS protocol implementation](https://docs.ipfs.io/basics/ipfs-implementations/) written in JS</h3>
+<h3 align="center">An <a href="https://docs.ipfs.io/basics/ipfs-implementations/">IPFS protocol implementation</a> written in JS</h3>
 
 <p align="center">
   <a href="https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core"><img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg"></a>
