@@ -62,7 +62,7 @@ In JavaScript land:
 $ npm install interface-ipfs-core
 ```
 
-If you want to run these tests against a go-ipfs daemon, checkout [ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client) and run test tests:
+If you want to run these tests against a Kubo daemon, checkout [ipfs-http-client](https://github.com/ipfs/js-ipfs-http-client) and run test tests:
 
 ```console
 $ git clone https://github.com/ipfs/js-ipfs-http-client
