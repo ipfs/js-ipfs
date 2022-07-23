@@ -18,7 +18,9 @@
   "exports": {
     ".": {
       "import": "./src/index.js"
-    }
+    },
+    "./index.js": "./index.js",
+    "./index.min.js": "./index.min.js"
   },
   "eslintConfig": {
     "extends": "ipfs",
