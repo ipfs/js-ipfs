@@ -120,7 +120,7 @@ Alternatively it can be an object which may have the following keys:
 #### Example
 
 ```JavaScript
-import { create } from 'ipfs-http-client'
+const { create } = await import('ipfs-http-client')
 
 // connect to the default API address http://localhost:5001
 const client = create()
