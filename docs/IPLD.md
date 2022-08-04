@@ -138,7 +138,7 @@ If your application requires support for extra codecs, you can configure them as
 * See [examples/custom-ipld-formats](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/custom-ipld-formats) for runnable code that demonstrates the above with in-process IPFS nodes, IPFS run as a daemon and also the http client
 * Also [examples/traverse-ipld-graphs](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples/traverse-ipld-graphs) which uses the [ipld-format-to-blockcodec](https://www.npmjs.com/package/ipld-format-to-blockcodec) module to use older [IPLD format][]s that have not been ported over to the new [BlockCodec][] interface, as well as additional [Multihash Hashers](https://www.npmjs.com/package/multiformats#multihash-hashers).
 
-[cid]: https://docs.ipfs.io/concepts/content-addressing/
+[cid]: https://docs.ipfs.tech/concepts/content-addressing/
 [blockcodec]: https://www.npmjs.com/package/multiformats#multicodec-encoders--decoders--codecs
 [unixfs]: https://github.com/ipfs/specs/blob/master/UNIXFS.md
 [ipld format]: https://github.com/ipld/interface-ipld-format

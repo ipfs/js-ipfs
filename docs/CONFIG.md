@@ -80,7 +80,7 @@ Contains information about various listener addresses to be used by this node.
 
 ### `API`
 
-The IPFS daemon exposes an HTTP API that allows to control the node and run the same commands as you can do from the command line. It is defined on the [HTTP API Spec](https://docs.ipfs.io/reference/api/http).
+The IPFS daemon exposes an HTTP API that allows to control the node and run the same commands as you can do from the command line. It is defined on the [HTTP API Spec](https://docs.ipfs.tech/reference/api/http).
 
 [Multiaddr](https://github.com/multiformats/multiaddr/) or array of [Multiaddr](https://github.com/multiformats/multiaddr/) describing the address(es) to serve the HTTP API on.
 
@@ -88,7 +88,7 @@ Default: `/ip4/127.0.0.1/tcp/5002`
 
 ### `RPC`
 
-js-IPFS has a gRPC-over-websockets server that allows it to do things that you cannot do over HTTP like bi-directional streaming.  It implements the same API as the [HTTP API Spec](https://docs.ipfs.io/reference/api/http) and can be accessed using the [ipfs-client](https://www.npmjs.com/package/ipfs-client) module.
+js-IPFS has a gRPC-over-websockets server that allows it to do things that you cannot do over HTTP like bi-directional streaming.  It implements the same API as the [HTTP API Spec](https://docs.ipfs.tech/reference/api/http) and can be accessed using the [ipfs-client](https://www.npmjs.com/package/ipfs-client) module.
 
 Configure the address it listens on using this config key.
 

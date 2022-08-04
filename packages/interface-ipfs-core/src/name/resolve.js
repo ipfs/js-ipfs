@@ -160,33 +160,33 @@ export function testResolve (factory, options) {
 
     after(() => factory.clean())
 
-    it('should resolve /ipns/ipfs.io', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.io')))
+    it('should resolve /ipns/ipfs.tech', async () => {
+      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech')))
         .to.match(/\/ipfs\/.+$/)
     })
 
-    it('should resolve /ipns/ipfs.io recursive === false', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.io', { recursive: false })))
+    it('should resolve /ipns/ipfs.tech recursive === false', async () => {
+      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech', { recursive: false })))
         .to.match(/\/ipns\/.+$/)
     })
 
-    it('should resolve /ipns/ipfs.io recursive === true', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.io', { recursive: true })))
+    it('should resolve /ipns/ipfs.tech recursive === true', async () => {
+      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech', { recursive: true })))
         .to.match(/\/ipfs\/.+$/)
     })
 
-    it('should resolve /ipns/ipfs.io with remainder', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.io/images/ipfs-logo.svg')))
+    it('should resolve /ipns/ipfs.tech with remainder', async () => {
+      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech/images/ipfs-logo.svg')))
         .to.match(/\/ipfs\/.+\/images\/ipfs-logo.svg$/)
     })
 
-    it('should resolve /ipns/ipfs.io with remainder recursive === false', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.io/images/ipfs-logo.svg', { recursive: false })))
+    it('should resolve /ipns/ipfs.tech with remainder recursive === false', async () => {
+      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech/images/ipfs-logo.svg', { recursive: false })))
         .to.match(/\/ipns\/.+\/images\/ipfs-logo.svg$/)
     })
 
-    it('should resolve /ipns/ipfs.io with remainder recursive === true', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.io/images/ipfs-logo.svg', { recursive: true })))
+    it('should resolve /ipns/ipfs.tech with remainder recursive === true', async () => {
+      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech/images/ipfs-logo.svg', { recursive: true })))
         .to.match(/\/ipfs\/.+\/images\/ipfs-logo.svg$/)
     })
 

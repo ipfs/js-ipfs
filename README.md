@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://js.ipfs.io" title="JS IPFS">
+  <a href="https://js.ipfs.tech" title="JS IPFS">
     <img src="https://ipfs.io/ipfs/Qme6KJdKcp85TYbLxuLV7oQzMiLremD7HMoXLZEmgo6Rnh/js-ipfs-sticker.png" alt="IPFS in JavaScript logo" width="244" />
   </a>
 </p>
@@ -20,9 +20,9 @@
 * Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples/tree/master) to learn how to spawn an IPFS node in Node.js and in the Browser
 * Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 * Head over to https://proto.school to take the [IPFS course](https://proto.school/course/ipfs) that covers core IPFS concepts and JS APIs
-* Check out https://docs.ipfs.io for [glossary](https://docs.ipfs.io/concepts/glossary), tips, how-tos and more
-* Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
-* Find out about chat channels, the IPFS newsletter, the IPFS blog, and more in the [IPFS community space](https://docs.ipfs.io/community/).
+* Check out https://docs.ipfs.tech for [glossary](https://docs.ipfs.tech/concepts/glossary), tips, how-tos and more
+* Need help? Please ask 'How do I?' questions on https://discuss.ipfs.tech
+* Find out about chat channels, the IPFS newsletter, the IPFS blog, and more in the [IPFS community space](https://docs.ipfs.tech/community/).
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -80,7 +80,7 @@ console.info(cid)
 
 ## Documentation
 
-* [Concepts](https://docs.ipfs.io/concepts/)
+* [Concepts](https://docs.ipfs.tech/concepts/)
 * [Config](./docs/CONFIG.md)
 * [Core API](./docs/core-api)
 * [Examples](https://github.com/ipfs-examples/js-ipfs-examples/tree/master/examples)
@@ -101,8 +101,8 @@ This project is broken into several modules, their purposes are:
 * [`/packages/ipfs-grpc-protocol`](./packages/ipfs-grpc-protocol) Shared module between the gRPC client and server
 * [`/packages/ipfs-grpc-server`](./packages/ipfs-grpc-server) A gRPC-over-websockets server for js-IPFS
 * [`/packages/ipfs-http-client`](./packages/ipfs-http-client) A client for the RPC-over-HTTP API presented by both js-ipfs and go-ipfs
-* [`/packages/ipfs-http-server`](./packages/ipfs-http-server) JS implementation of the [Kubo RPC HTTP API](https://docs.ipfs.io/reference/kubo/rpc/)
-* [`/packages/ipfs-http-gateway`](./packages/ipfs-http-gateway) JS implementation of the [IPFS HTTP Gateway](https://docs.ipfs.io/concepts/ipfs-gateway/)
+* [`/packages/ipfs-http-server`](./packages/ipfs-http-server) JS implementation of the [Kubo RPC HTTP API](https://docs.ipfs.tech/reference/kubo/rpc/)
+* [`/packages/ipfs-http-gateway`](./packages/ipfs-http-gateway) JS implementation of the [IPFS HTTP Gateway](https://docs.ipfs.tech/concepts/ipfs-gateway/)
 * [`/packages/ipfs-http-response`](./packages/ipfs-http-response) Creates a HTTP response for a given IPFS Path
 * [`/packages/ipfs-message-port-client`](./packages/ipfs-message-port-client) A client for the RPC-over-message-port API presented by js-ipfs running in a shared worker
 * [`/packages/ipfs-message-port-protocol`](./packages/ipfs-message-port-protocol) Code shared by the message port client & server

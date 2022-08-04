@@ -384,7 +384,7 @@ Aside from the default export, `ipfs` exports various types and utilities that a
 - [`multihash`](https://www.npmjs.com/package/multihashes)
 - [`multihashing`](https://www.npmjs.com/package/multihashing-async)
 - [`multicodec`](https://www.npmjs.com/package/multicodec)
-- [`CID`](https://docs.ipfs.io/concepts/content-addressing)
+- [`CID`](https://docs.ipfs.tech/concepts/content-addressing)
 
 These can be accessed like this, for example:
 

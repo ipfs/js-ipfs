@@ -1,6 +1,6 @@
 # Files API <!-- omit in toc -->
 
-> The files API enables users to use the File System abstraction of IPFS. There are two Files API, one at the top level, the original `add`, `cat`, `get` and `ls`, and another behind the [`files`, also known as MFS](https://docs.ipfs.io/guides/concepts/mfs/)
+> The files API enables users to use the File System abstraction of IPFS. There are two Files API, one at the top level, the original `add`, `cat`, `get` and `ls`, and another behind the [`files`, also known as MFS](https://docs.ipfs.tech/guides/concepts/mfs/)
 
 _Explore the Mutable File System through interactive coding challenges in our [ProtoSchool tutorial](https://proto.school/#/mutable-file-system/)._
 
@@ -1024,8 +1024,8 @@ for await (const file of ipfs.files.ls('/screenshots')) {
 
 [b]: https://www.npmjs.com/package/buffer
 [file]: https://developer.mozilla.org/en-US/docs/Web/API/File
-[cid]: https://docs.ipfs.io/concepts/content-addressing
+[cid]: https://docs.ipfs.tech/concepts/content-addressing
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob
 [IPFS Path]: https://www.npmjs.com/package/is-ipfs#isipfspathpath
-[MFS Path]: https://docs.ipfs.io/guides/concepts/mfs/
+[MFS Path]: https://docs.ipfs.tech/guides/concepts/mfs/
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

@@ -20,7 +20,7 @@ newIssueWelcomeComment: >
     - "Status" labels will show if this is ready to be worked on, blocked, or in progress.
     - "Need" labels will indicate if additional input or analysis is required.
 
-  Finally, remember to use https://discuss.ipfs.io if you just need general
+  Finally, remember to use https://discuss.ipfs.tech if you just need general
   support.
 
 # Configuration for new-pr-welcome - https://github.com/behaviorbot/new-pr-welcome

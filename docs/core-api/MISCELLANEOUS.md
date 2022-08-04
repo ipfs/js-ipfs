@@ -134,7 +134,7 @@ An optional object which may have the following keys:
 ### Example
 
 ```JavaScript
-const path = await ipfs.dns('ipfs.io')
+const path = await ipfs.dns('docs.ipfs.tech')
 console.log(path)
 ```
 
@@ -300,5 +300,5 @@ A great source of [examples](https://github.com/ipfs/js-ipfs/blob/master/package
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/miscellaneous
 [rs]: https://www.npmjs.com/package/readable-stream
 [ps]: https://www.npmjs.com/package/pull-stream
-[cid]: https://docs.ipfs.io/concepts/content-addressing
+[cid]: https://docs.ipfs.tech/concepts/content-addressing
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

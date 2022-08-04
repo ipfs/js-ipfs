@@ -212,4 +212,4 @@ A great source of [examples][] can be found in the tests for this API.
 [multihash]: https://github.com/multiformats/multihash
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/block
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
-[cid]: https://docs.ipfs.io/concepts/content-addressing
+[cid]: https://docs.ipfs.tech/concepts/content-addressing

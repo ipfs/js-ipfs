@@ -66,7 +66,7 @@ At this stage, we consider the release to be "production ready" and will ask the
 
 ### Stage 4 - Release
 
-At this stage, the release is "battle hardened" and ready for wide deployment. A new version is published to npm, announcements are made and a blog post is published to [blog.ipfs.io](https://blog.ipfs.io).
+At this stage, the release is "battle hardened" and ready for wide deployment. A new version is published to npm, announcements are made and a blog post is published to [blog.ipfs.tech](https://blog.ipfs.tech).
 
 ## Release Cycle
 

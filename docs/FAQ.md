@@ -164,9 +164,9 @@ Browsers [can't open TCP sockets](https://github.com/ipfs/js-ipfs/blob/master/do
 
 This has several drawbacks - WebRTC is expensive so having lots of peers does not scale well, the maximum packet size is small so it's comparatively inefficient, browsers will frequently cull connections if you switch away from the tab and at the time of writing go-IPFS [has no WebRTC-Star transport](https://libp2p.io/implementations/#transports) so great swathes of the network will not be able to dial your node.
 
-To make your content available, several 'preload' nodes are running. These nodes expose their [refs endpoint](https://docs.ipfs.io/reference/http/api/#api-v0-refs) over HTTP and all js-IPFS nodes connect to them as peers on startup.
+To make your content available, several 'preload' nodes are running. These nodes expose their [refs endpoint](https://docs.ipfs.tech/reference/http/api/#api-v0-refs) over HTTP and all js-IPFS nodes connect to them as peers on startup.
 
-When you add content to your node, a request is sent to a preload node with the CID of the content you've just added. This causes the preload node to use [Bitswap](https://docs.ipfs.io/concepts/bitswap/) to pull the content from your node, caching it for an hour or so which then means other nodes can then access the content without having to dial your otherwise undialable node.
+When you add content to your node, a request is sent to a preload node with the CID of the content you've just added. This causes the preload node to use [Bitswap](https://docs.ipfs.tech/concepts/bitswap/) to pull the content from your node, caching it for an hour or so which then means other nodes can then access the content without having to dial your otherwise undialable node.
 
 These nodes sometimes go down, which is why you see errors in the console. They are non-fatal and can be ignored.
 
@@ -174,4 +174,4 @@ If you run your own node you can [disable preloading](https://github.com/ipfs/js
 
 ## Have more questions?
 
-Ask for help in our forum at https://discuss.ipfs.io or in IRC (#ipfs on Freenode).
+Ask for help in our forum at https://discuss.ipfs.tech or chat channels listed at https://docs.ipfs.tech/community/.

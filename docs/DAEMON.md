@@ -16,7 +16,7 @@ To start a daemon on the CLI, use the `daemon` command:
 jsipfs daemon
 ```
 
-The IPFS Daemon exposes the API defined in the [HTTP API spec](https://docs.ipfs.io/reference/api/http/). You can use any of the IPFS HTTP-API client libraries with it, such as: [ipfs-http-client](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client).
+The IPFS Daemon exposes the RPC API defined in the [HTTP API Docs](https://docs.ipfs.tech/reference/http/api/). You can use any of the IPFS HTTP-API client libraries with it, such as: [ipfs-http-client](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client).
 
 ## Programmatic
 

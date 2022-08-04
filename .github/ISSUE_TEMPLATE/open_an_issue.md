@@ -11,7 +11,7 @@ Thank you for reporting an issue.
 
 This issue tracker is for bugs found within the JavaScript implementation of IPFS.
 
-If you are asking a question about how to use IPFS, please ask on https://discuss.ipfs.io
+If you are asking a question about how to use IPFS, please ask on https://discuss.ipfs.tech
 
 Otherwise please fill in as much of the template below as possible.
 -->

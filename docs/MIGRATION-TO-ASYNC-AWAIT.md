@@ -864,7 +864,7 @@ e.g.
 const IpfsHttpClient = require('ipfs-http-client')
 const ipfs = IpfsHttpClient()
 
-const files = await ipfs.addFromURL('https://ipfs.io/images/ipfs-logo.svg')
+const files = await ipfs.addFromURL('https://example.com/images/ipfs-logo.svg')
 
 files.forEach(file => {
   console.log(file)
@@ -878,7 +878,7 @@ const IpfsHttpClient = require('ipfs-http-client')
 const { urlSource } = IpfsHttpClient
 const ipfs = IpfsHttpClient()
 
-const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+const file = await ipfs.add(urlSource('https://example.com/images/ipfs-logo.svg'))
 
 console.log(file)
 ```

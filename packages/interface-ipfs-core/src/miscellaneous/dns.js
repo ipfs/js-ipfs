@@ -28,9 +28,9 @@ export function testDns (factory, options) {
 
     after(() => factory.clean())
 
-    it('should non-recursively resolve ipfs.io', async function () {
+    it('should non-recursively resolve ipfs.tech', async function () {
       try {
-        const res = await ipfs.dns('ipfs.io', { recursive: false })
+        const res = await ipfs.dns('ipfs.tech', { recursive: false })
 
         // matches pattern /ipns/<ipnsaddress>
         expect(res).to.match(/\/ipns\/.+$/)
@@ -44,9 +44,9 @@ export function testDns (factory, options) {
       }
     })
 
-    it('should recursively resolve ipfs.io', async function () {
+    it('should recursively resolve ipfs.tech', async function () {
       try {
-        const res = await ipfs.dns('ipfs.io', { recursive: true })
+        const res = await ipfs.dns('ipfs.tech', { recursive: true })
 
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)
@@ -60,9 +60,9 @@ export function testDns (factory, options) {
       }
     })
 
-    it('should resolve subdomain docs.ipfs.io', async function () {
+    it('should resolve subdomain docs.ipfs.tech', async function () {
       try {
-        const res = await ipfs.dns('docs.ipfs.io')
+        const res = await ipfs.dns('docs.ipfs.tech')
 
         // matches pattern /ipfs/<hash>
         expect(res).to.match(/\/ipfs\/.+$/)

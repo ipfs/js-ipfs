@@ -28,4 +28,4 @@ It is broken up into the following sections:
 * [SWARM.md](SWARM.md)
 
 ## History
-This API was created based off the [Kubo RPC HTTP API](https://docs.ipfs.io/reference/kubo/rpc/).  There is no guarantee they stay fully in sync.
+This API was created based off the [Kubo RPC HTTP API](https://docs.ipfs.tech/reference/kubo/rpc/).  There is no guarantee they stay fully in sync.

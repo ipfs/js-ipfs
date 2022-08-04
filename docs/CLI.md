@@ -15,7 +15,7 @@ npm install ipfs --global
 
 The CLI is available by using the command `jsipfs` in your terminal. This is aliased, instead of using `ipfs`, to make sure it does not conflict with the [Go implementation](https://github.com/ipfs/go-ipfs).
 
-Once installed, please follow the [Getting Started Guide](https://docs.ipfs.io/introduction/usage/) to learn how to initialize your node and run the daemon.
+Once installed, please follow the [Getting Started Guide](https://docs.ipfs.tech/introduction/usage/) to learn how to initialize your node and run the daemon.
 
 ```sh
 # Install js-ipfs globally

@@ -348,5 +348,5 @@ A great source of [examples][] can be found in the tests for this API.
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/dht
 [peerid]: https://docs.libp2p.io/concepts/peer-id/
-[cid]: https://docs.ipfs.io/concepts/content-addressing
+[cid]: https://docs.ipfs.tech/concepts/content-addressing
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

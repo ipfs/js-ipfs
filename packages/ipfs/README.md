@@ -1,7 +1,6 @@
 # ipfs <!-- omit in toc -->
 
-[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
-[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![ipfs.tech](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](https://ipfs.tech)
 [![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
 [![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
 [![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
@@ -24,12 +23,12 @@ $ npm i ipfs
 ```
 
 <p align="center">
-  <a href="https://js.ipfs.io" title="JS IPFS">
+  <a href="https://js.ipfs.tech" title="JS IPFS">
     <img src="https://ipfs.io/ipfs/Qme6KJdKcp85TYbLxuLV7oQzMiLremD7HMoXLZEmgo6Rnh/js-ipfs-sticker.png" alt="IPFS in JavaScript logo" width="244" />
   </a>
 </p>
 
-<h3 align="center">An <a href="https://docs.ipfs.io/basics/ipfs-implementations/">IPFS protocol implementation</a> written in JS</h3>
+<h3 align="center">An <a href="https://docs.ipfs.tech/basics/ipfs-implementations/">IPFS protocol implementation</a> written in JS</h3>
 
 <p align="center">
   <a href="https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core"><img src="https://img.shields.io/badge/interface--ipfs--core-API%20Docs-blue.svg"></a>
@@ -77,9 +76,9 @@ added QmXXY5ZxbtuYj6DnfApLiGstzPN7fvSyigrRee3hDWPCaf hello-world.txt
 - Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 - Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
 - Head over to <https://proto.school> to take interactive tutorials that cover core IPFS APIs
-- Check out <https://docs.ipfs.io> for tips, how-tos and more
-- See <https://blog.ipfs.io> for news and more
-- Need help? Please ask 'How do I?' questions on <https://discuss.ipfs.io>
+- Check out <https://docs.ipfs.tech> for tips, how-tos and more
+- See <https://blog.ipfs.tech> for news and more
+- Need help? Please ask 'How do I?' questions on <https://discuss.ipfs.tech>
 
 ## Want to hack on IPFS?
 
@@ -96,7 +95,7 @@ Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of
   c. reduce possible future bugs.
 - **Add tests**. There can never be enough tests.
 
-Find out about chat channels, the IPFS newsletter, the IPFS blog, and more in the [IPFS community space](https://docs.ipfs.io/community/).
+Find out about chat channels, the IPFS newsletter, the IPFS blog, and more in the [IPFS community space](https://docs.ipfs.tech/community/).
 
 ## License
 

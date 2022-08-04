@@ -112,6 +112,6 @@ for await (const ref of ipfs.refs.local()) {
 
 [examples]: https://github.com/ipfs/js-ipfs/blob/master/packages/interface-ipfs-core/src/files-regular
 [b]: https://www.npmjs.com/package/buffer
-[cid]: https://docs.ipfs.io/concepts/content-addressing
+[cid]: https://docs.ipfs.tech/concepts/content-addressing
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob
 [AbortSignal]: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal

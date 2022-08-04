@@ -1,7 +1,6 @@
 # ipfs-http-client <!-- omit in toc -->
 
-[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
-[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![ipfs.tech](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.tech)
 [![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
 [![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
 [![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
@@ -48,14 +47,13 @@ $ npm i ipfs-http-client
 ```
 
 <h1 align="center">
-  <a href="https://ipfs.io"><img width="650px" src="https://ipfs.io/ipfs/QmQJ68PFMDdAsgCZvA1UVzzn18asVcf7HVvCDgpjiSCAse" alt="IPFS http client lib logo" /></a>
+  <a href="https://ipfs.tech"><img width="650px" src="https://ipfs.io/ipfs/QmQJ68PFMDdAsgCZvA1UVzzn18asVcf7HVvCDgpjiSCAse" alt="IPFS http client lib logo" /></a>
 </h1>
 
 <h3 align="center">The JavaScript HTTP RPC API client library for IPFS implementations.</h3>
 
 <p align="center">
   <a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
-  <a href="http://webchat.freenode.net/?channels=%23ipfs"><img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat" /></a>
   <a href="https://discord.gg/24fmuwR"><img src="https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord&style=flat" /></a>
   <a href="https://github.com/ipfs/team-mgmt/blob/master/MGMT_JS_CORE_DEV.md"><img src="https://img.shields.io/badge/team-mgmt-blue.svg?style=flat" /></a>
 </p>
@@ -91,11 +89,10 @@ Both the Current and Active LTS versions of Node.js are supported. Please see [n
 - Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
 - Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
 - Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
-- Visit <https://dweb-primer.ipfs.io> to learn about IPFS and the concepts that underpin it
 - Head over to <https://proto.school> to take interactive tutorials that cover core IPFS APIs
-- Check out <https://docs.ipfs.io> for tips, how-tos and more
-- See <https://blog.ipfs.io> for news and more
-- Need help? Please ask 'How do I?' questions on <https://discuss.ipfs.io>
+- Check out <https://docs.ipfs.tech> for tips, how-tos and more
+- See <https://blog.ipfs.tech> for news and more
+- Need help? Please ask 'How do I?' questions on <https://discuss.ipfs.tech>
 
 ## Usage
 
@@ -239,7 +236,7 @@ Returns an async iterable that yields `{ path, content }` objects suitable for p
 import { create, urlSource } from 'ipfs-http-client'
 const ipfs = create()
 
-const file = await ipfs.add(urlSource('https://ipfs.io/images/ipfs-logo.svg'))
+const file = await ipfs.add(urlSource('https://example.com/ipfs-logo.svg'))
 console.log(file)
 
 /*
