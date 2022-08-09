@@ -78,7 +78,7 @@
     "copyfiles": "^2.4.1",
     "dag-jose": "^1.0.0",
     "delay": "^5.0.0",
-    "did-jwt": "^5.12.1",
+    "did-jwt": "^6.3.0",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.11.1",
     "ipfs-unixfs": "^6.0.3",
