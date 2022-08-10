@@ -26,10 +26,9 @@ Save time and get familiar with common caveats and limitations of the browser co
   JS IPFS running on HTTPS website requires Secure WebSockets (TLS) and won't work with unencrypted one.
   [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) not being available at all.
 
-- [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table) is not available in JS IPFS yet.
+- JS IPFS comes with limited support for the [DHT](https://docs.ipfs.tech/concepts/dht/) (DHT client mode).
 
-  [We are working on it](https://github.com/ipfs/js-ipfs/pull/1994). For now, the discovery and connectivity to other peers is achieved with a mix of rendezvous and
-  relay servers, delegated peer/content routing and preload servers.
+  [We are working to enable full DHT support](https://github.com/ipfs/js-ipfs/issues/3905). For now, the content discovery and connectivity to other peers is achieved with a mix of DHT client requests, rendezvous and relay servers, delegated peer/content routing, and preload servers.
 
 
 ## Addressing Limitations
