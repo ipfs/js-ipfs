@@ -1,4 +1,4 @@
-/** eslint-disable max-depth */
+/* eslint-disable max-depth */
 
 import client from 'prom-client'
 import Boom from '@hapi/boom'
@@ -31,38 +31,34 @@ export default [{
       for (const [system, components] of metrics.getComponentMetrics().entries()) {
         for (const [component, componentMetrics] of components.entries()) {
           for (const [metricName, trackedMetric] of componentMetrics.entries()) {
-            try {
-              const name = `${system}-${component}-${metricName}`.replace(/-/g, '_')
-              const labelName = trackedMetric.label ?? metricName.replace(/-/g, '_')
-              const help = trackedMetric.help ?? metricName.replace(/-/g, '_')
+            const name = `${system}-${component}-${metricName}`.replace(/-/g, '_')
+            const labelName = trackedMetric.label ?? metricName.replace(/-/g, '_')
+            const help = trackedMetric.help ?? metricName.replace(/-/g, '_')
 
-              /** @type {client.GaugeConfiguration<any>} */
-              const gaugeOptions = { name, help }
-              const metricValue = await trackedMetric.calculate()
+            /** @type {client.GaugeConfiguration<any>} */
+            const gaugeOptions = { name, help }
+            const metricValue = await trackedMetric.calculate()
 
-              if (typeof metricValue !== 'number') {
-                // metric group
-                gaugeOptions.labelNames = [
-                  labelName
-                ]
-              }
+            if (typeof metricValue !== 'number') {
+              // metric group
+              gaugeOptions.labelNames = [
+                labelName
+              ]
+            }
 
-              if (!gauges[name]) {
-                // create metric if it's not been seen before
-                gauges[name] = new client.Gauge(gaugeOptions)
-              }
+            if (!gauges[name]) {
+              // create metric if it's not been seen before
+              gauges[name] = new client.Gauge(gaugeOptions)
+            }
 
-              if (typeof metricValue !== 'number') {
-                // metric group
-                Object.entries(metricValue).forEach(([key, value]) => {
-                  gauges[name].set({ [labelName]: key }, value)
-                })
-              } else {
-                // metric value
-                gauges[name].set(metricValue)
-              }
-            } catch (err) {
-              console.error(err)
+            if (typeof metricValue !== 'number') {
+              // metric group
+              Object.entries(metricValue).forEach(([key, value]) => {
+                gauges[name].set({ [labelName]: key }, value)
+              })
+            } else {
+              // metric value
+              gauges[name].set(metricValue)
             }
           }
         }

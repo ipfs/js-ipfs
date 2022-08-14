@@ -162,8 +162,12 @@ export function testPubsub (factory, options) {
 
       const publishedMessageData = ipns.unmarshal(publishedMessage.data)
 
-      if (!publishedMessageData.pubKey) {
-        throw new Error('No public key found in message data')
+      if (publishedMessage.type !== 'signed') {
+        throw new Error('Message was not signed')
+      }
+
+      if (publishedMessageData.pubKey == null) {
+        throw new Error('Public key was missing from published message data')
       }
 
       const messageKey = publishedMessage.from

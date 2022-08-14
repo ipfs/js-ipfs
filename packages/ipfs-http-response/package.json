@@ -68,7 +68,7 @@
     "it-buffer": "^0.1.1",
     "it-concat": "^2.0.0",
     "it-map": "^1.0.6",
-    "it-reader": "^5.0.1",
+    "it-reader": "^6.0.1",
     "it-to-stream": "^1.0.0",
     "mime-types": "^2.1.30",
     "p-try-each": "^1.0.1"

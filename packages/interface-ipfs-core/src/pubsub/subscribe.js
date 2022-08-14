@@ -84,6 +84,10 @@ export function testSubscribe (factory, options) {
 
         const msg = await deferred.promise
 
+        if (msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(msg.data)).to.equal('hi')
         expect(msg).to.have.property('sequenceNumber')
         expect(msg.sequenceNumber).to.be.a('BigInt')
@@ -248,10 +252,20 @@ export function testSubscribe (factory, options) {
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
         const sub1Msg = await msgStream1.promise
+
+        if (sub1Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
         expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
         const sub2Msg = await msgStream2.promise
+
+        if (sub2Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
         expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })
@@ -283,10 +297,20 @@ export function testSubscribe (factory, options) {
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
         const sub1Msg = await msgStream1.promise
+
+        if (sub1Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
         expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
         const sub2Msg = await msgStream2.promise
+
+        if (sub2Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
         expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })
@@ -319,10 +343,20 @@ export function testSubscribe (factory, options) {
         await ipfs2.pubsub.publish(topic, buffer)
 
         const sub1Msg = await msgStream1.promise
+
+        if (sub1Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub1Msg.data, 'base16')).to.be.eql(expectedHex)
         expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
         const sub2Msg = await msgStream2.promise
+
+        if (sub2Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub2Msg.data, 'base16')).to.be.eql(expectedHex)
         expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })

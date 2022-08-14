@@ -11,6 +11,10 @@ import { peerIdFromString } from '@libp2p/peer-id'
 
 const log = logger('ipfs:ipns:pubsub')
 
+/**
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
+ */
+
 // Pubsub datastore aims to manage the pubsub subscriptions for IPNS
 export class IpnsPubsubDatastore {
   /**
@@ -33,10 +37,11 @@ export class IpnsPubsubDatastore {
    *
    * @param {Uint8Array} key - identifier of the value.
    * @param {Uint8Array} value - value to be stored.
+   * @param {AbortOptions} [options]
    */
-  async put (key, value) {
+  async put (key, value, options) {
     try {
-      await this._pubsubDs.put(key, value)
+      await this._pubsubDs.put(key, value, options)
     } catch (/** @type {any} */ err) {
       log.error(err)
       throw err
@@ -49,13 +54,14 @@ export class IpnsPubsubDatastore {
    * updated once new publishes occur.
    *
    * @param {Uint8Array} key - identifier of the value to be obtained.
+   * @param {AbortOptions} [options]
    */
-  async get (key) {
+  async get (key, options) {
     let res
     let err
 
     try {
-      res = await this._pubsubDs.get(key)
+      res = await this._pubsubDs.get(key, options)
     } catch (/** @type {any} */ e) {
       err = e
     }

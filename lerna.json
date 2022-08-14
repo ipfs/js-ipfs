@@ -1,8 +1,6 @@
 {
   "version": "independent",
-  "packages": [
-    "packages/*"
-  ],
+  "useWorkspaces": true,
   "command": {
     "bootstrap": {
       "hoist": true

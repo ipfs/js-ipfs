@@ -57,20 +57,21 @@
     "ipfs-core-types": "^0.11.1",
     "ipfs-core-utils": "^0.15.1",
     "ipfs-grpc-protocol": "^0.6.0",
-    "ipfs-unixfs": "^6.0.9",
+    "ipfs-unixfs": "^7.0.0",
     "it-first": "^1.0.4",
     "it-pushable": "^3.0.0",
     "@multiformats/multiaddr": "^10.0.0",
     "multiformats": "^9.5.1",
     "p-defer": "^4.0.0",
-    "protobufjs": "^6.10.2",
+    "protobufjs": "^7.0.0",
     "uint8arrays": "^3.0.0",
-    "wherearewe": "^1.0.0",
+    "wherearewe": "^2.0.1",
     "ws": "^8.5.0"
   },
   "devDependencies": {
     "aegir": "^37.0.11",
     "it-all": "^1.0.4",
+    "protobufjs-cli": "^1.0.0",
     "sinon": "^14.0.0"
   }
 }

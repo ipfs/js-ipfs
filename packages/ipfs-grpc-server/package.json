@@ -54,7 +54,7 @@
     "it-pushable": "^3.0.0",
     "@multiformats/multiaddr": "^10.0.0",
     "nanoid": "^4.0.0",
-    "protobufjs": "^6.10.2",
+    "protobufjs": "^7.0.0",
     "uint8arrays": "^3.0.0",
     "ws": "^8.5.0"
   },

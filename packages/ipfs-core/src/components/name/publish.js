@@ -89,7 +89,7 @@ export function createPublish ({ ipns, repo, codecs, peerId, isOnline, keychain 
     const bytes = uint8ArrayFromString(value)
 
     // Start publishing process
-    const result = await ipns.publish(results[0], bytes, pubLifetime)
+    const result = await ipns.publish(results[0], bytes, pubLifetime, options)
 
     return {
       name: result.name,

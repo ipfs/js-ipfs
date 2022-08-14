@@ -27,7 +27,7 @@ export function grpcPubsubSubscribe (ipfs, options = {}) {
       onMessage: (message) => {
         let sequenceNumber
 
-        if (message.sequenceNumber != null) {
+        if (message.type === 'signed' && message.sequenceNumber != null) {
           let numberString = message.sequenceNumber.toString(16)
 
           if (numberString.length % 2 !== 0) {

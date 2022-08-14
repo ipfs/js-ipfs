@@ -76,7 +76,9 @@ export class Network {
 
     const bitswap = createBitswap(libp2p, repo.blocks, {
       statsEnabled: true,
-      hashLoader: hashers
+      hashLoader: hashers,
+      maxInboundStreams: 64,
+      maxOutboundStreams: 128
     })
     await bitswap.start()
 

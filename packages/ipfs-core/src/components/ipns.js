@@ -8,6 +8,7 @@ const log = logger('ipfs:components:ipns')
 
 /**
  * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
  *
  * @typedef {object} ExperimentalOptions
  * @property {boolean} [ipnsPubsub]
@@ -106,15 +107,19 @@ export class IPNSAPI {
    * @param {PeerId} peerId
    * @param {Uint8Array} value
    * @param {number} lifetime
+   * @param {AbortOptions} [options]
    */
-  publish (peerId, value, lifetime) {
-    return this.getIPNS().publish(peerId, value, lifetime)
+  publish (peerId, value, lifetime, options) {
+    return this.getIPNS().publish(peerId, value, lifetime, options)
   }
 
   /**
    *
    * @param {string} name
-   * @param {*} [options]
+   * @param {object} [options]
+   * @param {boolean} [options.nocache]
+   * @param {boolean} [options.recursive]
+   * @param {AbortSignal} [options.signal]
    */
   resolve (name, options) {
     return this.getIPNS().resolve(name, options)
@@ -123,8 +128,9 @@ export class IPNSAPI {
   /**
    * @param {PeerId} peerId
    * @param {Uint8Array} value
+   * @param {AbortOptions} [options]
    */
-  initializeKeyspace (peerId, value) {
-    return this.getIPNS().initializeKeyspace(peerId, value)
+  initializeKeyspace (peerId, value, options) {
+    return this.getIPNS().initializeKeyspace(peerId, value, options)
   }
 }

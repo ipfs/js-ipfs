@@ -15,7 +15,7 @@ import { ipnsValidator } from 'ipns/validator'
 import { ipnsSelector } from 'ipns/selector'
 import { WebSockets } from '@libp2p/websockets'
 import { Mplex } from '@libp2p/mplex'
-import { NOISE } from '@chainsafe/libp2p-noise'
+import { Noise } from '@chainsafe/libp2p-noise'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true, concatArrays: true })
 
@@ -130,7 +130,7 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
       })
     ],
     connectionEncryption: [
-      NOISE
+      new Noise()
     ],
     relay: {
       enabled: get(options, 'relay.enabled', get(config, 'relay.enabled', true)),

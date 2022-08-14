@@ -98,7 +98,7 @@ export function createDht ({ network, repo, peerId }) {
         throw errCode(new Error('dht not configured'), 'ERR_DHT_NOT_CONFIGURED')
       }
 
-      yield * libp2p.dht.put(dhtKey, value)
+      yield * libp2p.dht.put(dhtKey, value, options)
     },
 
     /**

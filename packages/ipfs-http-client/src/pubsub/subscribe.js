@@ -107,12 +107,23 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
           continue
         }
 
-        onMessage({
-          from: peerIdFromString(msg.from),
-          data: rpcToBytes(msg.data),
-          sequenceNumber: rpcToBigInt(msg.seqno),
-          topic: rpcToText(msg.topicIDs[0])
-        })
+        if (msg.from != null && msg.seqno != null) {
+          onMessage({
+            type: 'signed',
+            from: peerIdFromString(msg.from),
+            data: rpcToBytes(msg.data),
+            sequenceNumber: rpcToBigInt(msg.seqno),
+            topic: rpcToText(msg.topicIDs[0]),
+            key: rpcToBytes(msg.key ?? 'u'),
+            signature: rpcToBytes(msg.signature ?? 'u')
+          })
+        } else {
+          onMessage({
+            type: 'unsigned',
+            data: rpcToBytes(msg.data),
+            topic: rpcToText(msg.topicIDs[0])
+          })
+        }
       } catch (/** @type {any} */ err) {
         err.message = `Failed to parse pubsub message: ${err.message}`
         onError(err, false, msg) // Not fatal

@@ -56,7 +56,7 @@
     "@libp2p/logger": "^2.0.0",
     "@libp2p/peer-id": "^1.1.10",
     "any-signal": "^3.0.0",
-    "dag-jose": "^1.0.0",
+    "dag-jose": "^2.0.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.11.1",
     "ipfs-core-utils": "^0.15.1",

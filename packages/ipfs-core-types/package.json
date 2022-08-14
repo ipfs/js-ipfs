@@ -50,11 +50,11 @@
     "@libp2p/interface-keychain": "^1.0.3",
     "@libp2p/interface-peer-id": "^1.0.4",
     "@libp2p/interface-peer-info": "^1.0.2",
-    "@libp2p/interface-pubsub": "^1.0.4",
+    "@libp2p/interface-pubsub": "^2.0.0",
     "@multiformats/multiaddr": "^10.0.0",
     "@types/node": "^18.0.0",
-    "interface-datastore": "^6.1.1",
-    "ipfs-unixfs": "^6.0.9",
+    "interface-datastore": "^7.0.0",
+    "ipfs-unixfs": "^7.0.0",
     "multiformats": "^9.5.1"
   },
   "devDependencies": {
