@@ -51,7 +51,7 @@
     "clean": "aegir clean",
     "build": "aegir build && copyfiles './test/fixtures/**/*' ./dist",
     "lint": "aegir lint",
-    "dep-check": "aegir dep-check -i ipfs-core-types -i copyfiles"
+    "dep-check": "aegir dep-check -i ipfs-core-types -i copyfiles -i @libp2p/interfaces"
   },
   "repository": {
     "type": "git",
