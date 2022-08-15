@@ -63,7 +63,7 @@
     "test:electron-main": "aegir test -t electron-main",
     "test:bootstrapers": "IPFS_TEST=bootstrapers aegir test -t browser -f test/bootstrappers.js",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types --i interface-blockstore"
+    "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types --i interface-blockstore -i @libp2p/interface-dht -i @libp2p/interface-keys -i @libp2p/interface-transport -i @libp2p/interfaces"
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^8.0.0",
