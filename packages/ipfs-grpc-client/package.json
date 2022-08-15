@@ -46,7 +46,7 @@
     "test:electron-main": "aegir test -t electron-main",
     "lint": "aegir lint",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i aegir -i ipfs-grpc-protocol -i ipfs-core-types"
+    "dep-check": "aegir dep-check -i aegir -i ipfs-grpc-protocol -i ipfs-core-types -i protobufjs-cli"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
