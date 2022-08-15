@@ -36,7 +36,7 @@
     "test": "aegir test -t node",
     "test:node": "aegir test -t node --cov",
     "clean": "aegir clean",
-    "dep-check": "aegir dep-check -i ipfs-http-client -i ipfs-core-types -i @libp2p/interfaces -i ipfs-unixfs",
+    "dep-check": "aegir dep-check -i ipfs-http-client -i ipfs-core-types -i @libp2p/interfaces -i ipfs-unixfs -i @libp2p/interface-dht",
     "build": "aegir build --no-bundle",
     "prepublishOnly": "node scripts/update-version.js"
   },
