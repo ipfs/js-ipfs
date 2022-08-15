@@ -49,7 +49,7 @@
     "ipfs-http-gateway": "^0.10.4",
     "ipfs-http-server": "^0.12.5",
     "ipfs-utils": "^9.0.6",
-    "libp2p": "next"
+    "libp2p": "0.37.3-509e56a"
   },
   "devDependencies": {
     "aegir": "^37.0.11",
