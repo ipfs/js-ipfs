@@ -26,6 +26,7 @@ We've come a long way, but this project is still in Alpha, lots of development i
 
 ## Getting started
 
+
 * Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
 * Ensure CORS is [correctly configured](https://github.com/ipfs/js-ipfs/blob/master/docs/CORS.md) for use with the HTTP client
 * Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples/tree/master) to learn how to spawn an IPFS node in Node.js and in the Browser
