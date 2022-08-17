@@ -1,7 +1,7 @@
 import type { CID } from 'multiformats/cid'
 import type { Mtime, MtimeLike } from 'ipfs-unixfs'
 
-export type Entry<Content extends AsyncIterable<Uint8Array>|Blob> =
+export type Entry<Content extends AsyncIterable<Uint8Array> | Blob> =
   | FileEntry<Content>
   | DirectoryEntry
 
@@ -10,7 +10,7 @@ export interface BaseEntry {
   mode?: number
   mtime?: Mtime
 }
-export interface FileEntry <Content extends AsyncIterable<Uint8Array>|Blob> extends BaseEntry {
+export interface FileEntry <Content extends AsyncIterable<Uint8Array> | Blob> extends BaseEntry {
   content?: Content
 }
 
