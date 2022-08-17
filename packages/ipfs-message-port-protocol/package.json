@@ -87,7 +87,7 @@
     "dep-check": "aegir dep-check -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.11.1",
+    "ipfs-core-types": "^0.11.0",
     "multiformats": "^9.5.1"
   },
   "devDependencies": {

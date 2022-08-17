@@ -52,7 +52,7 @@
     "@libp2p/interface-peer-id": "^1.0.4",
     "@libp2p/interface-peer-info": "^1.0.2",
     "@libp2p/interface-pubsub": "^2.0.0",
-    "@multiformats/multiaddr": "^10.0.0",
+    "@multiformats/multiaddr": "^10.1.8",
     "@types/node": "^18.0.0",
     "interface-datastore": "^7.0.0",
     "ipfs-unixfs": "^7.0.0",

@@ -10,6 +10,9 @@
   "references": [
     {
       "path": "../ipfs-core-types"
+    },
+    {
+      "path": "../ipfs-http-response"
     }
   ]
 }

@@ -9,13 +9,19 @@
   ],
   "references": [
     {
+      "path": "../interface-ipfs-core"
+    },
+    {
+      "path": "../ipfs-core"
+    },
+    {
+      "path": "../ipfs-core-types"
+    },
+    {
       "path": "../ipfs-message-port-protocol"
     },
     {
       "path": "../ipfs-message-port-server"
-    },
-    {
-      "path": "../ipfs-core-types"
     }
   ]
 }

@@ -9,7 +9,13 @@
   ],
   "references": [
     {
+      "path": "../ipfs-core"
+    },
+    {
       "path": "../ipfs-core-types"
+    },
+    {
+      "path": "../ipfs-grpc-protocol"
     }
   ]
 }
