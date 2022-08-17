@@ -2,15 +2,24 @@
   "name": "ipfs-core",
   "version": "0.15.4",
   "description": "JavaScript implementation of the IPFS specification",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
   "keywords": [
     "IPFS"
   ],
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "license": "(Apache-2.0 OR MIT)",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -28,27 +37,26 @@
     }
   },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./config/profiles": {
+      "types": "./src/components/config/profiles.d.ts",
+      "import": "./src/components/config/profiles.js"
+    }
+  },
   "eslintConfig": {
     "extends": "ipfs",
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "exports": {
-    ".": {
-      "import": "./src/index.js"
-    },
-    "./config/profiles": {
-      "import": "./src/components/config/profiles.js"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "build": "aegir build",

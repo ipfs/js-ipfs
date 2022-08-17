@@ -2,9 +2,24 @@
   "name": "interface-ipfs-core",
   "version": "0.155.2",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
+  "keywords": [
+    "IPFS"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -22,10 +37,17 @@
     }
   },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
   "eslintConfig": {
     "extends": "ipfs",
     "parserOptions": {
@@ -35,32 +57,12 @@
       "test/fixtures/*"
     ]
   },
-  "exports": {
-    ".": {
-      "import": "./src/index.js"
-    }
-  },
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "browser": {
-    "fs": false,
-    "os": false,
-    "path": false
-  },
   "scripts": {
     "clean": "aegir clean",
     "build": "aegir build && copyfiles './test/fixtures/**/*' ./dist",
     "lint": "aegir lint",
     "dep-check": "aegir dep-check -i ipfs-core-types -i copyfiles -i @libp2p/interfaces"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
-  },
-  "keywords": [
-    "IPFS"
-  ],
-  "license": "MIT",
   "dependencies": {
     "@ipld/car": "^4.1.0",
     "@ipld/dag-cbor": "^7.0.0",
@@ -112,74 +114,9 @@
     "sinon": "^14.0.0",
     "uint8arrays": "^3.0.0"
   },
-  "contributors": [
-    "Alan Shaw <alan.shaw@protocol.ai>",
-    "Alan Shaw <alan@tableflip.io>",
-    "Alex Potsides <alex@achingbrain.net>",
-    "Andrey <muzzzy@gmail.com>",
-    "Dan Ordille <dordille@gmail.com>",
-    "Dan Shields <35669742+NukeManDan@users.noreply.github.com>",
-    "David Dias <daviddias.p@gmail.com>",
-    "Dmitriy Ryajov <dryajov@gmail.com>",
-    "Enrico Marino <enrico.marino@email.com>",
-    "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
-    "Giles <giles.bradshaw@sigyl.com>",
-    "Haad <haadcode@users.noreply.github.com>",
-    "Henrique Dias <hacdias@gmail.com>",
-    "Hugo Dias <hugomrdias@gmail.com>",
-    "Hugo Dias <mail@hugodias.me>",
-    "Jacob Heun <jacobheun@gmail.com>",
-    "Jacob Karlsson <jacob.karlsson95@gmail.com>",
-    "Jason Papakostas <vithos@gmail.com>",
-    "Jim Pick <jim@protocol.ai>",
-    "Joel Gustafson <joelg@mit.edu>",
-    "Jonathan <jkrone@vt.edu>",
-    "Kevin Simper <kevin.simper@gmail.com>",
-    "Maciej Krüger <mkg20001@gmail.com>",
-    "Marcin Rataj <lidel@lidel.org>",
-    "Marius Darila <marius.darila@gmail.com>",
-    "Matt Ober <matt.ober3@gmail.com>",
-    "Matt Zumwalt <matt@databindery.com>",
-    "Michael Garvin <gar+gh@danger.computer>",
-    "Michael Muré <batolettre@gmail.com>",
-    "Mikeal Rogers <mikeal.rogers@gmail.com>",
-    "Nicolás Santángelo <santangelonicolas@gmail.com>",
-    "Nitin Patel <31539366+niinpatel@users.noreply.github.com>",
-    "Oli Evans <oli@tableflip.io>",
-    "Pascal Precht <pascal.precht@googlemail.com>",
-    "Pedro Santos <pedro.santos@moxy.studio>",
-    "Pedro Santos <pedromiguelsousasantos@hotmail.com>",
-    "Pedro Teixeira <i@pgte.me>",
-    "Prabhakar Poudel <yuvrajzohan@gmail.com>",
-    "Richard Littauer <richard.littauer@gmail.com>",
-    "Richard Schneider <makaretu@gmail.com>",
-    "Ryan Bell <ryan@piing.net>",
-    "Sangwon Hong <qpakzk@gmail.com>",
-    "Stephen Whitmore <stephen.whitmore@gmail.com>",
-    "Steven Allen <steven@stebalien.com>",
-    "Teri Chadbourne <terichadbourne@users.noreply.github.com>",
-    "Thiago Delgado <thiagodelgado111@gmail.com>",
-    "Travis Person <travis@protocol.ai>",
-    "Travis Person <travis@protoco.ai>",
-    "Vasco Santos <vasco.santos@moxy.studio>",
-    "Vasco Santos <vasco.santos@ua.pt>",
-    "Volker Mische <volker.mische@gmail.com>",
-    "Vutsal Singhal <vutsalsinghal@gmail.com>",
-    "dirkmc <dirkmdev@gmail.com>",
-    "greenkeeper[bot] <23040076+greenkeeper[bot]@users.noreply.github.com>",
-    "greenkeeper[bot] <greenkeeper[bot]@users.noreply.github.com>",
-    "greenkeeperio-bot <support@greenkeeper.io>",
-    "haad <haad@headbanggames.com>",
-    "isan_rivkin <isanrivkin@gmail.com>",
-    "klueq <43359723+klueq@users.noreply.github.com>",
-    "kumavis <kumavis@users.noreply.github.com>",
-    "nginnever <ginneversource@gmail.com>",
-    "reasv <7143787+reasv@users.noreply.github.com>",
-    "ron litzenberger <ron.litzenberger@gmail.com>",
-    "shunkin <hiyoko.san.ipod@gmail.com>",
-    "tcme <hi@this-connect.me>",
-    "victorbjelkholm <victorbjelkholm@gmail.com>",
-    "Łukasz Magiera <magik6k@users.noreply.github.com>",
-    "Максим Ильин <negamaxi@gmail.com>"
-  ]
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  }
 }

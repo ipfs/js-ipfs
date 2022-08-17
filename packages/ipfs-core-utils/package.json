@@ -3,11 +3,21 @@
   "version": "0.15.1",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "author": "Alex Potsides <alex@achingbrain.net>",
+  "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-utils#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -25,80 +35,96 @@
     }
   },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./agent": {
+      "types": "./src/agent.d.ts",
+      "browser": "./src/agent.browser.js",
+      "import": "./src/agent.js"
+    },
+    "./errors": {
+      "types": "./src/errors.d.ts",
+      "import": "./src/errors.js"
+    },
+    "./files/format-mode": {
+      "types": "./src/files/format-mode.d.ts",
+      "import": "./src/files/format-mode.js"
+    },
+    "./files/format-mtime": {
+      "types": "./src/files/format-mtime.d.ts",
+      "import": "./src/files/format-mtime.js"
+    },
+    "./files/normalise-content": {
+      "types": "./src/files/normalise-content.d.ts",
+      "import": "./src/files/normalise-content.js"
+    },
+    "./files/normalise-content.browser": {
+      "types": "./src/files/normalise-content.browser.d.ts",
+      "import": "./src/files/normalise-content.browser.js"
+    },
+    "./files/normalise-input-multiple": {
+      "types": "./src/files/normalise-input-multiple.d.ts",
+      "import": "./src/files/normalise-input-multiple.js"
+    },
+    "./files/normalise-input-multiple.browser": {
+      "types": "./src/files/normalise-input-multiple.browser.d.ts",
+      "import": "./src/files/normalise-input-multiple.browser.js"
+    },
+    "./files/normalise-input-single": {
+      "types": "./src/files/normalise-input-single.d.ts",
+      "import": "./src/files/normalise-input-single.js"
+    },
+    "./files/normalise-input-single.browser": {
+      "types": "./src/files/normalise-input-single.browser.d.ts",
+      "import": "./src/files/normalise-input-single.browser.js"
+    },
+    "./multibases": {
+      "types": "./src/multibases.d.ts",
+      "import": "./src/multibases.js"
+    },
+    "./multicodecs": {
+      "types": "./src/multicodecs.d.ts",
+      "import": "./src/multicodecs.js"
+    },
+    "./multihashes": {
+      "types": "./src/multihashes.d.ts",
+      "import": "./src/multihashes.js"
+    },
+    "./multipart-request": {
+      "types": "./src/multipart-request.d.ts",
+      "browser": "./src/multipart-request.browser.js",
+      "import": "./src/multipart-request.js"
+    },
+    "./pins/normalise-input": {
+      "types": "./src/pins/normalise-input.d.ts",
+      "import": "./src/pins/normalise-input.js"
+    },
+    "./to-cid-and-path": {
+      "types": "./src/to-cid-and-path.d.ts",
+      "import": "./src/to-cid-and-path.js"
+    },
+    "./to-url-string": {
+      "types": "./src/to-url-string.d.ts",
+      "import": "./src/to-url-string.js"
+    },
+    "./with-timeout-option": {
+      "types": "./src/with-timeout-option.d.ts",
+      "import": "./src/with-timeout-option.js"
+    }
+  },
   "eslintConfig": {
     "extends": "ipfs",
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "exports": {
-    ".": {
-      "import": "./src/index.js"
-    },
-    "./files/normalise-input-single": {
-      "import": "./src/files/normalise-input-single.js"
-    },
-    "./files/normalise-input-single.browser": {
-      "import": "./src/files/normalise-input-single.browser.js"
-    },
-    "./files/normalise-input-multiple": {
-      "import": "./src/files/normalise-input-multiple.js"
-    },
-    "./files/normalise-input-multiple.browser": {
-      "import": "./src/files/normalise-input-multiple.browser.js"
-    },
-    "./files/normalise-content": {
-      "import": "./src/files/normalise-content.js"
-    },
-    "./files/normalise-content.browser": {
-      "import": "./src/files/normalise-content.browser.js"
-    },
-    "./files/format-mode": {
-      "import": "./src/files/format-mode.js"
-    },
-    "./files/format-mtime": {
-      "import": "./src/files/format-mtime.js"
-    },
-    "./pins/normalise-input": {
-      "import": "./src/pins/normalise-input.js"
-    },
-    "./errors": {
-      "import": "./src/errors.js"
-    },
-    "./multibases": {
-      "import": "./src/multibases.js"
-    },
-    "./multicodecs": {
-      "import": "./src/multicodecs.js"
-    },
-    "./multihashes": {
-      "import": "./src/multihashes.js"
-    },
-    "./to-cid-and-path": {
-      "import": "./src/to-cid-and-path.js"
-    },
-    "./to-url-string": {
-      "import": "./src/to-url-string.js"
-    },
-    "./with-timeout-option": {
-      "import": "./src/with-timeout-option.js"
-    },
-    "./agent": {
-      "browser": "./src/agent.browser.js",
-      "import": "./src/agent.js"
-    },
-    "./multipart-request": {
-      "browser": "./src/multipart-request.browser.js",
-      "import": "./src/multipart-request.js"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "test": "aegir test",
@@ -113,7 +139,6 @@
     "dep-check": "aegir dep-check -i ipfs-core-types",
     "build": "aegir build"
   },
-  "license": "MIT",
   "dependencies": {
     "@libp2p/logger": "^2.0.0",
     "@multiformats/multiaddr": "^10.0.0",

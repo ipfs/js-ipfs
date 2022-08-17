@@ -2,22 +2,49 @@
   "name": "ipfs-grpc-server",
   "version": "0.9.4",
   "description": "A server library for the IPFS gRPC API",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
   "keywords": [
     "ipfs"
   ],
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-server#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "license": "(Apache-2.0 OR MIT)",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ]
+    }
+  },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
     ".": {
+      "types": "./dist/src/index.d.ts",
       "import": "./src/index.js"
     }
   },
@@ -26,10 +53,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "lint": "aegir lint",
@@ -43,6 +66,7 @@
     "@grpc/grpc-js": "^1.1.8",
     "@libp2p/logger": "^2.0.0",
     "@libp2p/peer-id": "^1.1.10",
+    "@multiformats/multiaddr": "^10.0.0",
     "change-case": "^4.1.1",
     "coercer": "^1.1.2",
     "ipfs-core-types": "^0.11.1",
@@ -52,7 +76,6 @@
     "it-peekable": "^1.0.2",
     "it-pipe": "^2.0.3",
     "it-pushable": "^3.0.0",
-    "@multiformats/multiaddr": "^10.0.0",
     "nanoid": "^4.0.0",
     "protobufjs": "^7.0.0",
     "uint8arrays": "^3.0.0",

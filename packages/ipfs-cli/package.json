@@ -2,15 +2,24 @@
   "name": "ipfs-cli",
   "version": "0.13.5",
   "description": "JavaScript implementation of the IPFS specification",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
   "keywords": [
     "IPFS"
   ],
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-cli#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "license": "(Apache-2.0 OR MIT)",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -28,27 +37,26 @@
     }
   },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./utils": {
+      "types": "./src/utils.d.ts",
+      "import": "./src/utils.js"
+    }
+  },
   "eslintConfig": {
     "extends": "ipfs",
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "exports": {
-    ".": {
-      "import": "./src/index.js"
-    },
-    "./utils": {
-      "import": "./src/utils.js"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "lint": "aegir lint",

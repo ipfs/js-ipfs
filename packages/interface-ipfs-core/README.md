@@ -1,20 +1,20 @@
 # interface-ipfs-core <!-- omit in toc -->
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?style=flat-square&path=packages/interface-ipfs-core)](https://david-dm.org/ipfs/js-ipfs?path=packages/interface-ipfs-core)
+[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
+[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
+[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
 
-> A test suite and interface you can use to implement an IPFS core interface.
+> A test suite and interface you can use to implement a IPFS core interface.
 
-## Table of Contents <!-- omit in toc -->
+## Table of contents <!-- omit in toc -->
 
+- [Install](#install)
 - [Background](#background)
 - [Core API](#core-api)
 - [Modules that implement the interface](#modules-that-implement-the-interface)
 - [Badge](#badge)
-- [Install](#install)
 - [Usage](#usage)
 - [Running tests](#running-tests)
   - [Running tests by command](#running-tests-by-command)
@@ -22,9 +22,14 @@
   - [Running only specific tests](#running-only-specific-tests)
 - [Skipping tests](#skipping-tests)
   - [Skipping specific tests](#skipping-specific-tests)
-- [Contribute](#contribute)
-  - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
+- [Contribute](#contribute)
+
+## Install
+
+```console
+$ npm i interface-ipfs-core
+```
 
 ## Background
 
@@ -53,10 +58,6 @@ Include this badge in your readme if you make a new module that implements inter
 ```md
 [![IPFS Core API Compatible](https://cdn.rawgit.com/ipfs/interface-ipfs-core/master/img/badge.svg)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
 ```
-
-## Install
-
-In JavaScript land:
 
 ```console
 $ npm install interface-ipfs-core
@@ -163,18 +164,23 @@ tests.repo(createCommon, {
 })
 ```
 
-## Contribute
-
-Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/js-ipfs/issues)!
-
-This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
-
-### Want to hack on IPFS?
-
-[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
-
 ## License
 
-Copyright (c) Protocol Labs, Inc. under the **MIT License**. See [LICENSE.md](./LICENSE.md) for details.
+Licensed under either of
+
+- Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
+
+## Contribute
+
+Contributions welcome! Please check out [the issues](https://github.com/ipfs/js-ipfs/issues).
+
+Also see our [contributing document](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) for more information on how we work, and about contributing in general.
+
+Please be aware that all interactions related to this repo are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
 [UnixFS]: https://github.com/ipfs/specs/tree/master/unixfs

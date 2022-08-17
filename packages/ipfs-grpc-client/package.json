@@ -2,22 +2,49 @@
   "name": "ipfs-grpc-client",
   "version": "0.10.2",
   "description": "A client library for the IPFS gRPC API",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-client#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
   "keywords": [
     "ipfs"
   ],
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-client#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "license": "(Apache-2.0 OR MIT)",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ]
+    }
+  },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
     ".": {
+      "types": "./dist/src/index.d.ts",
       "import": "./src/index.js"
     }
   },
@@ -26,14 +53,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "browser": {
-    "./src/grpc/transport.js": "./src/grpc/transport.browser.js",
-    "./src/grpc/transport.node.js": "./src/grpc/transport.browser.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "build": "aegir build",
@@ -52,6 +71,7 @@
     "@improbable-eng/grpc-web": "^0.15.0",
     "@libp2p/logger": "^2.0.0",
     "@libp2p/peer-id": "^1.1.10",
+    "@multiformats/multiaddr": "^10.0.0",
     "change-case": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.11.1",
@@ -60,7 +80,6 @@
     "ipfs-unixfs": "^7.0.0",
     "it-first": "^1.0.4",
     "it-pushable": "^3.0.0",
-    "@multiformats/multiaddr": "^10.0.0",
     "multiformats": "^9.5.1",
     "p-defer": "^4.0.0",
     "protobufjs": "^7.0.0",
@@ -73,5 +92,9 @@
     "it-all": "^1.0.4",
     "protobufjs-cli": "^1.0.0",
     "sinon": "^14.0.0"
+  },
+  "browser": {
+    "./src/grpc/transport.js": "./src/grpc/transport.browser.js",
+    "./src/grpc/transport.node.js": "./src/grpc/transport.browser.js"
   }
 }

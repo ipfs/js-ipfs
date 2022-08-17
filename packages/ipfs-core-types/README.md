@@ -1,34 +1,35 @@
 # ipfs-core-types <!-- omit in toc -->
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Dependency Status](https://david-dm.org/ipfs/js-ipfs/status.svg?style=flat-square&path=packages/ipfs-core-types)](https://david-dm.org/ipfs/js-ipfs?path=packages/ipfs-core-types)
+[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
+[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
+[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
 
-> IPFS interface definitions used by implementations for API compatibility
+> IPFS interface definitions used by implementations for API compatibility.
 
-## Table of Contents <!-- omit in toc -->
+## Table of contents <!-- omit in toc -->
 
-- [Background](#background)
 - [Install](#install)
+- [Background](#background)
 - [Usage](#usage)
   - [In JSDoc syntax](#in-jsdoc-syntax)
   - [In Typescript](#in-typescript)
 - [Validation](#validation)
-- [Contribute](#contribute)
-  - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
 - [License](#license)
+- [Contribute](#contribute)
+
+## Install
+
+```console
+$ npm i ipfs-core-types
+```
 
 ## Background
 
 The primary goal of this module is to define and ensure that IPFS core implementations and their respective client libraries implement the same interface, so that developers can quickly change between a local and a remote node without having to change their applications.
 
 It offers a set of typescript interface definitions that define the IPFS core API.  Once your implementation implements those APIs you can use the tests found in the [interface-ipfs-core](https://www.npmjs.com/package/interface-ipfs-core) module to validate your implementation.
-
-## Install
-
-In JavaScript land:
 
 ```console
 $ npm install ipfs-core-types
@@ -62,19 +63,21 @@ class MyImpl implements IPFS {
 
 In order to validate API compatibility you can run [typescript](https://www.typescriptlang.org/) over your implementation which will point out all the API compatibilities if there are some.
 
+## License
+
+Licensed under either of
+
+- Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
 
 ## Contribute
 
-Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/js-ipfs/issues)!
+Contributions welcome! Please check out [the issues](https://github.com/ipfs/js-ipfs/issues).
 
-This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+Also see our [contributing document](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) for more information on how we work, and about contributing in general.
 
-### Want to hack on IPFS?
+Please be aware that all interactions related to this repo are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
 
 [![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
-
-## License
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
-
-[![](https://github.com/ipfs/js-ipfs/raw/master/ipfs-core-types/img/badge.png)](https://github.com/ipfs/js-ipfs/tree/master/ipfs-core-types)
