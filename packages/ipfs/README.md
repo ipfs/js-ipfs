@@ -1,3 +1,28 @@
+# ipfs <!-- omit in toc -->
+
+[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
+[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
+[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
+
+> JavaScript implementation of the IPFS specification
+
+## Table of contents <!-- omit in toc -->
+
+- [Install](#install)
+- [Getting Started](#getting-started)
+  - [Next Steps](#next-steps)
+- [Want to hack on IPFS?](#want-to-hack-on-ipfs)
+- [License](#license)
+- [Contribute](#contribute)
+
+## Install
+
+```console
+$ npm i ipfs
+```
+
 <p align="center">
   <a href="https://js.ipfs.io" title="JS IPFS">
     <img src="https://ipfs.io/ipfs/Qme6KJdKcp85TYbLxuLV7oQzMiLremD7HMoXLZEmgo6Rnh/js-ipfs-sticker.png" alt="IPFS in JavaScript logo" width="244" />
@@ -24,17 +49,7 @@
 
 If you want to integrate IPFS into your application without including a CLI or HTTP server, see the [ipfs-core](https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core) module.
 
-## Table of Contents <!-- omit in toc -->
-
-- [Getting Started](#getting-started)
-  - [Install](#install)
-  - [Next Steps](#next-steps)
-- [Want to hack on IPFS?](#want-to-hack-on-ipfs)
-- [License](#license)
-
 ## Getting Started
-
-### Install
 
 Installing `ipfs` globally will give you the `jsipfs` command which you can use to start a daemon running:
 
@@ -58,13 +73,13 @@ added QmXXY5ZxbtuYj6DnfApLiGstzPN7fvSyigrRee3hDWPCaf hello-world.txt
 
 ### Next Steps
 
-* Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
-* Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
-* Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
-* Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
-* Check out https://docs.ipfs.io for tips, how-tos and more
-* See https://blog.ipfs.io for news and more
-* Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
+- Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
+- Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+- Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
+- Head over to <https://proto.school> to take interactive tutorials that cover core IPFS APIs
+- Check out <https://docs.ipfs.io> for tips, how-tos and more
+- See <https://blog.ipfs.io> for news and more
+- Need help? Please ask 'How do I?' questions on <https://discuss.ipfs.io>
 
 ## Want to hack on IPFS?
 
@@ -85,6 +100,19 @@ Find out about chat channels, the IPFS newsletter, the IPFS blog, and more in th
 
 ## License
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
+Licensed under either of
 
-[![](https://github.com/ipfs/js-ipfs/raw/master/packages/interface-ipfs-core/img/badge.png)](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core)
+- Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
+
+## Contribute
+
+Contributions welcome! Please check out [the issues](https://github.com/ipfs/js-ipfs/issues).
+
+Also see our [contributing document](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) for more information on how we work, and about contributing in general.
+
+Please be aware that all interactions related to this repo are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)

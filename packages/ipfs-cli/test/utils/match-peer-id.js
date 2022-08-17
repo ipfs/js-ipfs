@@ -1,7 +1,7 @@
 import sinon from 'sinon'
 
 /**
- * @param {import('@libp2p/interfaces/peer-id').PeerId} peerId
+ * @param {import('@libp2p/interface-peer-id').PeerId} peerId
  * @returns {import('sinon').SinonMatcher}
  */
 export function matchPeerId (peerId) {

@@ -1,15 +1,17 @@
 import * as ipns from 'ipns'
 import { importKey } from '@libp2p/crypto/keys'
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 import errcode from 'err-code'
 import { logger } from '@libp2p/logger'
 import { peerIdFromKeys } from '@libp2p/peer-id'
+import { TimeoutController } from 'timeout-abort-controller'
 
 const log = logger('ipfs:ipns:republisher')
 
 /**
- * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
  */
 
 const minute = 60 * 1000
@@ -23,7 +25,7 @@ export class IpnsRepublisher {
    * @param {import('./publisher').IpnsPublisher} publisher
    * @param {import('interface-datastore').Datastore} datastore
    * @param {PeerId} peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} keychain
+   * @param {import('@libp2p/interface-keychain').KeyChain} keychain
    * @param {object} options
    * @param {string} options.pass
    * @param {number} [options.initialBroadcastInterval]
@@ -87,7 +89,17 @@ export class IpnsRepublisher {
     const { pass } = this._options
     let firstRun = true
 
-    republishHandle._task = () => this._republishEntries(this._peerId, pass)
+    republishHandle._task = async () => {
+      const timeoutController = new TimeoutController(30000)
+
+      try {
+        await this._republishEntries(this._peerId, pass, {
+          signal: timeoutController.signal
+        })
+      } finally {
+        timeoutController.clear()
+      }
+    }
 
     republishHandle.runPeriodically(() => {
       if (firstRun) {
@@ -116,12 +128,13 @@ export class IpnsRepublisher {
   /**
    * @param {PeerId} peerId
    * @param {string} pass
+   * @param {AbortOptions} options
    */
-  async _republishEntries (peerId, pass) {
+  async _republishEntries (peerId, pass, options) {
     // TODO: Should use list of published entries.
     // We can't currently *do* that because go uses this method for now.
     try {
-      await this._republishEntry(peerId)
+      await this._republishEntry(peerId, options)
     } catch (/** @type {any} */ err) {
       const errMsg = 'cannot republish entry for the node\'s private key'
 
@@ -143,7 +156,7 @@ export class IpnsRepublisher {
           const privKey = await importKey(pem, pass)
           const peerIdKey = await peerIdFromKeys(privKey.public.bytes, privKey.bytes)
 
-          await this._republishEntry(peerIdKey)
+          await this._republishEntry(peerIdKey, options)
         }
       } catch (/** @type {any} */ err) {
         log.error(err)
@@ -153,11 +166,12 @@ export class IpnsRepublisher {
 
   /**
    * @param {PeerId} peerId
+   * @param {AbortOptions} options
    */
-  async _republishEntry (peerId) {
+  async _republishEntry (peerId, options) {
     try {
       const value = await this._getPreviousValue(peerId)
-      await this._publisher.publishWithEOL(peerId, value, defaultRecordLifetime)
+      await this._publisher.publishWithEOL(peerId, value, defaultRecordLifetime, options)
     } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_NO_ENTRY_FOUND') {
         return

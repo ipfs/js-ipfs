@@ -4,5 +4,8 @@ updates:
   directory: "/"
   schedule:
     interval: daily
-    time: "11:00"
+    time: "10:00"
   open-pull-requests-limit: 10
+  commit-message:
+    prefix: "deps"
+    prefix-development: "deps(dev)"

@@ -119,7 +119,7 @@ export interface PreloadOptions {
 export type IPFSPath = CID | string
 
 export interface BufferStore {
-  put: (key: Uint8Array, value: Uint8Array) => Promise<void>
-  get: (key: Uint8Array) => Promise<Uint8Array>
+  put: (key: Uint8Array, value: Uint8Array, options?: AbortOptions) => Promise<void>
+  get: (key: Uint8Array, options?: AbortOptions) => Promise<Uint8Array>
   stores: any[]
 }

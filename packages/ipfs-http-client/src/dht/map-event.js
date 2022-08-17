@@ -13,7 +13,7 @@ import { Multiaddr } from '@multiformats/multiaddr'
 import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 /**
@@ -46,7 +46,7 @@ export const mapEvent = (event) => {
 
   if (event.Type === FinalPeer) {
     // dht.query ends with a FinalPeer event with no Responses
-    /** @type {import('@libp2p/interfaces/peer-info').PeerInfo} */
+    /** @type {import('@libp2p/interface-peer-info').PeerInfo} */
     let peer = {
       // @ts-expect-error go-ipfs does not return this
       id: event.ID ?? peerIdFromString(event.ID),

@@ -5,7 +5,7 @@ import { createStat } from './stat.js'
 
 /**
  * @typedef {import('../../types').NetworkService} NetworkService
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */

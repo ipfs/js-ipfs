@@ -34,16 +34,14 @@ export function errorHandler (server) {
     if (process.env.DEBUG || statusCode >= 500) {
       const { req } = request.raw
       const debug = {
-        method: req.method,
-        url: request.url,
+        method: req.method?.toString(),
+        url: request.url?.toString(),
         headers: req.headers,
-        info: request.info,
         payload: request.payload,
         response: res.output.payload
       }
 
       server.logger.error(debug)
-      server.logger.error(res)
     }
 
     const response = h.response({

@@ -292,7 +292,7 @@ describe('/object', () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const pbNode = {
-        Data: uint8ArrayFromString('another'),
+        Data: Uint8Array.from(uint8ArrayFromString('another')),
         Links: [{
           Name: 'some link',
           Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'),
@@ -341,7 +341,7 @@ describe('/object', () => {
       ipfs.bases.getBase.withArgs('base64').returns(base64)
 
       const pbNode = {
-        Data: uint8ArrayFromString('another'),
+        Data: Uint8Array.from(uint8ArrayFromString('another')),
         Links: [{
           Name: 'some link',
           Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V').toV1(),
@@ -390,7 +390,7 @@ describe('/object', () => {
       ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
 
       const pbNode = {
-        Data: uint8ArrayFromString('another'),
+        Data: Uint8Array.from(uint8ArrayFromString('another')),
         Links: [{
           Name: 'some link',
           Hash: CID.parse('QmXg9Pp2ytZ14xgmQjYEiHjVjMFXzCVVEcRTWJBmLgR39V'),

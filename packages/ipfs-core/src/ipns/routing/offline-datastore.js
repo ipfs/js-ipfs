@@ -6,6 +6,10 @@ import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 const log = logger('ipfs:ipns:offline-datastore')
 
+/**
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
+ */
+
 // Offline datastore aims to mimic the same encoding as routing when storing records
 // to the local datastore
 export class OfflineDatastore {
@@ -23,8 +27,9 @@ export class OfflineDatastore {
    *
    * @param {Uint8Array} key - identifier of the value.
    * @param {Uint8Array} value - value to be stored.
+   * @param {AbortOptions} [options]
    */
-  async put (key, value) { // eslint-disable-line require-await
+  async put (key, value, options) { // eslint-disable-line require-await
     if (!(key instanceof Uint8Array)) {
       throw errcode(new Error('Offline datastore key must be a Uint8Array'), 'ERR_INVALID_KEY')
     }
@@ -45,15 +50,16 @@ export class OfflineDatastore {
     // Marshal to libp2p record as the DHT does
     const record = new Libp2pRecord(key, value, new Date())
 
-    await this._datastore.put(routingKey, record.serialize())
+    await this._datastore.put(routingKey, record.serialize(), options)
   }
 
   /**
    * Get a value from the local datastore indexed by the received key properly encoded.
    *
    * @param {Uint8Array} key - identifier of the value to be obtained.
+   * @param {AbortOptions} [options]
    */
-  async get (key) {
+  async get (key, options) {
     if (!(key instanceof Uint8Array)) {
       throw errcode(new Error('Offline datastore key must be a Uint8Array'), 'ERR_INVALID_KEY')
     }
@@ -67,7 +73,7 @@ export class OfflineDatastore {
       throw errcode(new Error('Not possible to generate the routing key'), 'ERR_GENERATING_ROUTING_KEY')
     }
 
-    const res = await this._datastore.get(routingKey)
+    const res = await this._datastore.get(routingKey, options)
 
     // Unmarshal libp2p record as the DHT does
     let record

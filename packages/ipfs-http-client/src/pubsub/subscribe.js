@@ -7,7 +7,7 @@ const log = logger('ipfs-http-client:pubsub:subscribe')
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {(err: Error, fatal: boolean, msg?: Message) => void} ErrorHandlerFn
  * @typedef {import('ipfs-core-types/src/pubsub').API<HTTPClientExtraOptions & { onError?: ErrorHandlerFn }>} PubsubAPI
  * @typedef {import('../types').Options} Options
@@ -107,12 +107,23 @@ async function readMessages (response, { onMessage, onEnd, onError }) {
           continue
         }
 
-        onMessage({
-          from: peerIdFromString(msg.from),
-          data: rpcToBytes(msg.data),
-          sequenceNumber: rpcToBigInt(msg.seqno),
-          topic: rpcToText(msg.topicIDs[0])
-        })
+        if (msg.from != null && msg.seqno != null) {
+          onMessage({
+            type: 'signed',
+            from: peerIdFromString(msg.from),
+            data: rpcToBytes(msg.data),
+            sequenceNumber: rpcToBigInt(msg.seqno),
+            topic: rpcToText(msg.topicIDs[0]),
+            key: rpcToBytes(msg.key ?? 'u'),
+            signature: rpcToBytes(msg.signature ?? 'u')
+          })
+        } else {
+          onMessage({
+            type: 'unsigned',
+            data: rpcToBytes(msg.data),
+            topic: rpcToText(msg.topicIDs[0])
+          })
+        }
       } catch (/** @type {any} */ err) {
         err.message = `Failed to parse pubsub message: ${err.message}`
         onError(err, false, msg) // Not fatal

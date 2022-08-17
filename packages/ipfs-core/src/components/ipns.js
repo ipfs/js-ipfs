@@ -7,7 +7,8 @@ import { logger } from '@libp2p/logger'
 const log = logger('ipfs:components:ipns')
 
 /**
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
  *
  * @typedef {object} ExperimentalOptions
  * @property {boolean} [ipnsPubsub]
@@ -59,8 +60,8 @@ export class IPNSAPI {
    *
    * @param {object} config
    * @param {import('ipfs-repo').IPFSRepo} config.repo
-   * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
+   * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
+   * @param {import('@libp2p/interface-keychain').KeyChain} config.keychain
    */
   startOffline ({ repo, peerId, keychain }) {
     if (this.offline != null) {
@@ -79,8 +80,8 @@ export class IPNSAPI {
    * @param {object} config
    * @param {import('libp2p').Libp2p} config.libp2p
    * @param {import('ipfs-repo').IPFSRepo} config.repo
-   * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
+   * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
+   * @param {import('@libp2p/interface-keychain').KeyChain} config.keychain
    */
   async startOnline ({ libp2p, repo, peerId, keychain }) {
     if (this.online != null) {
@@ -106,15 +107,19 @@ export class IPNSAPI {
    * @param {PeerId} peerId
    * @param {Uint8Array} value
    * @param {number} lifetime
+   * @param {AbortOptions} [options]
    */
-  publish (peerId, value, lifetime) {
-    return this.getIPNS().publish(peerId, value, lifetime)
+  publish (peerId, value, lifetime, options) {
+    return this.getIPNS().publish(peerId, value, lifetime, options)
   }
 
   /**
    *
    * @param {string} name
-   * @param {*} [options]
+   * @param {object} [options]
+   * @param {boolean} [options.nocache]
+   * @param {boolean} [options.recursive]
+   * @param {AbortSignal} [options.signal]
    */
   resolve (name, options) {
     return this.getIPNS().resolve(name, options)
@@ -123,8 +128,9 @@ export class IPNSAPI {
   /**
    * @param {PeerId} peerId
    * @param {Uint8Array} value
+   * @param {AbortOptions} [options]
    */
-  initializeKeyspace (peerId, value) {
-    return this.getIPNS().initializeKeyspace(peerId, value)
+  initializeKeyspace (peerId, value, options) {
+    return this.getIPNS().initializeKeyspace(peerId, value, options)
   }
 }

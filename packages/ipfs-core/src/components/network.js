@@ -22,7 +22,7 @@ import { BlockStorage } from '../block-storage.js'
  * @typedef {import('../types').Print} Print
  * @typedef {import('libp2p').Libp2p} libp2p
  * @typedef {import('ipfs-bitswap').IPFSBitswap} Bitswap
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
  */
 
@@ -76,7 +76,9 @@ export class Network {
 
     const bitswap = createBitswap(libp2p, repo.blocks, {
       statsEnabled: true,
-      hashLoader: hashers
+      hashLoader: hashers,
+      maxInboundStreams: 1024,
+      maxOutboundStreams: 1024
     })
     await bitswap.start()
 

@@ -3,13 +3,13 @@ import { Service } from '../utils/service.js'
 /**
  * @param {object} config
  * @param {import('../types').NetworkService} config.network
- * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
+ * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
  * @param {import('ipfs-repo').IPFSRepo} config.repo
  * @param {import('../types').Print} config.print
  * @param {import('../types').Preload} config.preload
  * @param {import('../types').MfsPreload} config.mfsPreload
  * @param {import('./ipns').IPNSAPI} config.ipns
- * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
+ * @param {import('@libp2p/interface-keychain').KeyChain} config.keychain
  * @param {import('ipfs-core-utils/multihashes').Multihashes} config.hashers
  * @param {import('../types').Options} config.options
  */

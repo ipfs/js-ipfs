@@ -15,7 +15,7 @@ import { ipnsValidator } from 'ipns/validator'
 import { ipnsSelector } from 'ipns/selector'
 import { WebSockets } from '@libp2p/websockets'
 import { Mplex } from '@libp2p/mplex'
-import { NOISE } from '@chainsafe/libp2p-noise'
+import { Noise } from '@chainsafe/libp2p-noise'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true, concatArrays: true })
 
@@ -31,7 +31,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true, concatArrays: true 
  * @property {DekOptions} [dek]
  *
  * @typedef {import('ipfs-repo').IPFSRepo} Repo
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  * @typedef {import('../types').Options} IPFSOptions
  * @typedef {import('libp2p').Libp2p} LibP2P
  * @typedef {import('libp2p').Libp2pOptions} Libp2pOptions
@@ -125,12 +125,12 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
     transports: [],
     streamMuxers: [
       new Mplex({
-        // temporary fix until we can limit streams on a per-protocol basis
-        maxStreamsPerConnection: Infinity
+        maxInboundStreams: 256,
+        maxOutboundStreams: 1024
       })
     ],
     connectionEncryption: [
-      NOISE
+      new Noise()
     ],
     relay: {
       enabled: get(options, 'relay.enabled', get(config, 'relay.enabled', true)),

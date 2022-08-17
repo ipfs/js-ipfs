@@ -4,7 +4,7 @@ import getDefaultConfig from 'ipfs-core-config/config'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { peerIdFromKeys } from '@libp2p/peer-id'
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 import mergeOpts from 'merge-options'
 import { profiles as configProfiles } from './config/profiles.js'
 import { NotEnabledError, NotInitializedError } from '../errors.js'
@@ -24,8 +24,8 @@ const log = logger('ipfs:components:peer:storage')
  * @typedef {import('../types').Print} Print
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  * @typedef {import('@libp2p/crypto/keys').KeyTypes} KeyType
- * @typedef {import('@libp2p/interfaces/keychain').KeyChain} Keychain
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-keychain').KeyChain} Keychain
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 export class Storage {

@@ -2,42 +2,75 @@
   "name": "ipfs-message-port-server",
   "version": "0.12.1",
   "description": "IPFS server library for exposing IPFS node over message port",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-message-port-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
   "keywords": [
     "ipfs",
     "message-port",
     "worker"
   ],
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-message-port-server#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "license": "(Apache-2.0 OR MIT)",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ]
+    }
+  },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
   "exports": {
     ".": {
+      "types": "./dist/src/index.d.ts",
       "import": "./src/index.js"
     },
     "./block": {
+      "types": "./src/block.d.ts",
       "import": "./src/block.js"
     },
     "./core": {
+      "types": "./src/core.d.ts",
       "import": "./src/core.js"
     },
     "./dag": {
+      "types": "./src/dag.d.ts",
       "import": "./src/dag.js"
     },
     "./files": {
+      "types": "./src/files.d.ts",
       "import": "./src/files.js"
     },
     "./server": {
+      "types": "./src/server.d.ts",
       "import": "./src/server.js"
     },
     "./service": {
+      "types": "./src/service.d.ts",
       "import": "./src/service.js"
     }
   },
@@ -46,13 +79,6 @@
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "browser": {
-    "worker_threads": false
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "build": "aegir build",
@@ -66,16 +92,15 @@
     "dep-check": "aegir dep-check -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.11.1",
-    "ipfs-message-port-protocol": "^0.12.1",
+    "ipfs-core-types": "^0.11.0",
+    "ipfs-message-port-protocol": "^0.12.0",
     "it-all": "^1.0.4"
   },
   "devDependencies": {
     "aegir": "^37.0.11",
     "multiformats": "^9.5.1"
   },
-  "engines": {
-    "node": ">=15.0.0",
-    "npm": ">=3.0.0"
+  "browser": {
+    "worker_threads": false
   }
 }
