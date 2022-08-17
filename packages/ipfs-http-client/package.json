@@ -90,7 +90,7 @@
   "devDependencies": {
     "aegir": "^37.0.11",
     "delay": "^5.0.0",
-    "go-ipfs": "^0.12.1",
+    "go-ipfs": "^0.14.0",
     "ipfsd-ctl": "^12.0.0",
     "it-all": "^1.0.4",
     "it-first": "^1.0.4",

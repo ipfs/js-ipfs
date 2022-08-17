@@ -90,7 +90,7 @@
     "aegir": "^37.0.11",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
-    "go-ipfs": "^0.12.1",
+    "go-ipfs": "^0.14.0",
     "interface-ipfs-core": "^0.155.0",
     "ipfs-client": "^0.8.0",
     "ipfs-core-types": "^0.11.0",
