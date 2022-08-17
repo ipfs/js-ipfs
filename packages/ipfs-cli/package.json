@@ -81,7 +81,7 @@
     "it-merge": "^1.0.3",
     "it-pipe": "^2.0.3",
     "it-split": "^1.0.0",
-    "it-tar": "^5.0.0",
+    "it-tar": "^6.0.0",
     "jsondiffpatch": "^0.4.1",
     "multiformats": "^9.5.1",
     "parse-duration": "^1.0.0",

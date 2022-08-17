@@ -126,7 +126,7 @@
     "it-peekable": "^1.0.2",
     "it-pipe": "^2.0.3",
     "it-pushable": "^3.0.0",
-    "it-tar": "^5.0.0",
+    "it-tar": "^6.0.0",
     "it-to-buffer": "^2.0.0",
     "just-safe-set": "^4.0.2",
     "libp2p": "next",

@@ -98,7 +98,7 @@
     "it-map": "^1.0.4",
     "it-pipe": "^2.0.3",
     "it-pushable": "^3.0.0",
-    "it-tar": "^5.0.0",
+    "it-tar": "^6.0.0",
     "it-to-buffer": "^2.0.0",
     "merge-options": "^3.0.4",
     "multiformats": "^9.5.1",
