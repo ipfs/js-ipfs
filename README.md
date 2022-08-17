@@ -24,7 +24,6 @@
 
 We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of 🐉..
 
-
 ## Getting started
 
 * Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
