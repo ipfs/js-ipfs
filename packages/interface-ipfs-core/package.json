@@ -84,7 +84,7 @@
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.11.1",
     "ipfs-unixfs": "^7.0.0",
-    "ipfs-unixfs-importer": "^10.0.0",
+    "ipfs-unixfs-importer": "^10.0.1",
     "ipfs-utils": "^9.0.6",
     "ipns": "^2.0.2",
     "is-ipfs": "^6.0.1",
