@@ -6,6 +6,9 @@ import { Multiaddr } from '@multiformats/multiaddr'
 import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
 import createNode from './utils/create-node.js'
 import createConfig from 'ipfs-core-config/config'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { unmarshalPrivateKey } from '@libp2p/crypto/keys'
+import { peerIdFromKeys } from '@libp2p/peer-id'
 
 const { Bootstrap: bootstrapList } = createConfig()
 
@@ -16,6 +19,8 @@ describe('config', function () {
   let ipfs
   /** @type {() => Promise<void>} */
   let cleanup
+  /** @type {import("ipfs-repo/dist/src/types").IPFSRepo} */
+  let repo
 
   before(async () => {
     const res = await createNode({
@@ -25,6 +30,7 @@ describe('config', function () {
     })
     ipfs = res.ipfs
     cleanup = res.cleanup
+    repo = res.repo
   })
 
   after(() => cleanup())
@@ -48,5 +54,17 @@ describe('config', function () {
     } else {
       expect(onlyWssOrResolvableAddr).to.be.false()
     }
+  })
+  it('does not store node private key in clear text', async () => {
+    const config = await repo.config.getAll()
+    const { Identity } = config
+    const peerId = await ipfs.id()
+    const peerIdString = peerId.id.toString()
+    expect(peerIdString).to.equal(Identity?.PeerID)
+    const privKey = Identity?.PrivKey || ''
+    const buf = uint8ArrayFromString(privKey, 'base64pad')
+    const key = await unmarshalPrivateKey(buf)
+    const pwntId = await peerIdFromKeys(key.public.bytes, key.bytes)
+    expect(peerIdString).not.equal(pwntId.toString())
   })
 })
