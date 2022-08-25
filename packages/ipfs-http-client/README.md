@@ -33,6 +33,7 @@
   - [Importing the module and usage](#importing-the-module-and-usage)
   - [In a web browser](#in-a-web-browser)
   - [Custom Headers](#custom-headers)
+  - [Infura Header](#Infura-header)
   - [Global Timeouts](#global-timeouts)
 - [Development](#development)
   - [Testing](#testing)
@@ -348,6 +349,23 @@ const ipfs = create({
     authorization: 'Bearer ' + TOKEN
   }
 })
+```
+
+### Infura Header
+
+If you wish to send infura headers with each request made by this library, for example, the Authorization header. You can use the config to do so:
+
+```js
+const auth =
+    'Basic ' + Buffer.from(INFURA_ID + ':' + INFURA_SECRET_KEY).toString('base64');
+const client = ipfsClient.create({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
+});
 ```
 
 ### Global Timeouts
