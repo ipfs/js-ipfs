@@ -73,7 +73,7 @@
     "@libp2p/peer-id": "^1.1.10",
     "@libp2p/peer-id-factory": "^1.0.10",
     "@libp2p/websockets": "^3.0.0",
-    "@multiformats/multiaddr": "^10.1.8",
+    "@multiformats/multiaddr": "^10.4.0",
     "@types/node": "^18.0.0",
     "@types/pako": "^2.0.0",
     "@types/readable-stream": "^2.3.13",

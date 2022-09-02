@@ -96,7 +96,7 @@
     "@libp2p/record": "^2.0.0",
     "@libp2p/websockets": "^3.0.0",
     "@multiformats/mafmt": "^11.0.2",
-    "@multiformats/multiaddr": "^10.1.8",
+    "@multiformats/multiaddr": "^10.4.0",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
     "@multiformats/murmur3": "^1.1.1",
     "any-signal": "^3.0.0",

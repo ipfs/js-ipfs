@@ -141,7 +141,7 @@
   },
   "dependencies": {
     "@libp2p/logger": "^2.0.0",
-    "@multiformats/multiaddr": "^10.1.8",
+    "@multiformats/multiaddr": "^10.4.0",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
     "any-signal": "^3.0.0",
     "blob-to-it": "^1.0.1",
