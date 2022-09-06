@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-protocol-v0.6.0...ipfs-grpc-protocol-v0.7.0) (2022-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to libp2p@0.38.x (#4151)
+
+### deps
+
+* update to libp2p@0.38.x ([#4151](https://www.github.com/ipfs/js-ipfs/issues/4151)) ([39dbf70](https://www.github.com/ipfs/js-ipfs/commit/39dbf708ec31b263115e44f420651fa4e056a89e))
+
 ## [0.6.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-protocol-v0.5.5...ipfs-grpc-protocol-v0.6.0) (2022-05-27)
 
 

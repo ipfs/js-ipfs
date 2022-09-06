@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-server",
-  "version": "0.9.4",
+  "version": "0.10.0",
   "description": "A server library for the IPFS gRPC API",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-server#readme",
@@ -69,8 +69,8 @@
     "@multiformats/multiaddr": "^10.1.8",
     "change-case": "^4.1.1",
     "coercer": "^1.1.2",
-    "ipfs-core-types": "^0.11.0",
-    "ipfs-grpc-protocol": "^0.6.0",
+    "ipfs-core-types": "^0.12.0",
+    "ipfs-grpc-protocol": "^0.7.0",
     "it-first": "^1.0.6",
     "it-map": "^1.0.6",
     "it-peekable": "^1.0.2",
@@ -84,7 +84,7 @@
   "devDependencies": {
     "@types/ws": "^8.5.3",
     "aegir": "^37.0.11",
-    "ipfs-core": "^0.15.0",
+    "ipfs-core": "^0.16.0",
     "it-all": "^1.0.4",
     "it-drain": "^1.0.3",
     "sinon": "^14.0.0"
