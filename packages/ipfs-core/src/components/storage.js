@@ -159,8 +159,6 @@ const initRepo = async (print, repo, options) => {
   })
 
   if (libp2p.keychain) {
-    await libp2p.loadKeychain()
-
     await repo.config.set('Keychain', {
       // @ts-expect-error private field
       DEK: libp2p.keychain.init.dek
@@ -263,10 +261,6 @@ const configureRepo = async (repo, options) => {
       ...changed.Keychain
     }
   })
-
-  if (libp2p.keychain) {
-    await libp2p.loadKeychain()
-  }
 
   return { peerId, keychain: libp2p.keychain }
 }

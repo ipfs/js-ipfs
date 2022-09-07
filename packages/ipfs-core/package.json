@@ -90,7 +90,7 @@
     "@libp2p/interfaces": "^3.0.3",
     "@libp2p/kad-dht": "^3.0.0",
     "@libp2p/logger": "^2.0.0",
-    "@libp2p/mplex": "^5.0.0",
+    "@libp2p/mplex": "^5.2.0",
     "@libp2p/peer-id": "^1.1.10",
     "@libp2p/peer-id-factory": "^1.0.10",
     "@libp2p/record": "^2.0.0",

@@ -64,10 +64,6 @@ export class Network {
       keychainConfig: undefined
     })
 
-    if (libp2p.keychain) {
-      await libp2p.loadKeychain()
-    }
-
     await libp2p.start()
 
     for (const ma of libp2p.getMultiaddrs()) {
