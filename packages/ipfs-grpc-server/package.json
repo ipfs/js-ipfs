@@ -66,7 +66,7 @@
     "@grpc/grpc-js": "^1.1.8",
     "@libp2p/logger": "^2.0.0",
     "@libp2p/peer-id": "^1.1.10",
-    "@multiformats/multiaddr": "^10.1.8",
+    "@multiformats/multiaddr": "^10.4.0",
     "change-case": "^4.1.1",
     "coercer": "^1.1.2",
     "ipfs-core-types": "^0.11.0",
