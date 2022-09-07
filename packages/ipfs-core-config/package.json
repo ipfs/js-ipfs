@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-config",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Package to store node and browser specific config for ipfs-core",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "license": "Apache-2.0 OR MIT",
@@ -118,6 +118,6 @@
   },
   "devDependencies": {
     "aegir": "^37.0.11",
-    "ipfs-core-utils": "^0.15.0"
+    "ipfs-core-utils": "^0.16.0"
   }
 }

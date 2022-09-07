@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-gateway",
-  "version": "0.10.4",
+  "version": "0.11.0",
   "description": "JavaScript implementation of the IPFS specification",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-gateway#readme",
@@ -72,8 +72,8 @@
     "@hapi/hapi": "^20.0.0",
     "@libp2p/logger": "^2.0.0",
     "hapi-pino": "^8.5.0",
-    "ipfs-core-types": "^0.11.0",
-    "ipfs-http-response": "^3.0.0",
+    "ipfs-core-types": "^0.12.0",
+    "ipfs-http-response": "^4.0.0",
     "is-ipfs": "^6.0.1",
     "it-last": "^1.0.4",
     "it-to-stream": "^1.0.0",

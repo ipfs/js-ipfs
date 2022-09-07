@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+## [0.11.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-gateway-v0.10.4...ipfs-http-gateway-v0.11.0) (2022-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to libp2p@0.38.x (#4151)
+
+### deps
+
+* update to libp2p@0.38.x ([#4151](https://www.github.com/ipfs/js-ipfs/issues/4151)) ([39dbf70](https://www.github.com/ipfs/js-ipfs/commit/39dbf708ec31b263115e44f420651fa4e056a89e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.11.0 to ^0.12.0
+    * ipfs-http-response bumped from ^3.0.0 to ^4.0.0
+
 ### [0.10.4](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-gateway-v0.10.3...ipfs-http-gateway-v0.10.4) (2022-06-24)
 
 

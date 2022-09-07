@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-cli-v0.13.5...ipfs-cli-v0.14.0) (2022-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to libp2p@0.38.x (#4151)
+
+### deps
+
+* update to libp2p@0.38.x ([#4151](https://www.github.com/ipfs/js-ipfs/issues/4151)) ([39dbf70](https://www.github.com/ipfs/js-ipfs/commit/39dbf708ec31b263115e44f420651fa4e056a89e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core bumped from ^0.15.0 to ^0.16.0
+    * ipfs-core-types bumped from ^0.11.0 to ^0.12.0
+    * ipfs-core-utils bumped from ^0.15.0 to ^0.16.0
+    * ipfs-daemon bumped from ^0.13.0 to ^0.14.0
+    * ipfs-http-client bumped from ^57.0.0 to ^58.0.0
+
 ### [0.13.5](https://www.github.com/ipfs/js-ipfs/compare/ipfs-cli-v0.13.4...ipfs-cli-v0.13.5) (2022-06-24)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-grpc-protocol",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Protobuf definitions for the IPFS gRPC API",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-protocol#readme",

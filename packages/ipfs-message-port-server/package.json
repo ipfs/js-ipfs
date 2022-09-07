@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-server",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "IPFS server library for exposing IPFS node over message port",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-message-port-server#readme",
@@ -92,8 +92,8 @@
     "dep-check": "aegir dep-check -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.11.0",
-    "ipfs-message-port-protocol": "^0.12.0",
+    "ipfs-core-types": "^0.12.0",
+    "ipfs-message-port-protocol": "^0.13.0",
     "it-all": "^1.0.4"
   },
   "devDependencies": {

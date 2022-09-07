@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.4...ipfs-http-response-v4.0.0) (2022-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to libp2p@0.38.x (#4151)
+
+### deps
+
+* update to libp2p@0.38.x ([#4151](https://www.github.com/ipfs/js-ipfs/issues/4151)) ([39dbf70](https://www.github.com/ipfs/js-ipfs/commit/39dbf708ec31b263115e44f420651fa4e056a89e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.15.0 to ^0.16.0
+
 ### [3.0.4](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.3...ipfs-http-response-v3.0.4) (2022-06-24)
 
 

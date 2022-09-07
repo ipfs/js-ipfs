@@ -1,6 +1,6 @@
 {
   "name": "interface-ipfs-core",
-  "version": "0.155.2",
+  "version": "0.156.0",
   "description": "A test suite and interface you can use to implement a IPFS core interface.",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core#readme",
@@ -84,7 +84,7 @@
     "delay": "^5.0.0",
     "did-jwt": "^6.2.0",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.11.0",
+    "ipfs-core-types": "^0.12.0",
     "ipfs-unixfs": "^7.0.0",
     "ipfs-unixfs-importer": "^10.0.1",
     "ipfs-utils": "^9.0.6",
