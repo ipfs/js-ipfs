@@ -88,7 +88,7 @@
     "ipfs-unixfs": "^7.0.0",
     "ipfs-unixfs-importer": "^10.0.1",
     "ipfs-utils": "^9.0.6",
-    "ipns": "^2.0.2",
+    "ipns": "^3.0.0",
     "is-ipfs": "^6.0.1",
     "iso-random-stream": "^2.0.2",
     "it-all": "^1.0.4",
