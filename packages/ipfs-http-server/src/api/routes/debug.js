@@ -8,7 +8,13 @@ import { disable, enable } from '@libp2p/logger'
 client.register.clear()
 
 /** @type {Record<string, client.Gauge<any>>} */
-const gauges = {}
+const gauges = {
+  'nodejs_memory_usage': new client.Gauge({
+    name: 'nodejs_memory_usage',
+    help: 'nodejs_memory_usage',
+    labelNames: Object.keys(process.memoryUsage())
+  })
+}
 
 // Endpoint for handling debug metrics
 export default [{
@@ -22,6 +28,10 @@ export default [{
     if (!process.env.IPFS_MONITORING) {
       throw Boom.notImplemented('Monitoring is disabled. Enable it by setting environment variable IPFS_MONITORING')
     }
+
+    Object.entries(process.memoryUsage()).forEach(([key, value]) => {
+      gauges['nodejs_memory_usage'].set({ [key]: key }, value)
+    })
 
     const { ipfs } = request.server.app
     // @ts-expect-error libp2p does not exist on ipfs
