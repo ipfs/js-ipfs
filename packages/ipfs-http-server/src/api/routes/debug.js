@@ -9,7 +9,7 @@ client.register.clear()
 
 /** @type {Record<string, client.Gauge<any>>} */
 const gauges = {
-  'nodejs_memory_usage': new client.Gauge({
+  nodejs_memory_usage: new client.Gauge({
     name: 'nodejs_memory_usage',
     help: 'nodejs_memory_usage',
     labelNames: Object.keys(process.memoryUsage())
@@ -30,7 +30,7 @@ export default [{
     }
 
     Object.entries(process.memoryUsage()).forEach(([key, value]) => {
-      gauges['nodejs_memory_usage'].set({ [key]: key }, value)
+      gauges.nodejs_memory_usage.set({ [key]: key }, value)
     })
 
     const { ipfs } = request.server.app
