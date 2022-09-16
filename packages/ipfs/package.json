@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.64.0",
+  "version": "0.64.1",
   "description": "JavaScript implementation of the IPFS specification",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs#readme",
@@ -77,7 +77,7 @@
   },
   "dependencies": {
     "@libp2p/logger": "^2.0.0",
-    "ipfs-cli": "^0.14.0",
+    "ipfs-cli": "^0.14.1",
     "ipfs-core": "^0.16.0",
     "semver": "^7.3.2",
     "update-notifier": "^6.0.0"

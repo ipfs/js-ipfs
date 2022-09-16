@@ -1,6 +1,6 @@
 {
   "name": "ipfs-cli",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "JavaScript implementation of the IPFS specification",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-cli#readme",
@@ -81,7 +81,7 @@
     "ipfs-core": "^0.16.0",
     "ipfs-core-types": "^0.12.0",
     "ipfs-core-utils": "^0.16.0",
-    "ipfs-daemon": "^0.14.0",
+    "ipfs-daemon": "^0.14.1",
     "ipfs-http-client": "^58.0.0",
     "ipfs-utils": "^9.0.6",
     "it-concat": "^2.0.0",
