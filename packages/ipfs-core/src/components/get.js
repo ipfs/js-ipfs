@@ -6,7 +6,6 @@ import { CID } from 'multiformats/cid'
 import { pack } from 'it-tar'
 import { pipe } from 'it-pipe'
 import Pako from 'pako'
-import map from 'it-map'
 import toBuffer from 'it-to-buffer'
 
 // https://www.gnu.org/software/gzip/manual/gzip.html

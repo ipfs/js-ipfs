@@ -8,7 +8,6 @@ import {
   stripControlCharacters
 } from '../utils.js'
 import { extract } from 'it-tar'
-import map from 'it-map'
 
 /**
  * @typedef {object} Argv

@@ -63,11 +63,11 @@ export const detectContentType = async (path, source) => {
 
   if (output != null) {
     return {
-      source: async function * () {
+      source: (async function * () {
         for await (const list of output) {
           yield * list
         }
-      }(),
+      }()),
       contentType
     }
   }
