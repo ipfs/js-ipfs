@@ -28,11 +28,11 @@ export const detectContentType = async (path, source) => {
 
       if (done) {
         return {
-          source: map(stream, (buf) => buf.slice())
+          source: map(stream, (buf) => buf.subarray())
         }
       }
 
-      fileSignature = await fileTypeFromBuffer(value.slice())
+      fileSignature = await fileTypeFromBuffer(value.subarray())
 
       output = (async function * () { // eslint-disable-line require-await
         yield value
@@ -62,7 +62,14 @@ export const detectContentType = async (path, source) => {
   }
 
   if (output != null) {
-    return { source: map(output, (buf) => buf.slice()), contentType }
+    return {
+      source: async function * () {
+        for await (const list of output) {
+          yield * list
+        }
+      }(),
+      contentType
+    }
   }
 
   return { source, contentType }

@@ -27,11 +27,7 @@ const defaultOptions = {
 async function * tarballed (files) {
   yield * pipe(
     files,
-    pack(),
-    /**
-     * @param {AsyncIterable<Uint8Array>} source
-     */
-    (source) => map(source, buf => buf.slice())
+    pack()
   )
 }
 

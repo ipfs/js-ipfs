@@ -110,7 +110,6 @@ const command = {
             await fs.promises.mkdir(path.dirname(outputPath), { recursive: true })
             await pipe(
               body,
-              (source) => map(source, buf => buf.slice()),
               toIterable.sink(fs.createWriteStream(outputPath))
             )
           } else if (header.type === 'directory') {

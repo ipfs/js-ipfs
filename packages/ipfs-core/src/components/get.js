@@ -57,11 +57,7 @@ export function createGet ({ repo, preload }) {
           },
           body: file.content()
         }],
-        pack(),
-        /**
-         * @param {AsyncIterable<Uint8Array>} source
-         */
-        (source) => map(source, buf => buf.slice())
+        pack()
         )
       } else {
         args.push(
@@ -126,11 +122,7 @@ export function createGet ({ repo, preload }) {
             yield output
           }
         },
-        pack(),
-        /**
-         * @param {AsyncIterable<Uint8Array>} source
-         */
-        (source) => map(source, buf => buf.slice())
+        pack()
       ]
 
       if (options.compress) {
