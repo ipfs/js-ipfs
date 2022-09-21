@@ -98,3 +98,4 @@
     "./src/grpc/transport.node.js": "./src/grpc/transport.browser.js"
   }
 }
+
