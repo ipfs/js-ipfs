@@ -1,5 +1,5 @@
 import { createLock } from './utils/create-lock.js'
-import isIpfs from 'is-ipfs'
+import * as isIpfs from 'is-ipfs'
 import { createStat } from './stat.js'
 import { createChmod } from './chmod.js'
 import { createCp } from './cp.js'

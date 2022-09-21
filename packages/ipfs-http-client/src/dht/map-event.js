@@ -9,11 +9,12 @@ import {
   AddingPeer,
   DialingPeer
 } from './response-types.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { peerIdFromString } from '@libp2p/peer-id'
 
 /**
  * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
+ * @typedef {import('@multiformats/multiaddr').Multiaddr} Multiaddr
  */
 
 /**
@@ -37,8 +38,8 @@ export const mapEvent = (event) => {
       messageType: 0,
       // TODO: how to infer this from the go-ipfs response
       messageName: 'PUT_VALUE',
-      closer: (event.Responses || []).map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => new Multiaddr(addr)), protocols: [] })),
-      providers: (event.Responses || []).map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => new Multiaddr(addr)), protocols: [] }))
+      closer: (event.Responses || []).map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => multiaddr(addr)), protocols: [] })),
+      providers: (event.Responses || []).map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => multiaddr(addr)), protocols: [] }))
       // TODO: how to infer this from the go-ipfs response
       // record: ???
     }
@@ -59,7 +60,7 @@ export const mapEvent = (event) => {
       // dht.findPeer has the result in the Responses field
       peer = {
         id: peerIdFromString(event.Responses[0].ID),
-        multiaddrs: event.Responses[0].Addrs.map(addr => new Multiaddr(addr)),
+        multiaddrs: event.Responses[0].Addrs.map(addr => multiaddr(addr)),
         protocols: []
       }
     }
@@ -83,7 +84,7 @@ export const mapEvent = (event) => {
     return {
       name: 'PROVIDER',
       type: event.Type,
-      providers: event.Responses.map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => new Multiaddr(addr)), protocols: [] }))
+      providers: event.Responses.map(({ ID, Addrs }) => ({ id: peerIdFromString(ID), multiaddrs: Addrs.map(addr => multiaddr(addr)), protocols: [] }))
     }
   }
 

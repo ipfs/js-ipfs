@@ -1,5 +1,5 @@
 import { ipfsCore as pkgversion } from '../version.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { NotStartedError } from '../errors.js'
@@ -69,7 +69,7 @@ export function createId ({ peerId, network }) {
           return `${str}/p2p/${idStr}`
         })
         .sort()
-        .map(ma => new Multiaddr(ma)),
+        .map(ma => multiaddr(ma)),
       agentVersion,
       protocolVersion,
       protocols: (peer.protocols || []).sort()

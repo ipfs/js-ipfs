@@ -1,4 +1,4 @@
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { peerIdFromString } from '@libp2p/peer-id'
@@ -24,7 +24,7 @@ export const createPeers = configure(api => {
 
     return (Peers || []).map(peer => {
       return {
-        addr: new Multiaddr(peer.Addr),
+        addr: multiaddr(peer.Addr),
         peer: peerIdFromString(peer.Peer),
         muxer: peer.Muxer,
         latency: peer.Latency,

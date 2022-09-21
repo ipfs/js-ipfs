@@ -1,5 +1,5 @@
 import { IPFS } from '@multiformats/mafmt'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import parseDuration from 'parse-duration'
 
 /**
@@ -31,7 +31,7 @@ const command = {
     })
 
     result.forEach((item) => {
-      let ma = new Multiaddr(`${item.addr}`)
+      let ma = multiaddr(`${item.addr}`)
 
       if (!IPFS.matches(ma)) {
         ma = ma.encapsulate(`/ipfs/${item.peer}`)
