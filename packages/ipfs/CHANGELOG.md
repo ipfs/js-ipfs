@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+### [0.64.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.64.0...ipfs-v0.64.1) (2022-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.14.0 to ^0.14.1
+
 ## [0.64.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.5...ipfs-v0.64.0) (2022-09-06)
 
 
