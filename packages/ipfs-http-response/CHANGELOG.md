@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [4.0.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v4.0.0...ipfs-http-response-v4.0.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* update @multiformats/multiadd to 11.0.0 ([2a830bf](https://www.github.com/ipfs/js-ipfs/commit/2a830bf58a5929fcce51dede871c99f62192fbda))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.16.0 to ^0.16.1
+
 ## [4.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.4...ipfs-http-response-v4.0.0) (2022-09-06)
 
 
