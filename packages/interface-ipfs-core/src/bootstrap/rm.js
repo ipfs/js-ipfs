@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr, isMultiaddr } from '@multiformats/multiaddr'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -17,7 +17,7 @@ export function testRm (factory, options) {
   const it = getIt(options)
 
   const invalidArg = 'this/Is/So/Invalid/'
-  const validIp4 = new Multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z')
+  const validIp4 = multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z')
 
   describe('.bootstrap.rm', function () {
     this.timeout(100 * 1000)
@@ -47,7 +47,7 @@ export function testRm (factory, options) {
     })
 
     it('removes a peer from the bootstrap list', async () => {
-      const peer = new Multiaddr('/ip4/111.111.111.111/tcp/1001/p2p/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb')
+      const peer = multiaddr('/ip4/111.111.111.111/tcp/1001/p2p/QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb')
       await ipfs.bootstrap.add(peer)
       let list = await ipfs.bootstrap.list()
       expect(list.Peers).to.deep.include(peer)
@@ -57,7 +57,7 @@ export function testRm (factory, options) {
 
       list = await ipfs.bootstrap.list()
       expect(list.Peers).to.not.deep.include(peer)
-      expect(res.Peers.every(ma => Multiaddr.isMultiaddr(ma))).to.be.true()
+      expect(res.Peers.every(ma => isMultiaddr(ma))).to.be.true()
     })
   })
 }

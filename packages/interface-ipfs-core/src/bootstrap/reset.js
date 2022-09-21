@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { isMultiaddr } from '@multiformats/multiaddr'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -43,7 +43,7 @@ export function testReset (factory, options) {
       const removedPeers = rmRes.Peers
 
       expect(removedPeers.sort()).to.deep.equal(addedPeers.sort())
-      expect(addedPeers.every(ma => Multiaddr.isMultiaddr(ma))).to.be.true()
+      expect(addedPeers.every(ma => isMultiaddr(ma))).to.be.true()
     })
   })
 }

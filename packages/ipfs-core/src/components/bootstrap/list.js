@@ -1,5 +1,5 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 
 /**
  * @param {object} config
@@ -12,7 +12,7 @@ export function createList ({ repo }) {
   async function list (options = {}) {
     /** @type {string[]|null} */
     const peers = (await repo.config.get('Bootstrap', options))
-    return { Peers: (peers || []).map(ma => new Multiaddr(ma)) }
+    return { Peers: (peers || []).map(ma => multiaddr(ma)) }
   }
 
   return withTimeoutOption(list)

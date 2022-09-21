@@ -1,7 +1,7 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { toHeaders } from '../utils/to-headers.js'
 import { unaryToPromise } from '../utils/unary-to-promise.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 
 /**
  * @param {import('@improbable-eng/grpc-web').grpc} grpc
@@ -23,7 +23,7 @@ export function grpcId (grpc, service, opts) {
 
     return {
       ...res,
-      addresses: (res.addresses || []).map((/** @type {string} */ str) => new Multiaddr(str))
+      addresses: (res.addresses || []).map((/** @type {string} */ str) => multiaddr(str))
     }
   }
 
