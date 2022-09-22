@@ -95,7 +95,7 @@
     "ipfs-client": "^0.9.1",
     "ipfs-core-types": "^0.12.1",
     "ipfs-http-client": "^58.0.1",
-    "ipfs-interop": "ipfs/interop#deps/update-multiformats-multiaddr",
+    "ipfs-interop": "^9.0.1",
     "ipfs-utils": "^9.0.6",
     "ipfsd-ctl": "^12.0.3",
     "iso-url": "^1.0.0",
