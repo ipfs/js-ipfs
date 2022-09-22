@@ -4,7 +4,7 @@
 import { expect } from 'aegir/chai'
 import { cli, fail } from './utils/cli.js'
 import sinon from 'sinon'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { peerIdFromString } from '@libp2p/peer-id'
 
 describe('swarm', () => {
@@ -28,33 +28,33 @@ describe('swarm', () => {
     }
 
     it('connect online', async () => {
-      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
+      const ma = multiaddr('/ip4/123.123.123.123/tcp/482')
 
-      ipfs.swarm.connect.withArgs(multiaddr, defaultOptions).resolves()
+      ipfs.swarm.connect.withArgs(ma, defaultOptions).resolves()
 
-      const out = await cli(`swarm connect ${multiaddr}`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${multiaddr}\n`)
+      const out = await cli(`swarm connect ${ma}`, { ipfs, isDaemon: true })
+      expect(out).to.equal(`${ma}\n`)
     })
 
     it('connect offline', async () => {
-      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
+      const ma = multiaddr('/ip4/123.123.123.123/tcp/482')
 
-      const out = await fail(`swarm connect ${multiaddr}`, { ipfs, isDaemon: false })
+      const out = await fail(`swarm connect ${ma}`, { ipfs, isDaemon: false })
       expect(out).to.include('This command must be run in online mode')
 
       expect(ipfs.swarm.connect.called).to.be.false()
     })
 
     it('connect with timeout', async () => {
-      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
+      const ma = multiaddr('/ip4/123.123.123.123/tcp/482')
 
-      ipfs.swarm.connect.withArgs(multiaddr, {
+      ipfs.swarm.connect.withArgs(ma, {
         ...defaultOptions,
         timeout: 1000
       }).resolves()
 
-      const out = await cli(`swarm connect ${multiaddr} --timeout=1s`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${multiaddr}\n`)
+      const out = await cli(`swarm connect ${ma} --timeout=1s`, { ipfs, isDaemon: true })
+      expect(out).to.equal(`${ma}\n`)
     })
   })
 
@@ -110,7 +110,7 @@ describe('swarm', () => {
       ipfs.swarm.addrs.withArgs(defaultOptions).resolves([{
         id: peer,
         addrs: [
-          new Multiaddr(addr)
+          multiaddr(addr)
         ]
       }])
 
@@ -128,7 +128,7 @@ describe('swarm', () => {
       }).resolves([{
         id: peer,
         addrs: [
-          new Multiaddr(addr)
+          multiaddr(addr)
         ]
       }])
 
@@ -175,26 +175,26 @@ describe('swarm', () => {
     }
 
     it('disconnect online', async () => {
-      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
-      ipfs.swarm.disconnect.withArgs(multiaddr, defaultOptions).resolves()
-      const out = await cli(`swarm disconnect ${multiaddr}`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${multiaddr}\n`)
+      const ma = multiaddr('/ip4/123.123.123.123/tcp/482')
+      ipfs.swarm.disconnect.withArgs(ma, defaultOptions).resolves()
+      const out = await cli(`swarm disconnect ${ma}`, { ipfs, isDaemon: true })
+      expect(out).to.equal(`${ma}\n`)
     })
 
     it('disconnect offline', async () => {
-      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
-      const out = await fail(`swarm disconnect ${multiaddr}`, { ipfs, isDaemon: false })
+      const ma = multiaddr('/ip4/123.123.123.123/tcp/482')
+      const out = await fail(`swarm disconnect ${ma}`, { ipfs, isDaemon: false })
       expect(out).to.include('This command must be run in online mode')
     })
 
     it('disconnect with timeout', async () => {
-      const multiaddr = new Multiaddr('/ip4/123.123.123.123/tcp/482')
-      ipfs.swarm.disconnect.withArgs(multiaddr, {
+      const ma = multiaddr('/ip4/123.123.123.123/tcp/482')
+      ipfs.swarm.disconnect.withArgs(ma, {
         ...defaultOptions,
         timeout: 1000
       }).resolves()
-      const out = await cli(`swarm disconnect ${multiaddr} --timeout=1s`, { ipfs, isDaemon: true })
-      expect(out).to.equal(`${multiaddr}\n`)
+      const out = await cli(`swarm disconnect ${ma} --timeout=1s`, { ipfs, isDaemon: true })
+      expect(out).to.equal(`${ma}\n`)
     })
   })
 })

@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+### [0.10.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-server-v0.10.0...ipfs-grpc-server-v0.10.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* update @multiformats/multiadd to 11.0.0 ([2a830bf](https://www.github.com/ipfs/js-ipfs/commit/2a830bf58a5929fcce51dede871c99f62192fbda))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.12.0 to ^0.12.1
+  * devDependencies
+    * ipfs-core bumped from ^0.16.0 to ^0.16.1
+
 ## [0.10.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-server-v0.9.4...ipfs-grpc-server-v0.10.0) (2022-09-06)
 
 

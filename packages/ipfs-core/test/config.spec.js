@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'aegir/chai'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
 import createNode from './utils/create-node.js'
 import createConfig from 'ipfs-core-config/config'
@@ -39,7 +39,7 @@ describe('config', function () {
         return acc
       }
 
-      const ma = new Multiaddr(curr)
+      const ma = multiaddr(curr)
       return ma.protos().some(proto => proto.name === 'wss' || proto.resolvable)
     }, true)
 

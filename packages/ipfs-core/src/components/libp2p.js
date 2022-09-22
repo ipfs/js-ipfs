@@ -5,7 +5,7 @@ import { routers } from 'ipfs-core-config/libp2p-pubsub-routers'
 import { DelegatedPeerRouting } from '@libp2p/delegated-peer-routing'
 import { DelegatedContentRouting } from '@libp2p/delegated-content-routing'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { ipfsCore as pkgversion } from '../version.js'
 import { libp2pConfig as getEnvLibp2pOptions } from 'ipfs-core-config/libp2p'
 import { createLibp2p as createNode } from 'libp2p'
@@ -36,6 +36,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true, concatArrays: true 
  * @typedef {import('libp2p').Libp2p} LibP2P
  * @typedef {import('libp2p').Libp2pOptions} Libp2pOptions
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
+ * @typedef {import('@multiformats/multiaddr').Multiaddr} Multiaddr
  */
 
 /**
@@ -195,7 +196,7 @@ function getLibp2pOptions ({ options, config, datastore, keychainConfig, peerId,
   if (delegateHosts.length > 0) {
     // Pick a random delegate host
     const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
-    const delegateAddr = new Multiaddr(delegateString).toOptions()
+    const delegateAddr = multiaddr(delegateString).toOptions()
     const delegateApiOptions = {
       host: delegateAddr.host,
       // port is a string atm, so we need to convert for the check

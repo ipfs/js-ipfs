@@ -1,5 +1,5 @@
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 
 /**
  * @param {object} config
@@ -16,7 +16,7 @@ export function createClear ({ repo }) {
 
     await repo.config.replace(config)
 
-    return { Peers: removed.map(ma => new Multiaddr(ma)) }
+    return { Peers: removed.map(ma => multiaddr(ma)) }
   }
 
   return withTimeoutOption(clear)

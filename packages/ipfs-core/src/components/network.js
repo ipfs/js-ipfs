@@ -1,6 +1,6 @@
 import { createBitswap } from 'ipfs-bitswap'
 import { createLibp2p } from './libp2p.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import errCode from 'err-code'
 import { BlockStorage } from '../block-storage.js'
 
@@ -24,6 +24,7 @@ import { BlockStorage } from '../block-storage.js'
  * @typedef {import('ipfs-bitswap').IPFSBitswap} Bitswap
  * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
+ * @typedef {import('@multiformats/multiaddr').Multiaddr} Multiaddr
  */
 
 export class Network {
@@ -109,7 +110,7 @@ const readAddrs = (peerId, config) => {
   const addrs = []
   const swarm = (config.Addresses && config.Addresses.Swarm) || []
   for (const addr of swarm) {
-    let ma = new Multiaddr(addr)
+    let ma = multiaddr(addr)
 
     // Temporary error for users migrating using websocket-star multiaddrs for listenning on libp2p
     // websocket-star support was removed from ipfs and libp2p

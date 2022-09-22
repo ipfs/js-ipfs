@@ -1,5 +1,7 @@
 # Object API <!-- omit in toc -->
 
+> ⚠️ Object API is [deprecated](https://github.com/ipfs/go-ipfs/issues/7936), use [FILES](FILES.md) and [DAG](DAG.md) APIs instead.
+
 - [`ipfs.object.new([options])`](#ipfsobjectnewoptions)
   - [Parameters](#parameters)
   - [Options](#options)
