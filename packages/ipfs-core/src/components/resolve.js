@@ -1,4 +1,4 @@
-import isIpfs from 'is-ipfs'
+import * as isIpfs from 'is-ipfs'
 import { CID } from 'multiformats/cid'
 import { peerIdFromString } from '@libp2p/peer-id'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'

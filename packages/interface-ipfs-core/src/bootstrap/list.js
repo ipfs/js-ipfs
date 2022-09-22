@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { isMultiaddr } from '@multiformats/multiaddr'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -31,7 +31,7 @@ export function testList (factory, options) {
 
       const peers = res.Peers
       expect(peers).to.be.an('Array')
-      expect(peers.every(ma => Multiaddr.isMultiaddr(ma))).to.be.true()
+      expect(peers.every(ma => isMultiaddr(ma))).to.be.true()
     })
   })
 }

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+### [0.12.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.12.0...ipfs-core-types-v0.12.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* update @multiformats/multiadd to 11.0.0 ([2a830bf](https://www.github.com/ipfs/js-ipfs/commit/2a830bf58a5929fcce51dede871c99f62192fbda))
+
 ## [0.12.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.11.1...ipfs-core-types-v0.12.0) (2022-09-06)
 
 

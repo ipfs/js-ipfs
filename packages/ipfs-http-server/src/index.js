@@ -1,9 +1,8 @@
 import Hapi from '@hapi/hapi'
 import Pino from 'hapi-pino'
 import { logger, enabled } from '@libp2p/logger'
-import { Multiaddr } from '@multiformats/multiaddr'
-// @ts-expect-error no types
-import toMultiaddr from 'uri-to-multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
+import toMultiaddr from '@multiformats/uri-to-multiaddr'
 import Boom from '@hapi/boom'
 import { routes } from './api/routes/index.js'
 import { errorHandler } from './error-handler.js'
@@ -275,7 +274,7 @@ export class HttpApi {
     if (!this._apiServers || !this._apiServers.length) {
       throw new Error('API address unavailable - server is not started')
     }
-    return new Multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
+    return multiaddr('/ip4/127.0.0.1/tcp/' + this._apiServers[0].info.port)
   }
 
   async stop () {
