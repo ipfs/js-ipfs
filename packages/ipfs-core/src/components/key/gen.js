@@ -5,7 +5,7 @@ const DEFAULT_KEY_SIZE = 2048
 
 /**
  * @param {object} config
- * @param {import('@libp2p/interfaces/keychain').KeyChain} config.keychain
+ * @param {import('@libp2p/interface-keychain').KeyChain} config.keychain
  */
 export function createGen ({ keychain }) {
   /**

@@ -2,6 +2,7 @@ import { Query } from './query.js'
 
 /**
  * @typedef {import('./transport').MessageTransport} MessageTransport
+ * @typedef {import('./query').QueryInput<any>} QueryInput
  */
 /**
  * @template T
@@ -29,7 +30,7 @@ export class Service {
     for (const method of methods) {
       /**
        * @template I, O
-       * @param {I} input
+       * @param {QueryInput} input
        * @returns {Promise<O>}
        */
       api[method] = input =>

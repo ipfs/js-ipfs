@@ -1,15 +1,28 @@
 {
   "name": "ipfs",
-  "version": "0.63.5",
+  "version": "0.64.2",
   "description": "JavaScript implementation of the IPFS specification",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
   "keywords": [
     "IPFS"
   ],
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "license": "(Apache-2.0 OR MIT)",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "bin": {
+    "jsipfs": "src/cli.js"
+  },
   "type": "module",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -27,31 +40,27 @@
     }
   },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./path": {
+      "types": "./src/path.d.ts",
+      "browser": "./src/path.browser.js",
+      "import": "./src/path.js"
+    }
+  },
   "eslintConfig": {
     "extends": "ipfs",
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "exports": {
-    ".": {
-      "import": "./src/index.js"
-    },
-    "./path": {
-      "browser": "./src/path.browser.js",
-      "import": "./src/path.js"
-    }
-  },
-  "bin": {
-    "jsipfs": "src/cli.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "build": "aegir build",
@@ -67,28 +76,28 @@
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
   "dependencies": {
-    "@libp2p/logger": "^1.1.4",
-    "ipfs-cli": "^0.13.5",
-    "ipfs-core": "^0.15.4",
+    "@libp2p/logger": "^2.0.0",
+    "ipfs-cli": "^0.14.2",
+    "ipfs-core": "^0.16.1",
     "semver": "^7.3.2",
-    "update-notifier": "^5.0.0"
+    "update-notifier": "^6.0.0"
   },
   "devDependencies": {
-    "@libp2p/webrtc-star-signalling-server": "^1.0.3",
-    "@libp2p/websockets": "^1.0.8",
+    "@libp2p/webrtc-star-signalling-server": "^2.0.1",
+    "@libp2p/websockets": "^3.0.0",
     "@types/semver": "^7.3.4",
-    "@types/update-notifier": "^5.0.0",
+    "@types/update-notifier": "^6.0.1",
     "aegir": "^37.0.11",
     "cross-env": "^7.0.0",
     "electron-webrtc": "^0.3.0",
     "go-ipfs": "^0.12.1",
-    "interface-ipfs-core": "^0.155.2",
-    "ipfs-client": "^0.8.3",
-    "ipfs-core-types": "^0.11.1",
-    "ipfs-http-client": "^57.0.3",
-    "ipfs-interop": "ipfs/interop#feat/upgrade-to-esm-libp2p",
+    "interface-ipfs-core": "^0.156.1",
+    "ipfs-client": "^0.9.1",
+    "ipfs-core-types": "^0.12.1",
+    "ipfs-http-client": "^58.0.1",
+    "ipfs-interop": "^9.0.1",
     "ipfs-utils": "^9.0.6",
-    "ipfsd-ctl": "^11.0.0",
+    "ipfsd-ctl": "^12.0.3",
     "iso-url": "^1.0.0",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.4.2",
@@ -99,154 +108,5 @@
     "./src/cli.js": false,
     "./src/path.js": "./src/path.browser.js",
     "go-ipfs": false
-  },
-  "engines": {
-    "node": ">=15.0.0",
-    "npm": ">=6.0.0"
-  },
-  "contributors": [
-    "0xflotus <0xflotus@gmail.com>",
-    "A_A <21040751+Otto-AA@users.noreply.github.com>",
-    "Adam Uhlíř <adam@uhlir.dev>",
-    "Alan Shaw <alan.shaw@protocol.ai>",
-    "Alan Shaw <alan@tableflip.io>",
-    "Alex North <alex@alexnorth.me>",
-    "Alex Potsides <alex@achingbrain.net>",
-    "Andrew Nesbitt <andrewnez@gmail.com>",
-    "Andrew de Andrade <andrew@deandrade.com.br>",
-    "André Cruz <andremiguelcruz@msn.com>",
-    "Arkadiy Kukarkin <parkan@users.noreply.github.com>",
-    "Arpit Agarwal <93arpit@gmail.com>",
-    "Arpit Agarwal <atvanguard@users.noreply.github.com>",
-    "Ayush Mahajan <mahajan.ayush2306@gmail.com>",
-    "Bernard Mordan <bernard@tableflip.io>",
-    "Brian Vander Schaaf <bvs330@gmail.com>",
-    "Bruno Zell <bruno.zzell@gmail.com>",
-    "CHEVALAY JOSSELIN <josselin54.chevalay@gmail.com>",
-    "Caio Gondim <me@caiogondim.com>",
-    "Chance Hudson <jchancehud@gmail.com>",
-    "Chirag Shinde <chirag-shinde@users.noreply.github.com>",
-    "Christian Couder <chriscool@tuxfamily.org>",
-    "Dafeng <dfguo.joe@gmail.com>",
-    "Dan Ordille <dordille@gmail.com>",
-    "Dan Shields <35669742+NukeManDan@users.noreply.github.com>",
-    "Daniel Buchner <danieljb2@gmail.com>",
-    "Daniel J. O'Quinn <danieljoquinn@gmail.com>",
-    "Daniela Borges Matos de Carvalho <alunassertiva@gmail.com>",
-    "David Dias <daviddias.p@gmail.com>",
-    "David Gilbertson <gilbertson.david@gmail.com>",
-    "David da Silva <dasilvacontin@gmail.com>",
-    "Diogo Silva <fsdiogo@gmail.com>",
-    "Dmitriy Ryajov <dryajov@gmail.com>",
-    "Dominic Della Valle <ddvpublic@Gmail.com>",
-    "Dzmitry Bachko <dbachko@gmail.com>",
-    "Enrico Marino <enrico.marino@email.com>",
-    "Faheel Ahmad <faheel@live.in>",
-    "Felix Yan <felixonmars@archlinux.org>",
-    "Francisco Baio Dias <xicombd@gmail.com>",
-    "Francisco Baio Dias <francisco@typeform.com>",
-    "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
-    "Gabriel Garrido Calvo <gabriel.garrido.work@gmail.com>",
-    "Gar <gar+gh@danger.computer>",
-    "Georgios Rassias <georassias@gmail.com>",
-    "Gorka Ludlow <gorka@aquigorka.com>",
-    "Grant Herman <grantlouisherman041@gmail.com>",
-    "Greenkeeper <support@greenkeeper.io>",
-    "Haad <haadcode@users.noreply.github.com>",
-    "Haoliang Yu <haoliangyu@users.noreply.github.com>",
-    "Harsh Vakharia <harshjv@users.noreply.github.com>",
-    "Henrique Dias <hacdias@gmail.com>",
-    "Henry Rodrick <moshisushi@gmail.com>",
-    "Heo Sangmin <heo@mapiacompany.com>",
-    "Hugo Dias <hugomrdias@gmail.com>",
-    "Hugo Dias <mail@hugodias.me>",
-    "Irakli Gozalishvili <contact@gozala.io>",
-    "Jacob Heun <jacobheun@gmail.com>",
-    "Jacob Heun <jake@andyet.net>",
-    "Jade Meskill <jade.meskill@gmail.com>",
-    "Jessica Schilling <jessica@protocol.ai>",
-    "Johannes Wikner <johannes.wikner@gmail.com>",
-    "Jon Schlinkert <dev@sellside.com>",
-    "Jonathan <jkrone@vt.edu>",
-    "Jonybang <Jonybange@gmail.com>",
-    "Jorropo <jorropo.pgm@gmail.com>",
-    "João Antunes <j.goncalo.antunes@gmail.com>",
-    "João Santos <joaosantos15@users.noreply.github.com>",
-    "Kevin Wang <kevin@fossa.io>",
-    "Lars Gierth <larsg@systemli.org>",
-    "Lukas Drgon <lukas.drgon@gmail.com>",
-    "Maciej Krüger <mkg20001@gmail.com>",
-    "Marcin Rataj <lidel@lidel.org>",
-    "Marcus Bernales <mboperator@gmail.com>",
-    "Marius Darila <marius.darila@gmail.com>",
-    "Mark Robert Henderson <henderson.mark@gmail.com>",
-    "Mat Kelly <machawk1@gmail.com>",
-    "Michelle Lee <michelle@protocol.ai>",
-    "Mikeal Rogers <mikeal.rogers@gmail.com>",
-    "Mithgol <getgit@mithgol.ru>",
-    "Molly <momack2@users.noreply.github.com>",
-    "Mounish Sai <pvsmounish@gmail.com>",
-    "My9Bot <34904312+My9Bot@users.noreply.github.com>",
-    "Nick Poulden <nick@poulden.com>",
-    "Nitin Patel <31539366+niinpatel@users.noreply.github.com>",
-    "Nuno Nogueira <nunofmn@gmail.com>",
-    "Oli Evans <oli@tableflip.io>",
-    "Oskar Nyberg <oskar@oskarnyberg.com>",
-    "Pascal Precht <pascal.precht@googlemail.com>",
-    "Pau Ramon Revilla <masylum@gmail.com>",
-    "Paulo Rodrigues <me@paulogr.com>",
-    "Pedro Santos <pedro.santos@moxy.studio>",
-    "Pedro Santos <pedromiguelsousasantos@hotmail.com>",
-    "Pedro Teixeira <i@pgte.me>",
-    "Portia Burton <plburton@gmail.com>",
-    "Prabhakar Poudel <yuvrajzohan@gmail.com>",
-    "Qmstream <51881352+Qmstream@users.noreply.github.com>",
-    "Raoul Millais <raoul@raoulmillais.com>",
-    "RasmusErik Voel Jensen <github@solsort.com>",
-    "Richard Littauer <richard.littauer@gmail.com>",
-    "Richard Schneider <makaretu@gmail.com>",
-    "Rob Brackett <rob@robbrackett.com>",
-    "Rod Keys <rod@zokos.com>",
-    "Sangwon Hong <qpakzk@gmail.com>",
-    "Sid Harder <sideharder@gmail.com>",
-    "SidHarder <softwarenavigator@gmail.com>",
-    "Stephen Whitmore <stephen.whitmore@gmail.com>",
-    "Stephen Whitmore <noffle@users.noreply.github.com>",
-    "Steven Allen <steven@stebalien.com>",
-    "Tapasweni Pathak <tapaswenipathak@gmail.com>",
-    "Terence Pae <terencepae@gmail.com>",
-    "Teri Chadbourne <terichadbourne@users.noreply.github.com>",
-    "Travis CI <travis@travis-ci.org>",
-    "Uroš Jurglič <jurglic@gmail.com>",
-    "Vasco Santos <vasco.santos@moxy.studio>",
-    "Vasco Santos <vasco.santos@ua.pt>",
-    "Vincent Martin <vince@finalatomicbuster.net>",
-    "Volker Mische <volker.mische@gmail.com>",
-    "Xiao Liang <yxliang01@users.noreply.github.com>",
-    "Yahya <ya7yaz@gmail.com>",
-    "Yole <yole@ultiledger.io>",
-    "bitspill <bitspill+github@bitspill.net>",
-    "datafatmunger <jbg@peerparty.org>",
-    "dirkmc <dirkmdev@gmail.com>",
-    "dirkmc <dirk@mccormick.cx>",
-    "greenkeeper[bot] <23040076+greenkeeper[bot]@users.noreply.github.com>",
-    "greenkeeper[bot] <greenkeeper[bot]@users.noreply.github.com>",
-    "haad <haad@headbanggames.com>",
-    "hapsody <hapsody@gmail.com>",
-    "jbenet <juan@benet.ai>",
-    "jonahweissman <19804455+jonahweissman@users.noreply.github.com>",
-    "kevingzhang <kevin.zhang.canada@gmail.com>",
-    "kumavis <kumavis@users.noreply.github.com>",
-    "nginnever <ginneversource@gmail.com>",
-    "npmcdn-to-unpkg-bot <npmcdn-to-unpkg-bot@users.noreply.github.com>",
-    "reasv <7143787+reasv@users.noreply.github.com>",
-    "robbsolter <35879806+robbsolter@users.noreply.github.com>",
-    "seungwon-kang <ksw3894@gmail.com>",
-    "swedneck <40505480+swedneck@users.noreply.github.com>",
-    "tcme <hi@this-connect.me>",
-    "victorbjelkholm <victorbjelkholm@gmail.com>",
-    "Łukasz Magiera <magik6k@users.noreply.github.com>",
-    "Максим Ильин <negamaxi@gmail.com>",
-    "Xmader <xmader@outlook.com>"
-  ]
+  }
 }

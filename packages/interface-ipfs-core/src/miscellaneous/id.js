@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { isMultiaddr } from '@multiformats/multiaddr'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
 import retry from 'p-retry'
 
@@ -38,7 +38,7 @@ export function testId (factory, options) {
       expect(res).to.have.a.property('addresses').that.is.an('array')
 
       for (const ma of res.addresses) {
-        expect(Multiaddr.isMultiaddr(ma)).to.be.true()
+        expect(isMultiaddr(ma)).to.be.true()
       }
     })
 
@@ -48,17 +48,11 @@ export function testId (factory, options) {
       expect(res).to.have.a.property('protocols').that.is.an('array')
 
       expect(res.protocols).to.include.members([
-        '/floodsub/1.0.0',
-        '/ipfs/bitswap/1.0.0',
-        '/ipfs/bitswap/1.1.0',
         '/ipfs/bitswap/1.2.0',
         '/ipfs/id/1.0.0',
         '/ipfs/id/push/1.0.0',
         '/ipfs/lan/kad/1.0.0',
-        '/ipfs/ping/1.0.0',
-        '/libp2p/circuit/relay/0.1.0',
-        '/meshsub/1.0.0',
-        '/meshsub/1.1.0'
+        '/ipfs/ping/1.0.0'
       ])
     })
 

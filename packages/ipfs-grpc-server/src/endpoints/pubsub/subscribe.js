@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  */
 
 /**
@@ -27,7 +27,7 @@ export function grpcPubsubSubscribe (ipfs, options = {}) {
       onMessage: (message) => {
         let sequenceNumber
 
-        if (message.sequenceNumber != null) {
+        if (message.type === 'signed' && message.sequenceNumber != null) {
           let numberString = message.sequenceNumber.toString(16)
 
           if (numberString.length % 2 !== 0) {

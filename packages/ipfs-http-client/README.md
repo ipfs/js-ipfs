@@ -1,3 +1,52 @@
+# ipfs-http-client <!-- omit in toc -->
+
+[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
+[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
+[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
+
+> A client library for the IPFS HTTP API
+
+## Table of contents <!-- omit in toc -->
+
+- [Install](#install)
+- [Getting Started](#getting-started)
+  - [Next Steps](#next-steps)
+- [Usage](#usage)
+  - - [`create([options])`](#createoptions)
+    - [Parameters](#parameters)
+    - [Options](#options)
+    - [Returns](#returns)
+    - [Example](#example)
+  - [API](#api)
+  - [Additional Options](#additional-options)
+  - [Instance Utils](#instance-utils)
+  - [Static Types and Utils](#static-types-and-utils)
+    - [Glob source](#glob-source)
+      - [`globSource(path, pattern, [options])`](#globsourcepath-pattern-options)
+      - [Example](#example-1)
+    - [URL source](#url-source)
+      - [`urlSource(url)`](#urlsourceurl)
+      - [Example](#example-2)
+  - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
+  - [Importing the module and usage](#importing-the-module-and-usage)
+  - [In a web browser](#in-a-web-browser)
+  - [Custom Headers](#custom-headers)
+  - [Infura Header](#Infura-header)
+  - [Global Timeouts](#global-timeouts)
+- [Development](#development)
+  - [Testing](#testing)
+- [Historical context](#historical-context)
+- [License](#license)
+- [Contribute](#contribute)
+
+## Install
+
+```console
+$ npm i ipfs-http-client
+```
+
 <h1 align="center">
   <a href="https://ipfs.io"><img width="650px" src="https://ipfs.io/ipfs/QmQJ68PFMDdAsgCZvA1UVzzn18asVcf7HVvCDgpjiSCAse" alt="IPFS http client lib logo" /></a>
 </h1>
@@ -27,47 +76,9 @@
   <br>
 </p>
 
-> A client library for the IPFS HTTP RPC API (`/api/v0/*`), implemented in JavaScript. This client library implements the IPFS [Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) enabling applications to change between an embedded js-ipfs node and any remote IPFS node without having to change the code. In addition, this client library implements a set of utility functions.
-
-## Table of Contents <!-- omit in toc -->
-
-- [Getting Started](#getting-started)
-  - [Install](#install)
-  - [Next Steps](#next-steps)
-- [Usage](#usage)
-    - [`create([options])`](#createoptions)
-    - [Parameters](#parameters)
-    - [Options](#options)
-    - [Returns](#returns)
-    - [Example](#example)
-  - [API](#api)
-  - [Additional Options](#additional-options)
-  - [Instance Utils](#instance-utils)
-  - [Static Types and Utils](#static-types-and-utils)
-    - [Glob source](#glob-source)
-      - [`globSource(path, pattern, [options])`](#globsourcepath-pattern-options)
-      - [Example](#example-1)
-    - [URL source](#url-source)
-      - [`urlSource(url)`](#urlsourceurl)
-      - [Example](#example-2)
-  - [Running the daemon with the right port](#running-the-daemon-with-the-right-port)
-  - [Importing the module and usage](#importing-the-module-and-usage)
-  - [In a web browser](#in-a-web-browser)
-  - [Custom Headers](#custom-headers)
-  - [Global Timeouts](#global-timeouts)
-- [Development](#development)
-  - [Testing](#testing)
-- [Contribute](#contribute)
-- [Historical context](#historical-context)
-- [License](#license)
-
 ## Getting Started
 
 We've come a long way, but this project is still in Alpha, lots of development is happening, APIs might change, beware of 🐉..
-
-### Install
-
-This module uses node.js, and can be installed through npm:
 
 ```bash
 npm install --save ipfs-http-client
@@ -77,14 +88,14 @@ Both the Current and Active LTS versions of Node.js are supported. Please see [n
 
 ### Next Steps
 
-* Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
-* Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
-* Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
-* Visit https://dweb-primer.ipfs.io to learn about IPFS and the concepts that underpin it
-* Head over to https://proto.school to take interactive tutorials that cover core IPFS APIs
-* Check out https://docs.ipfs.io for tips, how-tos and more
-* See https://blog.ipfs.io for news and more
-* Need help? Please ask 'How do I?' questions on https://discuss.ipfs.io
+- Read the [docs](https://github.com/ipfs/js-ipfs/tree/master/docs)
+- Look into the [examples](https://github.com/ipfs-examples/js-ipfs-examples) to learn how to spawn an IPFS node in Node.js and in the Browser
+- Consult the [Core API docs](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) to see what you can do with an IPFS node
+- Visit <https://dweb-primer.ipfs.io> to learn about IPFS and the concepts that underpin it
+- Head over to <https://proto.school> to take interactive tutorials that cover core IPFS APIs
+- Check out <https://docs.ipfs.io> for tips, how-tos and more
+- See <https://blog.ipfs.io> for news and more
+- Need help? Please ask 'How do I?' questions on <https://discuss.ipfs.io>
 
 ## Usage
 
@@ -102,19 +113,19 @@ None
 
 Alternatively it can be an object which may have the following keys:
 
-| Name | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| url | `String` or `URL` or `Multiaddr` | `'http://localhost:5001/api/v0'` | A URL that resolves to a running instance of the IPFS [HTTP RPC API](https://docs.ipfs.io/reference/http/api/) |
-| protocol | `String` | `'http'` | The protocol to used (ignored if url is specified) |
-| host | `String` | `'localhost'` | The host to used (ignored if url is specified) |
-| port | `number` | `5001` | The port to used (ignored if url is specified) |
-| path | `String` | `'api/v0'` | The path to used (ignored if url is specified) |
-| agent | [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) | `http.Agent({ keepAlive: true, maxSockets: 6 })` | An `http.Agent` used to control client behaviour (node.js only) |
+| Name     | Type                                                                 | Default                                          | Description                                                                                                    |
+| -------- | -------------------------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| url      | `String` or `URL` or `Multiaddr`                                     | `'http://localhost:5001/api/v0'`                 | A URL that resolves to a running instance of the IPFS [HTTP RPC API](https://docs.ipfs.io/reference/http/api/) |
+| protocol | `String`                                                             | `'http'`                                         | The protocol to used (ignored if url is specified)                                                             |
+| host     | `String`                                                             | `'localhost'`                                    | The host to used (ignored if url is specified)                                                                 |
+| port     | `number`                                                             | `5001`                                           | The port to used (ignored if url is specified)                                                                 |
+| path     | `String`                                                             | `'api/v0'`                                       | The path to used (ignored if url is specified)                                                                 |
+| agent    | [http.Agent](https://nodejs.org/api/http.html#http_class_http_agent) | `http.Agent({ keepAlive: true, maxSockets: 6 })` | An `http.Agent` used to control client behaviour (node.js only)                                                |
 
 #### Returns
 
-| Type | Description |
-| ---- | ----------- |
+| Type     | Description                                                                                               |
+| -------- | --------------------------------------------------------------------------------------------------------- |
 | `Object` | An object that conforms to the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) |
 
 #### Example
@@ -143,10 +154,10 @@ const { cid } = await client.add('Hello world!')
 
 ### Additional Options
 
-All core API methods take _additional_ `options` specific to the HTTP API:
+All core API methods take *additional* `options` specific to the HTTP API:
 
-* `headers` - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
-* `searchParams` - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
+- `headers` - An object or [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance that can be used to set custom HTTP headers. Note that this option can also be [configured globally](#custom-headers) via the constructor options.
+- `searchParams` - An object or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance that can be used to add additional query parameters to the query string sent with each request.
 
 ### Instance Utils
 
@@ -299,9 +310,9 @@ To always request the latest version, use one of the following examples:
 
 For maximum security you may also decide to:
 
-* reference a specific version of IPFS API (to prevent unexpected breaking changes when a newer latest version is published)
-* [generate a SRI hash](https://www.srihash.org/) of that version and use it to ensure integrity. Learn more also at the [jsdelivr website](https://www.jsdelivr.com/using-sri-with-dynamic-files)
-* set the [CORS settings attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) to make anonymous requests to CDN
+- reference a specific version of IPFS API (to prevent unexpected breaking changes when a newer latest version is published)
+- [generate a SRI hash](https://www.srihash.org/) of that version and use it to ensure integrity. Learn more also at the [jsdelivr website](https://www.jsdelivr.com/using-sri-with-dynamic-files)
+- set the [CORS settings attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) to make anonymous requests to CDN
 
 Example:
 
@@ -340,9 +351,26 @@ const ipfs = create({
 })
 ```
 
+### Infura Header
+
+If you wish to send infura headers with each request made by this library, for example, the Authorization header. You can use the config to do so:
+
+```js
+const auth =
+    'Basic ' + Buffer.from(INFURA_ID + ':' + INFURA_SECRET_KEY).toString('base64');
+const client = ipfsClient.create({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
+});
+```
+
 ### Global Timeouts
 
-To set a global timeout for _all_ requests pass a value for the `timeout` option:
+To set a global timeout for *all* requests pass a value for the `timeout` option:
 
 ```js
 // Timeout after 10 seconds
@@ -358,24 +386,25 @@ const ipfs = create({ timeout: '2m' })
 
 We run tests by executing `npm test` in a terminal window. This will run both Node.js and Browser tests, both in Chrome and PhantomJS. To ensure that the module conforms with the [`interface-ipfs-core`](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core) spec, we run the batch of tests provided by the interface module, which can be found [here](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/src).
 
-## Contribute
-
-The js-ipfs-http-client is a work in progress. As such, there's a few things you can do right now to help out:
-
-- **[Check out the existing issues](https://github.com/ipfs/js-ipfs-http-client/issues)**!
-- **Perform code reviews**. More eyes will help a) speed the project along b) ensure quality and c) reduce possible future bugs.
-- **Add tests**. There can never be enough tests. Note that interface tests exist inside [`interface-ipfs-core`](https://github.com/ipfs/js-ipfs/tree/master/packages/interface-ipfs-core/src).
-
-**Want to hack on IPFS?**
-
-[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
-
 ## Historical context
 
 This module started as a direct mapping from the go-ipfs cli to a JavaScript implementation, although this was useful and familiar to a lot of developers that were coming to IPFS for the first time, it also created some confusion on how to operate the core of IPFS and have access to the full capacity of the protocol. After much consideration, we decided to create `interface-ipfs-core` with the goal of standardizing the interface of a core implementation of IPFS, and keep the utility functions the IPFS community learned to use and love, such as reading files from disk and storing them directly to IPFS.
 
 ## License
 
-[MIT](LICENSE)
+Licensed under either of
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fipfs%2Fjs-ipfs-http-client?ref=badge_large)
+- Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
+
+## Contribute
+
+Contributions welcome! Please check out [the issues](https://github.com/ipfs/js-ipfs/issues).
+
+Also see our [contributing document](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) for more information on how we work, and about contributing in general.
+
+Please be aware that all interactions related to this repo are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)

@@ -120,6 +120,18 @@ export default {
             topic: {
               type: 'string',
               id: 5
+            },
+            key: {
+              type: 'bytes',
+              id: 6
+            },
+            signature: {
+              type: 'bytes',
+              id: 7
+            },
+            type: {
+              type: 'string',
+              id: 8
             }
           }
         },

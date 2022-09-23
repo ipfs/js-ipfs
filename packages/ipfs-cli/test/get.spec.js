@@ -9,7 +9,6 @@ import sinon from 'sinon'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { pack } from 'it-tar'
 import { pipe } from 'it-pipe'
-import map from 'it-map'
 import toBuffer from 'it-to-buffer'
 import { clean } from './utils/clean.js'
 import Pako from 'pako'
@@ -27,11 +26,7 @@ const defaultOptions = {
 async function * tarballed (files) {
   yield * pipe(
     files,
-    pack(),
-    /**
-     * @param {AsyncIterable<Uint8Array>} source
-     */
-    (source) => map(source, buf => buf.slice())
+    pack()
   )
 }
 

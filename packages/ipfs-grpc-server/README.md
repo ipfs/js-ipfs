@@ -1,6 +1,38 @@
-# ipfs-grpc-server
+# ipfs-grpc-server <!-- omit in toc -->
 
-> A gRPC server that runs over a websocket
+[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
+[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
+[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
+
+> A server library for the IPFS gRPC API
+
+## Table of contents <!-- omit in toc -->
+
+- [Install](#install)
+- [Why?](#why)
+- [Protocol](#protocol)
+  - [1. Metadata](#1-metadata)
+  - [2. Messages](#2-messages)
+    - [Signal](#signal)
+    - [Header](#header)
+    - [Message data](#message-data)
+    - [Trailer](#trailer)
+- [Handlers](#handlers)
+  - [Metadata](#metadata)
+  - [Unary](#unary)
+  - [Server streaming](#server-streaming)
+  - [Client streaming](#client-streaming)
+  - [Bidirectional streaming](#bidirectional-streaming)
+- [License](#license)
+- [Contribute](#contribute)
+
+## Install
+
+```console
+$ npm i ipfs-grpc-server
+```
 
 ## Why?
 
@@ -46,30 +78,30 @@ One ore more messages will be sent.  Messages are sent as a single websocket mes
 
 Every message sent to or received from the server will have the following format:
 
-| byte index | Notes |
-|---|---|
-| 0       | Signal |
-| 1-5     | Header |
-| n1-n2   | Message data |
-| n3-n3+5 | Trailer
+| byte index | Notes        |
+| ---------- | ------------ |
+| 0          | Signal       |
+| 1-5        | Header       |
+| n1-n2      | Message data |
+| n3-n3+5    | Trailer      |
 
 #### Signal
 
 A one-byte field.
 
-| Value | Meaning |
-|---|---|
-| 0       | START_SEND: Further messages will be sent as part of this context |
-| 1       | FINISH_SEND: This is the final message, no further data will be sent |
+| Value | Meaning                                                               |
+| ----- | --------------------------------------------------------------------- |
+| 0     | START\_SEND: Further messages will be sent as part of this context    |
+| 1     | FINISH\_SEND: This is the final message, no further data will be sent |
 
 #### Header
 
 A five-byte field that contains one byte signifying if it's a Header or a Trailer and four bytes that contain the length of the following data.
 
-| byte index   | Meaning |
-|--------------|---|
-| 0            | 0: This is a header, 128: This is a footer |
-| 1-4          | An unsigned big-endian 32-bit integer that specifies the length of the message |
+| byte index | Meaning                                                                        |
+| ---------- | ------------------------------------------------------------------------------ |
+| 0          | 0: This is a header, 128: This is a footer                                     |
+| 1-4        | An unsigned big-endian 32-bit integer that specifies the length of the message |
 
 #### Message data
 
@@ -79,10 +111,10 @@ A protocol buffer message, the length of which is defined in the header
 
 A five-byte field that contains one byte signifying if it's a Header or a Trailer and four bytes that contain the length of the following data.
 
-| byte index   | Meaning |
-|--------------|---|
-| 0            | 0: This is a header, 128: This is a footer |
-| 1-4          | A big-endian 32-bit integer that specifies the length of the trailer |
+| byte index | Meaning                                                              |
+| ---------- | -------------------------------------------------------------------- |
+| 0          | 0: This is a header, 128: This is a footer                           |
+| 1-4        | A big-endian 32-bit integer that specifies the length of the trailer |
 
 The trailer contains [HTTP headers][] as a utf8 encoded string in the same way as invocation metadata.
 
@@ -177,6 +209,27 @@ export function grpcFunction (ipfs, options = {}) {
 }
 ```
 
+## License
+
+Licensed under either of
+
+- Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
+
+## Contribute
+
+Contributions welcome! Please check out [the issues](https://github.com/ipfs/js-ipfs/issues).
+
+Also see our [contributing document](https://github.com/ipfs/community/blob/master/CONTRIBUTING_JS.md) for more information on how we work, and about contributing in general.
+
+Please be aware that all interactions related to this repo are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
+
 [HTTP headers]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+
 [it-pushable]: https://www.npmjs.com/package/it-pushable
+
 [AsyncIterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator

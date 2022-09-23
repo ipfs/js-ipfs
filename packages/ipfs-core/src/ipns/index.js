@@ -10,8 +10,9 @@ const log = logger('ipfs:ipns')
 const defaultRecordTtl = 60 * 1000
 
 /**
- * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
  */
 
 export class IPNS {
@@ -19,7 +20,7 @@ export class IPNS {
    * @param {import('ipfs-core-types/src/utils').BufferStore} routing
    * @param {import('interface-datastore').Datastore} datastore
    * @param {PeerId} peerId
-   * @param {import('@libp2p/interfaces/keychain').KeyChain} keychain
+   * @param {import('@libp2p/interface-keychain').KeyChain} keychain
    * @param {object} options
    * @param {string} options.pass
    * @param {number} [options.initialBroadcastInterval]
@@ -39,10 +40,11 @@ export class IPNS {
    * @param {PeerId} peerId
    * @param {Uint8Array} value
    * @param {number} lifetime
+   * @param {AbortOptions} [options]
    */
-  async publish (peerId, value, lifetime = IpnsPublisher.defaultRecordLifetime) {
+  async publish (peerId, value, lifetime = IpnsPublisher.defaultRecordLifetime, options) {
     try {
-      await this.publisher.publishWithEOL(peerId, value, lifetime)
+      await this.publisher.publishWithEOL(peerId, value, lifetime, options)
 
       log(`IPNS value ${uint8ArrayToString(value, 'base32')} was published correctly`)
 
@@ -74,6 +76,7 @@ export class IPNS {
    * @param {object} options
    * @param {boolean} [options.nocache]
    * @param {boolean} [options.recursive]
+   * @param {AbortSignal} [options.signal]
    */
   async resolve (name, options = {}) {
     if (typeof name !== 'string') {
@@ -111,8 +114,9 @@ export class IPNS {
    *
    * @param {PeerId} peerId
    * @param {Uint8Array} value
+   * @param {AbortOptions} [options]
    */
-  async initializeKeyspace (peerId, value) { // eslint-disable-line require-await
-    return this.publish(peerId, value, IpnsPublisher.defaultRecordLifetime)
+  async initializeKeyspace (peerId, value, options) { // eslint-disable-line require-await
+    return this.publish(peerId, value, IpnsPublisher.defaultRecordLifetime, options)
   }
 }

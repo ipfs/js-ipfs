@@ -13,11 +13,11 @@ import { isWebWorker, isNode } from 'ipfs-utils/src/env.js'
 import sinon from 'sinon'
 import defer from 'p-defer'
 import pWaitFor from 'p-wait-for'
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {import('it-pushable').Pushable<Message>} Pushable
  * @typedef {import('p-defer').DeferredPromise<Message>} DeferredMessagePromise
  */
@@ -84,6 +84,10 @@ export function testSubscribe (factory, options) {
 
         const msg = await deferred.promise
 
+        if (msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(msg.data)).to.equal('hi')
         expect(msg).to.have.property('sequenceNumber')
         expect(msg.sequenceNumber).to.be.a('BigInt')
@@ -93,7 +97,7 @@ export function testSubscribe (factory, options) {
       })
 
       it('should subscribe to one topic with options', async () => {
-        const msgStream = pushable()
+        const msgStream = pushable({ objectMode: true })
 
         await ipfs1.pubsub.subscribe(topic, msg => {
           msgStream.push(msg)
@@ -153,7 +157,7 @@ export function testSubscribe (factory, options) {
       })
 
       it('should allow discover option to be passed', async () => {
-        const msgStream = pushable()
+        const msgStream = pushable({ objectMode: true })
 
         await ipfs1.pubsub.subscribe(topic, msg => {
           msgStream.push(msg)
@@ -248,10 +252,20 @@ export function testSubscribe (factory, options) {
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
         const sub1Msg = await msgStream1.promise
+
+        if (sub1Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
         expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
         const sub2Msg = await msgStream2.promise
+
+        if (sub2Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
         expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })
@@ -283,10 +297,20 @@ export function testSubscribe (factory, options) {
         await ipfs2.pubsub.publish(topic, uint8ArrayFromString(expectedString))
 
         const sub1Msg = await msgStream1.promise
+
+        if (sub1Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub1Msg.data)).to.be.eql(expectedString)
         expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
         const sub2Msg = await msgStream2.promise
+
+        if (sub2Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub2Msg.data)).to.be.eql(expectedString)
         expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })
@@ -319,10 +343,20 @@ export function testSubscribe (factory, options) {
         await ipfs2.pubsub.publish(topic, buffer)
 
         const sub1Msg = await msgStream1.promise
+
+        if (sub1Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub1Msg.data, 'base16')).to.be.eql(expectedHex)
         expect(sub1Msg.from.toString()).to.eql(ipfs2Id.id.toString())
 
         const sub2Msg = await msgStream2.promise
+
+        if (sub2Msg.type !== 'signed') {
+          throw new Error('Message was not signed')
+        }
+
         expect(uint8ArrayToString(sub2Msg.data, 'base16')).to.be.eql(expectedHex)
         expect(sub2Msg.from.toString()).to.eql(ipfs2Id.id.toString())
       })
@@ -330,8 +364,8 @@ export function testSubscribe (factory, options) {
       it('should receive multiple messages', async () => {
         const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
 
-        const msgStream1 = pushable()
-        const msgStream2 = pushable()
+        const msgStream1 = pushable({ objectMode: true })
+        const msgStream2 = pushable({ objectMode: true })
 
         let sub1Called = 0
         /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
@@ -377,7 +411,7 @@ export function testSubscribe (factory, options) {
 
         const msgBase = 'msg - '
         const count = 100
-        const msgStream = pushable()
+        const msgStream = pushable({ objectMode: true })
 
         let subCalled = 0
         /** @type {import('@libp2p/interfaces/events').EventHandler<Message>} */
@@ -426,8 +460,8 @@ export function testSubscribe (factory, options) {
           const topic = `pubsub-topic-${Math.random()}`
           topics.push(topic)
 
-          const msgStream1 = pushable()
-          const msgStream2 = pushable()
+          const msgStream1 = pushable({ objectMode: true })
+          const msgStream2 = pushable({ objectMode: true })
 
           msgStreams.push({
             msgStream1,

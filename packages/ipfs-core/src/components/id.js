@@ -1,5 +1,5 @@
 import { ipfsCore as pkgversion } from '../version.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { NotStartedError } from '../errors.js'
@@ -11,12 +11,12 @@ const log = logger('ipfs:components:id')
 /**
  * @typedef {import('libp2p').Libp2p} Libp2p
  * @typedef {import('ipfs-core-types/src/utils').AbortOptions} AbortOptions
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 /**
  * @param {object} config
- * @param {import('@libp2p/interfaces/peer-id').PeerId} config.peerId
+ * @param {import('@libp2p/interface-peer-id').PeerId} config.peerId
  * @param {import('../types').NetworkService} config.network
  */
 export function createId ({ peerId, network }) {
@@ -69,7 +69,7 @@ export function createId ({ peerId, network }) {
           return `${str}/p2p/${idStr}`
         })
         .sort()
-        .map(ma => new Multiaddr(ma)),
+        .map(ma => multiaddr(ma)),
       agentVersion,
       protocolVersion,
       protocols: (peer.protocols || []).sort()

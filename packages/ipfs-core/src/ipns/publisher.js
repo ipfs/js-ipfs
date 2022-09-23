@@ -1,4 +1,4 @@
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 import { notFoundError } from 'datastore-core/errors'
 import errcode from 'err-code'
 import { logger } from '@libp2p/logger'
@@ -9,10 +9,11 @@ import * as ipns from 'ipns'
 const log = logger('ipfs:ipns:publisher')
 
 /**
- * @typedef {import('@libp2p/interfaces/keys').PrivateKey} PrivateKey
- * @typedef {import('@libp2p/interfaces/keys').PublicKey} PublicKey
+ * @typedef {import('@libp2p/interface-keys').PrivateKey} PrivateKey
+ * @typedef {import('@libp2p/interface-keys').PublicKey} PublicKey
  * @typedef {import('ipns').IPNSEntry} IPNSEntry
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
  */
 
 const ERR_NOT_FOUND = notFoundError().code
@@ -35,11 +36,12 @@ export class IpnsPublisher {
    * @param {PeerId} peerId
    * @param {Uint8Array} value
    * @param {number} lifetime
+   * @param {AbortOptions} [options]
    */
-  async publishWithEOL (peerId, value, lifetime) {
-    const record = await this._updateOrCreateRecord(peerId, value, lifetime)
+  async publishWithEOL (peerId, value, lifetime, options) {
+    const record = await this._updateOrCreateRecord(peerId, value, lifetime, options)
 
-    return this._putRecordToRouting(record, peerId)
+    return this._putRecordToRouting(record, peerId, options)
   }
 
   /**
@@ -47,16 +49,18 @@ export class IpnsPublisher {
    *
    * @param {PeerId} peerId
    * @param {Uint8Array} value
+   * @param {AbortOptions} options
    */
-  publish (peerId, value) {
-    return this.publishWithEOL(peerId, value, defaultRecordLifetime)
+  publish (peerId, value, options) {
+    return this.publishWithEOL(peerId, value, defaultRecordLifetime, options)
   }
 
   /**
    * @param {Uint8Array} record
    * @param {PeerId} peerId
+   * @param {AbortOptions} [options]
    */
-  async _putRecordToRouting (record, peerId) {
+  async _putRecordToRouting (record, peerId, options) {
     if (!(isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
       log.error(errMsg)
@@ -70,7 +74,7 @@ export class IpnsPublisher {
 
     const routingKey = ipns.peerIdToRoutingKey(peerId)
 
-    await this._publishEntry(routingKey, record)
+    await this._publishEntry(routingKey, record, options)
 
     return record
   }
@@ -78,11 +82,12 @@ export class IpnsPublisher {
   /**
    * @param {Uint8Array} key
    * @param {Uint8Array} entry
+   * @param {AbortOptions} [options]
    */
-  async _publishEntry (key, entry) {
+  async _publishEntry (key, entry, options) {
     // Add record to routing (buffer key)
     try {
-      const res = await this._routing.put(key, entry)
+      const res = await this._routing.put(key, entry, options)
       log(`ipns record for ${uint8ArrayToString(key, 'base32')} was stored in the routing`)
 
       return res
@@ -162,8 +167,9 @@ export class IpnsPublisher {
    * @param {PeerId} peerId
    * @param {Uint8Array} value
    * @param {number} lifetime
+   * @param {AbortOptions} [options]
    */
-  async _updateOrCreateRecord (peerId, value, lifetime) {
+  async _updateOrCreateRecord (peerId, value, lifetime, options) {
     if (!(isPeerId(peerId))) {
       const errMsg = 'peerId received is not valid'
       log.error(errMsg)
@@ -217,7 +223,7 @@ export class IpnsPublisher {
       const data = ipns.marshal(entryData)
 
       // Store the new record
-      await this._datastore.put(ipns.getLocalKey(peerId.toBytes()), data)
+      await this._datastore.put(ipns.getLocalKey(peerId.toBytes()), data, options)
 
       log(`ipns record for ${uint8ArrayToString(value, 'base32')} was stored in the datastore`)
 

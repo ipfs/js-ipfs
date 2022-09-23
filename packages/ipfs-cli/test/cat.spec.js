@@ -9,7 +9,8 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 const defaultOptions = {
   offset: undefined,
   length: undefined,
-  timeout: undefined
+  timeout: undefined,
+  preload: true
 }
 
 describe('cat', () => {
@@ -79,6 +80,19 @@ describe('cat', () => {
     }).returns([buf])
 
     const out = await cli(`cat ${cid} --timeout=1s`, { ipfs, raw: true })
+    expect(out).to.deep.equal(buf)
+  })
+
+  it('should cat a file without preloading', async () => {
+    const cid = CID.parse('QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB')
+    const buf = uint8ArrayFromString('hello world')
+
+    ipfs.cat.withArgs(cid.toString(), {
+      ...defaultOptions,
+      preload: false
+    }).returns([buf])
+
+    const out = await cli(`cat ${cid} --preload=false`, { ipfs, raw: true })
     expect(out).to.deep.equal(buf)
   })
 })

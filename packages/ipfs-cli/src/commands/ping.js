@@ -5,7 +5,7 @@ import { coercePeerId } from '../utils.js'
  * @typedef {object} Argv
  * @property {import('../types').Context} Argv.ctx
  * @property {number} Argv.count
- * @property {import('@libp2p/interfaces/peer-id').PeerId} Argv.peerId
+ * @property {import('@libp2p/interface-peer-id').PeerId} Argv.peerId
  * @property {number} Argv.timeout
  */
 

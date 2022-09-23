@@ -9,7 +9,8 @@ import * as Errors from 'datastore-core/errors'
 import { ipnsValidator } from 'ipns/validator'
 
 /**
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interfaces').AbortOptions} AbortOptions
  */
 
 const log = logger('ipfs:ipns:resolver')
@@ -28,8 +29,9 @@ export class IpnsResolver {
 
   /**
    * @param {string} name
-   * @param {object} options
+   * @param {object} [options]
    * @param {boolean} [options.recursive]
+   * @param {AbortSignal} [options.signal]
    */
   async resolve (name, options = {}) {
     if (typeof name !== 'string') {
@@ -53,7 +55,7 @@ export class IpnsResolver {
       depth = defaultMaximumRecursiveDepth
     }
 
-    const res = await this.resolver(key, depth)
+    const res = await this.resolver(key, depth, options)
 
     log(`${name} was locally resolved correctly`)
     return res
@@ -64,9 +66,10 @@ export class IpnsResolver {
    *
    * @param {string} name
    * @param {number} depth
+   * @param {AbortOptions} options
    * @returns {Promise<string>}
    */
-  async resolver (name, depth) {
+  async resolver (name, depth, options) {
     // Exceeded recursive maximum depth
     if (depth === 0) {
       const errMsg = `could not resolve name (recursion limit of ${defaultMaximumRecursiveDepth} exceeded)`
@@ -75,7 +78,7 @@ export class IpnsResolver {
       throw errcode(new Error(errMsg), 'ERR_RESOLVE_RECURSION_LIMIT')
     }
 
-    const res = await this._resolveName(name)
+    const res = await this._resolveName(name, options)
     const nameSegments = res.split('/')
 
     // If obtained a ipfs cid or recursive option is disabled
@@ -84,21 +87,22 @@ export class IpnsResolver {
     }
 
     // continue recursively until depth equals 0
-    return this.resolver(nameSegments[2], depth - 1)
+    return this.resolver(nameSegments[2], depth - 1, options)
   }
 
   /**
    * Resolve ipns entries from the provided routing
    *
    * @param {string} name
+   * @param {AbortOptions} options
    */
-  async _resolveName (name) {
+  async _resolveName (name, options) {
     const peerId = peerIdFromString(name)
     const routingKey = ipns.peerIdToRoutingKey(peerId)
     let record
 
     try {
-      record = await this._routing.get(routingKey)
+      record = await this._routing.get(routingKey, options)
     } catch (/** @type {any} */ err) {
       log.error('could not get record from routing', err)
 

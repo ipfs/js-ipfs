@@ -11,13 +11,22 @@
   ],
   "references": [
     {
+      "path": "../interface-ipfs-core"
+    },
+    {
       "path": "../ipfs-cli"
+    },
+    {
+      "path": "../ipfs-client"
     },
     {
       "path": "../ipfs-core"
     },
     {
       "path": "../ipfs-core-types"
+    },
+    {
+      "path": "../ipfs-http-client"
     }
   ]
 }

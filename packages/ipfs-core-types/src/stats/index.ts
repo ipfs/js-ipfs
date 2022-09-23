@@ -1,7 +1,7 @@
 import type { AbortOptions } from '../utils'
 import type { API as BitswapAPI } from '../bitswap'
 import type { API as RepoAPI } from '../repo'
-import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { PeerId } from '@libp2p/interface-peer-id'
 
 export interface API<OptionExtension = {}> {
   bitswap: BitswapAPI<OptionExtension>['stat']

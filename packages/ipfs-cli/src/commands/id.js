@@ -6,7 +6,7 @@ import { coercePeerId } from '../utils.js'
  * @property {import('../types').Context} Argv.ctx
  * @property {string} Argv.format
  * @property {number} Argv.timeout
- * @property {import('@libp2p/interfaces/peer-id').PeerId} [Argv.peerId]
+ * @property {import('@libp2p/interface-peer-id').PeerId} [Argv.peerId]
  */
 
 /** @type {import('yargs').CommandModule<Argv, Argv>} */

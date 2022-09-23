@@ -102,8 +102,8 @@ export class BlockStorage extends BaseBlockstore {
    * @param {AbortOptions} [options]
    */
   async * getMany (cids, options = {}) {
-    const getFromBitswap = pushable()
-    const getFromChild = pushable()
+    const getFromBitswap = pushable({ objectMode: true })
+    const getFromChild = pushable({ objectMode: true })
 
     Promise.resolve().then(async () => {
       for await (const cid of cids) {

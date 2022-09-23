@@ -9,7 +9,7 @@ import { pushable } from 'it-pushable'
 import { base64url } from 'multiformats/bases/base64'
 
 /**
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  */
 
 const preDecodeTopicFromHttpRpc = {
@@ -71,30 +71,35 @@ export const subscribeResource = {
     // request.raw.res.setHeader('Trailer', 'X-Stream-Error')
 
     return streamResponse(request, h, () => {
-      const output = pushable()
+      const output = pushable({ objectMode: true })
 
       /**
        * @type {import('@libp2p/interfaces/events').EventHandler<Message>}
        */
       const handler = (msg) => {
-        let sequenceNumber
-
-        if (msg.sequenceNumber != null) {
+        if (msg.type === 'signed') {
           let numberString = msg.sequenceNumber.toString(16)
 
           if (numberString.length % 2 !== 0) {
             numberString = `0${numberString}`
           }
 
-          sequenceNumber = base64url.encode(uint8ArrayFromString(numberString, 'base16'))
-        }
+          const sequenceNumber = base64url.encode(uint8ArrayFromString(numberString, 'base16'))
 
-        output.push({
-          from: msg.from, // TODO: switch to peerIdFromString(msg.from).toString() when go-ipfs defaults to CIDv1
-          data: base64url.encode(msg.data),
-          seqno: sequenceNumber,
-          topicIDs: [base64url.encode(uint8ArrayFromString(msg.topic))]
-        })
+          output.push({
+            from: msg.from, // TODO: switch to peerIdFromString(msg.from).toString() when go-ipfs defaults to CIDv1
+            data: base64url.encode(msg.data),
+            seqno: sequenceNumber,
+            topicIDs: [base64url.encode(uint8ArrayFromString(msg.topic))],
+            key: base64url.encode(msg.key),
+            signature: base64url.encode(msg.signature)
+          })
+        } else {
+          output.push({
+            data: base64url.encode(msg.data),
+            topicIDs: [base64url.encode(uint8ArrayFromString(msg.topic))]
+          })
+        }
       }
 
       // js-ipfs-http-client needs a reply, and go-ipfs does the same thing

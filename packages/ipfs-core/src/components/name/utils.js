@@ -1,4 +1,4 @@
-import isIPFS from 'is-ipfs'
+import * as isIPFS from 'is-ipfs'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import drain from 'it-drain'
 import { resolve } from '../../utils.js'

@@ -11,7 +11,7 @@ import { allNdjson } from '../utils/all-ndjson.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import FormData from 'form-data'
 import streamToPromise from 'stream-to-promise'
-import { EventTypes } from '@libp2p/interfaces/dht'
+import { EventTypes } from '@libp2p/interface-dht'
 
 describe('/dht', () => {
   const peerId = 'QmQ2zigjQikYnyYUSXZydNXrDRhBut2mubwJBaLXobMt3A'

@@ -1,4 +1,4 @@
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 
@@ -21,7 +21,7 @@ export const createLocalAddrs = configure(api => {
     /** @type {{ Strings: string[] }} */
     const { Strings } = await res.json()
 
-    return (Strings || []).map(a => new Multiaddr(a))
+    return (Strings || []).map(a => multiaddr(a))
   }
   return localAddrs
 })

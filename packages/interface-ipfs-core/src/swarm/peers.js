@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { Multiaddr } from '@multiformats/multiaddr'
+import { isMultiaddr } from '@multiformats/multiaddr'
 import delay from 'delay'
 import { isBrowser, isWebWorker } from 'ipfs-utils/src/env.js'
 import { expect } from 'aegir/chai'
@@ -60,7 +60,7 @@ export function testPeers (factory, options) {
       const peer = peers[0]
 
       expect(peer).to.have.a.property('addr')
-      expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer')
       expect(peer.peer).to.be.ok()
       expect(peer).to.not.have.a.property('latency')
@@ -77,7 +77,7 @@ export function testPeers (factory, options) {
 
       const peer = peers[0]
       expect(peer).to.have.a.property('addr')
-      expect(Multiaddr.isMultiaddr(peer.addr)).to.equal(true)
+      expect(isMultiaddr(peer.addr)).to.equal(true)
       expect(peer).to.have.a.property('peer')
       expect(peer).to.have.a.property('latency')
       expect(peer.latency).to.match(/n\/a|[0-9]+[mµ]?s/) // n/a or 3ms or 3µs or 3s
