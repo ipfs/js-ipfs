@@ -48,9 +48,9 @@ jobs:
           - name: ipfs browser nextjs
             repo: https://github.com/ipfs-examples/js-ipfs-browser-nextjs.git
             deps: ipfs-core@$PWD/packages/ipfs-core
-          #- name: ipfs browser vite
-          #  repo: https://github.com/ipfs-examples/js-ipfs-browser-vite.git
-          #  deps: ipfs-core@$PWD/packages/ipfs-core
+          - name: ipfs browser vite
+            repo: https://github.com/ipfs-examples/js-ipfs-browser-vite.git
+            deps: ipfs-core@$PWD/packages/ipfs-core
           - name: ipfs browser readable stream
             repo: https://github.com/ipfs-examples/js-ipfs-browser-readablestream.git
             deps: ipfs-core@$PWD/packages/ipfs-core
