@@ -5,7 +5,7 @@ import { logger } from '@libp2p/logger'
 // @ts-expect-error - no types
 import coerce from 'coercer'
 import { camelCase } from 'change-case'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 
 const log = logger('ipfs:grpc-server:utils:web-socket-server')
 
@@ -41,7 +41,7 @@ class Messages extends EventEmitter {
 
     this.info = {
       uri: '',
-      ma: new Multiaddr('/ip4/127.0.0.1/tcp/0/ws')
+      ma: multiaddr('/ip4/127.0.0.1/tcp/0/ws')
     }
 
     wss.on('connection', (ws, request) => {
@@ -87,12 +87,12 @@ class Messages extends EventEmitter {
           // which is not how this server runs: https://nodejs.org/dist/latest-v15.x/docs/api/net.html#net_server_address
           this.info = {
             uri: info,
-            ma: new Multiaddr(info)
+            ma: multiaddr(info)
           }
         } else {
           this.info = {
             uri: `http://${info.address}:${info.port}`,
-            ma: new Multiaddr(`/ip4/${info.address}/tcp/${info.port}/ws`)
+            ma: multiaddr(`/ip4/${info.address}/tcp/${info.port}/ws`)
           }
         }
 

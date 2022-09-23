@@ -1,8 +1,7 @@
 import Hapi from '@hapi/hapi'
 import Pino from 'hapi-pino'
 import { logger, enabled } from '@libp2p/logger'
-// @ts-expect-error no types
-import toMultiaddr from 'uri-to-multiaddr'
+import toMultiaddr from '@multiformats/uri-to-multiaddr'
 import routes from './routes/index.js'
 
 const LOG = 'ipfs:http-gateway'

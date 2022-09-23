@@ -1,6 +1,6 @@
 /* eslint-env mocha, browser */
 
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { expect } from 'aegir/chai'
 import { factory } from './utils/factory.js'
 import { create as ipfsClient } from '../src/index.js'
@@ -76,7 +76,7 @@ describe('ipfs-http-client constructor tests', () => {
     it('multiaddr instance', () => {
       const host = 'ace.place'
       const port = '1001'
-      const addr = new Multiaddr(`/dns4/${host}/tcp/${port}`)
+      const addr = multiaddr(`/dns4/${host}/tcp/${port}`)
       const ipfs = ipfsClient(addr)
       expectConfig(ipfs, { host, port })
     })
@@ -133,7 +133,7 @@ describe('ipfs-http-client constructor tests', () => {
       const port = '1001'
       const protocol = 'http' // default to http if not specified in multiaddr
       const addr = `/dns4/${host}/tcp/${port}`
-      const ipfs = ipfsClient({ url: new Multiaddr(addr) })
+      const ipfs = ipfsClient({ url: multiaddr(addr) })
       expectConfig(ipfs, { host, port, protocol })
     })
 
@@ -142,7 +142,7 @@ describe('ipfs-http-client constructor tests', () => {
       const port = '1001'
       const protocol = 'https'
       const addr = `/dns4/${host}/tcp/${port}/https`
-      const ipfs = ipfsClient({ url: new Multiaddr(addr) })
+      const ipfs = ipfsClient({ url: multiaddr(addr) })
       expectConfig(ipfs, { host, port, protocol })
     })
 

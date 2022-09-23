@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr, isMultiaddr } from '@multiformats/multiaddr'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -16,7 +16,7 @@ export function testClear (factory, options) {
   const describe = getDescribe(options)
   const it = getIt(options)
 
-  const validIp4 = new Multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z')
+  const validIp4 = multiaddr('/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z')
 
   describe('.bootstrap.clear', function () {
     this.timeout(100 * 1000)
@@ -50,7 +50,7 @@ export function testClear (factory, options) {
 
       expect(removedPeers.sort()).to.deep.equal(addedPeers.sort())
 
-      expect(removedPeers.every(ma => Multiaddr.isMultiaddr(ma))).to.be.true()
+      expect(removedPeers.every(ma => isMultiaddr(ma))).to.be.true()
     })
   })
 }

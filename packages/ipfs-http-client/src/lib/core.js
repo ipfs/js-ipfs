@@ -1,7 +1,7 @@
 
 /* eslint-env browser */
 
-import { Multiaddr } from '@multiformats/multiaddr'
+import { isMultiaddr } from '@multiformats/multiaddr'
 import { isBrowser, isWebWorker, isNode } from 'ipfs-utils/src/env.js'
 import parseDuration from 'parse-duration'
 import { logger } from '@libp2p/logger'
@@ -20,6 +20,7 @@ const DEFAULT_PORT = isBrowser || isWebWorker ? location.port : '5001'
 /**
  * @typedef {import('ipfs-utils/src/types').HTTPOptions} HTTPOptions
  * @typedef {import('../types').Options} Options
+ * @typedef {import('@multiformats/multiaddr').Multiaddr} Multiaddr
  */
 
 /**
@@ -32,11 +33,11 @@ const normalizeOptions = (options = {}) => {
   let opts = {}
   let agent
 
-  if (typeof options === 'string' || Multiaddr.isMultiaddr(options)) {
+  if (typeof options === 'string' || isMultiaddr(options)) {
     url = new URL(toUrlString(options))
   } else if (options instanceof URL) {
     url = options
-  } else if (typeof options.url === 'string' || Multiaddr.isMultiaddr(options.url)) {
+  } else if (typeof options.url === 'string' || isMultiaddr(options.url)) {
     url = new URL(toUrlString(options.url))
     opts = options
   } else if (options.url instanceof URL) {

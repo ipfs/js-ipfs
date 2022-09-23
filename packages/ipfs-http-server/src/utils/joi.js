@@ -1,6 +1,6 @@
 import { CID } from 'multiformats/cid'
 import parseDuration from 'parse-duration'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { toCidAndPath } from 'ipfs-core-utils/to-cid-and-path'
 import Joi from 'joi'
 import { peerIdFromString } from '@libp2p/peer-id'
@@ -107,7 +107,7 @@ export default Joi
             return
           }
 
-          return { value: new Multiaddr(value).toString() }
+          return { value: multiaddr(value).toString() }
         }
       }
     },

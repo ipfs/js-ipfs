@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import isIpfs from 'is-ipfs'
+import * as isIpfs from 'is-ipfs'
 import { nanoid } from 'nanoid'
 import { base64url } from 'multiformats/bases/base64'
 import { expect } from 'aegir/chai'

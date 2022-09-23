@@ -7,7 +7,7 @@ import Progress from 'progress'
 import byteman from 'byteman'
 import { create } from 'ipfs-core'
 import { CID } from 'multiformats/cid'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { create as httpClient } from 'ipfs-http-client'
 import { peerIdFromString } from '@libp2p/peer-id'
@@ -267,7 +267,7 @@ export const coerceMultiaddr = (value) => {
     return undefined
   }
 
-  return new Multiaddr(value)
+  return multiaddr(value)
 }
 
 /**

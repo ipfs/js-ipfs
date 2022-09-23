@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/chai'
 import { getDescribe, getIt } from '../utils/mocha.js'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { isMultiaddr } from '@multiformats/multiaddr'
 import { isWebWorker } from 'ipfs-utils/src/env.js'
 import retry from 'p-retry'
 
@@ -38,7 +38,7 @@ export function testId (factory, options) {
       expect(res).to.have.a.property('addresses').that.is.an('array')
 
       for (const ma of res.addresses) {
-        expect(Multiaddr.isMultiaddr(ma)).to.be.true()
+        expect(isMultiaddr(ma)).to.be.true()
       }
     })
 
