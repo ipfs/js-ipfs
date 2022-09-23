@@ -56,7 +56,7 @@ export function toAsyncIterator (content) {
         }
 
         return new Promise((resolve, reject) => {
-          const chunk = content.subarray(index, MFS_MAX_CHUNK_SIZE)
+          const chunk = content.slice(index, MFS_MAX_CHUNK_SIZE)
           index += MFS_MAX_CHUNK_SIZE
 
           const reader = new global.FileReader()
