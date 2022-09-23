@@ -334,7 +334,7 @@ const limitAsyncStreamBytes = (stream, limit) => {
       emitted += buf.length
 
       if (emitted > limit) {
-        yield buf.slice(0, limit - emitted)
+        yield buf.subarray(0, limit - emitted)
 
         return
       }
@@ -353,7 +353,7 @@ const asyncZeroes = (count, chunkSize = MFS_MAX_CHUNK_SIZE) => {
 
   async function * _asyncZeroes () {
     while (true) {
-      yield buf.slice()
+      yield buf
     }
   }
 
