@@ -132,11 +132,7 @@ export const Gateway = {
     }
 
     const { source, contentType } = await detectContentType(ipfsPath, ipfs.cat(data.cid, catOptions))
-    const responseStream = toStream.readable((async function * () {
-      for await (const chunk of source) {
-        yield chunk.slice() // Convert BufferList to Buffer
-      }
-    })())
+    const responseStream = toStream.readable(source)
 
     const res = h.response(responseStream).code(rangeResponse ? 206 : 200)
 
