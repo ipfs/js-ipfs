@@ -32,8 +32,8 @@ export function testDns (factory, options) {
       try {
         const res = await ipfs.dns('ipfs.tech', { recursive: false })
 
-        // matches pattern /ipns/<ipnsaddress>
-        expect(res).to.match(/\/ipns\/.+$/)
+        // matches pattern /ip?s/<id>
+        expect(res).to.match(/\/ip[n|f]s\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
           // @ts-expect-error this is mocha
@@ -48,8 +48,8 @@ export function testDns (factory, options) {
       try {
         const res = await ipfs.dns('ipfs.tech', { recursive: true })
 
-        // matches pattern /ipfs/<hash>
-        expect(res).to.match(/\/ipfs\/.+$/)
+        // matches pattern /ip.s/<id>
+        expect(res).to.match(/\/ip[n|f]s\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
           // @ts-expect-error this is mocha
@@ -64,8 +64,8 @@ export function testDns (factory, options) {
       try {
         const res = await ipfs.dns('docs.ipfs.tech')
 
-        // matches pattern /ipfs/<hash>
-        expect(res).to.match(/\/ipfs\/.+$/)
+        // matches pattern /ip?s/<id>
+        expect(res).to.match(/\/ip[n|f]s\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
           // @ts-expect-error this is mocha
