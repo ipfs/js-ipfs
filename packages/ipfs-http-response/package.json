@@ -69,7 +69,7 @@
     "@libp2p/logger": "^2.0.0",
     "ejs": "^3.1.6",
     "file-type": "^17.1.1",
-    "filesize": "^9.0.11",
+    "filesize": "^10.0.5",
     "it-buffer": "^0.1.1",
     "it-concat": "^2.0.0",
     "it-map": "^1.0.6",
