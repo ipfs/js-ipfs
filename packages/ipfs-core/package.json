@@ -86,7 +86,7 @@
     "@libp2p/interface-dht": "^1.0.1",
     "@libp2p/interface-keys": "^1.0.3",
     "@libp2p/interface-peer-id": "^1.0.4",
-    "@libp2p/interface-transport": "^1.0.2",
+    "@libp2p/interface-transport": "^2.0.0",
     "@libp2p/interfaces": "^3.0.3",
     "@libp2p/kad-dht": "^3.0.0",
     "@libp2p/logger": "^2.0.0",
