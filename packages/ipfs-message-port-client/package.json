@@ -64,13 +64,13 @@
     "dep-check": "aegir dep-check -i ipfs-core -i ipfs-core-types -i esbuild"
   },
   "dependencies": {
-    "browser-readablestream-to-it": "^1.0.1",
+    "browser-readablestream-to-it": "^2.0.0",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.12.1",
     "ipfs-message-port-protocol": "^0.13.1",
-    "ipfs-unixfs": "^7.0.0",
-    "it-peekable": "^1.0.2",
-    "multiformats": "^9.5.1"
+    "ipfs-unixfs": "^8.0.0",
+    "it-peekable": "^2.0.0",
+    "multiformats": "^10.0.0"
   },
   "devDependencies": {
     "aegir": "^37.0.11",

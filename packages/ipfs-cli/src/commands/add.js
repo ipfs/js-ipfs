@@ -86,7 +86,7 @@ async function * getSource (target, options = {}) {
  * @property {import('../types').Context} Argv.ctx
  * @property {boolean} Argv.trickle
  * @property {number} Argv.shardSplitThreshold
- * @property {import('multiformats/cid').CIDVersion} Argv.cidVersion
+ * @property {import('multiformats/cid').Version} Argv.cidVersion
  * @property {boolean} Argv.rawLeaves
  * @property {boolean} Argv.onlyHash
  * @property {string} Argv.hash

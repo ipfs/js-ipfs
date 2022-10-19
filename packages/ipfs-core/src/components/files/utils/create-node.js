@@ -4,7 +4,7 @@ import { CID } from 'multiformats/cid'
 
 /**
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('../').MfsContext} MfsContext
  */
 

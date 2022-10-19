@@ -94,11 +94,11 @@
   "dependencies": {
     "ipfs-core-types": "^0.12.1",
     "ipfs-message-port-protocol": "^0.13.1",
-    "it-all": "^1.0.4"
+    "it-all": "^2.0.0"
   },
   "devDependencies": {
     "aegir": "^37.0.11",
-    "multiformats": "^9.5.1"
+    "multiformats": "^10.0.0"
   },
   "browser": {
     "worker_threads": false

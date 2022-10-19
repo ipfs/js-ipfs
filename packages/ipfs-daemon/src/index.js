@@ -1,5 +1,5 @@
 import { logger } from '@libp2p/logger'
-import { WebRTCStar } from '@libp2p/webrtc-star'
+import { webRTCStar } from '@libp2p/webrtc-star'
 import { create } from 'ipfs-core'
 import { HttpApi } from 'ipfs-http-server'
 import { HttpGateway } from 'ipfs-http-gateway'
@@ -97,11 +97,11 @@ async function getLibp2p ({ libp2pOptions }) {
   if (wrtc || electronWebRTC) {
     log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
 
-    const transport = new WebRTCStar({
+    const transport = webRTCStar({
       wrtc: wrtc ?? electronWebRTC
     })
 
-    libp2pOptions.transports = [...libp2pOptions.transports ?? [], transport]
+    libp2pOptions.transports = [...libp2pOptions.transports ?? [], transport.transport]
     libp2pOptions.peerDiscovery = [...libp2pOptions.peerDiscovery ?? [], transport.discovery]
   }
 

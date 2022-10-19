@@ -3,8 +3,6 @@
 // @ts-expect-error no types
 import toStream from 'it-to-stream'
 import concat from 'it-concat'
-// @ts-expect-error no types
-import toBuffer from 'it-buffer'
 import { logger } from '@libp2p/logger'
 import * as ipfsResolver from './resolver.js'
 import * as pathUtils from './utils/path.js'
@@ -73,7 +71,7 @@ export async function getResponse (ipfsNode, ipfsPath) {
     const { source, contentType } = await detectContentType(ipfsPath, ipfsNode.cat(resolvedData.cid))
 
     if (typeof Blob === 'undefined') {
-      const responseStream = toStream.readable(toBuffer(source))
+      const responseStream = toStream.readable(source)
 
       return contentType
         ? new Response(responseStream, getHeader(200, 'OK', { 'Content-Type': contentType }))
@@ -82,7 +80,7 @@ export async function getResponse (ipfsNode, ipfsPath) {
 
     try {
       const data = await concat(source)
-      const blob = new Blob([data.slice()])
+      const blob = new Blob([data.subarray()])
 
       return contentType
         ? new Response(blob, getHeader(200, 'OK', { 'Content-Type': contentType }))

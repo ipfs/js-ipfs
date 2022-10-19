@@ -12,7 +12,7 @@ const defaultOptions = {
 
 /**
  * @typedef {import('multiformats/cid').CID} CID
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {import('./to-trail').MfsTrail} MfsTrail
  */

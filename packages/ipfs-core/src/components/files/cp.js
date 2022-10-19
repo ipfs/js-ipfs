@@ -16,7 +16,7 @@ const log = logger('ipfs:mfs:cp')
 /**
  * @typedef {import('@ipld/dag-pb').PBNode} DAGNode
  * @typedef {import('multiformats/cid').CID} CID
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
  * @typedef {import('./utils/to-mfs-path').MfsPath} MfsPath
  * @typedef {import('./utils/to-trail').MfsTrail} MfsTrail

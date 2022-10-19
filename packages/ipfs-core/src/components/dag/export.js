@@ -25,7 +25,10 @@ const NO_LINKS_CODECS = [
 
 /**
  * @template T
- * @typedef {import('multiformats/block').Block<T>} Block
+ * @template C
+ * @template A
+ * @template V
+ * @typedef {import('multiformats/block').Block<T, C, A, V>} Block
  */
 
 /**
@@ -85,12 +88,11 @@ export function createExport ({ repo, preload, codecs }) {
 }
 
 /**
- * @template T
  * @param {IPFSRepo} repo
  * @param {BlockWriter} writer
  * @param {AbortOptions} options
  * @param {import('ipfs-core-utils/multicodecs').Multicodecs} codecs
- * @returns {(cid:CID)=>Promise<Block<T>|null>}
+ * @returns {(cid:CID)=>Promise<ReturnType<createUnsafe>|null>}
  */
 function makeLoader (repo, writer, options, codecs) {
   return async (cid) => {

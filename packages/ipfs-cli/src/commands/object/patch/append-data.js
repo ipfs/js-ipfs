@@ -40,7 +40,7 @@ const command = {
     if (data) {
       buf = fs.readFileSync(data)
     } else {
-      buf = (await concat(getStdin(), { type: 'buffer' })).slice()
+      buf = (await concat(getStdin(), { type: 'buffer' })).subarray()
     }
 
     const cid = await ipfs.object.patch.appendData(root, buf, {

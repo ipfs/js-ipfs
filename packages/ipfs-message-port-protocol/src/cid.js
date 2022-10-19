@@ -43,7 +43,6 @@ export const decodeCID = encodedCID => {
     })
   }
 
-  // @ts-expect-error non-enumerable field that doesn't always get transferred
   if (!cid.asCID) {
     Object.defineProperty(cid, 'asCID', {
       get: () => cid

@@ -1,4 +1,4 @@
-import { WebSockets } from '@libp2p/websockets'
+import { webSockets } from '@libp2p/websockets'
 import { all } from '@libp2p/websockets/filters'
 
 export function ipfsOptionsWebsocketsFilterAll () {
@@ -6,7 +6,7 @@ export function ipfsOptionsWebsocketsFilterAll () {
     libp2p: {
       config: {
         transports: [
-          new WebSockets({
+          webSockets({
             filter: all
           })
         ]
