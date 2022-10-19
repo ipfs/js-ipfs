@@ -74,7 +74,7 @@
     "dep-check": "aegir dep-check -i interface-ipfs-core -i ipfs-core-types --i interface-blockstore -i @libp2p/interface-dht -i @libp2p/interface-keys -i @libp2p/interface-transport -i @libp2p/interfaces"
   },
   "dependencies": {
-    "@chainsafe/libp2p-noise": "^9.0.0",
+    "@chainsafe/libp2p-noise": "^10.0.0",
     "@ipld/car": "^5.0.0",
     "@ipld/dag-cbor": "^8.0.0",
     "@ipld/dag-json": "^9.0.0",
