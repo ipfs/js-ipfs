@@ -96,9 +96,21 @@ export function testResolve (factory, options) {
     it('should resolve an IPNS DNS link', async function () {
       // @ts-expect-error this is mocha
       this.retries(3)
-      const resolved = await ipfs.resolve('/ipns/ipfs.io')
+      const domain = 'ipfs.io'
 
-      expect(isIpfs.ipfsPath(resolved)).to.be.true()
+      try {
+        const resolved = await ipfs.resolve(`/ipns/${domain}`)
+
+        expect(isIpfs.ipfsPath(resolved)).to.be.true()
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          // @ts-expect-error this is mocha
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
     it('should resolve IPNS link recursively by default', async function () {

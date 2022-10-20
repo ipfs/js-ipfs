@@ -74,7 +74,7 @@
     "@libp2p/peer-id": "^1.1.10",
     "@multiformats/multiaddr": "^11.0.0",
     "any-signal": "^3.0.0",
-    "dag-jose": "^3.0.0",
+    "dag-jose": "^3.0.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.12.1",
     "ipfs-core-utils": "^0.16.1",

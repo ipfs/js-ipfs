@@ -102,7 +102,7 @@
     "any-signal": "^3.0.0",
     "array-shuffle": "^3.0.0",
     "blockstore-core": "^2.0.1",
-    "dag-jose": "^3.0.0",
+    "dag-jose": "^3.0.1",
     "datastore-core": "^8.0.1",
     "datastore-pubsub": "^6.0.0",
     "dlv": "^1.1.3",
