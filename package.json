@@ -59,7 +59,7 @@
     "docker:rc:push-rc": "docker push ipfs/js-ipfs:v`npm show ipfs@next version -q`"
   },
   "devDependencies": {
-    "lerna": "^6.0.0",
+    "lerna": "^6.0.1",
     "node-fetch": "npm:@achingbrain/node-fetch@^2.6.4",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2"
