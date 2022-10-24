@@ -94,7 +94,7 @@
     "build": "aegir build"
   },
   "dependencies": {
-    "@chainsafe/libp2p-gossipsub": "^4.0.0",
+    "@chainsafe/libp2p-gossipsub": "^5.0.0",
     "@libp2p/floodsub": "^5.0.0",
     "@libp2p/logger": "^2.0.2",
     "@libp2p/mdns": "^5.0.0",

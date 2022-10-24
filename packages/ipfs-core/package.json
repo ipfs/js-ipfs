@@ -147,7 +147,7 @@
     "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
-    "@chainsafe/libp2p-gossipsub": "^4.0.0",
+    "@chainsafe/libp2p-gossipsub": "^5.0.0",
     "@types/dlv": "^1.1.2",
     "@types/pako": "^2.0.0",
     "@types/rimraf": "^3.0.1",
