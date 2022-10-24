@@ -3,7 +3,7 @@
 import { expect } from 'aegir/chai'
 import { MemoryDatastore } from 'datastore-core/memory'
 import { createLibp2p as libp2pComponent } from '../src/components/libp2p.js'
-import { GossipSub } from '@chainsafe/libp2p-gossipsub'
+import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { createEd25519PeerId } from '@libp2p/peer-id-factory'
 
 /**
@@ -81,23 +81,6 @@ describe('libp2p customization', function () {
       await libp2p.start()
 
       expect(libp2p.getMultiaddrs().map(m => m.toString())).to.include(`${annAddr}/p2p/${peerId}`)
-    })
-
-    it('should select gossipsub as pubsub router', async () => {
-      libp2p = await libp2pComponent({
-        peerId,
-        // @ts-expect-error repo is not complete implementation
-        repo: { datastore },
-        print: console.log, // eslint-disable-line no-console
-        config: {
-          ...testConfig,
-          Pubsub: { PubSubRouter: 'gossipsub' }
-        }
-      })
-
-      await libp2p.start()
-
-      expect(libp2p.pubsub).to.be.an.instanceOf(GossipSub)
     })
   })
 })
