@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [0.9.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-client-v0.9.1...ipfs-client-v0.9.2) (2022-10-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-grpc-client bumped from ^0.11.1 to ^0.12.0
+    * ipfs-http-client bumped from ^58.0.1 to ^59.0.0
+
 ### [0.9.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-client-v0.9.0...ipfs-client-v0.9.1) (2022-09-21)
 
 

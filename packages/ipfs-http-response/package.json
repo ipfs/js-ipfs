@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-response",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Creates an HTTP response from an IPFS Hash",
   "author": "Vasco Santos <vasco.santos@moxy.studio>",
   "license": "Apache-2.0 OR MIT",
@@ -82,7 +82,7 @@
     "@types/mime-types": "^2.1.1",
     "aegir": "^37.0.11",
     "get-stream": "^6.0.0",
-    "ipfs-core": "^0.16.1",
+    "ipfs-core": "^0.17.0",
     "ipfsd-ctl": "^12.0.3",
     "it-all": "^2.0.0",
     "uint8arrays": "^4.0.2"
