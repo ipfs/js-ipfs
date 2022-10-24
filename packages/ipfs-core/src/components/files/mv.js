@@ -6,7 +6,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 
 /**
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions
  * @property {boolean} parents

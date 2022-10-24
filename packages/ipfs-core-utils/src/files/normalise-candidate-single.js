@@ -49,7 +49,6 @@ export async function * normaliseCandidateSingle (input, normaliseContent) {
 
   // Iterable<?>
   if (Symbol.iterator in input || Symbol.asyncIterator in input) {
-    // @ts-expect-error it's (async)iterable
     const peekable = itPeekable(input)
 
     /** @type {any} value **/

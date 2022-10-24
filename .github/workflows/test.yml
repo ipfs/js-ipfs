@@ -50,7 +50,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npm run test:node -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npx lerna run test:node --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: node
@@ -67,7 +67,7 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npm run test:chrome -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npx lerna run test:chrome --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: chrome
@@ -84,7 +84,7 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npm run test:chrome-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npx lerna run test:chrome-webworker --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: chrome-webworker
@@ -101,7 +101,7 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npm run test:firefox -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npx lerna run test:firefox --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: firefox
@@ -119,7 +119,7 @@ jobs:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npx playwright install --with-deps
-      - run: npm run test:firefox-webworker -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npx lerna run test:firefox-webworker --since ${{ github.event.pull_request.base.sha }} --concurrency 1
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: firefox-webworker
@@ -138,7 +138,7 @@ jobs:
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm run test:electron-main -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+          run: npx lerna run test:electron-main --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: electron-main
@@ -162,7 +162,7 @@ jobs:
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npm install
       - run: npm run build
-      - run: npm run test:interop -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -- -t ${{ matrix.type }} --bail
+      - run: npx lerna run test:interop --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }} --bail
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: interop-${{ matrix.type }}
@@ -190,7 +190,7 @@ jobs:
           node-version: lts/*
       - run: npm install
       - run: npm run build
-      - run: npm run ${{ matrix.suite }} -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }}
+      - run: npx lerna run ${{ matrix.suite }} --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -t ${{ matrix.type }} --bail
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: interface-${{ matrix.type }}
@@ -208,7 +208,7 @@ jobs:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npx playwright install --with-deps
-      - run: npm run test:interface:message-port-client -- --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npx lerna run test:interface:message-port-client --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
 
   release:
     runs-on: ubuntu-latest

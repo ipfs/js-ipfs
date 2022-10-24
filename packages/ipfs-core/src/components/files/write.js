@@ -29,7 +29,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs:mfs:write')
 
 /**
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {import('./utils/to-mfs-path').FilePath} FilePath

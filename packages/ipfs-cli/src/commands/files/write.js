@@ -17,7 +17,7 @@ import parseDuration from 'parse-duration'
  * @property {boolean} Argv.truncate
  * @property {boolean} Argv.rawLeaves
  * @property {boolean} Argv.reduceSingleLeafToSelf
- * @property {import('multiformats/cid').CIDVersion} Argv.cidVersion
+ * @property {import('multiformats/cid').Version} Argv.cidVersion
  * @property {string} Argv.hashAlg
  * @property {boolean} Argv.parents
  * @property {'trickle' | 'balanced'} Argv.strategy

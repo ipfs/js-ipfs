@@ -76,17 +76,17 @@
     "ipfs-core-types": "^0.12.1",
     "ipfs-http-response": "^4.0.1",
     "is-ipfs": "^7.0.0",
-    "it-last": "^1.0.4",
+    "it-last": "^2.0.0",
     "it-to-stream": "^1.0.0",
     "joi": "^17.2.1",
-    "multiformats": "^9.5.1",
-    "uint8arrays": "^3.0.0"
+    "multiformats": "^10.0.0",
+    "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
     "@types/hapi__hapi": "^20.0.5",
     "aegir": "^37.0.11",
-    "file-type": "^17.1.1",
+    "file-type": "^18.0.0",
     "sinon": "^14.0.0"
   }
 }

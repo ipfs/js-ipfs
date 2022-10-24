@@ -6,7 +6,7 @@ import { sha256 } from 'multiformats/hashes/sha2'
  * @typedef {object} PersistOptions
  * @property {import('multiformats/codecs/interface').BlockCodec<any, any>} [codec]
  * @property {import('multiformats/hashes/interface').MultihashHasher} [hasher]
- * @property {import('multiformats/cid').CIDVersion} [cidVersion]
+ * @property {import('multiformats/cid').Version} [cidVersion]
  * @property {boolean} [onlyHash]
  * @property {AbortSignal} [signal]
  */

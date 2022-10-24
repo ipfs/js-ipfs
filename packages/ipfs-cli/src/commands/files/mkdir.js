@@ -12,7 +12,7 @@ import parseDuration from 'parse-duration'
  * @property {import('../../types').Context} Argv.ctx
  * @property {string} Argv.path
  * @property {boolean} Argv.parents
- * @property {import('multiformats/cid').CIDVersion} Argv.cidVersion
+ * @property {import('multiformats/cid').Version} Argv.cidVersion
  * @property {string} Argv.hashAlg
  * @property {boolean} Argv.flush
  * @property {number} Argv.shardSplitThreshold

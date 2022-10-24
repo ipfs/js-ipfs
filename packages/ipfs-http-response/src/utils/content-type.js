@@ -39,7 +39,9 @@ export const detectContentType = async (path, source) => {
         yield * stream
       })()
     } catch (/** @type {any} */ err) {
-      if (err.code !== 'ERR_UNDER_READ') throw err
+      if (err.code !== 'ERR_UNDER_READ') {
+        throw err
+      }
 
       // not enough bytes for sniffing, just yield the data
       output = (async function * () { // eslint-disable-line require-await

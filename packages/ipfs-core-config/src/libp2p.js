@@ -1,15 +1,15 @@
-import { TCP } from '@libp2p/tcp'
-import { MulticastDNS } from '@libp2p/mdns'
+import { tcp } from '@libp2p/tcp'
+import { mdns } from '@libp2p/mdns'
 import os from 'os'
 
 export function libp2pConfig () {
   /** @type {import('libp2p').Libp2pOptions} */
   const options = {
     transports: [
-      new TCP()
+      tcp()
     ],
     peerDiscovery: [
-      new MulticastDNS()
+      mdns()
     ],
     connectionManager: {
       maxParallelDials: 150, // 150 total parallel multiaddr dials

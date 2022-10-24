@@ -9,7 +9,7 @@ import parseDuration from 'parse-duration'
  * @property {string} Argv.format
  * @property {string} Argv.mhtype
  * @property {number} Argv.mhlen
- * @property {import('multiformats/cid').CIDVersion} Argv.version
+ * @property {import('multiformats/cid').Version} Argv.version
  * @property {boolean} Argv.pin
  * @property {string} Argv.cidBase
  * @property {number} Argv.timeout
@@ -62,7 +62,7 @@ const command = {
     if (block) {
       data = fs.readFileSync(block)
     } else {
-      data = (await concat(getStdin(), { type: 'buffer' })).slice()
+      data = (await concat(getStdin(), { type: 'buffer' })).subarray()
     }
 
     const cid = await ipfs.block.put(data, {

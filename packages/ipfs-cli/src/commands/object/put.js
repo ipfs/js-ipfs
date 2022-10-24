@@ -42,7 +42,7 @@ const command = {
     if (data) {
       buf = uint8ArrayFromString(data)
     } else {
-      buf = (await concat(getStdin(), { type: 'buffer' })).slice()
+      buf = (await concat(getStdin(), { type: 'buffer' })).subarray()
     }
 
     let node

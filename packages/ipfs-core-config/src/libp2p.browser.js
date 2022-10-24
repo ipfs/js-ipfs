@@ -1,12 +1,12 @@
-import { WebRTCStar } from '@libp2p/webrtc-star'
+import { webRTCStar } from '@libp2p/webrtc-star'
 
 export function libp2pConfig () {
-  const webRtcStar = new WebRTCStar()
+  const webRtcStar = webRTCStar()
 
   /** @type {import('libp2p').Libp2pOptions} */
   const options = {
     transports: [
-      webRtcStar
+      webRtcStar.transport
     ],
     peerDiscovery: [
       webRtcStar.discovery

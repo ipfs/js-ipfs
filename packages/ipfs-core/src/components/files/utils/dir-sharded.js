@@ -27,7 +27,7 @@ import {
  * @property {Mtime} [mtime]
  * @property {number} [mode]
  * @property {import('multiformats/codecs/interface').BlockCodec<any, any>} [codec]
- * @property {import('multiformats/cid').CIDVersion} [cidVersion]
+ * @property {import('multiformats/cid').Version} [cidVersion]
  * @property {boolean} [onlyHash]
  * @property {AbortSignal} [signal]
  */
