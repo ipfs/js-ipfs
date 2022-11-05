@@ -283,7 +283,7 @@ The "basic" connection manager tries to keep between `LowWater` and `HighWater` 
 
 By default when running under nodejs, libp2p will try to use [UPnP](https://en.wikipedia.org/wiki/Universal_Plug_and_Play) to open a random high port on your router for any TCP connections you have configured.
 
-Set `DisableNatPortMap` to `false` to disable this behaviour.
+Set `DisableNatPortMap` to `true` to disable this behaviour.
 
 ### Example
 
