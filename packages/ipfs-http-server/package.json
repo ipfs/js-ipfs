@@ -66,7 +66,7 @@
   "dependencies": {
     "@hapi/boom": "^9.1.0",
     "@hapi/content": "^5.0.2",
-    "@hapi/hapi": "^20.0.0",
+    "@hapi/hapi": "^21.0.0",
     "@ipld/dag-pb": "^3.0.0",
     "@libp2p/interface-dht": "^1.0.1",
     "@libp2p/interfaces": "^3.0.3",
