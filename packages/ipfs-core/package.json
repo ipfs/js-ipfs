@@ -65,6 +65,9 @@
     },
     "./storage": {
       "import": "./src/components/storage.js"
+    },
+    "./preload": {
+      "import": "./src/preload.js"
     }
   },
   "eslintConfig": {
