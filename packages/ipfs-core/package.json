@@ -44,6 +44,21 @@
     },
     "./config/profiles": {
       "import": "./src/components/config/profiles.js"
+    },
+    "./block": {
+      "import": "./src/components/block/index.js"
+    },
+    "./dag": {
+      "import": "./src/components/dag/index.js"
+    },
+    "./pin": {
+      "import": "./src/components/pin/index.js"
+    },
+    "./repo": {
+      "import": "./src/components/repo/index.js"
+    },
+    "./storage": {
+      "import": "./src/components/storage.js"
     }
   },
   "repository": {
