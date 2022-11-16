@@ -24,7 +24,7 @@ const codecs = [dagCBOR, dagJSON, dagPB, raw].reduce((/** @type {Record<string, 
  * @property {string} Argv.data
  * @property {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} Argv.inputCodec
  * @property {'dag-cbor' | 'dag-json' | 'dag-pb' | 'raw'} Argv.storeCodec
- * @property {import('multiformats/cid').CIDVersion} Argv.cidVersion
+ * @property {import('multiformats/cid').Version} Argv.cidVersion
  * @property {boolean} Argv.pin
  * @property {string} Argv.hashAlg
  * @property {string} Argv.cidBase
@@ -101,12 +101,12 @@ const command = {
       cidVersion = 1
     }
 
-    /** @type {Buffer} */
+    /** @type {Uint8Array} */
     let source
 
     if (!data) {
       // pipe from stdin
-      source = (await concat(getStdin(), { type: 'buffer' })).slice()
+      source = (await concat(getStdin(), { type: 'buffer' })).subarray()
     } else {
       source = Buffer.from(data)
     }

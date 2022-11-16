@@ -12,6 +12,7 @@ import { bases, hashes, codecs } from 'multiformats/basics'
 import { initAssets } from 'ipfs-core-config/init-assets'
 import { AlreadyInitializedError } from '../errors.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { TimeoutController } from 'timeout-abort-controller'
 import { createStart } from './start.js'
 
 import { createStop } from './stop.js'
@@ -51,6 +52,8 @@ import { Multibases } from 'ipfs-core-utils/multibases'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs')
+
+const IPNS_INIT_KEYSPACE_TIMEOUT = 30000
 
 /**
  * @typedef {import('../types').Options} Options
@@ -331,7 +334,14 @@ export async function create (options = {}) {
       throw errCode(new Error('Public key missing'), 'ERR_MISSING_PUBLIC_KEY')
     }
 
-    await ipfs.ipns.initializeKeyspace(storage.peerId, uint8ArrayFromString(`/ipfs/${cid}`))
+    const timeoutController = new TimeoutController(IPNS_INIT_KEYSPACE_TIMEOUT)
+    try {
+      await ipfs.ipns.initializeKeyspace(storage.peerId, uint8ArrayFromString(`/ipfs/${cid}`), {
+        signal: timeoutController.signal
+      })
+    } finally {
+      timeoutController.clear()
+    }
   }
 
   if (options.start !== false) {

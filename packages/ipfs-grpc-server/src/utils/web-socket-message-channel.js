@@ -51,8 +51,8 @@ export class WebSocketMessageChannel {
       serialize: (message) => Buffer.from([])
     }
 
-    this.source = pushable()
-    this.sink = pushable()
+    this.source = pushable({ objectMode: true })
+    this.sink = pushable({ objectMode: true })
 
     ws.on('message', (buf) => {
       if (!(buf instanceof Uint8Array)) {
@@ -77,7 +77,7 @@ export class WebSocketMessageChannel {
         return
       }
 
-      const header = buf.slice(offset, HEADER_SIZE + offset)
+      const header = buf.subarray(offset, HEADER_SIZE + offset)
       const length = header.readUInt32BE(1)
       offset += HEADER_SIZE
 
@@ -85,7 +85,7 @@ export class WebSocketMessageChannel {
         return
       }
 
-      const message = buf.slice(offset, offset + length)
+      const message = buf.subarray(offset, offset + length)
       const deserialized = this.handler.deserialize(message)
       this.source.push(deserialized)
     })

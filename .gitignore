@@ -8,6 +8,7 @@ tsconfig-types.aegir.json
 
 # Coverage directory used by tools like istanbul
 coverage
+.coverage
 .nyc_output
 tests_output
 cache

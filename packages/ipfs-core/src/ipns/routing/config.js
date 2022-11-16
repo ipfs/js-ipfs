@@ -12,7 +12,7 @@ import { DHTDatastore } from './dht-datastore.js'
  * @param {object} arg
  * @param {import('libp2p').Libp2p} arg.libp2p
  * @param {import('ipfs-repo').IPFSRepo} arg.repo
- * @param {import('@libp2p/interfaces/peer-id').PeerId} arg.peerId
+ * @param {import('@libp2p/interface-peer-id').PeerId} arg.peerId
  * @param {object} arg.options
  */
 export function createRouting ({ libp2p, repo, peerId, options }) {

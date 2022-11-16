@@ -3,10 +3,10 @@
 import { expect } from 'aegir/chai'
 import { cli } from './utils/cli.js'
 import sinon from 'sinon'
-import { Multiaddr } from '@multiformats/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 
 describe('bootstrap', () => {
-  const peer = new Multiaddr('/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
+  const peer = multiaddr('/ip4/111.111.111.111/tcp/1001/p2p/QmcyFFKfLDGJKwufn2GeitxvhricsBQyNKTkrD14psikoD')
   let ipfs
 
   before(() => {

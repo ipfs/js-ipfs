@@ -11,6 +11,9 @@
   ],
   "references": [
     {
+      "path": "../interface-ipfs-core"
+    },
+    {
       "path": "../ipfs-core-config"
     },
     {

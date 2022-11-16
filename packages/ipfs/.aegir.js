@@ -9,17 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
-  inject: [path.join(__dirname, '../../scripts/node-globals.js')],
-  plugins: [
-    {
-      name: 'node built ins',
-      setup (build) {
-        build.onResolve({ filter: /^stream$/ }, () => {
-          return { path: require.resolve('readable-stream') }
-        })
-      }
-    }
-  ]
+  inject: [path.join(__dirname, '../../scripts/node-globals.js')]
 }
 
 /** @type {import('aegir').PartialOptions} */

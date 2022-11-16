@@ -1,14 +1,11 @@
-import type { KeyType } from '@libp2p/interfaces/keys'
-import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { KeyType } from '@libp2p/interface-keys'
+import type { PeerId } from '@libp2p/interface-peer-id'
 import type { Config as IPFSConfig } from 'ipfs-core-types/src/config'
 import type { Libp2p, Libp2pOptions } from 'libp2p'
-
 import type { IPFSRepo } from 'ipfs-repo'
 import type { ProgressCallback as MigrationProgressCallback } from 'ipfs-repo-migrations'
 import type { Network, Options as NetworkOptions } from './components/network'
-
 import type { Datastore } from 'interface-datastore'
-
 import type { Service } from './utils/service'
 import type { CID } from 'multiformats/cid'
 import type { BlockCodec } from 'multiformats/codecs/interface'

@@ -204,7 +204,7 @@ export function testWrite (factory, options) {
     })
 
     it('writes a small file using an HTML5 Blob (Browser only)', async function () {
-      if (!global.Blob) {
+      if (!global.Blob || !global.FileReader) {
         // @ts-expect-error this is mocha
         return this.skip()
       }

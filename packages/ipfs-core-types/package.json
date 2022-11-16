@@ -1,61 +1,64 @@
 {
   "name": "ipfs-core-types",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
-  "types": "dist/src/index.d.ts",
+  "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
+  "keywords": [
+    "API",
+    "IPFS",
+    "interface",
+    "types"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "type": "module",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "src",
+    "dist/src",
+    "!dist/test",
+    "!**/*.tsbuildinfo"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
   "scripts": {
     "clean": "aegir clean",
     "lint": "aegir lint",
     "build": "aegir build"
   },
-  "files": [
-    "dist",
-    "src",
-    "!**/*.tsbuildinfo"
-  ],
-  "typesVersions": {
-    "*": {
-      "*": [
-        "*",
-        "dist/*",
-        "dist/src/*",
-        "dist/src/*/index"
-      ],
-      "src/*": [
-        "*",
-        "dist/*",
-        "dist/src/*",
-        "dist/src/*/index"
-      ]
-    }
-  },
-  "eslintConfig": {
-    "extends": "ipfs"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
-  },
-  "keywords": [
-    "IPFS",
-    "types",
-    "interface",
-    "API"
-  ],
-  "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
-    "@ipld/dag-pb": "^2.1.3",
-    "interface-datastore": "^6.0.2",
-    "ipfs-unixfs": "^6.0.9",
-    "@multiformats/multiaddr": "^10.0.0",
-    "multiformats": "^9.5.1"
+    "@ipld/dag-pb": "^3.0.0",
+    "@libp2p/interface-keychain": "^1.0.3",
+    "@libp2p/interface-peer-id": "^1.0.4",
+    "@libp2p/interface-peer-info": "^1.0.2",
+    "@libp2p/interface-pubsub": "^3.0.0",
+    "@multiformats/multiaddr": "^11.0.0",
+    "@types/node": "^18.0.0",
+    "interface-datastore": "^7.0.0",
+    "ipfs-unixfs": "^8.0.0",
+    "multiformats": "^10.0.0"
   },
   "devDependencies": {
     "aegir": "^37.0.11"
-  },
-  "contributors": [
-    "Irakli Gozalishvili <dev@gozala.io>"
-  ]
+  }
 }

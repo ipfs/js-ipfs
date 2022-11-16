@@ -1,4 +1,4 @@
-import filesize from 'filesize'
+import { filesize } from 'filesize'
 import style from './style.js'
 import { cidArray } from '../utils/path.js'
 import ejs from 'ejs'

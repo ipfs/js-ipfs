@@ -4,7 +4,7 @@ import { NotEnabledError } from '../errors.js'
 import get from 'dlv'
 
 /**
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {import('@libp2p/interfaces/events').EventHandler<CustomEvent<Message>>} EventHandler
  * @typedef {import('@libp2p/interfaces/events').EventHandler<Message>} MessageEventHandler
  */
@@ -98,7 +98,7 @@ export function createPubsub ({ network, config }) {
     // no more pubsub handlers, remove message listener
     if (Object.keys(handlers).length === 0) {
       libp2p.pubsub.removeEventListener('message', onMessage)
-      onMessage = null
+      onMessage = undefined
     }
   }
 

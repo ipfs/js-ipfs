@@ -100,7 +100,7 @@ const peerId = PeerId.createFromB58String(peerIdStr)
 You can get hold of the `PeerId` class using npm or in a script tag:
 
 ```js
-import { PeerId } from '@libp2p/interfaces/peer-id'
+import { PeerId } from '@libp2p/interface-peer-id'
 const peerId = PeerId.createFromB58String(peerIdStr)
 ```
 
@@ -128,7 +128,7 @@ You can get hold of the `PeerInfo` class using npm or in a script tag:
 
 ```js
 const PeerInfo = require('peer-info')
-import { PeerId } from '@libp2p/interfaces/peer-id'
+import { PeerId } from '@libp2p/interface-peer-id'
 const peerInfo = new PeerInfo(PeerId.createFromB58String(info.id))
 info.addrs.forEach(addr => peerInfo.multiaddrs.add(addr))
 ```

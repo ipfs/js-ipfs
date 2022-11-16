@@ -15,7 +15,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs:mfs:touch')
 
 /**
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {object} DefaultOptions

@@ -16,6 +16,9 @@
       "path": "../ipfs-core-utils"
     },
     {
+      "path": "../ipfs-http-client"
+    },
+    {
       "path": "../ipfs-http-gateway"
     }
   ]

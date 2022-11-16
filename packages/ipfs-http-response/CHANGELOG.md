@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v4.0.1...ipfs-http-response-v5.0.0) (2022-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* ipfs is now bundled with libp2p@0.40.x which has different config
+
+### Features
+
+* upgrade libp2p to 0.40.x ([#4237](https://www.github.com/ipfs/js-ipfs/issues/4237)) ([0cee4a4](https://www.github.com/ipfs/js-ipfs/commit/0cee4a4c55767022584dcbade0b0b9b43326f9c9))
+
+
+### Bug Fixes
+
+* replace slice with subarray for increased performance ([#4210](https://www.github.com/ipfs/js-ipfs/issues/4210)) ([dfc43d4](https://www.github.com/ipfs/js-ipfs/commit/dfc43d4e9be67fdf25553677f469379d966ff806))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.16.1 to ^0.17.0
+
+### [4.0.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v4.0.0...ipfs-http-response-v4.0.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* update @multiformats/multiadd to 11.0.0 ([2a830bf](https://www.github.com/ipfs/js-ipfs/commit/2a830bf58a5929fcce51dede871c99f62192fbda))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.16.0 to ^0.16.1
+
+## [4.0.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.4...ipfs-http-response-v4.0.0) (2022-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to libp2p@0.38.x (#4151)
+
+### deps
+
+* update to libp2p@0.38.x ([#4151](https://www.github.com/ipfs/js-ipfs/issues/4151)) ([39dbf70](https://www.github.com/ipfs/js-ipfs/commit/39dbf708ec31b263115e44f420651fa4e056a89e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.15.0 to ^0.16.0
+
+### [3.0.4](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.3...ipfs-http-response-v3.0.4) (2022-06-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.15.3 to ^0.15.4
+
+### [3.0.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.2...ipfs-http-response-v3.0.3) (2022-06-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.15.2 to ^0.15.3
+
+### [3.0.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.1...ipfs-http-response-v3.0.2) (2022-06-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * ipfs-core bumped from ^0.15.1 to ^0.15.2
+
 ### [3.0.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-response-v3.0.0...ipfs-http-response-v3.0.1) (2022-06-01)
 
 
@@ -75,7 +157,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * devDependencies
     * ipfs-core bumped from ^0.13.0 to ^0.14.0
 
-## [1.0.6](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.5...ipfs-http-response@1.0.6) (2021-12-15)
+### [1.0.6](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.5...ipfs-http-response@1.0.6) (2021-12-15)
 
 **Note:** Version bump only for package ipfs-http-response
 
@@ -83,7 +165,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [1.0.5](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.4...ipfs-http-response@1.0.5) (2021-11-24)
+### [1.0.5](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.4...ipfs-http-response@1.0.5) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-http-response
 
@@ -91,7 +173,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [1.0.4](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.3...ipfs-http-response@1.0.4) (2021-11-19)
+### [1.0.4](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.3...ipfs-http-response@1.0.4) (2021-11-19)
 
 **Note:** Version bump only for package ipfs-http-response
 
@@ -99,7 +181,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [1.0.3](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.2...ipfs-http-response@1.0.3) (2021-11-12)
+### [1.0.3](https://github.com/ipfs/js-ipfs-http-response/compare/ipfs-http-response@1.0.2...ipfs-http-response@1.0.3) (2021-11-12)
 
 **Note:** Version bump only for package ipfs-http-response
 
@@ -118,11 +200,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [1.0.1](https://github.com/ipfs/js-ipfs-http-response/compare/v1.0.0...v1.0.1) (2021-09-08)
+### [1.0.1](https://github.com/ipfs/js-ipfs-http-response/compare/v1.0.0...v1.0.1) (2021-09-08)
 
 
 
-# [1.0.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.7.0...v1.0.0) (2021-09-07)
+## [1.0.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.7.0...v1.0.0) (2021-09-07)
 
 
 ### Bug Fixes
@@ -131,7 +213,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.7.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.4...v0.7.0) (2021-07-12)
+## [0.7.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.4...v0.7.0) (2021-07-12)
 
 
 ### chore
@@ -145,15 +227,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.4](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.3...v0.6.4) (2021-04-16)
+### [0.6.4](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.3...v0.6.4) (2021-04-16)
 
 
 
-## [0.6.3](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.2...v0.6.3) (2021-04-12)
+### [0.6.3](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.2...v0.6.3) (2021-04-12)
 
 
 
-## [0.6.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.1...v0.6.2) (2021-03-17)
+### [0.6.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.1...v0.6.2) (2021-03-17)
 
 
 ### Bug Fixes
@@ -162,12 +244,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [0.6.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.0...v0.6.1) (2020-12-22)
+### [0.6.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.6.0...v0.6.1) (2020-12-22)
 
 
 
 <a name="0.6.0"></a>
-# [0.6.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.5.1...v0.6.0) (2020-08-14)
+## [0.6.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.5.1...v0.6.0) (2020-08-14)
 
 
 ### Bug Fixes
@@ -185,7 +267,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 <a name="0.5.1"></a>
-## [0.5.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.5.0...v0.5.1) (2020-06-30)
+### [0.5.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.5.0...v0.5.1) (2020-06-30)
 
 
 ### Bug Fixes
@@ -195,7 +277,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 <a name="0.5.0"></a>
-# [0.5.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.4.0...v0.5.0) (2020-01-07)
+## [0.5.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.4.0...v0.5.0) (2020-01-07)
 
 
 ### Code Refactoring
@@ -210,7 +292,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 <a name="0.4.0"></a>
-# [0.4.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.3.1...v0.4.0) (2019-10-14)
+## [0.4.0](https://github.com/ipfs/js-ipfs-http-response/compare/v0.3.1...v0.4.0) (2019-10-14)
 
 
 ### Chores
@@ -227,7 +309,7 @@ Co-authored-by: PedroMiguelSS <pedro.santos@moxy.studio>
 
 
 <a name="0.3.1"></a>
-## [0.3.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.2...v0.3.1) (2019-06-06)
+### [0.3.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.2...v0.3.1) (2019-06-06)
 
 
 ### Bug Fixes
@@ -266,12 +348,12 @@ Not a direct dependency of this module but ipld-dag-pb changed the
 case of some property names that are used by this module.
 
 <a name="0.2.2"></a>
-## [0.2.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.1...v0.2.2) (2019-01-19)
+### [0.2.2](https://github.com/ipfs/js-ipfs-http-response/compare/v0.2.1...v0.2.2) (2019-01-19)
 
 
 
 <a name="0.2.1"></a>
-## [0.2.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.4...v0.2.1) (2018-11-09)
+### [0.2.1](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.4...v0.2.1) (2018-11-09)
 
 
 ### Bug Fixes
@@ -286,7 +368,7 @@ case of some property names that are used by this module.
 
 
 <a name="0.1.4"></a>
-## [0.1.4](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.3...v0.1.4) (2018-08-02)
+### [0.1.4](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.3...v0.1.4) (2018-08-02)
 
 
 ### Bug Fixes
@@ -296,7 +378,7 @@ case of some property names that are used by this module.
 
 
 <a name="0.1.3"></a>
-## [0.1.3](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.2...v0.1.3) (2018-07-28)
+### [0.1.3](https://github.com/ipfs/js-ipfs-http-response/compare/v0.1.2...v0.1.3) (2018-07-28)
 
 
 ### Bug Fixes

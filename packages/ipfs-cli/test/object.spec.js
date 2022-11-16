@@ -216,7 +216,7 @@ describe('object', () => {
       const out = await cli('object put', {
         ipfs,
         getStdin: function * () {
-          yield Buffer.from('{}')
+          yield uint8ArrayFromString('{}')
         }
       })
 
@@ -431,7 +431,7 @@ describe('object', () => {
 
       it('append data from pipe', async () => {
         ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
-        const buf = Buffer.from('hello world')
+        const buf = uint8ArrayFromString('hello world')
 
         ipfs.object.patch.appendData.withArgs(cid, buf, defaultOptions).resolves(
           cid
@@ -496,7 +496,7 @@ describe('object', () => {
 
       it('set-data from pipe', async () => {
         ipfs.bases.getBase.withArgs('base58btc').returns(base58btc)
-        const buf = Buffer.from('hello world')
+        const buf = uint8ArrayFromString('hello world')
 
         ipfs.object.patch.setData.withArgs(cid, buf, defaultOptions).resolves(
           cid

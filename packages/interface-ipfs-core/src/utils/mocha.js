@@ -100,7 +100,6 @@ export function getIt (config) {
   /**
    * @param {string} name
    * @param {*} impl
-   * @returns
    */
   const _it = (name, impl) => {
     if (Array.isArray(config.skip)) {

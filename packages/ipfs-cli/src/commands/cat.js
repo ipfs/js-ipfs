@@ -6,6 +6,7 @@ import parseDuration from 'parse-duration'
  * @property {string} Argv.ipfsPath
  * @property {number} Argv.offset
  * @property {number} Argv.length
+ * @property {boolean} Argv.preload
  * @property {number} Argv.timeout
  */
 
@@ -26,14 +27,19 @@ const command = {
       number: true,
       describe: 'Maximum number of bytes to read'
     },
+    preload: {
+      boolean: true,
+      default: true,
+      describe: 'Preload this object when adding'
+    },
     timeout: {
       string: true,
       coerce: parseDuration
     }
   },
 
-  async handler ({ ctx: { ipfs, print }, ipfsPath, offset, length, timeout }) {
-    for await (const buf of ipfs.cat(ipfsPath, { offset, length, timeout })) {
+  async handler ({ ctx: { ipfs, print }, ipfsPath, offset, length, preload, timeout }) {
+    for await (const buf of ipfs.cat(ipfsPath, { offset, length, preload, timeout })) {
       print.write(buf)
     }
   }

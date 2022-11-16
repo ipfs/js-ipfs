@@ -1,6 +1,6 @@
 import type { AbortOptions } from '../utils'
-import type { PeerId } from '@libp2p/interfaces/peer-id'
-import type { Message } from '@libp2p/interfaces/pubsub'
+import type { PeerId } from '@libp2p/interface-peer-id'
+import type { Message } from '@libp2p/interface-pubsub'
 import type { EventHandler } from '@libp2p/interfaces/events'
 
 export interface API<OptionExtension = {}> {

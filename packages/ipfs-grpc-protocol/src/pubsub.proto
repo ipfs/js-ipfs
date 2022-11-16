@@ -19,6 +19,9 @@ message SubscribeResponse {
     bytes sequenceNumber = 3;
     bytes data = 4;
     string topic = 5;
+    bytes key = 6;
+    bytes signature = 7;
+    string type = 8;
 }
 
 message UnSubscribeRequest {

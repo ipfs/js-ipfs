@@ -25,7 +25,7 @@ const daemonsOptions = {
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
- * @typedef {import('@libp2p/interfaces/pubsub').Message} Message
+ * @typedef {import('@libp2p/interface-pubsub').Message} Message
  * @typedef {import('@libp2p/interfaces/events').EventHandler<Message>} EventHandler
  */
 
@@ -126,7 +126,7 @@ export function testPubsub (factory, options) {
       const testAccountName = 'test-account'
 
       /**
-       * @type {import('@libp2p/interfaces/pubsub').Message}
+       * @type {import('@libp2p/interface-pubsub').Message}
        */
       let publishedMessage
 
@@ -162,8 +162,12 @@ export function testPubsub (factory, options) {
 
       const publishedMessageData = ipns.unmarshal(publishedMessage.data)
 
-      if (!publishedMessageData.pubKey) {
-        throw new Error('No public key found in message data')
+      if (publishedMessage.type !== 'signed') {
+        throw new Error('Message was not signed')
+      }
+
+      if (publishedMessageData.pubKey == null) {
+        throw new Error('Public key was missing from published message data')
       }
 
       const messageKey = publishedMessage.from

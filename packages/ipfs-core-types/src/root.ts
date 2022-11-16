@@ -1,8 +1,8 @@
 import type { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
-import type { CID, CIDVersion } from 'multiformats/cid'
+import type { CID, Version as CIDVersion } from 'multiformats/cid'
 import type { Mtime } from 'ipfs-unixfs'
 import type { Multiaddr } from '@multiformats/multiaddr'
-import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { PeerId } from '@libp2p/interface-peer-id'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -260,7 +260,7 @@ export interface CatOptions extends AbortOptions, PreloadOptions {
 export interface GetOptions extends AbortOptions, PreloadOptions {
   archive?: boolean
   compress?: boolean
-  compressionLevel?: -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6| 7 | 8| 9
+  compressionLevel?: -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 }
 
 export interface ListOptions extends AbortOptions, PreloadOptions {

@@ -1,6 +1,6 @@
 import type { AbortOptions } from '../utils'
 import type { Multiaddr } from '@multiformats/multiaddr'
-import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { PeerId } from '@libp2p/interface-peer-id'
 
 export interface API<OptionExtension = {}> {
   /**

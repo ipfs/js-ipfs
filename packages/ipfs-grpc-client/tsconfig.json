@@ -13,6 +13,9 @@
     },
     {
       "path": "../ipfs-core-utils"
+    },
+    {
+      "path": "../ipfs-grpc-protocol"
     }
   ]
 }

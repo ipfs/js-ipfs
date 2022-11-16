@@ -30,7 +30,7 @@ export function testAdd (factory, options) {
   const it = getIt(options)
 
   describe('.add', function () {
-    this.timeout(540 * 1000)
+    this.timeout(1080 * 1000)
 
     /** @type {import('ipfs-core-types').IPFS} */
     let ipfs

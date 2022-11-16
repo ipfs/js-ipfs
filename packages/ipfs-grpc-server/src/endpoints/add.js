@@ -26,7 +26,7 @@ export function grpcAdd (ipfs, options = {}) {
 
     await pipe(
       async function * toInput () {
-        const fileInputStream = pushable()
+        const fileInputStream = pushable({ objectMode: true })
 
         setTimeout(async () => {
           const streams = []

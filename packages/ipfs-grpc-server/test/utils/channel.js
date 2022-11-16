@@ -3,10 +3,10 @@ import { pushable } from 'it-pushable'
 
 class MessageChannel {
   constructor () {
-    this.source = pushable()
-    this.sink = pushable()
+    this.source = pushable({ objectMode: true })
+    this.sink = pushable({ objectMode: true })
 
-    this.clientSink = pushable()
+    this.clientSink = pushable({ objectMode: true })
   }
 
   sendMetadata (metadata) {

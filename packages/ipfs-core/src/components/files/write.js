@@ -29,7 +29,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs:mfs:write')
 
 /**
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('ipfs-unixfs').MtimeLike} MtimeLike
  * @typedef {import('./').MfsContext} MfsContext
  * @typedef {import('./utils/to-mfs-path').FilePath} FilePath
@@ -334,7 +334,7 @@ const limitAsyncStreamBytes = (stream, limit) => {
       emitted += buf.length
 
       if (emitted > limit) {
-        yield buf.slice(0, limit - emitted)
+        yield buf.subarray(0, limit - emitted)
 
         return
       }
@@ -353,7 +353,7 @@ const asyncZeroes = (count, chunkSize = MFS_MAX_CHUNK_SIZE) => {
 
   async function * _asyncZeroes () {
     while (true) {
-      yield buf.slice()
+      yield buf
     }
   }
 

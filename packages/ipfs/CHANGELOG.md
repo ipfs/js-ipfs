@@ -3,31 +3,129 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.61.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.60.2...ipfs@0.61.0) (2021-12-15)
+
+## [0.65.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.64.2...ipfs-v0.65.0) (2022-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* ipfs is now bundled with libp2p@0.40.x which has different config
+
+### Features
+
+* upgrade libp2p to 0.40.x ([#4237](https://www.github.com/ipfs/js-ipfs/issues/4237)) ([0cee4a4](https://www.github.com/ipfs/js-ipfs/commit/0cee4a4c55767022584dcbade0b0b9b43326f9c9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.14.2 to ^0.15.0
+    * ipfs-core bumped from ^0.16.1 to ^0.17.0
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.156.1 to ^0.157.0
+    * ipfs-client bumped from ^0.9.1 to ^0.9.2
+    * ipfs-core-types bumped from ^0.12.1 to ^0.13.0
+    * ipfs-http-client bumped from ^58.0.1 to ^59.0.0
+
+### [0.64.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.64.1...ipfs-v0.64.2) (2022-09-21)
 
 
 ### Bug Fixes
 
-* **pubsub:** multibase in pubsub http rpc ([#3922](https://github.com/ipfs/js-ipfs/issues/3922)) ([6eeaca4](https://github.com/ipfs/js-ipfs/commit/6eeaca452c36fa13be42d704575c577e4ca938f1))
+* update @multiformats/multiadd to 11.0.0 ([2a830bf](https://www.github.com/ipfs/js-ipfs/commit/2a830bf58a5929fcce51dede871c99f62192fbda))
 
 
-### Features
+### Dependencies
 
-* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
-* update DAG API to match go-ipfs@0.10 changes ([#3917](https://github.com/ipfs/js-ipfs/issues/3917)) ([38c01be](https://github.com/ipfs/js-ipfs/commit/38c01be03b4fd5f401cd9b698cfdb4237d835b01))
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.14.1 to ^0.14.2
+    * ipfs-core bumped from ^0.16.0 to ^0.16.1
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.156.0 to ^0.156.1
+    * ipfs-client bumped from ^0.9.0 to ^0.9.1
+    * ipfs-core-types bumped from ^0.12.0 to ^0.12.1
+    * ipfs-http-client bumped from ^58.0.0 to ^58.0.1
+
+### [0.64.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.64.0...ipfs-v0.64.1) (2022-09-16)
 
 
-### BREAKING CHANGES
+### Dependencies
 
-* **pubsub:** We had to make breaking changes to `pubsub` commands sent over HTTP RPC  to fix data corruption caused by topic names and payload bytes that included `\n`. More details in https://github.com/ipfs/go-ipfs/issues/7939 and https://github.com/ipfs/go-ipfs/pull/8183 
-* `ipfs.dag.put` no longer accepts a `format` arg, it is now `storeCodec` and `inputCodec`.  `'json'` has become `'dag-json'`, `'cbor'` has become `'dag-cbor'` and so on
-* The DHT API has been refactored to return async iterators of query events
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.14.0 to ^0.14.1
+
+## [0.64.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.5...ipfs-v0.64.0) (2022-09-06)
 
 
+### ⚠ BREAKING CHANGES
+
+* update to libp2p@0.38.x (#4151)
+
+### deps
+
+* update to libp2p@0.38.x ([#4151](https://www.github.com/ipfs/js-ipfs/issues/4151)) ([39dbf70](https://www.github.com/ipfs/js-ipfs/commit/39dbf708ec31b263115e44f420651fa4e056a89e))
 
 
+### Dependencies
 
-### [0.63.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.1...ipfs-v0.63.2) (2022-06-01)
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.13.0 to ^0.14.0
+    * ipfs-core bumped from ^0.15.0 to ^0.16.0
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.155.0 to ^0.156.0
+    * ipfs-client bumped from ^0.8.0 to ^0.9.0
+    * ipfs-core-types bumped from ^0.11.0 to ^0.12.0
+    * ipfs-http-client bumped from ^57.0.0 to ^58.0.0
+
+### [0.63.5](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.4...ipfs-v0.63.5) (2022-06-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.13.4 to ^0.13.5
+    * ipfs-core bumped from ^0.15.3 to ^0.15.4
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.155.1 to ^0.155.2
+    * ipfs-client bumped from ^0.8.2 to ^0.8.3
+    * ipfs-http-client bumped from ^57.0.2 to ^57.0.3
+
+### [0.63.4](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.3...ipfs-v0.63.4) (2022-06-22)
+
+
+### Bug Fixes
+
+* use default ws filters instead of connecting to everything ([#4142](https://www.github.com/ipfs/js-ipfs/issues/4142)) ([7be50bd](https://www.github.com/ipfs/js-ipfs/commit/7be50bd157b984d4607545bb78d22cd33de933fa)), closes [#4141](https://www.github.com/ipfs/js-ipfs/issues/4141)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.13.3 to ^0.13.4
+    * ipfs-core bumped from ^0.15.2 to ^0.15.3
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.155.0 to ^0.155.1
+    * ipfs-client bumped from ^0.8.1 to ^0.8.2
+    * ipfs-core-types bumped from ^0.11.0 to ^0.11.1
+    * ipfs-http-client bumped from ^57.0.1 to ^57.0.2
+
+### [0.63.3](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.2...ipfs-v0.63.3) (2022-06-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-cli bumped from ^0.13.2 to ^0.13.3
+    * ipfs-core bumped from ^0.15.1 to ^0.15.2
+
+## [0.63.2](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.1...ipfs-v0.63.2) (2022-06-01)
 
 
 ### Dependencies
@@ -40,7 +138,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
     * ipfs-client bumped from ^0.8.0 to ^0.8.1
     * ipfs-http-client bumped from ^57.0.0 to ^57.0.1
 
-### [0.63.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.0...ipfs-v0.63.1) (2022-05-30)
+## [0.63.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-v0.63.0...ipfs-v0.63.1) (2022-05-30)
 
 
 ### Dependencies
@@ -54,7 +152,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### ⚠ BREAKING CHANGES
 
-* This module is now ESM only and there return types of some methods have changed
+* This module is now ESM only and there return types of some methods have changed.  See the [upgrade guide](https://github.com/ipfs/js-ipfs/blob/master/docs/upgrading/v0.62-v0.63.md) for more info.
 
 ### Features
 
@@ -148,6 +246,26 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
     * ipfs-core-types bumped from ^0.9.0 to ^0.10.0
     * ipfs-http-client bumped from ^55.0.0 to ^56.0.0
 
+## [0.61.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.60.2...ipfs@0.61.0) (2021-12-15)
+
+
+### Bug Fixes
+
+* **pubsub:** multibase in pubsub http rpc ([#3922](https://github.com/ipfs/js-ipfs/issues/3922)) ([6eeaca4](https://github.com/ipfs/js-ipfs/commit/6eeaca452c36fa13be42d704575c577e4ca938f1))
+
+
+### Features
+
+* dht client ([#3947](https://github.com/ipfs/js-ipfs/issues/3947)) ([62d8ecb](https://github.com/ipfs/js-ipfs/commit/62d8ecbc723e693a2544e69172d99c576d187c23))
+* update DAG API to match go-ipfs@0.10 changes ([#3917](https://github.com/ipfs/js-ipfs/issues/3917)) ([38c01be](https://github.com/ipfs/js-ipfs/commit/38c01be03b4fd5f401cd9b698cfdb4237d835b01))
+
+
+### BREAKING CHANGES
+
+* **pubsub:** We had to make breaking changes to `pubsub` commands sent over HTTP RPC  to fix data corruption caused by topic names and payload bytes that included `\n`. More details in https://github.com/ipfs/go-ipfs/issues/7939 and https://github.com/ipfs/go-ipfs/pull/8183
+* `ipfs.dag.put` no longer accepts a `format` arg, it is now `storeCodec` and `inputCodec`.  `'json'` has become `'dag-json'`, `'cbor'` has become `'dag-cbor'` and so on
+* The DHT API has been refactored to return async iterators of query events
+
 ## [0.60.2](https://github.com/ipfs/js-ipfs/compare/ipfs@0.60.1...ipfs@0.60.2) (2021-11-24)
 
 **Note:** Version bump only for package ipfs
@@ -164,7 +282,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.60.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.59.1...ipfs@0.60.0) (2021-11-12)
+## [0.60.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.59.1...ipfs@0.60.0) (2021-11-12)
 
 
 ### Bug Fixes
@@ -188,7 +306,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.59.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.58.6...ipfs@0.59.0) (2021-09-24)
+## [0.59.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.58.6...ipfs@0.59.0) (2021-09-24)
 
 
 ### Features
@@ -257,7 +375,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.58.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.57.0...ipfs@0.58.0) (2021-08-17)
+## [0.58.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.57.0...ipfs@0.58.0) (2021-08-17)
 
 
 ### Features
@@ -268,7 +386,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.57.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.56.1...ipfs@0.57.0) (2021-08-11)
+## [0.57.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.56.1...ipfs@0.57.0) (2021-08-11)
 
 
 ### Features
@@ -292,7 +410,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [0.56.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.55.4...ipfs@0.56.0) (2021-07-27)
+## [0.56.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.55.4...ipfs@0.56.0) (2021-07-27)
 
 
 ### Features
@@ -346,7 +464,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.55.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.54.4...ipfs@0.55.0) (2021-05-10)
+## [0.55.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.54.4...ipfs@0.55.0) (2021-05-10)
 
 
 ### Bug Fixes
@@ -405,7 +523,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.54.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.53.2...ipfs@0.54.0) (2021-02-01)
+## [0.54.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.53.2...ipfs@0.54.0) (2021-02-01)
 
 
 ### Bug Fixes
@@ -447,7 +565,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.53.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.52.3...ipfs@0.53.0) (2021-01-15)
+## [0.53.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.52.3...ipfs@0.53.0) (2021-01-15)
 
 
 ### chore
@@ -501,7 +619,7 @@ Co-authored-by: Hugo Dias <hugomrdias@gmail.com>
 
 
 
-# [0.52.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.51.0...ipfs@0.52.0) (2020-11-09)
+## [0.52.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.51.0...ipfs@0.52.0) (2020-11-09)
 
 
 ### Bug Fixes
@@ -522,7 +640,7 @@ Co-authored-by: Hugo Dias <hugomrdias@gmail.com>
 
 
 
-# [0.51.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.50.2...ipfs@0.51.0) (2020-10-28)
+## [0.51.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.50.2...ipfs@0.51.0) (2020-10-28)
 
 
 ### Bug Fixes
@@ -567,7 +685,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.50.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.49.1...ipfs@0.50.0) (2020-09-03)
+## [0.50.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.49.1...ipfs@0.50.0) (2020-09-03)
 
 
 ### Features
@@ -595,7 +713,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.49.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.48.1...ipfs@0.49.0) (2020-08-12)
+## [0.49.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.48.1...ipfs@0.49.0) (2020-08-12)
 
 
 ### Bug Fixes
@@ -633,7 +751,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.48.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.47.0...ipfs@0.48.0) (2020-07-16)
+## [0.48.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.47.0...ipfs@0.48.0) (2020-07-16)
 
 
 ### Bug Fixes
@@ -659,7 +777,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.47.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.46.0...ipfs@0.47.0) (2020-06-24)
+## [0.47.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.46.0...ipfs@0.47.0) (2020-06-24)
 
 
 ### Bug Fixes
@@ -678,7 +796,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.46.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.45.0...ipfs@0.46.0) (2020-06-05)
+## [0.46.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.45.0...ipfs@0.46.0) (2020-06-05)
 
 
 ### Bug Fixes
@@ -694,7 +812,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.45.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.44.0...ipfs@0.45.0) (2020-05-29)
+## [0.45.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.44.0...ipfs@0.45.0) (2020-05-29)
 
 
 ### Features
@@ -705,7 +823,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.44.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.3...ipfs@0.44.0) (2020-05-18)
+## [0.44.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.43.3...ipfs@0.44.0) (2020-05-18)
 
 
 ### Bug Fixes
@@ -758,7 +876,7 @@ Co-authored-by: achingbrain <alex@achingbrain.net>
 
 
 
-# [0.43.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.1...ipfs@0.43.0) (2020-04-16)
+## [0.43.0](https://github.com/ipfs/js-ipfs/compare/ipfs@0.42.1...ipfs@0.43.0) (2020-04-16)
 
 
 ### Bug Fixes
@@ -842,7 +960,7 @@ on small files with CIDv1.
 
 
 <a name="0.41.0"></a>
-# [0.41.0](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.2...v0.41.0) (2020-02-13)
+## [0.41.0](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.2...v0.41.0) (2020-02-13)
 
 
 ### Bug Fixes
@@ -852,12 +970,12 @@ on small files with CIDv1.
 
 
 <a name="0.41.0-rc.2"></a>
-# [0.41.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.1...v0.41.0-rc.2) (2020-02-11)
+## [0.41.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.1...v0.41.0-rc.2) (2020-02-11)
 
 
 
 <a name="0.41.0-rc.1"></a>
-# [0.41.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.0...v0.41.0-rc.1) (2020-02-10)
+## [0.41.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.41.0-rc.0...v0.41.0-rc.1) (2020-02-10)
 
 
 ### Bug Fixes
@@ -873,7 +991,7 @@ on small files with CIDv1.
 
 
 <a name="0.41.0-rc.0"></a>
-# [0.41.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0...v0.41.0-rc.0) (2020-02-03)
+## [0.41.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0...v0.41.0-rc.0) (2020-02-03)
 
 
 ### Bug Fixes
@@ -927,12 +1045,12 @@ on small files with CIDv1.
 
 
 <a name="0.40.0"></a>
-# [0.40.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.1...v0.40.0) (2019-12-02)
+## [0.40.0](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.1...v0.40.0) (2019-12-02)
 
 
 
 <a name="0.40.0-rc.1"></a>
-# [0.40.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.0...v0.40.0-rc.1) (2019-11-28)
+## [0.40.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.40.0-rc.0...v0.40.0-rc.1) (2019-11-28)
 
 
 ### Bug Fixes
@@ -942,7 +1060,7 @@ on small files with CIDv1.
 
 
 <a name="0.40.0-rc.0"></a>
-# [0.40.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0...v0.40.0-rc.0) (2019-11-11)
+## [0.40.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0...v0.40.0-rc.0) (2019-11-11)
 
 
 ### Bug Fixes
@@ -968,12 +1086,12 @@ on small files with CIDv1.
 
 
 <a name="0.39.0"></a>
-# [0.39.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.2...v0.39.0) (2019-10-23)
+## [0.39.0](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.2...v0.39.0) (2019-10-23)
 
 
 
 <a name="0.39.0-rc.2"></a>
-# [0.39.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.1...v0.39.0-rc.2) (2019-10-17)
+## [0.39.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.1...v0.39.0-rc.2) (2019-10-17)
 
 
 ### Bug Fixes
@@ -986,12 +1104,12 @@ on small files with CIDv1.
 
 
 <a name="0.39.0-rc.1"></a>
-# [0.39.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.0...v0.39.0-rc.1) (2019-10-15)
+## [0.39.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.39.0-rc.0...v0.39.0-rc.1) (2019-10-15)
 
 
 
 <a name="0.39.0-rc.0"></a>
-# [0.39.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0...v0.39.0-rc.0) (2019-10-08)
+## [0.39.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0...v0.39.0-rc.0) (2019-10-08)
 
 
 ### Bug Fixes
@@ -1017,41 +1135,41 @@ on small files with CIDv1.
 
 
 <a name="0.38.0"></a>
-# [0.38.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.6...v0.38.0) (2019-09-30)
+## [0.38.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.6...v0.38.0) (2019-09-30)
 
 
 
 <a name="0.38.0-rc.6"></a>
-# [0.38.0-rc.6](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.5...v0.38.0-rc.6) (2019-09-25)
+## [0.38.0-rc.6](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.5...v0.38.0-rc.6) (2019-09-25)
 
 
 
 <a name="0.38.0-rc.5"></a>
-# [0.38.0-rc.5](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.4...v0.38.0-rc.5) (2019-09-18)
+## [0.38.0-rc.5](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.4...v0.38.0-rc.5) (2019-09-18)
 
 
 
 <a name="0.38.0-rc.4"></a>
-# [0.38.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.3...v0.38.0-rc.4) (2019-09-17)
+## [0.38.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.3...v0.38.0-rc.4) (2019-09-17)
 
 
 
 <a name="0.38.0-rc.3"></a>
-# [0.38.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.2...v0.38.0-rc.3) (2019-09-17)
+## [0.38.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.2...v0.38.0-rc.3) (2019-09-17)
 
 
 
 <a name="0.38.0-rc.2"></a>
-# [0.38.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.1...v0.38.0-rc.2) (2019-09-16)
+## [0.38.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.1...v0.38.0-rc.2) (2019-09-16)
 
 
 
-# [0.38.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.0...v0.38.0-rc.1) (2019-09-13)
+## [0.38.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.38.0-rc.0...v0.38.0-rc.1) (2019-09-13)
 
 
 
 <a name="0.38.0-rc.0"></a>
-# [0.38.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0-pre.1...v0.38.0-rc.0) (2019-09-09)
+## [0.38.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.38.0-pre.1...v0.38.0-rc.0) (2019-09-09)
 
 
 ### Bug Fixes
@@ -1075,7 +1193,7 @@ on small files with CIDv1.
 
 
 <a name="0.38.0-pre.1"></a>
-# [0.38.0-pre.1](https://github.com/ipfs/js-ipfs/compare/v0.38.0-pre.0...v0.38.0-pre.1) (2019-09-02)
+## [0.38.0-pre.1](https://github.com/ipfs/js-ipfs/compare/v0.38.0-pre.0...v0.38.0-pre.1) (2019-09-02)
 
 
 ### Bug Fixes
@@ -1100,7 +1218,7 @@ on small files with CIDv1.
 
 
 <a name="0.38.0-pre.0"></a>
-# [0.38.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.37.1...v0.38.0-pre.0) (2019-08-27)
+## [0.38.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.37.1...v0.38.0-pre.0) (2019-08-27)
 
 
 ### Bug Fixes
@@ -1143,12 +1261,12 @@ Previously, js-ipfs buffered all hashes of added files and sorted them before ou
 
 
 <a name="0.37.0"></a>
-# [0.37.0](https://github.com/ipfs/js-ipfs/compare/v0.37.0-rc.1...v0.37.0) (2019-08-06)
+## [0.37.0](https://github.com/ipfs/js-ipfs/compare/v0.37.0-rc.1...v0.37.0) (2019-08-06)
 
 
 
 <a name="0.37.0-rc.1"></a>
-# [0.37.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.37.0-rc.0...v0.37.0-rc.1) (2019-08-06)
+## [0.37.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.37.0-rc.0...v0.37.0-rc.1) (2019-08-06)
 
 
 ### Bug Fixes
@@ -1163,7 +1281,7 @@ Previously, js-ipfs buffered all hashes of added files and sorted them before ou
 
 
 <a name="0.37.0-rc.0"></a>
-# [0.37.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.4...v0.37.0-rc.0) (2019-07-17)
+## [0.37.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.4...v0.37.0-rc.0) (2019-07-17)
 
 
 ### Bug Fixes
@@ -1247,7 +1365,7 @@ Signed-off-by: Marcin Rataj <lidel@lidel.org>
 
 
 <a name="0.36.0"></a>
-# [0.36.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-rc.0...v0.36.0) (2019-05-22)
+## [0.36.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-rc.0...v0.36.0) (2019-05-22)
 
 
 ### Bug Fixes
@@ -1262,7 +1380,7 @@ Signed-off-by: Marcin Rataj <lidel@lidel.org>
 
 
 <a name="0.36.0-rc.0"></a>
-# [0.36.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-pre.0...v0.36.0-rc.0) (2019-05-21)
+## [0.36.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.36.0-pre.0...v0.36.0-rc.0) (2019-05-21)
 
 
 ### Code Refactoring
@@ -1293,7 +1411,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="0.36.0-pre.0"></a>
-# [0.36.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0...v0.36.0-pre.0) (2019-05-17)
+## [0.36.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0...v0.36.0-pre.0) (2019-05-17)
 
 
 ### Bug Fixes
@@ -1312,12 +1430,12 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="0.35.0"></a>
-# [0.35.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.7...v0.35.0) (2019-04-12)
+## [0.35.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.7...v0.35.0) (2019-04-12)
 
 
 
 <a name="0.35.0-rc.7"></a>
-# [0.35.0-rc.7](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.6...v0.35.0-rc.7) (2019-04-12)
+## [0.35.0-rc.7](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.6...v0.35.0-rc.7) (2019-04-12)
 
 
 ### Bug Fixes
@@ -1343,7 +1461,7 @@ Co-Authored-By: hugomrdias <mail@hugodias.me>
 
 
 <a name="0.35.0-rc.6"></a>
-# [0.35.0-rc.6](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.5...v0.35.0-rc.6) (2019-04-11)
+## [0.35.0-rc.6](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.5...v0.35.0-rc.6) (2019-04-11)
 
 
 ### Bug Fixes
@@ -1359,7 +1477,7 @@ Co-Authored-By: hugomrdias <mail@hugodias.me>
 
 
 <a name="0.35.0-rc.5"></a>
-# [0.35.0-rc.5](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.4...v0.35.0-rc.5) (2019-04-04)
+## [0.35.0-rc.5](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.4...v0.35.0-rc.5) (2019-04-04)
 
 
 ### Bug Fixes
@@ -1376,7 +1494,7 @@ Co-Authored-By: hugomrdias <mail@hugodias.me>
 
 
 <a name="0.35.0-rc.4"></a>
-# [0.35.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.3...v0.35.0-rc.4) (2019-03-28)
+## [0.35.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.3...v0.35.0-rc.4) (2019-03-28)
 
 
 ### Bug Fixes
@@ -1401,7 +1519,7 @@ Co-Authored-By: hugomrdias <mail@hugodias.me>
 
 
 <a name="0.35.0-rc.3"></a>
-# [0.35.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.2...v0.35.0-rc.3) (2019-03-21)
+## [0.35.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.2...v0.35.0-rc.3) (2019-03-21)
 
 
 ### Bug Fixes
@@ -1411,12 +1529,12 @@ Co-Authored-By: hugomrdias <mail@hugodias.me>
 
 
 <a name="0.35.0-rc.2"></a>
-# [0.35.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.1...v0.35.0-rc.2) (2019-03-21)
+## [0.35.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.1...v0.35.0-rc.2) (2019-03-21)
 
 
 
 <a name="0.35.0-rc.1"></a>
-# [0.35.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.0...v0.35.0-rc.1) (2019-03-20)
+## [0.35.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.35.0-rc.0...v0.35.0-rc.1) (2019-03-20)
 
 
 ### Bug Fixes
@@ -1441,7 +1559,7 @@ Co-Authored-By: hugomrdias <mail@hugodias.me>
 
 
 <a name="0.35.0-rc.0"></a>
-# [0.35.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0-pre.0...v0.35.0-rc.0) (2019-03-06)
+## [0.35.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.35.0-pre.0...v0.35.0-rc.0) (2019-03-06)
 
 
 ### Bug Fixes
@@ -1492,7 +1610,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="0.35.0-pre.0"></a>
-# [0.35.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.34.4...v0.35.0-pre.0) (2019-02-11)
+## [0.35.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.34.4...v0.35.0-pre.0) (2019-02-11)
 
 
 ### Bug Fixes
@@ -1564,12 +1682,12 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="0.34.0"></a>
-# [0.34.0](https://github.com/ipfs/js-ipfs/compare/v0.34.0-rc.1...v0.34.0) (2019-01-17)
+## [0.34.0](https://github.com/ipfs/js-ipfs/compare/v0.34.0-rc.1...v0.34.0) (2019-01-17)
 
 
 
 <a name="0.34.0-rc.1"></a>
-# [0.34.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.34.0-rc.0...v0.34.0-rc.1) (2019-01-15)
+## [0.34.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.34.0-rc.0...v0.34.0-rc.1) (2019-01-15)
 
 
 ### Bug Fixes
@@ -1598,7 +1716,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="0.34.0-rc.0"></a>
-# [0.34.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.34.0-pre.0...v0.34.0-rc.0) (2018-12-18)
+## [0.34.0-rc.0](https://github.com/ipfs/js-ipfs/compare/v0.34.0-pre.0...v0.34.0-rc.0) (2018-12-18)
 
 
 ### Bug Fixes
@@ -1617,7 +1735,7 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="0.34.0-pre.0"></a>
-# [0.34.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.33.1...v0.34.0-pre.0) (2018-12-07)
+## [0.34.0-pre.0](https://github.com/ipfs/js-ipfs/compare/v0.33.1...v0.34.0-pre.0) (2018-12-07)
 
 
 ### Bug Fixes
@@ -1719,12 +1837,12 @@ Signed-off-by: Alan Shaw <alan.shaw@protocol.ai>
 
 
 <a name="0.33.0"></a>
-# [0.33.0](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.4...v0.33.0) (2018-11-01)
+## [0.33.0](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.4...v0.33.0) (2018-11-01)
 
 
 
 <a name="0.33.0-rc.4"></a>
-# [0.33.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.3...v0.33.0-rc.4) (2018-11-01)
+## [0.33.0-rc.4](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.3...v0.33.0-rc.4) (2018-11-01)
 
 
 ### Bug Fixes
@@ -1807,17 +1925,17 @@ you need to bundle them yourself.
 
 
 <a name="0.33.0-rc.3"></a>
-# [0.33.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.2...v0.33.0-rc.3) (2018-10-24)
+## [0.33.0-rc.3](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.2...v0.33.0-rc.3) (2018-10-24)
 
 
 
 <a name="0.33.0-rc.2"></a>
-# [0.33.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.1...v0.33.0-rc.2) (2018-10-23)
+## [0.33.0-rc.2](https://github.com/ipfs/js-ipfs/compare/v0.33.0-rc.1...v0.33.0-rc.2) (2018-10-23)
 
 
 
 <a name="0.33.0-rc.1"></a>
-# [0.33.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.32.3...v0.33.0-rc.1) (2018-10-19)
+## [0.33.0-rc.1](https://github.com/ipfs/js-ipfs/compare/v0.32.3...v0.33.0-rc.1) (2018-10-19)
 
 
 ### Bug Fixes
@@ -1877,7 +1995,7 @@ you need to bundle them yourself.
 
 
 <a name="0.32.0"></a>
-# [0.32.0](https://github.com/ipfs/js-ipfs/compare/v0.32.0-rc.2...v0.32.0) (2018-09-11)
+## [0.32.0](https://github.com/ipfs/js-ipfs/compare/v0.32.0-rc.2...v0.32.0) (2018-09-11)
 
 
 ### Bug Fixes
@@ -1971,7 +2089,7 @@ you need to bundle them yourself.
 
 
 <a name="0.31.0"></a>
-# [0.31.0](https://github.com/ipfs/js-ipfs/compare/v0.30.1...v0.31.0) (2018-07-29)
+## [0.31.0](https://github.com/ipfs/js-ipfs/compare/v0.30.1...v0.31.0) (2018-07-29)
 
 
 ### Bug Fixes
@@ -2007,7 +2125,7 @@ you need to bundle them yourself.
 
 
 <a name="0.30.0"></a>
-# [0.30.0](https://github.com/ipfs/js-ipfs/compare/v0.29.3...v0.30.0) (2018-07-09)
+## [0.30.0](https://github.com/ipfs/js-ipfs/compare/v0.29.3...v0.30.0) (2018-07-09)
 
 
 ### Bug Fixes
@@ -2084,7 +2202,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.29.0"></a>
-# [0.29.0](https://github.com/ipfs/js-ipfs/compare/v0.28.2...v0.29.0) (2018-05-29)
+## [0.29.0](https://github.com/ipfs/js-ipfs/compare/v0.28.2...v0.29.0) (2018-05-29)
 
 
 ### Bug Fixes
@@ -2168,7 +2286,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.28.0"></a>
-# [0.28.0](https://github.com/ipfs/js-ipfs/compare/v0.27.7...v0.28.0) (2018-03-01)
+## [0.28.0](https://github.com/ipfs/js-ipfs/compare/v0.27.7...v0.28.0) (2018-03-01)
 
 
 ### Bug Fixes
@@ -2274,7 +2392,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.27.0"></a>
-# [0.27.0](https://github.com/ipfs/js-ipfs/compare/v0.26.0...v0.27.0) (2017-12-04)
+## [0.27.0](https://github.com/ipfs/js-ipfs/compare/v0.26.0...v0.27.0) (2017-12-04)
 
 
 ### Bug Fixes
@@ -2311,7 +2429,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.26.0"></a>
-# [0.26.0](https://github.com/ipfs/js-ipfs/compare/v0.25.4...v0.26.0) (2017-09-13)
+## [0.26.0](https://github.com/ipfs/js-ipfs/compare/v0.25.4...v0.26.0) (2017-09-13)
 
 
 ### Bug Fixes
@@ -2379,7 +2497,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.25.0"></a>
-# [0.25.0](https://github.com/ipfs/js-ipfs/compare/v0.24.1...v0.25.0) (2017-07-12)
+## [0.25.0](https://github.com/ipfs/js-ipfs/compare/v0.24.1...v0.25.0) (2017-07-12)
 
 
 ### Bug Fixes
@@ -2407,7 +2525,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.24.0"></a>
-# [0.24.0](https://github.com/ipfs/js-ipfs/compare/v0.23.1...v0.24.0) (2017-05-24)
+## [0.24.0](https://github.com/ipfs/js-ipfs/compare/v0.23.1...v0.24.0) (2017-05-24)
 
 
 ### Bug Fixes
@@ -2449,7 +2567,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.23.0"></a>
-# [0.23.0](https://github.com/ipfs/js-ipfs/compare/v0.22.1...v0.23.0) (2017-03-24)
+## [0.23.0](https://github.com/ipfs/js-ipfs/compare/v0.22.1...v0.23.0) (2017-03-24)
 
 
 ### Bug Fixes
@@ -2487,7 +2605,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.22.0"></a>
-# [0.22.0](https://github.com/ipfs/js-ipfs/compare/v0.21.8...v0.22.0) (2017-02-15)
+## [0.22.0](https://github.com/ipfs/js-ipfs/compare/v0.21.8...v0.22.0) (2017-02-15)
 
 
 ### Bug Fixes
@@ -2573,7 +2691,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.21.0"></a>
-# [0.21.0](https://github.com/ipfs/js-ipfs/compare/v0.20.4...v0.21.0) (2017-01-17)
+## [0.21.0](https://github.com/ipfs/js-ipfs/compare/v0.20.4...v0.21.0) (2017-01-17)
 
 
 ### Bug Fixes
@@ -2619,7 +2737,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.19.0"></a>
-# [0.19.0](https://github.com/ipfs/js-ipfs/compare/v0.18.0...v0.19.0) (2016-11-26)
+## [0.19.0](https://github.com/ipfs/js-ipfs/compare/v0.18.0...v0.19.0) (2016-11-26)
 
 
 ### Bug Fixes
@@ -2642,7 +2760,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.18.0"></a>
-# [0.18.0](https://github.com/ipfs/js-ipfs/compare/v0.17.0...v0.18.0) (2016-11-12)
+## [0.18.0](https://github.com/ipfs/js-ipfs/compare/v0.17.0...v0.18.0) (2016-11-12)
 
 
 ### Bug Fixes
@@ -2668,7 +2786,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.17.0"></a>
-# [0.17.0](https://github.com/ipfs/js-ipfs/compare/v0.16.0...v0.17.0) (2016-10-10)
+## [0.17.0](https://github.com/ipfs/js-ipfs/compare/v0.16.0...v0.17.0) (2016-10-10)
 
 
 ### Bug Fixes
@@ -2685,7 +2803,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.16.0"></a>
-# [0.16.0](https://github.com/ipfs/js-ipfs/compare/v0.15.0...v0.16.0) (2016-09-15)
+## [0.16.0](https://github.com/ipfs/js-ipfs/compare/v0.15.0...v0.16.0) (2016-09-15)
 
 
 ### Bug Fixes
@@ -2714,7 +2832,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.15.0"></a>
-# [0.15.0](https://github.com/ipfs/js-ipfs/compare/v0.14.3...v0.15.0) (2016-09-09)
+## [0.15.0](https://github.com/ipfs/js-ipfs/compare/v0.14.3...v0.15.0) (2016-09-09)
 
 
 ### Bug Fixes
@@ -2781,17 +2899,17 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.14.0"></a>
-# [0.14.0](https://github.com/ipfs/js-ipfs/compare/v0.13.0...v0.14.0) (2016-06-27)
+## [0.14.0](https://github.com/ipfs/js-ipfs/compare/v0.13.0...v0.14.0) (2016-06-27)
 
 
 
 <a name="0.13.0"></a>
-# [0.13.0](https://github.com/ipfs/js-ipfs/compare/v0.12.0...v0.13.0) (2016-06-07)
+## [0.13.0](https://github.com/ipfs/js-ipfs/compare/v0.12.0...v0.13.0) (2016-06-07)
 
 
 
 <a name="0.12.0"></a>
-# [0.12.0](https://github.com/ipfs/js-ipfs/compare/v0.11.1...v0.12.0) (2016-06-06)
+## [0.12.0](https://github.com/ipfs/js-ipfs/compare/v0.11.1...v0.12.0) (2016-06-06)
 
 
 ### Bug Fixes
@@ -2806,7 +2924,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.11.0"></a>
-# [0.11.0](https://github.com/ipfs/js-ipfs/compare/v0.10.3...v0.11.0) (2016-05-27)
+## [0.11.0](https://github.com/ipfs/js-ipfs/compare/v0.10.3...v0.11.0) (2016-05-27)
 
 
 
@@ -2831,37 +2949,37 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.10.0"></a>
-# [0.10.0](https://github.com/ipfs/js-ipfs/compare/v0.9.0...v0.10.0) (2016-05-24)
+## [0.10.0](https://github.com/ipfs/js-ipfs/compare/v0.9.0...v0.10.0) (2016-05-24)
 
 
 
 <a name="0.9.0"></a>
-# [0.9.0](https://github.com/ipfs/js-ipfs/compare/v0.8.0...v0.9.0) (2016-05-24)
+## [0.9.0](https://github.com/ipfs/js-ipfs/compare/v0.8.0...v0.9.0) (2016-05-24)
 
 
 
 <a name="0.8.0"></a>
-# [0.8.0](https://github.com/ipfs/js-ipfs/compare/v0.7.0...v0.8.0) (2016-05-23)
+## [0.8.0](https://github.com/ipfs/js-ipfs/compare/v0.7.0...v0.8.0) (2016-05-23)
 
 
 
 <a name="0.7.0"></a>
-# [0.7.0](https://github.com/ipfs/js-ipfs/compare/v0.6.1...v0.7.0) (2016-05-21)
+## [0.7.0](https://github.com/ipfs/js-ipfs/compare/v0.6.1...v0.7.0) (2016-05-21)
 
 
 
 <a name="0.6.1"></a>
-## [0.6.1](https://github.com/ipfs/js-ipfs/compare/v0.6.0...v0.6.1) (2016-05-19)
+### [0.6.1](https://github.com/ipfs/js-ipfs/compare/v0.6.0...v0.6.1) (2016-05-19)
 
 
 
 <a name="0.6.0"></a>
-# [0.6.0](https://github.com/ipfs/js-ipfs/compare/v0.5.0...v0.6.0) (2016-05-19)
+## [0.6.0](https://github.com/ipfs/js-ipfs/compare/v0.5.0...v0.6.0) (2016-05-19)
 
 
 
 <a name="0.5.0"></a>
-# [0.5.0](https://github.com/ipfs/js-ipfs/compare/v0.4.10...v0.5.0) (2016-05-16)
+## [0.5.0](https://github.com/ipfs/js-ipfs/compare/v0.4.10...v0.5.0) (2016-05-16)
 
 
 ### Bug Fixes
@@ -2879,7 +2997,7 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.4.10"></a>
-## [0.4.10](https://github.com/ipfs/js-ipfs/compare/v0.4.9...v0.4.10) (2016-05-08)
+### [0.4.10](https://github.com/ipfs/js-ipfs/compare/v0.4.9...v0.4.10) (2016-05-08)
 
 
 ### Bug Fixes
@@ -2890,82 +3008,82 @@ Signed-off-by: Alan Shaw <alan@tableflip.io>
 
 
 <a name="0.4.9"></a>
-## [0.4.9](https://github.com/ipfs/js-ipfs/compare/v0.4.8...v0.4.9) (2016-04-28)
+### [0.4.9](https://github.com/ipfs/js-ipfs/compare/v0.4.8...v0.4.9) (2016-04-28)
 
 
 
 <a name="0.4.8"></a>
-## [0.4.8](https://github.com/ipfs/js-ipfs/compare/v0.4.7...v0.4.8) (2016-04-28)
+### [0.4.8](https://github.com/ipfs/js-ipfs/compare/v0.4.7...v0.4.8) (2016-04-28)
 
 
 
 <a name="0.4.7"></a>
-## [0.4.7](https://github.com/ipfs/js-ipfs/compare/v0.4.6...v0.4.7) (2016-04-25)
+### [0.4.7](https://github.com/ipfs/js-ipfs/compare/v0.4.6...v0.4.7) (2016-04-25)
 
 
 
 <a name="0.4.6"></a>
-## [0.4.6](https://github.com/ipfs/js-ipfs/compare/v0.4.4...v0.4.6) (2016-04-22)
+### [0.4.6](https://github.com/ipfs/js-ipfs/compare/v0.4.4...v0.4.6) (2016-04-22)
 
 
 
 <a name="0.4.4"></a>
-## [0.4.4](https://github.com/ipfs/js-ipfs/compare/v0.4.3...v0.4.4) (2016-03-22)
+### [0.4.4](https://github.com/ipfs/js-ipfs/compare/v0.4.3...v0.4.4) (2016-03-22)
 
 
 
 <a name="0.4.3"></a>
-## [0.4.3](https://github.com/ipfs/js-ipfs/compare/v0.4.2...v0.4.3) (2016-03-21)
+### [0.4.3](https://github.com/ipfs/js-ipfs/compare/v0.4.2...v0.4.3) (2016-03-21)
 
 
 
 <a name="0.4.2"></a>
-## [0.4.2](https://github.com/ipfs/js-ipfs/compare/v0.4.1...v0.4.2) (2016-03-21)
+### [0.4.2](https://github.com/ipfs/js-ipfs/compare/v0.4.1...v0.4.2) (2016-03-21)
 
 
 
 <a name="0.4.1"></a>
-## [0.4.1](https://github.com/ipfs/js-ipfs/compare/v0.4.0...v0.4.1) (2016-03-16)
+### [0.4.1](https://github.com/ipfs/js-ipfs/compare/v0.4.0...v0.4.1) (2016-03-16)
 
 
 
 <a name="0.4.0"></a>
-# [0.4.0](https://github.com/ipfs/js-ipfs/compare/v0.3.1...v0.4.0) (2016-02-23)
+## [0.4.0](https://github.com/ipfs/js-ipfs/compare/v0.3.1...v0.4.0) (2016-02-23)
 
 
 
 <a name="0.3.1"></a>
-## [0.3.1](https://github.com/ipfs/js-ipfs/compare/v0.3.0...v0.3.1) (2016-02-19)
+### [0.3.1](https://github.com/ipfs/js-ipfs/compare/v0.3.0...v0.3.1) (2016-02-19)
 
 
 
 <a name="0.3.0"></a>
-# [0.3.0](https://github.com/ipfs/js-ipfs/compare/v0.2.3...v0.3.0) (2016-02-03)
+## [0.3.0](https://github.com/ipfs/js-ipfs/compare/v0.2.3...v0.3.0) (2016-02-03)
 
 
 
 <a name="0.2.3"></a>
-## [0.2.3](https://github.com/ipfs/js-ipfs/compare/v0.2.2...v0.2.3) (2016-01-31)
+### [0.2.3](https://github.com/ipfs/js-ipfs/compare/v0.2.2...v0.2.3) (2016-01-31)
 
 
 
 <a name="0.2.2"></a>
-## [0.2.2](https://github.com/ipfs/js-ipfs/compare/v0.2.1...v0.2.2) (2016-01-28)
+### [0.2.2](https://github.com/ipfs/js-ipfs/compare/v0.2.1...v0.2.2) (2016-01-28)
 
 
 
 <a name="0.2.1"></a>
-## [0.2.1](https://github.com/ipfs/js-ipfs/compare/v0.2.0...v0.2.1) (2016-01-28)
+### [0.2.1](https://github.com/ipfs/js-ipfs/compare/v0.2.0...v0.2.1) (2016-01-28)
 
 
 
 <a name="0.2.0"></a>
-# [0.2.0](https://github.com/ipfs/js-ipfs/compare/v0.0.3...v0.2.0) (2016-01-27)
+## [0.2.0](https://github.com/ipfs/js-ipfs/compare/v0.0.3...v0.2.0) (2016-01-27)
 
 
 
 <a name="0.0.3"></a>
-## [0.0.3](https://github.com/ipfs/js-ipfs/compare/v0.0.2...v0.0.3) (2016-01-15)
+### [0.0.3](https://github.com/ipfs/js-ipfs/compare/v0.0.2...v0.0.3) (2016-01-15)
 
 
 

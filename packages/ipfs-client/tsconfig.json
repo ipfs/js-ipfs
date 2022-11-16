@@ -9,10 +9,10 @@
   ],
   "references": [
     {
-      "path": "../ipfs-http-client"
+      "path": "../ipfs-grpc-client"
     },
     {
-      "path": "../ipfs-grpc-client"
+      "path": "../ipfs-http-client"
     }
   ]
 }

@@ -4,7 +4,7 @@ import getDefaultConfig from 'ipfs-core-config/config'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { peerIdFromKeys } from '@libp2p/peer-id'
-import { isPeerId } from '@libp2p/interfaces/peer-id'
+import { isPeerId } from '@libp2p/interface-peer-id'
 import mergeOpts from 'merge-options'
 import { profiles as configProfiles } from './config/profiles.js'
 import { NotEnabledError, NotInitializedError } from '../errors.js'
@@ -13,6 +13,7 @@ import { ERR_REPO_NOT_INITIALIZED } from 'ipfs-repo/errors'
 import { createEd25519PeerId, createRSAPeerId } from '@libp2p/peer-id-factory'
 import errCode from 'err-code'
 import { unmarshalPrivateKey } from '@libp2p/crypto/keys'
+import { Key } from 'interface-datastore/key'
 
 const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs:components:peer:storage')
@@ -24,8 +25,8 @@ const log = logger('ipfs:components:peer:storage')
  * @typedef {import('../types').Print} Print
  * @typedef {import('ipfs-core-types/src/config').Config} IPFSConfig
  * @typedef {import('@libp2p/crypto/keys').KeyTypes} KeyType
- * @typedef {import('@libp2p/interfaces/keychain').KeyChain} Keychain
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-keychain').KeyChain} Keychain
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 export class Storage {
@@ -158,14 +159,14 @@ const initRepo = async (print, repo, options) => {
     keychainConfig
   })
 
-  if (libp2p.keychain) {
-    await libp2p.loadKeychain()
-
-    await repo.config.set('Keychain', {
-      // @ts-expect-error private field
-      DEK: libp2p.keychain.init.dek
-    })
+  if (!(await repo.datastore.has(new Key('/info/self')))) {
+    await libp2p.keychain.importPeer('self', peerId)
   }
+
+  await repo.config.set('Keychain', {
+    // @ts-expect-error private field
+    DEK: libp2p.keychain.init.dek
+  })
 
   return { peerId, keychain: libp2p.keychain }
 }
@@ -263,10 +264,6 @@ const configureRepo = async (repo, options) => {
       ...changed.Keychain
     }
   })
-
-  if (libp2p.keychain) {
-    await libp2p.loadKeychain()
-  }
 
   return { peerId, keychain: libp2p.keychain }
 }

@@ -6,7 +6,7 @@ import last from 'it-last'
 import { CID } from 'multiformats/cid'
 import { base32 } from 'multiformats/bases/base32'
 import { resolver, utils } from 'ipfs-http-response'
-import isIPFS from 'is-ipfs'
+import * as isIPFS from 'is-ipfs'
 // @ts-expect-error no types
 import toStream from 'it-to-stream'
 import * as PathUtils from '../utils/path.js'
@@ -132,11 +132,7 @@ export const Gateway = {
     }
 
     const { source, contentType } = await detectContentType(ipfsPath, ipfs.cat(data.cid, catOptions))
-    const responseStream = toStream.readable((async function * () {
-      for await (const chunk of source) {
-        yield chunk.slice() // Convert BufferList to Buffer
-      }
-    })())
+    const responseStream = toStream.readable(source)
 
     const res = h.response(responseStream).code(rangeResponse ? 206 : 200)
 

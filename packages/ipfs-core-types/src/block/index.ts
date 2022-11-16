@@ -1,5 +1,5 @@
 import type { AbortOptions, PreloadOptions } from '../utils'
-import type { CID, CIDVersion } from 'multiformats/cid'
+import type { CID, Version as CIDVersion } from 'multiformats/cid'
 
 export interface API<OptionExtension = {}> {
   /**
@@ -27,19 +27,6 @@ export interface API<OptionExtension = {}> {
    * const cid = await ipfs.block.put(bytes)
    *
    * console.log(decoder.decode(block.data))
-   * // Logs:
-   * // a serialized object
-   * console.log(block.cid.toString())
-   * // Logs:
-   * // the CID of the object
-   *
-   * // With custom format and hashtype through CID
-   * import { CID } from 'multiformats/cid'
-   * const another = encoder.encode('another serialized object')
-   * const cid = CID.createV1(dagPB.code, multihash)
-   * const block = await ipfs.block.put(another, cid)
-   * console.log(decoder.decode(block.data))
-   *
    * // Logs:
    * // a serialized object
    * console.log(block.cid.toString())

@@ -9,7 +9,7 @@ import Boom from '@hapi/boom'
 
 /**
  * @typedef {import('ipfs-core-types/src/dht').QueryEvent} QueryEvent
- * @typedef {import('@libp2p/interfaces/peer-id').PeerId} PeerId
+ * @typedef {import('@libp2p/interface-peer-id').PeerId} PeerId
  */
 
 /**

@@ -1,35 +1,58 @@
 {
   "name": "ipfs-grpc-protocol",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Protobuf definitions for the IPFS gRPC API",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-protocol#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs/issues"
+  },
   "keywords": [
     "ipfs"
   ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "type": "module",
-  "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "./dist/src/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ],
+      "src/*": [
+        "*",
+        "dist/*",
+        "dist/src/*",
+        "dist/src/*/index"
+      ]
+    }
+  },
   "files": [
-    "dist",
     "src",
+    "dist",
+    "!dist/test",
     "!**/*.tsbuildinfo"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
   "eslintConfig": {
     "extends": "ipfs",
     "parserOptions": {
       "sourceType": "module"
     }
-  },
-  "exports": {
-    ".": {
-      "import": "./src/index.js"
-    }
-  },
-  "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-grpc-protocol#readme",
-  "bugs": "https://github.com/ipfs/js-ipfs/issues",
-  "license": "(Apache-2.0 OR MIT)",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs.git"
   },
   "scripts": {
     "clean": "aegir clean",
@@ -39,6 +62,7 @@
   "devDependencies": {
     "aegir": "^37.0.11",
     "mkdirp": "^1.0.4",
-    "protobufjs": "^6.10.2"
+    "protobufjs": "^7.0.0",
+    "protobufjs-cli": "^1.0.0"
   }
 }
