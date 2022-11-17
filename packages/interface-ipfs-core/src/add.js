@@ -73,8 +73,7 @@ export function testAdd (factory, options) {
 
     it('should add a File', async function () {
       if (!supportsFileReader) {
-        // @ts-expect-error this is mocha
-        return this.skip('skip in node')
+        return this.skip()
       }
 
       const fileAdded = await ipfs.add(new File(['should add a File'], 'filename.txt', { type: 'text/plain' }))
@@ -83,8 +82,7 @@ export function testAdd (factory, options) {
 
     it('should add a File as tuple', async function () {
       if (!supportsFileReader) {
-        // @ts-expect-error this is mocha
-        return this.skip('skip in node')
+        return this.skip()
       }
 
       const tuple = {
@@ -212,7 +210,6 @@ export function testAdd (factory, options) {
 
     it('should add readable stream', async function () {
       if (!isNode) {
-        // @ts-expect-error this is mocha
         this.skip()
       }
       const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
@@ -264,7 +261,6 @@ export function testAdd (factory, options) {
     })
 
     it('should add with only-hash=true', async function () {
-      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const content = String(Math.random() + Date.now())
 
@@ -292,21 +288,18 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mode as string', async function () {
-      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mode = '0777'
       await testMode(mode, parseInt(mode, 8))
     })
 
     it('should add with mode as number', async function () {
-      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mode = parseInt('0777', 8)
       await testMode(mode, mode)
     })
 
     it('should add with mtime as Date', async function () {
-      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = new Date(5000)
       await testMtime(mtime, {
@@ -316,7 +309,6 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mtime as { nsecs, secs }', async function () {
-      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = {
         secs: 5,
@@ -326,7 +318,6 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mtime as timespec', async function () {
-      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       await testMtime({
         Seconds: 5,
@@ -338,7 +329,6 @@ export function testAdd (factory, options) {
     })
 
     it('should add with mtime as hrtime', async function () {
-      // @ts-expect-error this is mocha
       this.slow(10 * 1000)
       const mtime = process.hrtime()
       await testMtime(mtime, {

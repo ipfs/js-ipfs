@@ -59,7 +59,6 @@ export function testId (factory, options) {
     it('should return swarm ports opened after startup', async function () {
       if (isWebWorker) {
         // TODO: webworkers are not currently dialable
-        // @ts-expect-error this is mocha
         return this.skip()
       }
 
@@ -69,7 +68,6 @@ export function testId (factory, options) {
     it('should get the id of another node in the swarm', async function () {
       if (isWebWorker) {
         // TODO: https://github.com/libp2p/js-libp2p-websockets/issues/129
-        // @ts-expect-error this is mocha
         return this.skip()
       }
 

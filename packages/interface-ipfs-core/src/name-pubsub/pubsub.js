@@ -82,7 +82,6 @@ export function testPubsub (factory, options) {
     after(() => factory.clean())
 
     it('should publish and then resolve correctly', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(80 * 1000)
 
       const routingKey = ipns.peerIdToRoutingKey(idA.id)
@@ -98,7 +97,6 @@ export function testPubsub (factory, options) {
     })
 
     it('should self resolve, publish and then resolve correctly', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(6000)
       const emptyDirCid = '/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
       const { path } = await nodeA.add(uint8ArrayFromString('pubsub records'))
@@ -120,7 +118,6 @@ export function testPubsub (factory, options) {
     })
 
     it('should handle event on publish correctly', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(80 * 1000)
 
       const testAccountName = 'test-account'

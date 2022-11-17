@@ -38,13 +38,11 @@ export function testDns (factory, options) {
         expect(res).to.match(/\/ipns\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -62,13 +60,11 @@ export function testDns (factory, options) {
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -86,13 +82,11 @@ export function testDns (factory, options) {
         expect(res).to.match(/\/ipfs\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 

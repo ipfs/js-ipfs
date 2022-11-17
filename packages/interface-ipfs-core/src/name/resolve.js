@@ -44,7 +44,6 @@ export function testResolve (factory, options) {
     after(() => factory.clean())
 
     it('should resolve a record default options', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options'))
@@ -58,7 +57,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record from peerid as cidv1 in base32', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
       const { cid } = await ipfs.add(uint8ArrayFromString('should resolve a record from cidv1b32'))
       const { id: peerId } = await ipfs.id()
@@ -80,7 +78,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record recursive === true', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
@@ -94,7 +91,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record default options with remainder', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options with remainder'))
@@ -115,7 +111,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record recursive === true with remainder', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive = true with remainder'))
@@ -169,7 +164,6 @@ export function testResolve (factory, options) {
       } catch (/** @type {any} */ err) {
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -186,7 +180,6 @@ export function testResolve (factory, options) {
       } catch (/** @type {any} */ err) {
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -203,7 +196,6 @@ export function testResolve (factory, options) {
       } catch (/** @type {any} */ err) {
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -220,7 +212,6 @@ export function testResolve (factory, options) {
       } catch (/** @type {any} */ err) {
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -237,7 +228,6 @@ export function testResolve (factory, options) {
       } catch (/** @type {any} */ err) {
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -254,7 +244,6 @@ export function testResolve (factory, options) {
       } catch (/** @type {any} */ err) {
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 
@@ -279,7 +268,6 @@ export function testResolve (factory, options) {
       } catch (/** @type {any} */ err) {
         // happens when running tests offline
         if (err.message.includes(`ECONNREFUSED ${domain}`)) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 

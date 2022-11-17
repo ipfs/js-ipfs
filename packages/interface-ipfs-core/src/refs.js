@@ -50,7 +50,6 @@ export function testRefs (factory, options) {
       const { path, params, expected, expectError, expectTimeout } = options
       // eslint-disable-next-line no-loop-func
       it(name, async function () {
-        // @ts-expect-error this is mocha
         this.timeout(20 * 1000)
 
         // Call out to IPFS
@@ -81,7 +80,6 @@ export function testRefs (factory, options) {
     })
 
     it('should get refs with cbor links', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       // Call out to IPFS

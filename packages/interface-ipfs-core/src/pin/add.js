@@ -102,9 +102,7 @@ export function testAdd (factory, options) {
     })
 
     it('should fail to pin a hash not in datastore', async function () {
-      // @ts-expect-error this is mocha
       this.slow(3 * 1000)
-      // @ts-expect-error this is mocha
       this.timeout(5 * 1000)
       const falseHash = `${`${fixtures.directory.cid}`.slice(0, -2)}ss`
 
@@ -113,9 +111,7 @@ export function testAdd (factory, options) {
     })
 
     it('needs all children in datastore to pin recursively', async function () {
-      // @ts-expect-error this is mocha
       this.slow(3 * 1000)
-      // @ts-expect-error this is mocha
       this.timeout(5 * 1000)
       await all(ipfs.block.rm(fixtures.directory.files[0].cid))
 
