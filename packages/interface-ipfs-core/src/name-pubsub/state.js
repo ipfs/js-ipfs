@@ -26,7 +26,6 @@ export function testState (factory, options) {
     after(() => factory.clean())
 
     it('should get the current state of pubsub', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(50 * 1000)
 
       const res = await ipfs.name.pubsub.state()

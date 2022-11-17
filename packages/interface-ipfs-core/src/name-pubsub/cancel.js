@@ -32,7 +32,6 @@ export function testCancel (factory, options) {
     after(() => factory.clean())
 
     it('should return false when the name that is intended to cancel is not subscribed', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(60 * 1000)
 
       const res = await ipfs.name.pubsub.cancel(nodeId)
@@ -42,7 +41,6 @@ export function testCancel (factory, options) {
     })
 
     it('should cancel a subscription correctly returning true', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(300 * 1000)
 
       const peerId = await createEd25519PeerId()

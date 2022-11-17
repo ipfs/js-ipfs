@@ -44,7 +44,6 @@ export function testGen (factory, options) {
 
     keyTypes.forEach((kt) => {
       it(`should generate a new ${kt.opts.type || 'default'} key`, async function () {
-        // @ts-expect-error this is mocha
         this.timeout(20 * 1000)
         const name = nanoid()
         const key = await ipfs.key.gen(name, kt.opts)
@@ -61,8 +60,7 @@ export function testGen (factory, options) {
         } catch (/** @type {any} */ err) {
           if (err.code === 'ERR_NOT_IMPLEMENTED') {
             // key export is not exposed over the HTTP API
-            // @ts-expect-error this is mocha
-            this.skip('Cannot verify key type')
+            this.skip()
           }
 
           throw err

@@ -72,7 +72,6 @@ export function testExport (factory, options) {
     })
 
     it('export of shuffled devnet export identical to canonical original', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(360000)
 
       const input = loadFixture('test/fixtures/car/lotus_devnet_genesis.car', 'interface-ipfs-core')
@@ -83,7 +82,6 @@ export function testExport (factory, options) {
     })
 
     it('export of shuffled testnet export identical to canonical original', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(360000)
 
       const input = loadFixture('test/fixtures/car/lotus_testnet_export_128.car', 'interface-ipfs-core')
