@@ -99,7 +99,7 @@ export async function * normaliseInput (input) {
     const iterator = input[Symbol.iterator]()
     const first = iterator.next()
 
-    if (first.done == true) {
+    if (first.done) {
       return iterator
     }
 
