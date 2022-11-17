@@ -154,7 +154,7 @@
     "aegir": "^37.0.11",
     "blockstore-datastore-adapter": "^4.0.0",
     "delay": "^5.0.0",
-    "go-ipfs": "^0.12.0",
+    "go-ipfs": "^0.16.0",
     "interface-blockstore-tests": "^3.0.0",
     "interface-ipfs-core": "^0.157.0",
     "ipfsd-ctl": "^12.0.3",
