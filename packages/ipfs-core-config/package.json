@@ -98,7 +98,7 @@
     "@libp2p/floodsub": "^5.0.0",
     "@libp2p/logger": "^2.0.2",
     "@libp2p/mdns": "^5.0.0",
-    "@libp2p/tcp": "^5.0.0",
+    "@libp2p/tcp": "^6.0.3",
     "@libp2p/webrtc-star": "^5.0.2",
     "blockstore-datastore-adapter": "^4.0.0",
     "datastore-core": "^8.0.1",
