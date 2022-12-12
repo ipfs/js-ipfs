@@ -45,7 +45,8 @@
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
-      "import": "./src/index.js"
+      "import": "./src/index.js",
+      "require": "./src/index.js"
     }
   },
   "eslintConfig": {
