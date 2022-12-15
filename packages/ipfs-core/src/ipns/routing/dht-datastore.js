@@ -24,12 +24,22 @@ export class DHTDatastore {
    */
   async put (key, value, options) {
     try {
-      await drain(this._dht.put(key, value, options))
+      let responses = this._dht.put(key, value, options);
+      while(true) {
+        let item;
+        try {
+          item = await responses.next();
+        } catch(e) {
+          if (e.message != "Query aborted") throw e;
+        }
+        if (item && item.done) break;
+      }
     } catch (/** @type {any} */ err) {
       log.error(err)
       throw err
     }
   }
+
 
   /**
    * @param {Uint8Array} key - identifier of the value to be obtained.
