@@ -5,26 +5,24 @@ ENV IPFS_MONITORING=1
 ENV IPFS_PATH=/root/.jsipfs
 ENV BUILD_DEPS='libnspr4 libnspr4-dev libnss3'
 
-RUN apk add --no-cache git python3 build-base
-
-# Hopefully remove when https://github.com/node-webrtc/node-webrtc/pull/694 is merged
-RUN npm install -g ipfs@"$IPFS_VERSION"
-
-# Make the image a bit smaller
-RUN npm cache clear --force
-RUN apk del build-base python3 git
-
-# Configure jsipfs
-RUN jsipfs init
-
-RUN jsipfs version
-
-# Allow connections from any host
-RUN sed -i.bak "s/127.0.0.1/0.0.0.0/g" $IPFS_PATH/config
+RUN \
+    apk add --no-cache catatonit bash procps nodejs npm \
+        build-base python3 && \
+    npm install -g --build-from-source ipfs@"$IPFS_VERSION" && \
+    npm cache clear --force && \
+    apk del build-base python3 make npm && \
+    rm -rf /node-* /SHASUMS256.txt /tmp/* /root/.electron /root/.cache \
+        /sbin/apk /etc/apk /lib/apk /usr/share/apk /var/lib/apk \ 
+        /usr/share/man/* /usr/share/doc /root/.npm /root/.node-gyp /root/.config \
+        /usr/lib/node_modules/npm/man /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/docs \
+        /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
+    { rm -rf /root/.gnupg || true; } 
 
 EXPOSE 4002
 EXPOSE 4003
 EXPOSE 5002
 EXPOSE 9090
 
-CMD jsipfs daemon
+COPY entrypoint.sh /entrypoint.sh
+
+CMD ["catatonit", "/entrypoint.sh"]
