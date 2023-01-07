@@ -16,6 +16,7 @@ import { withTimeoutOption } from 'ipfs-core-utils/with-timeout-option'
  * @returns {BandwidthInfo}
  */
 function getBandwidthStats (libp2p, opts) {
+/*
   let stats
 
   if (!libp2p.metrics) {
@@ -27,16 +28,16 @@ function getBandwidthStats (libp2p, opts) {
   } else {
     stats = libp2p.metrics.getGlobal()
   }
-
-  if (!stats) {
-    return {
-      totalIn: BigInt(0),
-      totalOut: BigInt(0),
-      rateIn: 0.0,
-      rateOut: 0.0
-    }
+*/
+  //  if (!stats) {
+  return {
+    totalIn: BigInt(0),
+    totalOut: BigInt(0),
+    rateIn: 0.0,
+    rateOut: 0.0
   }
-
+  //  }
+/*
   const movingAverages = stats.getMovingAverages()
   const snapshot = stats.getSnapshot()
 
@@ -46,6 +47,7 @@ function getBandwidthStats (libp2p, opts) {
     rateIn: movingAverages.dataReceived[60000].movingAverage / 60,
     rateOut: movingAverages.dataSent[60000].movingAverage / 60
   }
+*/
 }
 
 /**

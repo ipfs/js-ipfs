@@ -65,7 +65,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.1.8",
     "@libp2p/logger": "^2.0.0",
-    "@libp2p/peer-id": "^1.1.10",
+    "@libp2p/peer-id": "^2.0.0",
     "@multiformats/multiaddr": "^11.0.0",
     "change-case": "^4.1.1",
     "coercer": "^1.1.2",
@@ -83,10 +83,10 @@
   },
   "devDependencies": {
     "@types/ws": "^8.5.3",
-    "aegir": "^37.0.11",
+    "aegir": "^37.9.0",
     "ipfs-core": "^0.17.0",
     "it-all": "^2.0.0",
     "it-drain": "^2.0.0",
-    "sinon": "^14.0.0"
+    "sinon": "^15.0.1"
   }
 }

@@ -71,6 +71,9 @@ export function createLibp2p ({
     return options.libp2p({ libp2pOptions, options, config, datastore, peerId })
   }
 
+  // do not start by default
+  libp2pOptions.start = false
+
   return createNode(libp2pOptions)
 }
 

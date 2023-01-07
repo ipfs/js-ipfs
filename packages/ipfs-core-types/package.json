@@ -47,18 +47,18 @@
     "build": "aegir build"
   },
   "dependencies": {
-    "@ipld/dag-pb": "^3.0.0",
-    "@libp2p/interface-keychain": "^1.0.3",
-    "@libp2p/interface-peer-id": "^1.0.4",
+    "@ipld/dag-pb": "^4.0.0",
+    "@libp2p/interface-keychain": "^2.0.0",
+    "@libp2p/interface-peer-id": "^2.0.0",
     "@libp2p/interface-peer-info": "^1.0.2",
     "@libp2p/interface-pubsub": "^3.0.0",
     "@multiformats/multiaddr": "^11.0.0",
     "@types/node": "^18.0.0",
     "interface-datastore": "^7.0.0",
-    "ipfs-unixfs": "^8.0.0",
-    "multiformats": "^10.0.0"
+    "ipfs-unixfs": "^9.0.0",
+    "multiformats": "^11.0.0"
   },
   "devDependencies": {
-    "aegir": "^37.0.11"
+    "aegir": "^37.9.0"
   }
 }

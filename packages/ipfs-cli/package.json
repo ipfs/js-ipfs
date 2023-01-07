@@ -67,11 +67,11 @@
     "build": "aegir build --no-bundle"
   },
   "dependencies": {
-    "@ipld/dag-cbor": "^8.0.0",
-    "@ipld/dag-json": "^9.0.0",
-    "@ipld/dag-pb": "^3.0.0",
-    "@libp2p/logger": "^2.0.0",
-    "@libp2p/peer-id": "^1.1.10",
+    "@ipld/dag-cbor": "^9.0.0",
+    "@ipld/dag-json": "^10.0.0",
+    "@ipld/dag-pb": "^4.0.0",
+    "@libp2p/logger": "^2.0.2",
+    "@libp2p/peer-id": "^2.0.0",
     "@multiformats/mafmt": "^11.0.2",
     "@multiformats/multiaddr": "^11.0.0",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
@@ -90,7 +90,7 @@
     "it-split": "^2.0.0",
     "it-tar": "^6.0.0",
     "jsondiffpatch": "^0.4.1",
-    "multiformats": "^10.0.0",
+    "multiformats": "^11.0.0",
     "parse-duration": "^1.0.0",
     "pretty-bytes": "^6.0.0",
     "progress": "^2.0.3",
@@ -99,14 +99,14 @@
     "yargs": "^17.4.0"
   },
   "devDependencies": {
-    "@libp2p/crypto": "^1.0.0",
+    "@libp2p/crypto": "^1.0.7",
     "@types/get-folder-size": "^3.0.1",
     "@types/ncp": "^2.0.5",
     "@types/progress": "^2.0.3",
     "@types/rimraf": "^3.0.1",
     "@types/yargs": "^17.0.10",
-    "aegir": "^37.0.11",
-    "ipfs-repo": "^16.0.0",
+    "aegir": "^37.9.0",
+    "ipfs-repo": "^17.0.0",
     "it-all": "^2.0.0",
     "it-first": "^2.0.0",
     "it-map": "^2.0.0",
@@ -115,7 +115,7 @@
     "ncp": "^2.0.0",
     "pako": "^2.0.4",
     "rimraf": "^3.0.2",
-    "sinon": "^14.0.0",
+    "sinon": "^15.0.1",
     "string-argv": "^0.3.1",
     "temp-write": "^5.0.0"
   }

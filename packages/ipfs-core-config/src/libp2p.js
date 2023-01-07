@@ -1,6 +1,7 @@
 import { tcp } from '@libp2p/tcp'
 import { mdns } from '@libp2p/mdns'
 import os from 'os'
+import { prometheusMetrics } from '@libp2p/prometheus-metrics'
 
 export function libp2pConfig () {
   /** @type {import('libp2p').Libp2pOptions} */
@@ -20,10 +21,11 @@ export function libp2pConfig () {
     nat: {
       enabled: true,
       description: `ipfs@${os.hostname()}`
-    },
-    metrics: {
-      enabled: true
     }
+  }
+
+  if (process.env.IPFS_MONITORING != null) {
+    options.metrics = prometheusMetrics()
   }
 
   return options

@@ -148,14 +148,14 @@
     "browser-readablestream-to-it": "^2.0.0",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.13.0",
-    "ipfs-unixfs": "^8.0.0",
+    "ipfs-unixfs": "^9.0.0",
     "ipfs-utils": "^9.0.6",
     "it-all": "^2.0.0",
     "it-map": "^2.0.0",
     "it-peekable": "^2.0.0",
     "it-to-stream": "^1.0.0",
     "merge-options": "^3.0.4",
-    "multiformats": "^10.0.0",
+    "multiformats": "^11.0.0",
     "nanoid": "^4.0.0",
     "parse-duration": "^1.0.0",
     "timeout-abort-controller": "^3.0.0",
@@ -163,7 +163,7 @@
   },
   "devDependencies": {
     "@web-std/file": "^3.0.2",
-    "aegir": "^37.0.11"
+    "aegir": "^37.9.0"
   },
   "browser": {
     "fs": false

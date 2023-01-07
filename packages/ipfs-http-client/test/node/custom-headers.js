@@ -19,9 +19,9 @@ function startServer (fn) {
       res.writeHead(200)
       res.write(JSON.stringify({}))
       res.end()
-      server.close()
-
-      headersResolve(req.headers)
+      server.close(() => {
+        headersResolve(req.headers)
+      })
     })
   })
 
