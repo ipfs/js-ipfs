@@ -1,4 +1,6 @@
 import Joi from '../../utils/joi.js'
+import { peerIdFromString } from '@libp2p/peer-id'
+import { multiaddr } from '@multiformats/multiaddr'
 
 export const peersResource = {
   options: {
@@ -196,7 +198,15 @@ export const connectResource = {
       }
     })
 
-    await ipfs.swarm.connect(addr, {
+    let peerIdOrMultiaddr
+
+    if (addr[0] === '/') {
+      peerIdOrMultiaddr = multiaddr(addr)
+    } else {
+      peerIdOrMultiaddr = peerIdFromString(addr)
+    }
+
+    await ipfs.swarm.connect(peerIdOrMultiaddr, {
       signal: controller.signal,
       timeout
     })
