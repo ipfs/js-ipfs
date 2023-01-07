@@ -145,6 +145,7 @@ jobs:
 
   test-interop:
     name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -160,8 +161,6 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npm install
-      - run: npm run build
       - run: npm run test:interop
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
