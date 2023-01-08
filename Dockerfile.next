@@ -3,14 +3,13 @@ FROM alpine:3.17
 ENV IPFS_VERSION=next
 ENV IPFS_MONITORING=1
 ENV IPFS_PATH=/root/.jsipfs
-ENV BUILD_DEPS='libnspr4 libnspr4-dev libnss3'
 
 RUN \
-    apk add --no-cache catatonit bash procps nodejs npm \
-        build-base python3 && \
+    apk add --no-cache catatonit bash procps nodejs && \
+    apk add --no-cache --virtual .build-deps npm git build-base python3 && \
     npm install -g --build-from-source ipfs@"$IPFS_VERSION" && \
     npm cache clear --force && \
-    apk del build-base python3 make npm && \
+    apk del .build-deps && \
     rm -rf /node-* /SHASUMS256.txt /tmp/* /root/.electron /root/.cache \
         /sbin/apk /etc/apk /lib/apk /usr/share/apk /var/lib/apk \ 
         /usr/share/man/* /usr/share/doc /root/.npm /root/.node-gyp /root/.config \
