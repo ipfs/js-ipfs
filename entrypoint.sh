@@ -16,5 +16,5 @@ if ! [[ -f "$IPFS_PATH" ]]; then
     jsipfs init    
 fi
 
-jsipfs daemon &
-wait -n ${!}
+jsipfs daemon & \
+wait -n

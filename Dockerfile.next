@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.17
 
 ENV IPFS_VERSION=next
 ENV IPFS_MONITORING=1

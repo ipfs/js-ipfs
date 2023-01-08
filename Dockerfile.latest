@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM alpine:3.17
 
 ENV IPFS_VERSION=latest
 ENV IPFS_MONITORING=1
