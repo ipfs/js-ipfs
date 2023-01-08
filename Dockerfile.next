@@ -25,4 +25,4 @@ EXPOSE 9090
 
 COPY entrypoint.sh /entrypoint.sh
 
-CMD ["catatonit", "/entrypoint.sh"]
+CMD ["catatonit", "-g", "/entrypoint.sh"]
