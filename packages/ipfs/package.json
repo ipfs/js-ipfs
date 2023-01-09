@@ -98,7 +98,7 @@
     "ipfs-utils": "^9.0.6",
     "ipfsd-ctl": "^12.0.3",
     "iso-url": "^1.0.0",
-    "kubo-rpc-client": "^1.0.1",
+    "kubo-rpc-client": "^2.0.2",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.4.2",
     "url": "^0.11.0"
