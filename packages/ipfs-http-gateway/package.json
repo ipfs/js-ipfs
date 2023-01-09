@@ -69,7 +69,7 @@
   "dependencies": {
     "@hapi/ammo": "^5.0.1",
     "@hapi/boom": "^9.1.0",
-    "@hapi/hapi": "^20.0.0",
+    "@hapi/hapi": "^21.1.0",
     "@libp2p/logger": "^2.0.0",
     "@multiformats/uri-to-multiaddr": "^7.0.0",
     "hapi-pino": "^8.5.0",
