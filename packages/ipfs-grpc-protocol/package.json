@@ -60,7 +60,7 @@
     "lint": "aegir lint"
   },
   "devDependencies": {
-    "aegir": "^37.0.11",
+    "aegir": "^37.9.0",
     "mkdirp": "^1.0.4",
     "protobufjs": "^7.0.0",
     "protobufjs-cli": "^1.0.0"

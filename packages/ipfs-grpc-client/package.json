@@ -70,17 +70,17 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
     "@libp2p/logger": "^2.0.0",
-    "@libp2p/peer-id": "^1.1.10",
+    "@libp2p/peer-id": "^2.0.0",
     "@multiformats/multiaddr": "^11.0.0",
     "change-case": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.13.0",
     "ipfs-core-utils": "^0.17.0",
     "ipfs-grpc-protocol": "^0.7.0",
-    "ipfs-unixfs": "^8.0.0",
+    "ipfs-unixfs": "^9.0.0",
     "it-first": "^2.0.0",
     "it-pushable": "^3.0.0",
-    "multiformats": "^10.0.0",
+    "multiformats": "^11.0.0",
     "p-defer": "^4.0.0",
     "protobufjs": "^7.0.0",
     "uint8arrays": "^4.0.2",
@@ -88,10 +88,10 @@
     "ws": "^8.5.0"
   },
   "devDependencies": {
-    "aegir": "^37.0.11",
+    "aegir": "^37.9.0",
     "it-all": "^2.0.0",
     "protobufjs-cli": "^1.0.0",
-    "sinon": "^14.0.0"
+    "sinon": "^15.0.1"
   },
   "browser": {
     "./src/grpc/transport.js": "./src/grpc/transport.browser.js",

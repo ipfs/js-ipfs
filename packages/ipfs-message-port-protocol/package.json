@@ -88,10 +88,10 @@
   },
   "dependencies": {
     "ipfs-core-types": "^0.13.0",
-    "multiformats": "^10.0.0"
+    "multiformats": "^11.0.0"
   },
   "devDependencies": {
-    "aegir": "^37.0.11",
+    "aegir": "^37.9.0",
     "uint8arrays": "^4.0.2"
   }
 }

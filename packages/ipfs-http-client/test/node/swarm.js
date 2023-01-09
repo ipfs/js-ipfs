@@ -4,7 +4,8 @@ import { expect } from 'aegir/chai'
 import nock from 'nock'
 import { create as httpClient } from '../../src/index.js'
 
-describe('.swarm.peers', function () {
+// skipped as nock cannot mock undici/fetch requests yet - https://github.com/nock/nock/issues/2183
+describe.skip('.swarm.peers', function () {
   this.timeout(50 * 1000) // slow CI
 
   const ipfs = httpClient('/ip4/127.0.0.1/tcp/5001')

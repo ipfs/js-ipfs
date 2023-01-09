@@ -26,7 +26,8 @@ export default async (config = {}) => {
     repo,
     config: {
       Addresses: {
-        Swarm: []
+        Swarm: [],
+        Delegates: []
       },
       Bootstrap: []
     },
