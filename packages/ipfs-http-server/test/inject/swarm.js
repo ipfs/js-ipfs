@@ -278,7 +278,7 @@ describe('/swarm', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Strings').with.lengthOf(1).that.includes(`connect ${multiaddr} success`)
-      expect(ipfs.swarm.connect.calledWith(multiaddr, defaultOptions)).to.be.true()
+      expect(ipfs.swarm.connect.calledWith(sinon.match(ma => ma.toString() === multiaddr), defaultOptions)).to.be.true()
     })
 
     it('should accept timeout', async () => {
@@ -289,7 +289,7 @@ describe('/swarm', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Strings').with.lengthOf(1).that.includes(`connect ${multiaddr} success`)
-      expect(ipfs.swarm.connect.calledWith(multiaddr, {
+      expect(ipfs.swarm.connect.calledWith(sinon.match(ma => ma.toString() === multiaddr), {
         ...defaultOptions,
         timeout: 1000
       })).to.be.true()
@@ -314,7 +314,7 @@ describe('/swarm', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Strings').with.lengthOf(1).that.includes(`disconnect ${multiaddr} success`)
-      expect(ipfs.swarm.disconnect.calledWith(multiaddr, defaultOptions)).to.be.true()
+      expect(ipfs.swarm.disconnect.calledWith(sinon.match(ma => ma.toString() === multiaddr), defaultOptions)).to.be.true()
     })
 
     it('should accept timeout', async () => {
@@ -325,7 +325,7 @@ describe('/swarm', () => {
 
       expect(res).to.have.property('statusCode', 200)
       expect(res).to.have.nested.property('result.Strings').with.lengthOf(1).that.includes(`disconnect ${multiaddr} success`)
-      expect(ipfs.swarm.disconnect.calledWith(multiaddr, {
+      expect(ipfs.swarm.disconnect.calledWith(sinon.match(ma => ma.toString() === multiaddr), {
         ...defaultOptions,
         timeout: 1000
       })).to.be.true()
