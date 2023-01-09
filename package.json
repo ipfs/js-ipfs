@@ -47,9 +47,9 @@
     "docker:release:push-latest": "docker push ipfs/js-ipfs:latest",
     "docker:release:push-version": "docker push ipfs/js-ipfs:v`npm show ipfs@latest version -q`",
     "release:rc": "run-s npm:rc:* docker:rc",
-    "npm:rc:version": "aegir version prerelease --preid `git rev-parse --short HEAD` --force-publish --no-push --yes",
+    "npm:rc:version": "lerna version prerelease --preid `git rev-parse --short HEAD` --force-publish --no-push --yes",
     "npm:rc:build": "npm run build",
-    "npm:rc:publish": "aegir publish from-package --no-push --no-private --dist-tag next --yes",
+    "npm:rc:publish": "lerna publish from-package --no-push --no-private --dist-tag next --yes",
     "docker:rc": "run-s docker:rc:*",
     "docker:rc:build": "docker build . --no-cache --tag js-ipfs:next --file ./Dockerfile.next",
     "docker:rc:tag-next": "docker tag js-ipfs:next docker.io/ipfs/js-ipfs:next",
@@ -59,6 +59,7 @@
   },
   "devDependencies": {
     "aegir": "^37.9.0",
+    "lerna": "^6.4.0",
     "node-fetch": "npm:@achingbrain/node-fetch@^2.6.4",
     "npm-run-all": "^4.1.5"
   },
