@@ -41,7 +41,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        node: [16]
+        node: [lts/*]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -188,8 +188,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: lts/*
-      - run: npm install
-      - run: npm run build
+      - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npm run ${{ matrix.suite }} -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
