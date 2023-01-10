@@ -262,8 +262,6 @@ jobs:
       - if: ${{ !steps.release.outputs.releases_created }}
         name: Run release rc
         run: |
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git config --global user.name "github-actions[bot]"
             git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
             npm run --if-present release:rc
         env:

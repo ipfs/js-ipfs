@@ -103,7 +103,7 @@
     "@types/hapi-pino": "^8.0.1",
     "@types/hapi__hapi": "^20.0.5",
     "@types/node": "^18.0.0",
-    "aegir": "^37.9.0",
+    "aegir": "^37.11.0",
     "err-code": "^3.0.1",
     "form-data": "^4.0.0",
     "ipfs-http-client": "^59.0.0",

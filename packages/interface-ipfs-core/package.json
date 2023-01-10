@@ -77,7 +77,7 @@
     "@types/node": "^18.0.0",
     "@types/pako": "^2.0.0",
     "@types/readable-stream": "^2.3.13",
-    "aegir": "^37.9.0",
+    "aegir": "^37.11.0",
     "blockstore-core": "^3.0.0",
     "copyfiles": "^2.4.1",
     "dag-jose": "^3.0.1",
