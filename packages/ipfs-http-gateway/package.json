@@ -83,7 +83,7 @@
     "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
-    "@types/hapi-pino": "^8.0.1",
+    "@types/hapi-pino": "^9.1.3",
     "@types/hapi__hapi": "^20.0.5",
     "aegir": "^37.11.0",
     "file-type": "^18.0.0",
