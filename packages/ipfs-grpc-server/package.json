@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@types/ws": "^8.5.3",
-    "aegir": "^37.9.0",
+    "aegir": "^37.11.0",
     "ipfs-core": "^0.17.0",
     "it-all": "^2.0.0",
     "it-drain": "^2.0.0",

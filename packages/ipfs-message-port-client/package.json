@@ -73,7 +73,7 @@
     "multiformats": "^11.0.0"
   },
   "devDependencies": {
-    "aegir": "^37.9.0",
+    "aegir": "^37.11.0",
     "interface-ipfs-core": "^0.157.0",
     "ipfs-core": "^0.17.0",
     "ipfs-message-port-server": "^0.14.0"
