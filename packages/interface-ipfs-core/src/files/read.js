@@ -112,6 +112,14 @@ export function testRead (factory, options) {
       expect(testFileData).to.eql(fixtures.smallFile.data)
     })
 
+    it('should be able to read rawLeaves files', async () => {
+      const { cid } = await ipfs.add(fixtures.smallFile.data, {
+        rawLeaves: true
+      })
+      const testFileData = uint8ArrayConcat(await all(ipfs.files.read(`/ipfs/${cid}`)))
+      expect(testFileData).to.eql(fixtures.smallFile.data)
+    })
+
     describe('with sharding', () => {
       /** @type {import('ipfs-core-types').IPFS} */
       let ipfs
