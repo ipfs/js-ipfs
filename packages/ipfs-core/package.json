@@ -138,7 +138,7 @@
     "it-tar": "^6.0.0",
     "it-to-buffer": "^3.0.0",
     "just-safe-set": "^4.0.2",
-    "libp2p": "next",
+    "libp2p": "^0.42.0",
     "merge-options": "^3.0.4",
     "mortice": "^3.0.0",
     "multiformats": "^11.0.0",
