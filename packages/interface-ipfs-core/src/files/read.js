@@ -116,7 +116,8 @@ export function testRead (factory, options) {
       const { cid } = await ipfs.add(fixtures.smallFile.data, {
         rawLeaves: true
       })
-      const testFileData = uint8ArrayConcat(await all(ipfs.files.read(`/ipfs/${cid}`)))
+      await ipfs.files.cp(`/ipfs/${cid}`, '/raw-leaves.txt')
+      const testFileData = uint8ArrayConcat(await all(ipfs.files.read('/raw-leaves.txt')))
       expect(testFileData).to.eql(fixtures.smallFile.data)
     })
 
