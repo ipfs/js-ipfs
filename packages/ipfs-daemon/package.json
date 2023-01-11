@@ -71,7 +71,7 @@
     "ipfs-grpc-server": "^0.11.0",
     "ipfs-http-gateway": "^0.12.0",
     "ipfs-http-server": "^0.14.0",
-    "ipfs-utils": "^9.0.10",
+    "ipfs-utils": "^9.0.11",
     "libp2p": "next"
   },
   "devDependencies": {

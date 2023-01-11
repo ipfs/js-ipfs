@@ -95,7 +95,7 @@
     "ipfs-core-types": "^0.13.0",
     "ipfs-http-client": "^59.0.0",
     "ipfs-interop": "ipfs/interop#deps/update-multiformats",
-    "ipfs-utils": "^9.0.10",
+    "ipfs-utils": "^9.0.11",
     "ipfsd-ctl": "^12.0.3",
     "iso-url": "^1.0.0",
     "kubo-rpc-client": "^2.0.2",
