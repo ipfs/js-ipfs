@@ -149,7 +149,7 @@
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.13.0",
     "ipfs-unixfs": "^9.0.0",
-    "ipfs-utils": "^9.0.6",
+    "ipfs-utils": "^9.0.10",
     "it-all": "^2.0.0",
     "it-map": "^2.0.0",
     "it-peekable": "^2.0.0",
