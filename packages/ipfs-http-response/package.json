@@ -79,7 +79,7 @@
   "devDependencies": {
     "@types/ejs": "^3.1.0",
     "@types/mime-types": "^2.1.1",
-    "aegir": "^37.9.0",
+    "aegir": "^37.11.0",
     "get-stream": "^6.0.0",
     "ipfs-core": "^0.17.0",
     "ipfsd-ctl": "^12.0.3",

@@ -41,7 +41,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        node: [16]
+        node: [lts/*]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -168,6 +168,7 @@ jobs:
 
   test-interface:
     name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -187,8 +188,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: lts/*
-      - run: npm install
-      - run: npm run build
+      - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npm run ${{ matrix.suite }} -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
@@ -262,8 +262,6 @@ jobs:
       - if: ${{ !steps.release.outputs.releases_created }}
         name: Run release rc
         run: |
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git config --global user.name "github-actions[bot]"
             git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
             npm run --if-present release:rc
         env:

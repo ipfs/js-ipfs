@@ -109,7 +109,7 @@
     "hashlru": "^2.3.0",
     "interface-datastore": "^7.0.0",
     "ipfs-repo": "^17.0.0",
-    "ipfs-utils": "^9.0.6",
+    "ipfs-utils": "^9.0.13",
     "is-ipfs": "^8.0.0",
     "it-all": "^2.0.0",
     "it-drain": "^2.0.0",
@@ -118,7 +118,7 @@
     "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
-    "aegir": "^37.9.0",
+    "aegir": "^37.11.0",
     "ipfs-core-utils": "^0.17.0"
   }
 }
