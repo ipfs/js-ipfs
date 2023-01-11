@@ -80,7 +80,7 @@
     "aegir": "^37.11.0",
     "blockstore-core": "^3.0.0",
     "copyfiles": "^2.4.1",
-    "dag-jose": "^3.0.1",
+    "dag-jose": "^4.0.0",
     "delay": "^5.0.0",
     "did-jwt": "^6.2.0",
     "err-code": "^3.0.1",

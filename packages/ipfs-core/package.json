@@ -103,7 +103,7 @@
     "array-shuffle": "^3.0.0",
     "blockstore-core": "^3.0.0",
     "browser-readablestream-to-it": "^2.0.0",
-    "dag-jose": "^3.0.1",
+    "dag-jose": "^4.0.0",
     "datastore-core": "^8.0.1",
     "datastore-pubsub": "^7.0.0",
     "dlv": "^1.1.3",
