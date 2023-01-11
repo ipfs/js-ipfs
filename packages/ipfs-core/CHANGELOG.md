@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.18.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-v0.17.0...ipfs-core-v0.18.0) (2023-01-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* update multiformats to v11.x.x and related depenendcies (#4277)
+
+### Bug Fixes
+
+* allow reading rawLeaves in MFS ([#4282](https://www.github.com/ipfs/js-ipfs/issues/4282)) ([0cfcaf6](https://www.github.com/ipfs/js-ipfs/commit/0cfcaf65998bdc2af0cc29ac48229bb3bc35c5b8))
+* mfs blob import for files larger than 262144b ([#4251](https://www.github.com/ipfs/js-ipfs/issues/4251)) ([6be5906](https://www.github.com/ipfs/js-ipfs/commit/6be59068cc99c517526bfa123ad475ae05fcbaef)), closes [#3601](https://www.github.com/ipfs/js-ipfs/issues/3601) [#3576](https://www.github.com/ipfs/js-ipfs/issues/3576)
+* update multiformats to v11.x.x and related depenendcies ([#4277](https://www.github.com/ipfs/js-ipfs/issues/4277)) ([521c84a](https://www.github.com/ipfs/js-ipfs/commit/521c84a958b04d61702577a5adce28519c1b2a3b))
+* use aegir to publish RCs ([#4284](https://www.github.com/ipfs/js-ipfs/issues/4284)) ([6d90cbf](https://www.github.com/ipfs/js-ipfs/commit/6d90cbf321a7dbf4b1084ba20f0c514dc08d8d0a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-config bumped from ^0.6.0 to ^0.7.0
+    * ipfs-core-types bumped from ^0.13.0 to ^0.14.0
+    * ipfs-core-utils bumped from ^0.17.0 to ^0.18.0
+    * ipfs-http-client bumped from ^59.0.0 to ^60.0.0
+  * devDependencies
+    * interface-ipfs-core bumped from ^0.157.0 to ^0.158.0
+
 ## [0.17.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-v0.16.1...ipfs-core-v0.17.0) (2022-10-24)
 
 

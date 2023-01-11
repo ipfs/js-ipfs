@@ -1,6 +1,6 @@
 {
   "name": "ipfs-message-port-protocol",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "IPFS client/server protocol over message port",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-message-port-protocol#readme",
@@ -87,7 +87,7 @@
     "dep-check": "aegir dep-check -i ipfs-core-types"
   },
   "dependencies": {
-    "ipfs-core-types": "^0.13.0",
+    "ipfs-core-types": "^0.14.0",
     "multiformats": "^11.0.0"
   },
   "devDependencies": {

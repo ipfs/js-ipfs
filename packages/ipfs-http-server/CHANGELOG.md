@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-server-v0.14.0...ipfs-http-server-v0.15.0) (2023-01-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* update multiformats to v11.x.x and related depenendcies (#4277)
+
+### Bug Fixes
+
+* update multiformats to v11.x.x and related depenendcies ([#4277](https://www.github.com/ipfs/js-ipfs/issues/4277)) ([521c84a](https://www.github.com/ipfs/js-ipfs/commit/521c84a958b04d61702577a5adce28519c1b2a3b))
+* use aegir to publish RCs ([#4284](https://www.github.com/ipfs/js-ipfs/issues/4284)) ([6d90cbf](https://www.github.com/ipfs/js-ipfs/commit/6d90cbf321a7dbf4b1084ba20f0c514dc08d8d0a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.13.0 to ^0.14.0
+    * ipfs-core-utils bumped from ^0.17.0 to ^0.18.0
+    * ipfs-http-gateway bumped from ^0.12.0 to ^0.13.0
+  * devDependencies
+    * ipfs-http-client bumped from ^59.0.0 to ^60.0.0
+
 ## [0.14.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-server-v0.13.2...ipfs-http-server-v0.14.0) (2022-10-24)
 
 
