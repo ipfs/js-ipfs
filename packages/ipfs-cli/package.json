@@ -83,7 +83,7 @@
     "ipfs-core-utils": "^0.17.0",
     "ipfs-daemon": "^0.15.0",
     "ipfs-http-client": "^59.0.0",
-    "ipfs-utils": "^9.0.6",
+    "ipfs-utils": "^9.0.13",
     "it-concat": "^3.0.1",
     "it-merge": "^2.0.0",
     "it-pipe": "^2.0.3",

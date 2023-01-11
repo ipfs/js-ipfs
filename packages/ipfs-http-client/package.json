@@ -78,7 +78,7 @@
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.13.0",
     "ipfs-core-utils": "^0.17.0",
-    "ipfs-utils": "^9.0.6",
+    "ipfs-utils": "^9.0.13",
     "it-first": "^2.0.0",
     "it-last": "^2.0.0",
     "merge-options": "^3.0.4",
