@@ -109,7 +109,7 @@
     "hashlru": "^2.3.0",
     "interface-datastore": "^7.0.0",
     "ipfs-repo": "^17.0.0",
-    "ipfs-utils": "^9.0.11",
+    "ipfs-utils": "^9.0.12",
     "is-ipfs": "^8.0.0",
     "it-all": "^2.0.0",
     "it-drain": "^2.0.0",
