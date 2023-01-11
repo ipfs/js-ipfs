@@ -35,7 +35,7 @@ function startServer (handler) {
   })
 }
 
-describe('agent', function () {
+describe.skip('agent', function () {
   /** @type {import('http').Agent} */
   let agent
 

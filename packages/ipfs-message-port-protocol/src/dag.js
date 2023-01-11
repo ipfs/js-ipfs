@@ -66,7 +66,8 @@ const collectNode = (value, cids, transfer) => {
     const cid = CID.asCID(value)
 
     if (cid) {
-      cids.push(cid)
+      // @ts-expect-error - this has to be the same instance
+      cids.push(value)
       encodeCID(cid, transfer)
     } else if (value instanceof ArrayBuffer) {
       if (transfer) {

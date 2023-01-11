@@ -66,6 +66,6 @@
     "merge-options": "^3.0.4"
   },
   "devDependencies": {
-    "aegir": "^37.0.11"
+    "aegir": "^37.11.0"
   }
 }

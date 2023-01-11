@@ -68,12 +68,12 @@
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.13.0",
     "ipfs-message-port-protocol": "^0.14.0",
-    "ipfs-unixfs": "^8.0.0",
+    "ipfs-unixfs": "^9.0.0",
     "it-peekable": "^2.0.0",
-    "multiformats": "^10.0.0"
+    "multiformats": "^11.0.0"
   },
   "devDependencies": {
-    "aegir": "^37.0.11",
+    "aegir": "^37.11.0",
     "interface-ipfs-core": "^0.157.0",
     "ipfs-core": "^0.17.0",
     "ipfs-message-port-server": "^0.14.0"

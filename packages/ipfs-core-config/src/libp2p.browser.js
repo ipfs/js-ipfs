@@ -19,9 +19,6 @@ export function libp2pConfig () {
     },
     nat: {
       enabled: false
-    },
-    metrics: {
-      enabled: true
     }
   }
 

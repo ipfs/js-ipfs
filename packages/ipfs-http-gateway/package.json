@@ -75,18 +75,18 @@
     "hapi-pino": "^8.5.0",
     "ipfs-core-types": "^0.13.0",
     "ipfs-http-response": "^5.0.0",
-    "is-ipfs": "^7.0.0",
+    "is-ipfs": "^8.0.0",
     "it-last": "^2.0.0",
     "it-to-stream": "^1.0.0",
     "joi": "^17.2.1",
-    "multiformats": "^10.0.0",
+    "multiformats": "^11.0.0",
     "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
     "@types/hapi__hapi": "^20.0.5",
-    "aegir": "^37.0.11",
+    "aegir": "^37.11.0",
     "file-type": "^18.0.0",
-    "sinon": "^14.0.0"
+    "sinon": "^15.0.1"
   }
 }

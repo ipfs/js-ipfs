@@ -44,7 +44,7 @@ export const decodeCID = encodedCID => {
 
   if (!cid['/']) {
     Object.defineProperty(cid, '/', {
-      get: () => cid
+      get: () => cid.bytes
     })
   }
 

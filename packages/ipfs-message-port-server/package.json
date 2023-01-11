@@ -97,8 +97,8 @@
     "it-all": "^2.0.0"
   },
   "devDependencies": {
-    "aegir": "^37.0.11",
-    "multiformats": "^10.0.0"
+    "aegir": "^37.11.0",
+    "multiformats": "^11.0.0"
   },
   "browser": {
     "worker_threads": false

@@ -5,7 +5,6 @@ import { HttpApi } from 'ipfs-http-server'
 import { HttpGateway } from 'ipfs-http-gateway'
 import { createServer as gRPCServer } from 'ipfs-grpc-server'
 import { isElectron } from 'ipfs-utils/src/env.js'
-import prometheusClient from 'prom-client'
 import { createLibp2p } from 'libp2p'
 
 const log = logger('ipfs:daemon')
@@ -16,11 +15,6 @@ export class Daemon {
    */
   constructor (options = {}) {
     this._options = options
-
-    if (process.env.IPFS_MONITORING) {
-      // Setup debug metrics collection
-      prometheusClient.collectDefaultMetrics()
-    }
 
     /** @type {import('ipfs-core-types').IPFS} */
     // @ts-expect-error we set this in .start()

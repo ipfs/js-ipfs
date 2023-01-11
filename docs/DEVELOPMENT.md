@@ -31,7 +31,7 @@ $ npm install -g npm@latest
 > npm install
 ```
 
-This will install [lerna](https://www.npmjs.com/package/lerna) and bootstrap the various packages, deduping and hoisting dependencies into the root folder.
+This will install the dependencies of the various packages, deduping and hoisting dependencies into the root folder.
 
 If later you add new dependencies to submodules or just wish to remove all the `node_modules`/`dist` folders and start again, run `npm run reset && npm install` from the root.
 

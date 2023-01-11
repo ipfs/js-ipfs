@@ -41,7 +41,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        node: [16]
+        node: [lts/*]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -50,7 +50,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npx lerna run test:node --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npm run test:node
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: node
@@ -67,7 +67,7 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npx lerna run test:chrome --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npm run test:chrome
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: chrome
@@ -84,7 +84,7 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npx lerna run test:chrome-webworker --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npm run test:chrome-webworker
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: chrome-webworker
@@ -101,7 +101,7 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npx lerna run test:firefox --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npm run test:firefox
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: firefox
@@ -119,7 +119,7 @@ jobs:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npx playwright install --with-deps
-      - run: npx lerna run test:firefox-webworker --since ${{ github.event.pull_request.base.sha }} --concurrency 1
+      - run: npm run test:firefox-webworker
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: firefox-webworker
@@ -138,13 +138,14 @@ jobs:
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - uses: GabrielBB/xvfb-action@v1
         with:
-          run: npx lerna run test:electron-main --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+          run: npm run test:electron-main
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: electron-main
 
   test-interop:
     name: Interop tests ${{ matrix.project }} ${{ matrix.type }}
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -160,15 +161,14 @@ jobs:
         with:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
-      - run: npm install
-      - run: npm run build
-      - run: npx lerna run test:interop --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- -t ${{ matrix.type }} --bail
+      - run: npm run test:interop -- -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: interop-${{ matrix.type }}
 
   test-interface:
     name: Interface tests ${{ matrix.suite }} ${{ matrix.type }}
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -188,9 +188,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: lts/*
-      - run: npm install
-      - run: npm run build
-      - run: npx lerna run ${{ matrix.suite }} --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -t ${{ matrix.type }} --bail
+      - uses: ipfs/aegir/actions/cache-node-modules@master
+      - run: npm run ${{ matrix.suite }} -- -- -t ${{ matrix.type }}
       - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           flags: interface-${{ matrix.type }}
@@ -208,7 +207,7 @@ jobs:
           node-version: lts/*
       - uses: ipfs/aegir/actions/cache-node-modules@master
       - run: npx playwright install --with-deps
-      - run: npx lerna run test:interface:message-port-client --since ${{ github.event.pull_request.base.sha }} --concurrency 1 -- -- --bail
+      - run: npm run test:interface:message-port-client
 
   release:
     runs-on: ubuntu-latest
@@ -263,8 +262,6 @@ jobs:
       - if: ${{ !steps.release.outputs.releases_created }}
         name: Run release rc
         run: |
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git config --global user.name "github-actions[bot]"
             git update-index --assume-unchanged packages/ipfs-core/src/version.js packages/ipfs-http-server/src/version.js packages/ipfs/src/package.js
             npm run --if-present release:rc
         env:

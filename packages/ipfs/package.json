@@ -83,11 +83,11 @@
     "update-notifier": "^6.0.0"
   },
   "devDependencies": {
-    "@libp2p/webrtc-star-signalling-server": "^2.0.1",
+    "@libp2p/webrtc-star-signalling-server": "^3.0.0",
     "@libp2p/websockets": "^5.0.0",
     "@types/semver": "^7.3.4",
     "@types/update-notifier": "^6.0.1",
-    "aegir": "^37.0.11",
+    "aegir": "^37.11.0",
     "cross-env": "^7.0.0",
     "go-ipfs": "^0.12.0",
     "interface-ipfs-core": "^0.157.0",
@@ -95,10 +95,10 @@
     "ipfs-core-types": "^0.13.0",
     "ipfs-http-client": "^59.0.0",
     "ipfs-interop": "ipfs/interop#deps/update-multiformats",
-    "ipfs-utils": "^9.0.6",
+    "ipfs-utils": "^9.0.13",
     "ipfsd-ctl": "^12.0.3",
     "iso-url": "^1.0.0",
-    "kubo-rpc-client": "^1.0.1",
+    "kubo-rpc-client": "^2.0.2",
     "merge-options": "^3.0.4",
     "mock-ipfs-pinning-service": "^0.4.2",
     "url": "^0.11.0"

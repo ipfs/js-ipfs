@@ -94,22 +94,23 @@
     "build": "aegir build"
   },
   "dependencies": {
-    "@chainsafe/libp2p-gossipsub": "^4.0.0",
-    "@libp2p/floodsub": "^5.0.0",
+    "@chainsafe/libp2p-gossipsub": "^6.0.0",
+    "@libp2p/floodsub": "^6.0.0",
     "@libp2p/logger": "^2.0.2",
-    "@libp2p/mdns": "^5.0.0",
-    "@libp2p/tcp": "^5.0.0",
-    "@libp2p/webrtc-star": "^5.0.2",
-    "blockstore-datastore-adapter": "^4.0.0",
+    "@libp2p/mdns": "^6.0.0",
+    "@libp2p/prometheus-metrics": "^1.0.1",
+    "@libp2p/tcp": "^6.0.2",
+    "@libp2p/webrtc-star": "^6.0.0",
+    "blockstore-datastore-adapter": "^5.0.0",
     "datastore-core": "^8.0.1",
     "datastore-fs": "^8.0.0",
     "datastore-level": "^9.0.0",
     "err-code": "^3.0.1",
     "hashlru": "^2.3.0",
     "interface-datastore": "^7.0.0",
-    "ipfs-repo": "^16.0.0",
-    "ipfs-utils": "^9.0.6",
-    "is-ipfs": "^7.0.0",
+    "ipfs-repo": "^17.0.0",
+    "ipfs-utils": "^9.0.13",
+    "is-ipfs": "^8.0.0",
     "it-all": "^2.0.0",
     "it-drain": "^2.0.0",
     "it-foreach": "^1.0.0",
@@ -117,7 +118,7 @@
     "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
-    "aegir": "^37.0.11",
+    "aegir": "^37.11.0",
     "ipfs-core-utils": "^0.17.0"
   }
 }
