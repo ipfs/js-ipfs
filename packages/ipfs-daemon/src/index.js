@@ -1,11 +1,10 @@
 import { logger } from '@libp2p/logger'
-import { WebRTCStar } from '@libp2p/webrtc-star'
+import { webRTCStar } from '@libp2p/webrtc-star'
 import { create } from 'ipfs-core'
 import { HttpApi } from 'ipfs-http-server'
 import { HttpGateway } from 'ipfs-http-gateway'
 import { createServer as gRPCServer } from 'ipfs-grpc-server'
 import { isElectron } from 'ipfs-utils/src/env.js'
-import prometheusClient from 'prom-client'
 import { createLibp2p } from 'libp2p'
 
 const log = logger('ipfs:daemon')
@@ -16,11 +15,6 @@ export class Daemon {
    */
   constructor (options = {}) {
     this._options = options
-
-    if (process.env.IPFS_MONITORING) {
-      // Setup debug metrics collection
-      prometheusClient.collectDefaultMetrics()
-    }
 
     /** @type {import('ipfs-core-types').IPFS} */
     // @ts-expect-error we set this in .start()
@@ -97,11 +91,11 @@ async function getLibp2p ({ libp2pOptions }) {
   if (wrtc || electronWebRTC) {
     log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
 
-    const transport = new WebRTCStar({
+    const transport = webRTCStar({
       wrtc: wrtc ?? electronWebRTC
     })
 
-    libp2pOptions.transports = [...libp2pOptions.transports ?? [], transport]
+    libp2pOptions.transports = [...libp2pOptions.transports ?? [], transport.transport]
     libp2pOptions.peerDiscovery = [...libp2pOptions.peerDiscovery ?? [], transport.discovery]
   }
 

@@ -9,7 +9,7 @@ import {
 import { decodeCID, encodeCID } from 'ipfs-message-port-protocol/cid'
 
 /**
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('ipfs-core-types').IPFS} IPFS
  * @typedef {import('ipfs-core-types/src/root').AddOptions} AddOptions
  * @typedef {import('ipfs-core-types/src/root').AddAllOptions} AddAllOptions

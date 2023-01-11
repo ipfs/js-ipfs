@@ -11,14 +11,16 @@ export const createGen = configure(api => {
   /**
    * @type {KeyAPI["gen"]}
    */
-  async function gen (name, options = { type: 'Ed25519' }) {
+  async function gen (name, options) {
+    const opts = options ?? { type: 'Ed25519' }
+
     const res = await api.post('key/gen', {
-      signal: options.signal,
+      signal: opts.signal,
       searchParams: toUrlSearchParams({
         arg: name,
-        ...options
+        ...opts
       }),
-      headers: options.headers
+      headers: opts.headers
     })
     const data = await res.json()
 

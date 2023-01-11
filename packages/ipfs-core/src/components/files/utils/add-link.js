@@ -18,7 +18,7 @@ const log = logger('ipfs:mfs:core:utils:add-link')
 
 /**
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('hamt-sharding').Bucket<any>} Bucket
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode

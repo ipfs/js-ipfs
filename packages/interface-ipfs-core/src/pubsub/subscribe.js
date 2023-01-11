@@ -194,7 +194,6 @@ export function testSubscribe (factory, options) {
 
       it('should receive messages from a different node with floodsub', async function () {
         if (!isNode) {
-          // @ts-expect-error this is mocha
           return this.skip()
         }
 

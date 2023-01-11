@@ -29,14 +29,20 @@ export function testDns (factory, options) {
     after(() => factory.clean())
 
     it('should non-recursively resolve ipfs.tech', async function () {
+      const domain = 'ipfs.tech'
+
       try {
-        const res = await ipfs.dns('ipfs.tech', { recursive: false })
+        const res = await ipfs.dns(domain, { recursive: false })
 
         // matches pattern /ip?s/<id>
         expect(res).to.match(/\/ip[n|f]s\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-expect-error this is mocha
+          return this.skip()
+        }
+
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
           return this.skip()
         }
 
@@ -45,14 +51,20 @@ export function testDns (factory, options) {
     })
 
     it('should recursively resolve ipfs.tech', async function () {
+      const domain = 'ipfs.tech'
+
       try {
-        const res = await ipfs.dns('ipfs.tech', { recursive: true })
+        const res = await ipfs.dns(domain, { recursive: true })
 
         // matches pattern /ip.s/<id>
         expect(res).to.match(/\/ip[n|f]s\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-expect-error this is mocha
+          return this.skip()
+        }
+
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
           return this.skip()
         }
 
@@ -61,14 +73,20 @@ export function testDns (factory, options) {
     })
 
     it('should resolve subdomain docs.ipfs.tech', async function () {
+      const domain = 'docs.ipfs.tech'
+
       try {
-        const res = await ipfs.dns('docs.ipfs.tech')
+        const res = await ipfs.dns(domain)
 
         // matches pattern /ip?s/<id>
         expect(res).to.match(/\/ip[n|f]s\/.+$/)
       } catch (/** @type {any} */ err) {
         if (err.message.includes('could not resolve name')) {
-          // @ts-expect-error this is mocha
+          return this.skip()
+        }
+
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
           return this.skip()
         }
 

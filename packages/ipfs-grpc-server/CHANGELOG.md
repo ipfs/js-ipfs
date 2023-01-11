@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+## [0.11.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-server-v0.10.1...ipfs-grpc-server-v0.11.0) (2022-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* ipfs is now bundled with libp2p@0.40.x which has different config
+
+### Features
+
+* upgrade libp2p to 0.40.x ([#4237](https://www.github.com/ipfs/js-ipfs/issues/4237)) ([0cee4a4](https://www.github.com/ipfs/js-ipfs/commit/0cee4a4c55767022584dcbade0b0b9b43326f9c9))
+
+
+### Bug Fixes
+
+* replace slice with subarray for increased performance ([#4210](https://www.github.com/ipfs/js-ipfs/issues/4210)) ([dfc43d4](https://www.github.com/ipfs/js-ipfs/commit/dfc43d4e9be67fdf25553677f469379d966ff806))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.12.1 to ^0.13.0
+  * devDependencies
+    * ipfs-core bumped from ^0.16.1 to ^0.17.0
+
 ### [0.10.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-server-v0.10.0...ipfs-grpc-server-v0.10.1) (2022-09-21)
 
 

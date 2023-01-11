@@ -39,8 +39,8 @@ export function createRead (context) {
         const mfsPath = await toMfsPath(context, path, options)
         const result = await exporter(mfsPath.mfsPath, context.repo.blocks)
 
-        if (result.type !== 'file') {
-          throw errCode(new Error(`${path} was not a file`), 'ERR_NOT_FILE')
+        if (result.type !== 'file' && result.type !== 'raw') {
+          throw errCode(new Error(`${path} was not a file or raw bytes`), 'ERR_NOT_FILE')
         }
 
         if (!result.content) {

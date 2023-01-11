@@ -17,7 +17,7 @@ import {
 const log = logger('ipfs:mfs:core:utils:hamt-utils')
 
 /**
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('ipfs-unixfs').Mtime} Mtime
  * @typedef {import('../').MfsContext} MfsContext
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode

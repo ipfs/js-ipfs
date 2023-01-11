@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "license": "Apache-2.0 OR MIT",
@@ -144,26 +144,26 @@
     "@multiformats/multiaddr": "^11.0.0",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
     "any-signal": "^3.0.0",
-    "blob-to-it": "^1.0.1",
-    "browser-readablestream-to-it": "^1.0.1",
+    "blob-to-it": "^2.0.0",
+    "browser-readablestream-to-it": "^2.0.0",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.12.1",
-    "ipfs-unixfs": "^7.0.0",
-    "ipfs-utils": "^9.0.6",
-    "it-all": "^1.0.4",
-    "it-map": "^1.0.6",
-    "it-peekable": "^1.0.2",
+    "ipfs-core-types": "^0.13.0",
+    "ipfs-unixfs": "^9.0.0",
+    "ipfs-utils": "^9.0.13",
+    "it-all": "^2.0.0",
+    "it-map": "^2.0.0",
+    "it-peekable": "^2.0.0",
     "it-to-stream": "^1.0.0",
     "merge-options": "^3.0.4",
-    "multiformats": "^9.5.1",
+    "multiformats": "^11.0.0",
     "nanoid": "^4.0.0",
     "parse-duration": "^1.0.0",
     "timeout-abort-controller": "^3.0.0",
-    "uint8arrays": "^3.0.0"
+    "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
     "@web-std/file": "^3.0.2",
-    "aegir": "^37.0.11"
+    "aegir": "^37.11.0"
   },
   "browser": {
     "fs": false

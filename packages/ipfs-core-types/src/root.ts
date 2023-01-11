@@ -1,5 +1,5 @@
 import type { AbortOptions, PreloadOptions, IPFSPath, ImportCandidateStream, ImportCandidate } from './utils'
-import type { CID, CIDVersion } from 'multiformats/cid'
+import type { CID, Version as CIDVersion } from 'multiformats/cid'
 import type { Mtime } from 'ipfs-unixfs'
 import type { Multiaddr } from '@multiformats/multiaddr'
 import type { PeerId } from '@libp2p/interface-peer-id'

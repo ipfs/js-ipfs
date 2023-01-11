@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.157.0](https://www.github.com/ipfs/js-ipfs/compare/interface-ipfs-core-v0.156.1...interface-ipfs-core-v0.157.0) (2022-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* ipfs is now bundled with libp2p@0.40.x which has different config
+* require IPNS V2 signatures (#4207)
+
+### Features
+
+* upgrade libp2p to 0.40.x ([#4237](https://www.github.com/ipfs/js-ipfs/issues/4237)) ([0cee4a4](https://www.github.com/ipfs/js-ipfs/commit/0cee4a4c55767022584dcbade0b0b9b43326f9c9))
+
+
+### Bug Fixes
+
+* require IPNS V2 signatures ([#4207](https://www.github.com/ipfs/js-ipfs/issues/4207)) ([d1b0a8a](https://www.github.com/ipfs/js-ipfs/commit/d1b0a8a71073b4ece0dbda5a5405d76dd8d5b358))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.12.1 to ^0.13.0
+
 ### [0.156.1](https://www.github.com/ipfs/js-ipfs/compare/interface-ipfs-core-v0.156.0...interface-ipfs-core-v0.156.1) (2022-09-21)
 
 

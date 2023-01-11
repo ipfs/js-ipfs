@@ -6,7 +6,7 @@ import { CID } from 'multiformats/cid'
  * @property {import('../../types').Context} Argv.ctx
  * @property {string[]} [Argv.cids]
  * @property {string} [Argv.format]
- * @property {import('multiformats/cid').CIDVersion} [Argv.cidVersion]
+ * @property {import('multiformats/cid').Version} [Argv.cidVersion]
  * @property {string} [Argv.base]
  */
 

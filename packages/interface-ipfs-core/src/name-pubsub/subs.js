@@ -27,7 +27,6 @@ export function testSubs (factory, options) {
     after(() => factory.clean())
 
     it('should get an empty array as a result of subscriptions before any resolve', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(60 * 1000)
 
       const res = await ipfs.name.pubsub.subs()
@@ -36,7 +35,6 @@ export function testSubs (factory, options) {
     })
 
     it('should get the list of subscriptions updated after a resolve', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(300 * 1000)
       const id = 'QmNP1ASen5ZREtiJTtVD3jhMKhoPb1zppET1tgpjHx2NGA'
 

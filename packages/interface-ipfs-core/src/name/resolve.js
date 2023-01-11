@@ -44,7 +44,6 @@ export function testResolve (factory, options) {
     after(() => factory.clean())
 
     it('should resolve a record default options', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options'))
@@ -58,7 +57,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record from peerid as cidv1 in base32', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
       const { cid } = await ipfs.add(uint8ArrayFromString('should resolve a record from cidv1b32'))
       const { id: peerId } = await ipfs.id()
@@ -80,7 +78,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record recursive === true', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive === true'))
@@ -94,7 +91,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record default options with remainder', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record default options with remainder'))
@@ -115,7 +111,6 @@ export function testResolve (factory, options) {
     })
 
     it('should resolve a record recursive === true with remainder', async function () {
-      // @ts-expect-error this is mocha
       this.timeout(20 * 1000)
 
       const { path } = await ipfs.add(uint8ArrayFromString('should resolve a record recursive = true with remainder'))
@@ -160,34 +155,100 @@ export function testResolve (factory, options) {
 
     after(() => factory.clean())
 
-    it('should resolve /ipns/ipfs.tech', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech')))
-        .to.match(/\/ipfs\/.+$/)
+    it('should resolve /ipns/ipfs.tech', async function () {
+      const domain = 'ipfs.tech'
+
+      try {
+        expect(await last(ipfs.name.resolve(`/ipns/${domain}`)))
+          .to.match(/\/ipfs\/.+$/)
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should resolve /ipns/ipfs.tech recursive === false', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech', { recursive: false })))
-        .to.match(/\/ipns\/.+$/)
+    it('should resolve /ipns/ipfs.tech recursive === false', async function () {
+      const domain = 'ipfs.tech'
+
+      try {
+        expect(await last(ipfs.name.resolve(`/ipns/${domain}`, { recursive: false })))
+          .to.match(/\/ipns\/.+$/)
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should resolve /ipns/ipfs.tech recursive === true', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech', { recursive: true })))
-        .to.match(/\/ipfs\/.+$/)
+    it('should resolve /ipns/ipfs.tech recursive === true', async function () {
+      const domain = 'ipfs.tech'
+
+      try {
+        expect(await last(ipfs.name.resolve(`/ipns/${domain}`, { recursive: true })))
+          .to.match(/\/ipfs\/.+$/)
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should resolve /ipns/ipfs.tech with remainder', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech/images/ipfs-logo.svg')))
-        .to.match(/\/ipfs\/.+\/images\/ipfs-logo.svg$/)
+    it('should resolve /ipns/ipfs.tech with remainder', async function () {
+      const domain = 'ipfs.tech'
+
+      try {
+        expect(await last(ipfs.name.resolve(`/ipns/${domain}/images/ipfs-logo.svg`)))
+          .to.match(/\/ipfs\/.+\/images\/ipfs-logo.svg$/)
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should resolve /ipns/ipfs.tech with remainder recursive === false', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech/images/ipfs-logo.svg', { recursive: false })))
-        .to.match(/\/ipns\/.+\/images\/ipfs-logo.svg$/)
+    it('should resolve /ipns/ipfs.tech with remainder recursive === false', async function () {
+      const domain = 'ipfs.tech'
+
+      try {
+        expect(await last(ipfs.name.resolve(`/ipns/${domain}/images/ipfs-logo.svg`, { recursive: false })))
+          .to.match(/\/ipns\/.+\/images\/ipfs-logo.svg$/)
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
-    it('should resolve /ipns/ipfs.tech with remainder recursive === true', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/ipfs.tech/images/ipfs-logo.svg', { recursive: true })))
-        .to.match(/\/ipfs\/.+\/images\/ipfs-logo.svg$/)
+    it('should resolve /ipns/ipfs.tech with remainder recursive === true', async function () {
+      const domain = 'ipfs.tech'
+
+      try {
+        expect(await last(ipfs.name.resolve(`/ipns/${domain}/images/ipfs-logo.svg`, { recursive: true })))
+          .to.match(/\/ipfs\/.+\/images\/ipfs-logo.svg$/)
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
 
     it('should fail to resolve /ipns/ipfs.a', async () => {
@@ -198,9 +259,20 @@ export function testResolve (factory, options) {
       }
     })
 
-    it('should resolve ipns path with hamt-shard recursive === true', async () => {
-      expect(await last(ipfs.name.resolve('/ipns/tr.wikipedia-on-ipfs.org/wiki/Anasayfa.html', { recursive: true })))
-        .to.match(/\/ipfs\/.+$/)
+    it('should resolve ipns path with hamt-shard recursive === true', async function () {
+      const domain = 'tr.wikipedia-on-ipfs.org'
+
+      try {
+        expect(await last(ipfs.name.resolve(`/ipns/${domain}/wiki/Anasayfa.html`, { recursive: true })))
+          .to.match(/\/ipfs\/.+$/)
+      } catch (/** @type {any} */ err) {
+        // happens when running tests offline
+        if (err.message.includes(`ECONNREFUSED ${domain}`)) {
+          return this.skip()
+        }
+
+        throw err
+      }
     })
   })
 }

@@ -93,16 +93,20 @@ export function getDescribe (config) {
  * @param {object} [config]
  * @param {boolean | Skip | (string | Skip)[]} [config.skip]
  * @param {boolean} [config.only]
+ * @returns {Mocha.TestFunction}
  */
 export function getIt (config) {
   if (!config) return it
 
   /**
-   * @param {string} name
-   * @param {*} impl
-   * @returns
+   * @param {string | Mocha.Func} name
+   * @param {Mocha.Func | Mocha.AsyncFunc} [impl]
    */
   const _it = (name, impl) => {
+    if (typeof name !== 'string') {
+      throw new Error('Pass test name as first argument to it')
+    }
+
     if (Array.isArray(config.skip)) {
       const skip = config.skip
         .map((s) => isSkip(s) ? s : { name: s, reason: '🤷' })
@@ -125,9 +129,10 @@ export function getIt (config) {
       }
     }
 
-    it(name, impl)
+    return it(name, impl)
   }
 
+  _it.retries = it.retries
   _it.skip = it.skip
   _it.only = it.only // eslint-disable-line no-only-tests/no-only-tests
 

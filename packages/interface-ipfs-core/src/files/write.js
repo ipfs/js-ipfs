@@ -188,7 +188,6 @@ export function testWrite (factory, options) {
 
     it('writes a small file using a Node stream (Node only)', async function () {
       if (!isNode) {
-        // @ts-expect-error this is mocha
         this.skip()
       }
       const filePath = `/small-file-${Math.random()}.txt`
@@ -204,8 +203,7 @@ export function testWrite (factory, options) {
     })
 
     it('writes a small file using an HTML5 Blob (Browser only)', async function () {
-      if (!global.Blob) {
-        // @ts-expect-error this is mocha
+      if (!global.Blob || !global.FileReader) {
         return this.skip()
       }
 

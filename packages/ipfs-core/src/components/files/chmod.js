@@ -22,7 +22,7 @@ const mergeOptions = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs:mfs:touch')
 
 /**
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  * @typedef {import('./').MfsContext} MfsContext
  *

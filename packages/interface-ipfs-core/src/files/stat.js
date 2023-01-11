@@ -11,6 +11,7 @@ import { identity } from 'multiformats/hashes/identity'
 import { randomBytes } from 'iso-random-stream'
 import isShardAtPath from '../utils/is-shard-at-path.js'
 import * as raw from 'multiformats/codecs/raw'
+import { isBrowser } from 'wherearewe'
 
 /**
  * @typedef {import('ipfsd-ctl').Factory} Factory
@@ -91,6 +92,27 @@ export function testStat (factory, options) {
       const filePath = `/stat-${Math.random()}/large-file-${Math.random()}.txt`
 
       await ipfs.files.write(filePath, largeFile, {
+        create: true,
+        parents: true
+      })
+
+      await expect(ipfs.files.stat(filePath)).to.eventually.include({
+        size: largeFile.length,
+        cumulativeSize: 490800,
+        blocks: 2,
+        type: 'file'
+      })
+    })
+
+    it('should stat a large browser File', async function () {
+      if (!isBrowser) {
+        this.skip()
+      }
+
+      const filePath = `/stat-${Math.random()}/large-file-${Math.random()}.txt`
+      const blob = new Blob([largeFile])
+
+      await ipfs.files.write(filePath, blob, {
         create: true,
         parents: true
       })

@@ -1,6 +1,7 @@
 import split from 'it-split'
 import { CID } from 'multiformats/cid'
 import { base32 } from 'multiformats/bases/base32'
+import { toString as uint8arrayToString } from 'uint8arrays/to-string'
 
 /**
  * @typedef {object} Argv
@@ -24,7 +25,7 @@ const command = {
     }
 
     for await (const data of input) {
-      const input = data.toString().trim()
+      const input = (data instanceof Uint8Array ? uint8arrayToString(data) : data).trim()
 
       if (!input) {
         continue

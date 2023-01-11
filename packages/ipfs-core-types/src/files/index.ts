@@ -1,5 +1,5 @@
 import type { AbortOptions, IPFSPath } from '../utils'
-import type { CID, CIDVersion } from 'multiformats/cid'
+import type { CID, Version as CIDVersion } from 'multiformats/cid'
 import type { Mtime, MtimeLike } from 'ipfs-unixfs'
 import type { AddProgressFn } from '../root'
 
