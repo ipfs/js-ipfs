@@ -6,7 +6,6 @@ import { floodsub } from '@libp2p/floodsub'
 /** @type {() => Record<string, (components: any) => PubSub>}>} */
 export const routers = () => ({
   gossipsub: gossipsub({
-    allowPublishToZeroPeers: true,
     fallbackToFloodsub: true,
     emitSelf: true,
     maxInboundStreams: 64,
