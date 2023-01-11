@@ -88,6 +88,14 @@ export function testPubsub (factory, options) {
       const topic = `${namespace}${uint8ArrayToString(routingKey, 'base64url')}`
 
       await nodeB.pubsub.subscribe(topic, () => {})
+
+      // wait for nodeA to see nodeB's subscription
+      await waitFor(async () => {
+        const peers = await nodeA.pubsub.peers(topic)
+
+        return peers.map(p => p.toString()).includes(idB.id.toString())
+      })
+
       await nodeA.name.publish(ipfsRef, { resolve: false })
       await delay(1000) // guarantee record is written
 
@@ -149,6 +157,14 @@ export function testPubsub (factory, options) {
       const topic = `${namespace}${uint8ArrayToString(routingKey, 'base64url')}`
 
       await nodeB.pubsub.subscribe(topic, checkMessage)
+
+      // wait for nodeA to see nodeB's subscription
+      await waitFor(async () => {
+        const peers = await nodeA.pubsub.peers(topic)
+
+        return peers.map(p => p.toString()).includes(idB.id.toString())
+      })
+
       await nodeA.name.publish(ipfsRef, { resolve: false, key: testAccountName })
       await waitFor(alreadySubscribed)
 

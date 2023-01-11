@@ -5,7 +5,6 @@ import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 /** @type {() => Record<string, (components: any) => PubSub>}>} */
 export const routers = () => ({
   gossipsub: gossipsub({
-    allowPublishToZeroPeers: true,
     fallbackToFloodsub: true,
     emitSelf: true,
     maxInboundStreams: 64,
