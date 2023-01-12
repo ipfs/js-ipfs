@@ -71,7 +71,7 @@ export async function multipartRequest (source, headers = {}, boundary = `------
       }
     } catch (e) {
       log(e)
-      yield e
+      throw e
     } finally {
       yield `\r\n--${boundary}--\r\n`
     }
