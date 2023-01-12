@@ -100,10 +100,6 @@ describe('interface-ipfs-core ipfs-client tests', () => {
         reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
       },
       {
-        name: 'should not add from an invalid url',
-        reason: 'https://github.com/ipfs/js-ipfs/issues/3195'
-      },
-      {
         name: 'should be able to add dir without sharding',
         reason: 'Cannot spawn IPFS with different args'
       },

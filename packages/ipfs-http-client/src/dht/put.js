@@ -3,6 +3,7 @@ import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { mapEvent } from './map-event.js'
+import { abortSignal } from '../lib/abort-signal.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -15,6 +16,7 @@ export const createPut = configure(api => {
    */
   async function * put (key, value, options = {}) {
     const res = await api.post('dht/put', {
+      signal: abortSignal(options.signal),
       searchParams: toUrlSearchParams({
         arg: key instanceof Uint8Array ? uint8ArrayToString(key) : key.toString(),
         ...options

@@ -2,6 +2,7 @@ import { CID } from 'multiformats/cid'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../../lib/configure.js'
 import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
+import { abortSignal } from '../../lib/abort-signal.js'
 
 /**
  * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -14,6 +15,7 @@ export const createAppendData = configure(api => {
    */
   async function appendData (cid, data, options = {}) {
     const res = await api.post('object/patch/append-data', {
+      signal: abortSignal(options.signal),
       searchParams: toUrlSearchParams({
         arg: `${cid}`,
         ...options

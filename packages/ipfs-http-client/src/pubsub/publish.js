@@ -2,6 +2,7 @@ import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { textToUrlSafeRpc } from '../lib/http-rpc-wire-format.js'
+import { abortSignal } from "../lib/abort-signal.js";
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -19,6 +20,7 @@ export const createPublish = configure(api => {
     })
 
     const res = await api.post('pubsub/pub', {
+      signal: abortSignal(options.signal),
       searchParams,
       ...(
         await multipartRequest([data], options.headers)

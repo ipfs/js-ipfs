@@ -2,6 +2,7 @@ import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { abortSignal } from '../lib/abort-signal.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -14,6 +15,7 @@ export const createReplace = configure(api => {
    */
   const replace = async (config, options = {}) => {
     const res = await api.post('config/replace', {
+      signal: abortSignal(options.signal),
       searchParams: toUrlSearchParams(options),
       ...(
         await multipartRequest([uint8ArrayFromString(JSON.stringify(config))], options.headers)

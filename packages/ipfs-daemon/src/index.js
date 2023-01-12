@@ -55,9 +55,9 @@ export class Daemon {
       this._httpApi && this._httpApi.stop(),
       this._httpGateway && this._httpGateway.stop(),
       this._grpcServer && this._grpcServer.stop(),
+      await this._ipfs.stop(),
     ])
 
-    await this._ipfs.stop();
 
     log('stopped')
   }

@@ -2,6 +2,7 @@ import { CID } from 'multiformats/cid'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
+import { abortSignal } from '../lib/abort-signal.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -16,6 +17,7 @@ export const createPut = configure(api => {
     let res
     try {
       const response = await api.post('block/put', {
+        signal: abortSignal(options.signal),
         searchParams: toUrlSearchParams(options),
         ...(
           await multipartRequest([data], options.headers)

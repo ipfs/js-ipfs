@@ -114,6 +114,6 @@ describe('daemon', function () {
 
     await expect(fetch(`${uri}/api/v0/id`, {
       method: 'POST'
-    })).to.eventually.be.rejectedWith('fetch failed')
+    })).to.eventually.be.rejectedWith('/ECONNREFUSED/')
   })
 })

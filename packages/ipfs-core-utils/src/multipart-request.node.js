@@ -4,7 +4,7 @@ import { modeToString } from './mode-to-string.js'
 import mergeOpts from 'merge-options'
 // @ts-expect-error no types
 import toStream from 'it-to-stream'
-import { logger } from "@libp2p/logger";
+import { logger } from '@libp2p/logger'
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs:core-utils:multipart-request')
@@ -27,7 +27,7 @@ export async function multipartRequest (source, headers = {}, boundary = `------
       let index = 0
 
       // @ts-expect-error
-      for await (const {content, path, mode, mtime} of source) {
+      for await (const { content, path, mode, mtime } of source) {
         let fileSuffix = ''
         const type = content ? 'file' : 'dir'
 
@@ -45,7 +45,7 @@ export async function multipartRequest (source, headers = {}, boundary = `------
         }
 
         if (mtime != null) {
-          const {secs, nsecs} = mtime
+          const { secs, nsecs } = mtime
 
           qs.push(`mtime=${secs}`)
 
@@ -64,14 +64,14 @@ export async function multipartRequest (source, headers = {}, boundary = `------
         yield '\r\n'
 
         if (content) {
-          yield* content
+          yield * content
         }
 
         index++
       }
     } catch (e) {
       log(e)
-      throw e;
+      yield e
     } finally {
       yield `\r\n--${boundary}--\r\n`
     }
