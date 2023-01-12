@@ -2,7 +2,7 @@ import { CID } from 'multiformats/cid'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../../lib/configure.js'
 import { toUrlSearchParams } from '../../lib/to-url-search-params.js'
-import { abortSignal } from "../../lib/abort-signal.js";
+import { abortSignal } from '../../lib/abort-signal.js'
 
 /**
  * @typedef {import('../../types').HTTPClientExtraOptions} HTTPClientExtraOptions

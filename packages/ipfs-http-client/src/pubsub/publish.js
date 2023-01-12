@@ -1,8 +1,8 @@
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
-import { textToUrlSafeRpc } from '../lib/http-rpc-wire-format.js'
 import { abortSignal } from "../lib/abort-signal.js";
+import { textToUrlSafeRpc } from '../lib/http-rpc-wire-format.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
