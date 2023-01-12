@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@types/hapi-pino": "^8.0.1",
-    "@types/hapi__hapi": "^20.0.5",
+    "@types/hapi__hapi": "^21.0.0",
     "aegir": "^37.11.0",
     "file-type": "^18.0.0",
     "sinon": "^15.0.1"
