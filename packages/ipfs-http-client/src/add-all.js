@@ -22,7 +22,7 @@ export const createAddAll = configure((api) => {
     const controller = new AbortController()
     const signal = abortSignal(controller.signal, options.signal)
     const { headers, body, total, parts } =
-      await multipartRequest(source, controller, options.headers)
+      await multipartRequest(source, options.headers)
 
     // In browser response body only starts streaming once upload is
     // complete, at which point all the progress updates are invalid. If

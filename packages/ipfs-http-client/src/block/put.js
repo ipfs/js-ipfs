@@ -2,7 +2,6 @@ import { CID } from 'multiformats/cid'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
-import { abortSignal } from '../lib/abort-signal.js'
 
 /**
  * @typedef {import('../types').HTTPClientExtraOptions} HTTPClientExtraOptions
@@ -14,17 +13,12 @@ export const createPut = configure(api => {
    * @type {BlockAPI["put"]}
    */
   async function put (data, options = {}) {
-    // allow aborting requests on body errors
-    const controller = new AbortController()
-    const signal = abortSignal(controller.signal, options.signal)
-
     let res
     try {
       const response = await api.post('block/put', {
-        signal: signal,
         searchParams: toUrlSearchParams(options),
         ...(
-          await multipartRequest([data], controller, options.headers)
+          await multipartRequest([data], options.headers)
         )
       })
       res = await response.json()

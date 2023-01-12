@@ -31,6 +31,7 @@ tsconfig-check.aegir.json
 
 # Editor files
 .vscode
+.idea
 
 # Operating system files
 .DS_Store

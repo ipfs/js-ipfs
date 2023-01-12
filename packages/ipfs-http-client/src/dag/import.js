@@ -1,6 +1,5 @@
 import { configure } from '../lib/configure.js'
 import { toUrlSearchParams } from '../lib/to-url-search-params.js'
-import { abortSignal } from '../lib/abort-signal.js'
 import { multipartRequest } from 'ipfs-core-utils/multipart-request'
 import { CID } from 'multiformats/cid'
 
@@ -14,12 +13,9 @@ export const createImport = configure(api => {
    * @type {DAGAPI["import"]}
    */
   async function * dagImport (source, options = {}) {
-    const controller = new AbortController()
-    const signal = abortSignal(controller.signal, options.signal)
-    const { headers, body } = await multipartRequest(source, controller, options.headers)
+    const { headers, body } = await multipartRequest(source, options.headers)
 
     const res = await api.post('dag/import', {
-      signal,
       headers,
       body,
       searchParams: toUrlSearchParams({ 'pin-roots': options.pinRoots })

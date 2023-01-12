@@ -25,13 +25,7 @@ describe('interface-ipfs-core over ipfs-http-client tests against js-ipfs', func
         reason: 'Not supported by http'
       }]
       .concat(isNode
-        ? [{
-            name: 'should fail when passed invalid input',
-            reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
-          }, {
-            name: 'should not add from an invalid url',
-            reason: 'node-fetch cannot detect errors in streaming bodies - https://github.com/node-fetch/node-fetch/issues/753'
-          }]
+        ? []
         : [{
             name: 'should add with mtime as hrtime',
             reason: 'Not designed to run in the browser'

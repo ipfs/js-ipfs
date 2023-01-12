@@ -4,8 +4,7 @@ import { modeToString } from './mode-to-string.js'
 import mergeOpts from 'merge-options'
 // @ts-expect-error no types
 import toStream from 'it-to-stream'
-import { logger } from '@libp2p/logger'
-import itPeekable from 'it-peekable'
+import { logger } from "@libp2p/logger";
 
 const merge = mergeOpts.bind({ ignoreUndefined: true })
 const log = logger('ipfs:core-utils:multipart-request')
@@ -16,11 +15,10 @@ const log = logger('ipfs:core-utils:multipart-request')
 
 /**
  * @param {ImportCandidateStream} source
- * @param {AbortController} abortController
  * @param {Headers|Record<string, string>} [headers]
  * @param {string} [boundary]
  */
-export async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
+export async function multipartRequest (source, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   /**
    * @param {ImportCandidateStream} source
    */
@@ -29,7 +27,7 @@ export async function multipartRequest (source, abortController, headers = {}, b
       let index = 0
 
       // @ts-expect-error
-      for await (const { content, path, mode, mtime } of source) {
+      for await (const {content, path, mode, mtime} of source) {
         let fileSuffix = ''
         const type = content ? 'file' : 'dir'
 
@@ -47,7 +45,7 @@ export async function multipartRequest (source, abortController, headers = {}, b
         }
 
         if (mtime != null) {
-          const { secs, nsecs } = mtime
+          const {secs, nsecs} = mtime
 
           qs.push(`mtime=${secs}`)
 
@@ -66,31 +64,17 @@ export async function multipartRequest (source, abortController, headers = {}, b
         yield '\r\n'
 
         if (content) {
-          yield * content
+          yield* content
         }
 
         index++
       }
-    } catch (/** @type {any} */ err) {
-      log(err)
-      // workaround for https://github.com/node-fetch/node-fetch/issues/753
-      abortController.abort()
+    } catch (e) {
+      log(e)
+      throw e;
     } finally {
       yield `\r\n--${boundary}--\r\n`
     }
-  }
-
-  // peek at the first value in order to get the input stream moving
-  // and to validate its contents.
-  // We cannot do this in the `for await..of` in streamFiles due to
-  // https://github.com/node-fetch/node-fetch/issues/753
-  const peekable = itPeekable(normaliseInput(source))
-
-  /** @type {any} value **/
-  const { value, done } = await peekable.peek()
-
-  if (!done) {
-    peekable.push(value)
   }
 
   return {
@@ -100,6 +84,6 @@ export async function multipartRequest (source, abortController, headers = {}, b
       'Content-Type': `multipart/form-data; boundary=${boundary}`
     }),
     // @ts-expect-error normaliseInput returns unixfs importer import candidates
-    body: toStream(streamFiles(peekable))
+    body: toStream(streamFiles(normaliseInput(source)))
   }
 }

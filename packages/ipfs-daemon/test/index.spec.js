@@ -2,7 +2,7 @@
 
 import { expect } from 'aegir/chai'
 import { Daemon } from '../src/index.js'
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 import WebSocket from 'ws'
 import os from 'os'
 
@@ -114,6 +114,6 @@ describe('daemon', function () {
 
     await expect(fetch(`${uri}/api/v0/id`, {
       method: 'POST'
-    })).to.eventually.be.rejectedWith(/ECONNREFUSED/)
+    })).to.eventually.be.rejectedWith('fetch failed')
   })
 })

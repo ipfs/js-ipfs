@@ -9,11 +9,10 @@ import { nanoid } from 'nanoid'
 
 /**
  * @param {ImportCandidateStream} source
- * @param {AbortController} abortController
  * @param {Headers|Record<string, string>} [headers]
  * @param {string} [boundary]
  */
-export async function multipartRequest (source, abortController, headers = {}, boundary = `-----------------------------${nanoid()}`) {
+export async function multipartRequest (source, headers = {}, boundary = `-----------------------------${nanoid()}`) {
   let req = multipartRequestNode
 
   // In electron-renderer we use native fetch and should encode body using native
@@ -23,5 +22,5 @@ export async function multipartRequest (source, abortController, headers = {}, b
     req = multipartRequestBrowser
   }
 
-  return req(source, abortController, headers, boundary)
+  return req(source, headers, boundary)
 }

@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "aegir": "^37.11.0",
-    "node-fetch": "^3.2.3",
+    "undici": "^5.15.0",
     "ws": "^8.5.0"
   },
   "optionalDependencies": {
