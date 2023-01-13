@@ -6,7 +6,10 @@
 [![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
 [![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
 
-> A client library for the IPFS HTTP API
+> A client library for the [IPFS HTTP API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) exposed by js-ipfs. 
+
+
+> Note: The client library for the [Kubo RPC API](https://docs.ipfs.tech/reference/kubo/rpc/) has moved into [js-kubo-rpc-client](https://github.com/ipfs/js-kubo-rpc-client).
 
 ## Table of contents <!-- omit in toc -->
 
@@ -51,7 +54,7 @@ $ npm i ipfs-http-client
   <a href="https://ipfs.io"><img width="650px" src="https://ipfs.io/ipfs/QmQJ68PFMDdAsgCZvA1UVzzn18asVcf7HVvCDgpjiSCAse" alt="IPFS http client lib logo" /></a>
 </h1>
 
-<h3 align="center">The JavaScript HTTP RPC API client library for IPFS implementations.</h3>
+<h3 align="center">The JavaScript HTTP RPC API client library for js-ipfs.</h3>
 
 <p align="center">
   <a href="https://riot.im/app/#/room/#ipfs-dev:matrix.org"><img src="https://img.shields.io/badge/matrix-%23ipfs%3Amatrix.org-blue.svg?style=flat" /> </a>
