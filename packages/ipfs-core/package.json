@@ -158,7 +158,7 @@
     "go-ipfs": "^0.12.0",
     "interface-blockstore-tests": "^4.0.0",
     "interface-ipfs-core": "^0.158.0",
-    "ipfsd-ctl": "^12.0.3",
+    "ipfsd-ctl": "^13.0.0",
     "iso-url": "^1.0.0",
     "it-all": "^2.0.0",
     "nanoid": "^4.0.0",
