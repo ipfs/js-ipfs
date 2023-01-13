@@ -103,6 +103,7 @@
     "@types/get-folder-size": "^3.0.1",
     "@types/ncp": "^2.0.5",
     "@types/progress": "^2.0.3",
+    "@types/rimraf": "^3.0.1",
     "@types/yargs": "^17.0.10",
     "aegir": "^37.11.0",
     "ipfs-repo": "^17.0.0",
@@ -113,6 +114,7 @@
     "nanoid": "^4.0.0",
     "ncp": "^2.0.0",
     "pako": "^2.0.4",
+    "rimraf": "^3.0.2",
     "sinon": "^15.0.1",
     "string-argv": "^0.3.1",
     "temp-write": "^5.0.0"
