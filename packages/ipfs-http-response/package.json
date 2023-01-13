@@ -82,7 +82,7 @@
     "aegir": "^37.11.0",
     "get-stream": "^6.0.0",
     "ipfs-core": "^0.18.0",
-    "ipfsd-ctl": "^12.0.3",
+    "ipfsd-ctl": "^13.0.0",
     "it-all": "^2.0.0",
     "uint8arrays": "^4.0.2"
   },
