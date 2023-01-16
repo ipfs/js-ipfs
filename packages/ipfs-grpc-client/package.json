@@ -69,9 +69,9 @@
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
-    "@libp2p/logger": "^2.0.0",
+    "@libp2p/logger": "^2.0.5",
     "@libp2p/peer-id": "^2.0.0",
-    "@multiformats/multiaddr": "^11.0.0",
+    "@multiformats/multiaddr": "^11.1.5",
     "change-case": "^4.1.1",
     "err-code": "^3.0.1",
     "ipfs-core-types": "^0.14.0",

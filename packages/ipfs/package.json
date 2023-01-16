@@ -76,7 +76,7 @@
     "dep-check": "aegir dep-check -i ipfs-core-types -i @types/*"
   },
   "dependencies": {
-    "@libp2p/logger": "^2.0.0",
+    "@libp2p/logger": "^2.0.5",
     "ipfs-cli": "^0.16.0",
     "ipfs-core": "^0.18.0",
     "semver": "^7.3.2",

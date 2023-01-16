@@ -96,7 +96,7 @@
   "dependencies": {
     "@chainsafe/libp2p-gossipsub": "^6.0.0",
     "@libp2p/floodsub": "^6.0.0",
-    "@libp2p/logger": "^2.0.2",
+    "@libp2p/logger": "^2.0.5",
     "@libp2p/mdns": "^6.0.0",
     "@libp2p/prometheus-metrics": "^1.0.1",
     "@libp2p/tcp": "^6.0.2",

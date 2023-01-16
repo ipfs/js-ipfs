@@ -66,7 +66,7 @@
     "dep-check": "aegir dep-check -i global"
   },
   "dependencies": {
-    "@libp2p/logger": "^2.0.0",
+    "@libp2p/logger": "^2.0.5",
     "ejs": "^3.1.6",
     "file-type": "^18.0.0",
     "filesize": "^10.0.5",
