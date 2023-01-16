@@ -197,7 +197,7 @@ export const Gateway = {
         // Suborigin for /ipfs/: https://github.com/ipfs/in-web-browsers/issues/66
         const rootCid = path.split('/')[2]
         const ipfsOrigin = CID.parse(rootCid).toV1().toString(base32)
-        response.headers['Suborigin'] = `ipfs000${ipfsOrigin}`
+        response.headers.Suborigin = `ipfs000${ipfsOrigin}`
       } else if (path.startsWith('/ipns/')) {
         // Suborigin for /ipns/: https://github.com/ipfs/in-web-browsers/issues/66
         const root = path.split('/')[2]
@@ -205,7 +205,7 @@ export const Gateway = {
         const ipnsOrigin = isIPFS.cid(root)
           ? CID.parse(root).toV1().toString(base32)
           : base32.encode(uint8ArrayFromString(root))
-        response.headers['Suborigin'] = `ipns000${ipnsOrigin}`
+        response.headers.Suborigin = `ipns000${ipnsOrigin}`
       }
     }
     return h.continue
