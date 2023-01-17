@@ -140,8 +140,8 @@
     "build": "aegir build"
   },
   "dependencies": {
-    "@libp2p/logger": "^2.0.0",
-    "@multiformats/multiaddr": "^11.0.0",
+    "@libp2p/logger": "^2.0.5",
+    "@multiformats/multiaddr": "^11.1.5",
     "@multiformats/multiaddr-to-uri": "^9.0.1",
     "any-signal": "^3.0.0",
     "blob-to-it": "^2.0.0",

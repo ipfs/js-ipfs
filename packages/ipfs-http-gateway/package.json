@@ -70,7 +70,7 @@
     "@hapi/ammo": "^5.0.1",
     "@hapi/boom": "^9.1.0",
     "@hapi/hapi": "^20.0.0",
-    "@libp2p/logger": "^2.0.0",
+    "@libp2p/logger": "^2.0.5",
     "@multiformats/uri-to-multiaddr": "^7.0.0",
     "hapi-pino": "^8.5.0",
     "ipfs-core-types": "^0.14.0",

@@ -189,15 +189,15 @@ export const Gateway = {
     // Add headers to successful responses (regular or range)
     if (response.statusCode === 200 || response.statusCode === 206) {
       const path = request.path
-      response.header('X-Ipfs-Path', path)
+      response.headers['X-Ipfs-Path'] = path
       if (path.startsWith('/ipfs/')) {
         // "set modtime to a really long time ago, since files are immutable and should stay cached"
         // Source: https://github.com/ipfs/go-ipfs/blob/v0.4.20/core/corehttp/gateway_handler.go#L228-L229
-        response.header('Last-Modified', 'Thu, 01 Jan 1970 00:00:01 GMT')
+        response.headers['Last-Modified'] = 'Thu, 01 Jan 1970 00:00:01 GMT'
         // Suborigin for /ipfs/: https://github.com/ipfs/in-web-browsers/issues/66
         const rootCid = path.split('/')[2]
         const ipfsOrigin = CID.parse(rootCid).toV1().toString(base32)
-        response.header('Suborigin', `ipfs000${ipfsOrigin}`)
+        response.headers.Suborigin = `ipfs000${ipfsOrigin}`
       } else if (path.startsWith('/ipns/')) {
         // Suborigin for /ipns/: https://github.com/ipfs/in-web-browsers/issues/66
         const root = path.split('/')[2]
@@ -205,7 +205,7 @@ export const Gateway = {
         const ipnsOrigin = isIPFS.cid(root)
           ? CID.parse(root).toV1().toString(base32)
           : base32.encode(uint8ArrayFromString(root))
-        response.header('Suborigin', `ipns000${ipnsOrigin}`)
+        response.headers.Suborigin = `ipns000${ipnsOrigin}`
       }
     }
     return h.continue

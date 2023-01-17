@@ -1,16 +1,16 @@
 # ipfs-message-port-protocol <!-- omit in toc -->
 
-[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
-[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![ipfs.tech](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](https://ipfs.tech)
+[![Discuss](https://img.shields.io/discourse/https/discuss.ipfs.tech/posts.svg?style=flat-square)](https://discuss.ipfs.tech)
 [![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
-[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/ipfs/js-ipfs/js-test-and-release.yml?branch=master\&style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml?query=branch%3Amaster)
 
 > IPFS client/server protocol over message port
 
 ## Table of contents <!-- omit in toc -->
 
 - [Install](#install)
+  - [Browser `<script>` tag](#browser-script-tag)
 - [Usage](#usage)
 - [Wire protocol codecs](#wire-protocol-codecs)
   - [`CID`](#cid)
@@ -24,6 +24,14 @@
 
 ```console
 $ npm i ipfs-message-port-protocol
+```
+
+### Browser `<script>` tag
+
+Loading this module through a script tag will make it's exports available as `IpfsMessagePortProtocol` in the global namespace.
+
+```html
+<script src="https://unpkg.com/ipfs-message-port-protocol/dist/index.min.js"></script>
 ```
 
 ## Usage

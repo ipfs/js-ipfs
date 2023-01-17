@@ -1,16 +1,16 @@
 # ipfs-grpc-client <!-- omit in toc -->
 
-[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
-[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![ipfs.tech](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](https://ipfs.tech)
+[![Discuss](https://img.shields.io/discourse/https/discuss.ipfs.tech/posts.svg?style=flat-square)](https://discuss.ipfs.tech)
 [![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
-[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/ipfs/js-ipfs/js-test-and-release.yml?branch=master\&style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml?query=branch%3Amaster)
 
 > A client library for the IPFS gRPC API
 
 ## Table of contents <!-- omit in toc -->
 
 - [Install](#install)
+  - [Browser `<script>` tag](#browser-script-tag)
 - [Why?](#why)
 - [API](#api)
   - [`create([options])`](#createoptions)
@@ -25,6 +25,14 @@
 
 ```console
 $ npm i ipfs-grpc-client
+```
+
+### Browser `<script>` tag
+
+Loading this module through a script tag will make it's exports available as `IpfsGrpcClient` in the global namespace.
+
+```html
+<script src="https://unpkg.com/ipfs-grpc-client/dist/index.min.js"></script>
 ```
 
 This module implements part of the [IPFS Core API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) using      gRPC over websockets to achieve the bidirectional streaming necessary to have full duplex streams running in the browser.
