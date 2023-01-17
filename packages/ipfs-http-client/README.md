@@ -3,9 +3,9 @@
 [![ipfs.tech](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](https://ipfs.tech)
 [![Discuss](https://img.shields.io/discourse/https/discuss.ipfs.tech/posts.svg?style=flat-square)](https://discuss.ipfs.tech)
 [![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs)
-[![CI](https://img.shields.io/github/actions/workflow/status/ipfs/js-ipfs/js-test-and-release.yml?branch=master\&style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/js-test-and-release.yml?query=branch%3Amaster)
+[![CI](https://img.shields.io/github/actions/workflow/status/ipfs/js-ipfs/test.yml?branch=master\&style=flat-square)](https://github.com/ipfs/js-ipfs/actions/workflows/test.yml?query=branch%3Amaster)
 
-> A client library for the [IPFS HTTP API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) exposed by js-ipfs. 
+> A client library for the [IPFS HTTP API](https://github.com/ipfs/js-ipfs/tree/master/docs/core-api) exposed by js-ipfs.
 
 
 > Note: The client library for the [Kubo RPC API](https://docs.ipfs.tech/reference/kubo/rpc/) has moved into [js-kubo-rpc-client](https://github.com/ipfs/js-kubo-rpc-client).
