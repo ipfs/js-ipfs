@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "aegir": "^37.11.0",
-    "mkdirp": "^1.0.4",
+    "mkdirp": "^2.1.3",
     "protobufjs": "^7.0.0",
     "protobufjs-cli": "^1.0.0"
   }
