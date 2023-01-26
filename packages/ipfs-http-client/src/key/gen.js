@@ -14,6 +14,8 @@ export const createGen = configure(api => {
   async function gen (name, options) {
     const opts = options ?? { type: 'Ed25519' }
 
+    opts.type = opts.type.toLowerCase()
+
     const res = await api.post('key/gen', {
       signal: opts.signal,
       searchParams: toUrlSearchParams({
