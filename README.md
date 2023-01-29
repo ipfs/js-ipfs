@@ -172,6 +172,10 @@ Read the [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of
   c. reduce possible future bugs.
 - **Add tests**. There can never be enough tests.
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ipfs/ipfs,ipfs/kubo,ipfs/js-ipfs&type=Date)](https://star-history.com/#ipfs/ipfs&ipfs/kubo&ipfs/js-ipfs&Date)
+
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fipfs%2Fjs-ipfs?ref=badge_large)
