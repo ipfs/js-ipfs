@@ -64,7 +64,7 @@
     "prepublishOnly": "node scripts/update-version.js"
   },
   "dependencies": {
-    "@hapi/boom": "^9.1.0",
+    "@hapi/boom": "^10.0.1",
     "@hapi/content": "^5.0.2",
     "@hapi/hapi": "^20.0.0",
     "@ipld/dag-pb": "^4.0.0",
