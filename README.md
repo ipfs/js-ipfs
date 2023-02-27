@@ -78,6 +78,27 @@ console.info(cid)
 // QmXXY5ZxbtuYj6DnfApLiGstzPN7fvSyigrRee3hDWPCaf
 ```
 
+### Use pre-built script in teh browser
+
+Directly load pre-built bundle from a CDN in the browser using <script> tag:
+
+```
+  <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
+
+```
+The use it in the script:
+```
+  <script>
+
+  const node = await Ipfs.create()
+  const result = await node.add('=^.^= meow meow')
+  const cid = results['cid']
+  console.log("CID for content",cid)
+  
+</script>
+  ```
+  
+
 ## Documentation
 
 * [Concepts](https://docs.ipfs.io/concepts/)
