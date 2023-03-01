@@ -331,7 +331,7 @@ See the [multihash](https://github.com/multiformats/js-multihash/blob/master/src
 
 ##### Importing files from the file system
 
-Both js-ipfs and js-ipfs-http-client export a utility to make importing files from the file system easier (Note: it not available in the browser).
+Both js-ipfs and js-ipfs-http-client export a utility to make importing files from the file system easier (Note: it is not available in the browser).
 
 ```js
 import { create, globSource } from 'ipfs'
