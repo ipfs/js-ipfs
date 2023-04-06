@@ -9,7 +9,7 @@ export function toUrlSearchParams ({ arg, searchParams, hashAlg, mtime, mode, ..
   if (searchParams) {
     options = {
       ...options,
-      ...searchParams
+      ...Object.fromEntries(searchParams)
     }
   }
 
