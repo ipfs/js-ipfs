@@ -90,7 +90,7 @@
     "it-multipart": "^3.0.0",
     "it-pipe": "^2.0.3",
     "it-pushable": "^3.0.0",
-    "it-reduce": "^2.0.0",
+    "it-reduce": "^3.0.2",
     "joi": "^17.2.1",
     "just-safe-set": "^4.0.2",
     "multiformats": "^11.0.0",
