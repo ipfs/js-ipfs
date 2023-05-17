@@ -104,7 +104,7 @@
     "blockstore-datastore-adapter": "^5.0.0",
     "datastore-core": "^8.0.1",
     "datastore-fs": "^8.0.0",
-    "datastore-level": "^9.0.0",
+    "datastore-level": "^10.1.1",
     "err-code": "^3.0.1",
     "hashlru": "^2.3.0",
     "interface-datastore": "^7.0.0",
