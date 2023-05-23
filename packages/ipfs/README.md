@@ -1,3 +1,13 @@
+> # ⛔️ DEPRECATED: [js-IPFS](https://github.com/ipfs/js-ipfs) has been superseded by [Helia](https://github.com/ipfs/helia) <!-- omit in toc -->
+>
+> To help you upgrade your app to use Helia please see the following resources:
+>
+>  - [Migration guide](https://github.com/ipfs/helia/wiki/%F0%9F%9A%9B-Migrating-from-js-IPFS)
+>  - [FAQ](https://github.com/ipfs/helia/wiki/%E2%9D%93-FAQ)
+>  - [Hello Helia talk](https://www.youtube.com/watch?v=T_FlhkLSgH8)
+>  - [The State of IPFS in JS](https://blog.ipfs.tech/state-of-ipfs-in-js/)
+>  - [discuss.ipfs.tech post](..)
+
 # ipfs <!-- omit in toc -->
 
 [![ipfs.tech](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](https://ipfs.tech)
