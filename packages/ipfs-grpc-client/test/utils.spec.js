@@ -11,6 +11,7 @@ describe('utils', () => {
     it('should transform a bidirectional client into an async iterable', async () => {
       const service = 'service'
       const options = {
+        host: '',
         metadata: {
           foo: 'bar'
         }
@@ -42,6 +43,7 @@ describe('utils', () => {
     it('should propagate client errors', async () => {
       const service = 'service'
       const options = {
+        host: '',
         metadata: {
           foo: 'bar'
         }

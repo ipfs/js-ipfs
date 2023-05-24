@@ -112,6 +112,7 @@
     "pako": "^2.0.4",
     "readable-stream": "^4.0.0",
     "sinon": "^15.0.1",
+    "stream": "^0.0.2",
     "uint8arrays": "^4.0.2",
     "wherearewe": "^2.0.1"
   },
