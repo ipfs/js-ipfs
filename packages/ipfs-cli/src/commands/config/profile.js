@@ -12,7 +12,6 @@ const command = {
 
   builder (yargs) {
     return yargs
-      // @ts-expect-error types are wrong
       .command(commands)
   },
 
