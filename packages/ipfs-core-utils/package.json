@@ -152,7 +152,7 @@
     "ipfs-utils": "^9.0.13",
     "it-all": "^2.0.0",
     "it-map": "^2.0.0",
-    "it-peekable": "^2.0.0",
+    "it-peekable": "^3.0.1",
     "it-to-stream": "^1.0.0",
     "merge-options": "^3.0.4",
     "multiformats": "^11.0.0",

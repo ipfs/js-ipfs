@@ -132,7 +132,7 @@
     "it-map": "^2.0.0",
     "it-merge": "^2.0.0",
     "it-parallel": "^3.0.0",
-    "it-peekable": "^2.0.0",
+    "it-peekable": "^3.0.1",
     "it-pipe": "^2.0.3",
     "it-pushable": "^3.0.0",
     "it-tar": "^6.0.0",

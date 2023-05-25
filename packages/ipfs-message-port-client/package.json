@@ -69,7 +69,7 @@
     "ipfs-core-types": "^0.14.1",
     "ipfs-message-port-protocol": "^0.15.1",
     "ipfs-unixfs": "^9.0.0",
-    "it-peekable": "^2.0.0",
+    "it-peekable": "^3.0.1",
     "multiformats": "^11.0.0"
   },
   "devDependencies": {

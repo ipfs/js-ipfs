@@ -73,7 +73,7 @@
     "ipfs-grpc-protocol": "^0.8.1",
     "it-first": "^2.0.0",
     "it-map": "^2.0.0",
-    "it-peekable": "^2.0.0",
+    "it-peekable": "^3.0.1",
     "it-pipe": "^2.0.3",
     "it-pushable": "^3.0.0",
     "nanoid": "^4.0.0",
