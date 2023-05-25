@@ -1,3 +1,9 @@
+> # ⛔️ DEPRECATED: [js-IPFS](https://github.com/ipfs/js-ipfs) has been superseded by [Helia](https://github.com/ipfs/helia)
+>
+> 📚 [Learn more about this deprecation](https://github.com/ipfs/js-ipfs/issues/4336) or [how to migrate](https://github.com/ipfs/helia/wiki/Migrating-from-js-IPFS)
+>
+> ⚠️ If you continue using this repo, please note that security fixes will not be provided
+
 # ipfs-http-client <!-- omit in toc -->
 
 [![ipfs.tech](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](https://ipfs.tech)
@@ -17,7 +23,7 @@
 - [Getting Started](#getting-started)
   - [Next Steps](#next-steps)
 - [Usage](#usage)
-  - - [`create([options])`](#createoptions)
+    - [`create([options])`](#createoptions)
     - [Parameters](#parameters)
     - [Options](#options)
     - [Returns](#returns)
