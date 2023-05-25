@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [0.15.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-server-v0.15.0...ipfs-http-server-v0.15.1) (2023-05-25)
+
+
+### Bug Fixes
+
+* add deprecation notice to readmes ([#4362](https://www.github.com/ipfs/js-ipfs/issues/4362)) ([7b79c1b](https://www.github.com/ipfs/js-ipfs/commit/7b79c1b8df5c818dc124b346ea28330455732d5c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.14.0 to ^0.14.1
+    * ipfs-core-utils bumped from ^0.18.0 to ^0.18.1
+    * ipfs-http-gateway bumped from ^0.13.0 to ^0.13.1
+  * devDependencies
+    * ipfs-http-client bumped from ^60.0.0 to ^60.0.1
+
 ## [0.15.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-http-server-v0.14.0...ipfs-http-server-v0.15.0) (2023-01-11)
 
 

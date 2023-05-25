@@ -1,6 +1,6 @@
 {
   "name": "ipfs-http-client",
-  "version": "60.0.0",
+  "version": "60.0.1",
   "description": "A client library for the IPFS HTTP API",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client#readme",
@@ -76,8 +76,8 @@
     "any-signal": "^3.0.0",
     "dag-jose": "^4.0.0",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.14.0",
-    "ipfs-core-utils": "^0.18.0",
+    "ipfs-core-types": "^0.14.1",
+    "ipfs-core-utils": "^0.18.1",
     "ipfs-utils": "^9.0.13",
     "it-first": "^2.0.0",
     "it-last": "^2.0.0",

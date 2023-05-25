@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+### [0.12.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-server-v0.12.0...ipfs-grpc-server-v0.12.1) (2023-05-25)
+
+
+### Bug Fixes
+
+* add deprecation notice to readmes ([#4362](https://www.github.com/ipfs/js-ipfs/issues/4362)) ([7b79c1b](https://www.github.com/ipfs/js-ipfs/commit/7b79c1b8df5c818dc124b346ea28330455732d5c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * ipfs-core-types bumped from ^0.14.0 to ^0.14.1
+    * ipfs-grpc-protocol bumped from ^0.8.0 to ^0.8.1
+  * devDependencies
+    * ipfs-core bumped from ^0.18.0 to ^0.18.1
+
 ## [0.12.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-grpc-server-v0.11.0...ipfs-grpc-server-v0.12.0) (2023-01-11)
 
 
