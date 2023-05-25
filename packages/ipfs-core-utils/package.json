@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-utils",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Package to share code between ipfs and ipfs-http-client",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "license": "Apache-2.0 OR MIT",
@@ -147,7 +147,7 @@
     "blob-to-it": "^2.0.0",
     "browser-readablestream-to-it": "^2.0.0",
     "err-code": "^3.0.1",
-    "ipfs-core-types": "^0.14.0",
+    "ipfs-core-types": "^0.14.1",
     "ipfs-unixfs": "^9.0.0",
     "ipfs-utils": "^9.0.13",
     "it-all": "^2.0.0",

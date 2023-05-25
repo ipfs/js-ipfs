@@ -1,6 +1,6 @@
 {
   "name": "ipfs-core-types",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "IPFS interface definitions used by implementations for API compatibility.",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-core-types#readme",

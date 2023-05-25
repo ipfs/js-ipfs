@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 
+### [0.14.1](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.14.0...ipfs-core-types-v0.14.1) (2023-05-25)
+
+
+### Bug Fixes
+
+* add deprecation notice to readmes ([#4362](https://www.github.com/ipfs/js-ipfs/issues/4362)) ([7b79c1b](https://www.github.com/ipfs/js-ipfs/commit/7b79c1b8df5c818dc124b346ea28330455732d5c))
+
 ## [0.14.0](https://www.github.com/ipfs/js-ipfs/compare/ipfs-core-types-v0.13.0...ipfs-core-types-v0.14.0) (2023-01-11)
 
 

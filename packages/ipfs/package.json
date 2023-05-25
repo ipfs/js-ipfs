@@ -1,6 +1,6 @@
 {
   "name": "ipfs",
-  "version": "0.66.0",
+  "version": "0.66.1",
   "description": "JavaScript implementation of the IPFS specification",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs#readme",
@@ -77,8 +77,8 @@
   },
   "dependencies": {
     "@libp2p/logger": "^2.0.5",
-    "ipfs-cli": "^0.16.0",
-    "ipfs-core": "^0.18.0",
+    "ipfs-cli": "^0.16.1",
+    "ipfs-core": "^0.18.1",
     "semver": "^7.3.2",
     "update-notifier": "^6.0.0"
   },
@@ -90,10 +90,10 @@
     "aegir": "^37.11.0",
     "cross-env": "^7.0.0",
     "go-ipfs": "^0.12.0",
-    "interface-ipfs-core": "^0.158.0",
-    "ipfs-client": "^0.10.0",
-    "ipfs-core-types": "^0.14.0",
-    "ipfs-http-client": "^60.0.0",
+    "interface-ipfs-core": "^0.158.1",
+    "ipfs-client": "^0.10.1",
+    "ipfs-core-types": "^0.14.1",
+    "ipfs-http-client": "^60.0.1",
     "ipfs-interop": "^10.0.0",
     "ipfs-utils": "^9.0.13",
     "ipfsd-ctl": "^13.0.0",
